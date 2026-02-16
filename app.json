@@ -16,7 +16,8 @@
       "bundleIdentifier": "com.klee.conjugo",
       "buildNumber": "1",
       "infoPlist": {
-        "CFBundleDisplayName": "ConjuGo!"
+        "CFBundleDisplayName": "ConjuGo!",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

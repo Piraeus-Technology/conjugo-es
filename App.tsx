@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import HomeScreen from './src/screens/HomeScreen';
 import ConjugationScreen from './src/screens/ConjugationScreen';
+import TipJarScreen from './src/screens/TipJarScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 
@@ -63,18 +64,27 @@ export default function App() {
           <Stack.Screen
             name="Search"
             component={HomeScreen}
-            options={{
+            options={({ navigation }) => ({
               title: 'ConjuGo!',
               headerRight: () => (
-                <TouchableOpacity onPress={toggleTheme}>
-                  <Ionicons
-                    name={isDark ? 'sunny' : 'moon'}
-                    size={22}
-                    color={colors.textPrimary}
-                  />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => navigation.navigate('TipJar')}>
+                    <Ionicons
+                      name="cafe-outline"
+                      size={22}
+                      color={colors.textPrimary}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={toggleTheme} style={{ marginLeft: 16 }}>
+                    <Ionicons
+                      name={isDark ? 'sunny' : 'moon'}
+                      size={22}
+                      color={colors.textPrimary}
+                    />
+                  </TouchableOpacity>
+                </View>
               ),
-            }}
+            })}
           />
           <Stack.Screen
             name="Conjugation"
@@ -82,6 +92,13 @@ export default function App() {
             options={({ route }: any) => ({
               title: route.params.infinitive,
             })}
+          />
+          <Stack.Screen
+            name="TipJar"
+            component={TipJarScreen}
+            options={{
+              title: 'Support ConjuGo!',
+            }}
           />
         </Stack.Navigator>
       </NavigationContainer>
