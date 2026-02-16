@@ -1,29 +1,39 @@
 {
   "expo": {
-    "name": "spanish-conjugation",
-    "slug": "spanish-conjugation",
+    "name": "ConjuGo!",
+    "slug": "conjuGo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#F4B942"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.klee.conjugo",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleDisplayName": "ConjuGo!"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#F4B942"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.klee.conjugo",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2b815864-9311-430a-8c67-01bddd04b041"
+      }
     }
   }
 }

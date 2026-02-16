@@ -1,0 +1,6684 @@
+{
+  "ser": {
+    "type": "er",
+    "regular": false,
+    "translation": "to be (permanent)",
+    "overrides": {
+      "present": [
+        "soy",
+        "eres",
+        "es",
+        "somos",
+        "sois",
+        "son"
+      ],
+      "preterite": [
+        "fui",
+        "fuiste",
+        "fue",
+        "fuimos",
+        "fuisteis",
+        "fueron"
+      ],
+      "imperfect": [
+        "era",
+        "eras",
+        "era",
+        "éramos",
+        "erais",
+        "eran"
+      ],
+      "future": [
+        "seré",
+        "serás",
+        "será",
+        "seremos",
+        "seréis",
+        "serán"
+      ],
+      "conditional": [
+        "sería",
+        "serías",
+        "sería",
+        "seríamos",
+        "seríais",
+        "serían"
+      ],
+      "subjunctive_present": [
+        "sea",
+        "seas",
+        "sea",
+        "seamos",
+        "seáis",
+        "sean"
+      ],
+      "subjunctive_imperfect": [
+        "fuera",
+        "fueras",
+        "fuera",
+        "fuéramos",
+        "fuerais",
+        "fueran"
+      ],
+      "imperative_affirmative": [
+        "—",
+        "sé",
+        "sea",
+        "seamos",
+        "sed",
+        "sean"
+      ],
+      "imperative_negative": [
+        "—",
+        "no seas",
+        "no sea",
+        "no seamos",
+        "no seáis",
+        "no sean"
+      ]
+    }
+  },
+  "estar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to be (state/location)",
+    "overrides": {
+      "present": [
+        "estoy",
+        "estás",
+        "está",
+        "estamos",
+        "estáis",
+        "están"
+      ],
+      "preterite": [
+        "estuve",
+        "estuviste",
+        "estuvo",
+        "estuvimos",
+        "estuvisteis",
+        "estuvieron"
+      ],
+      "subjunctive_present": [
+        "esté",
+        "estés",
+        "esté",
+        "estemos",
+        "estéis",
+        "estén"
+      ],
+      "subjunctive_imperfect": [
+        "estuviera",
+        "estuvieras",
+        "estuviera",
+        "estuviéramos",
+        "estuvierais",
+        "estuvieran"
+      ]
+    }
+  },
+  "ir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to go",
+    "overrides": {
+      "present": [
+        "voy",
+        "vas",
+        "va",
+        "vamos",
+        "vais",
+        "van"
+      ],
+      "preterite": [
+        "fui",
+        "fuiste",
+        "fue",
+        "fuimos",
+        "fuisteis",
+        "fueron"
+      ],
+      "imperfect": [
+        "iba",
+        "ibas",
+        "iba",
+        "íbamos",
+        "ibais",
+        "iban"
+      ],
+      "subjunctive_present": [
+        "vaya",
+        "vayas",
+        "vaya",
+        "vayamos",
+        "vayáis",
+        "vayan"
+      ],
+      "subjunctive_imperfect": [
+        "fuera",
+        "fueras",
+        "fuera",
+        "fuéramos",
+        "fuerais",
+        "fueran"
+      ],
+      "imperative_affirmative": [
+        "—",
+        "ve",
+        "vaya",
+        "vamos",
+        "id",
+        "vayan"
+      ],
+      "imperative_negative": [
+        "—",
+        "no vayas",
+        "no vaya",
+        "no vayamos",
+        "no vayáis",
+        "no vayan"
+      ]
+    }
+  },
+  "haber": {
+    "type": "er",
+    "regular": false,
+    "translation": "to have (auxiliary)",
+    "overrides": {
+      "present": [
+        "he",
+        "has",
+        "ha",
+        "hemos",
+        "habéis",
+        "han"
+      ],
+      "preterite": [
+        "hube",
+        "hubiste",
+        "hubo",
+        "hubimos",
+        "hubisteis",
+        "hubieron"
+      ],
+      "imperfect": [
+        "había",
+        "habías",
+        "había",
+        "habíamos",
+        "habíais",
+        "habían"
+      ],
+      "future": [
+        "habré",
+        "habrás",
+        "habrá",
+        "habremos",
+        "habréis",
+        "habrán"
+      ],
+      "conditional": [
+        "habría",
+        "habrías",
+        "habría",
+        "habríamos",
+        "habríais",
+        "habrían"
+      ],
+      "subjunctive_present": [
+        "haya",
+        "hayas",
+        "haya",
+        "hayamos",
+        "hayáis",
+        "hayan"
+      ],
+      "subjunctive_imperfect": [
+        "hubiera",
+        "hubieras",
+        "hubiera",
+        "hubiéramos",
+        "hubierais",
+        "hubieran"
+      ]
+    }
+  },
+  "hacer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to do/make",
+    "pattern": {
+      "irregularFutureStem": "har"
+    },
+    "overrides": {
+      "present": [
+        "hago",
+        "haces",
+        "hace",
+        "hacemos",
+        "hacéis",
+        "hacen"
+      ],
+      "preterite": [
+        "hice",
+        "hiciste",
+        "hizo",
+        "hicimos",
+        "hicisteis",
+        "hicieron"
+      ],
+      "subjunctive_present": [
+        "haga",
+        "hagas",
+        "haga",
+        "hagamos",
+        "hagáis",
+        "hagan"
+      ],
+      "imperative_affirmative": [
+        "—",
+        "haz",
+        "haga",
+        "hagamos",
+        "haced",
+        "hagan"
+      ]
+    }
+  },
+  "decir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to say/tell",
+    "pattern": {
+      "irregularFutureStem": "dir"
+    },
+    "overrides": {
+      "present": [
+        "digo",
+        "dices",
+        "dice",
+        "decimos",
+        "decís",
+        "dicen"
+      ],
+      "preterite": [
+        "dije",
+        "dijiste",
+        "dijo",
+        "dijimos",
+        "dijisteis",
+        "dijeron"
+      ],
+      "subjunctive_present": [
+        "diga",
+        "digas",
+        "diga",
+        "digamos",
+        "digáis",
+        "digan"
+      ],
+      "imperative_affirmative": [
+        "—",
+        "di",
+        "diga",
+        "digamos",
+        "decid",
+        "digan"
+      ]
+    }
+  },
+  "dar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to give",
+    "overrides": {
+      "present": [
+        "doy",
+        "das",
+        "da",
+        "damos",
+        "dais",
+        "dan"
+      ],
+      "preterite": [
+        "di",
+        "diste",
+        "dio",
+        "dimos",
+        "disteis",
+        "dieron"
+      ],
+      "subjunctive_present": [
+        "dé",
+        "des",
+        "dé",
+        "demos",
+        "deis",
+        "den"
+      ],
+      "subjunctive_imperfect": [
+        "diera",
+        "dieras",
+        "diera",
+        "diéramos",
+        "dierais",
+        "dieran"
+      ]
+    }
+  },
+  "ver": {
+    "type": "er",
+    "regular": false,
+    "translation": "to see",
+    "overrides": {
+      "present": [
+        "veo",
+        "ves",
+        "ve",
+        "vemos",
+        "veis",
+        "ven"
+      ],
+      "preterite": [
+        "vi",
+        "viste",
+        "vio",
+        "vimos",
+        "visteis",
+        "vieron"
+      ],
+      "imperfect": [
+        "veía",
+        "veías",
+        "veía",
+        "veíamos",
+        "veíais",
+        "veían"
+      ],
+      "subjunctive_present": [
+        "vea",
+        "veas",
+        "vea",
+        "veamos",
+        "veáis",
+        "vean"
+      ]
+    }
+  },
+  "oír": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to hear",
+    "overrides": {
+      "present": [
+        "oigo",
+        "oyes",
+        "oye",
+        "oímos",
+        "oís",
+        "oyen"
+      ],
+      "preterite": [
+        "oí",
+        "oíste",
+        "oyó",
+        "oímos",
+        "oísteis",
+        "oyeron"
+      ],
+      "subjunctive_present": [
+        "oiga",
+        "oigas",
+        "oiga",
+        "oigamos",
+        "oigáis",
+        "oigan"
+      ]
+    }
+  },
+  "leer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to read",
+    "overrides": {
+      "preterite": [
+        "leí",
+        "leíste",
+        "leyó",
+        "leímos",
+        "leísteis",
+        "leyeron"
+      ]
+    }
+  },
+  "reír": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to laugh",
+    "overrides": {
+      "present": [
+        "río",
+        "ríes",
+        "ríe",
+        "reímos",
+        "reís",
+        "ríen"
+      ],
+      "preterite": [
+        "reí",
+        "reíste",
+        "rio",
+        "reímos",
+        "reísteis",
+        "rieron"
+      ],
+      "subjunctive_present": [
+        "ría",
+        "rías",
+        "ría",
+        "riamos",
+        "riáis",
+        "rían"
+      ]
+    }
+  },
+  "sonreír": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to smile",
+    "overrides": {
+      "present": [
+        "sonrío",
+        "sonríes",
+        "sonríe",
+        "sonreímos",
+        "sonreís",
+        "sonríen"
+      ],
+      "preterite": [
+        "sonreí",
+        "sonreíste",
+        "sonrio",
+        "sonreímos",
+        "sonreísteis",
+        "sonrieron"
+      ],
+      "subjunctive_present": [
+        "sonría",
+        "sonrías",
+        "sonría",
+        "sonriamos",
+        "sonriáis",
+        "sonrían"
+      ]
+    }
+  },
+  "saber": {
+    "type": "er",
+    "regular": false,
+    "translation": "to know (facts)",
+    "pattern": {
+      "irregularPreteriteStem": "sup",
+      "irregularFutureStem": "sabr"
+    },
+    "overrides": {
+      "present": [
+        "sé",
+        "sabes",
+        "sabe",
+        "sabemos",
+        "sabéis",
+        "saben"
+      ],
+      "subjunctive_present": [
+        "sepa",
+        "sepas",
+        "sepa",
+        "sepamos",
+        "sepáis",
+        "sepan"
+      ]
+    }
+  },
+  "caber": {
+    "type": "er",
+    "regular": false,
+    "translation": "to fit",
+    "pattern": {
+      "irregularPreteriteStem": "cup",
+      "irregularFutureStem": "cabr"
+    },
+    "overrides": {
+      "present": [
+        "quepo",
+        "cabes",
+        "cabe",
+        "cabemos",
+        "cabéis",
+        "caben"
+      ],
+      "subjunctive_present": [
+        "quepa",
+        "quepas",
+        "quepa",
+        "quepamos",
+        "quepáis",
+        "quepan"
+      ]
+    }
+  },
+  "tener": {
+    "type": "er",
+    "regular": false,
+    "translation": "to have",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "tuv",
+      "irregularFutureStem": "tendr"
+    }
+  },
+  "venir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to come",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "vin",
+      "irregularFutureStem": "vendr"
+    }
+  },
+  "poner": {
+    "type": "er",
+    "regular": false,
+    "translation": "to put",
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "pus",
+      "irregularFutureStem": "pondr"
+    }
+  },
+  "salir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to leave/go out",
+    "pattern": {
+      "yoGo": true,
+      "irregularFutureStem": "saldr"
+    }
+  },
+  "valer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to be worth",
+    "pattern": {
+      "yoGo": true,
+      "irregularFutureStem": "valdr"
+    }
+  },
+  "caer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to fall",
+    "pattern": {
+      "yoGo": true
+    }
+  },
+  "traer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to bring",
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "traj"
+    }
+  },
+  "pensar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to think",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "cerrar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to close",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "despertar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to wake up",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "recomendar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to recommend",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "calentar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to heat",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "confesar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to confess",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "sentar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to seat",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "acertar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to guess correctly",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "apretar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to squeeze/tighten",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "atravesar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to cross",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "gobernar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to govern",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "helar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to freeze",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "manifestar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to manifest",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "merendar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to have a snack",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "nevar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to snow",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "sembrar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to sow/plant",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "temblar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to tremble",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "tropezar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to trip",
+    "pattern": {
+      "spellingChange": "zar_cé",
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "fregar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to scrub/wash dishes",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "spellingChange": "gar_gué"
+    }
+  },
+  "comenzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to begin",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "spellingChange": "zar_cé"
+    }
+  },
+  "empezar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to start",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "spellingChange": "zar_cé"
+    }
+  },
+  "negar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to deny",
+    "pattern": {
+      "spellingChange": "gar_gué",
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "entender": {
+    "type": "er",
+    "regular": false,
+    "translation": "to understand",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "perder": {
+    "type": "er",
+    "regular": false,
+    "translation": "to lose",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "defender": {
+    "type": "er",
+    "regular": false,
+    "translation": "to defend",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "encender": {
+    "type": "er",
+    "regular": false,
+    "translation": "to light/turn on",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "ascender": {
+    "type": "er",
+    "regular": false,
+    "translation": "to ascend/promote",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "descender": {
+    "type": "er",
+    "regular": false,
+    "translation": "to descend",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "atender": {
+    "type": "er",
+    "regular": false,
+    "translation": "to attend to/serve",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "tender": {
+    "type": "er",
+    "regular": false,
+    "translation": "to tend/hang out",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "verter": {
+    "type": "er",
+    "regular": false,
+    "translation": "to pour/spill",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
+  },
+  "querer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to want/love",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "irregularPreteriteStem": "quis",
+      "irregularFutureStem": "querr"
+    }
+  },
+  "sentir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to feel",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "preferir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to prefer",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "mentir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to lie",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "divertir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to amuse/entertain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "convertir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to convert",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "hervir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to boil",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "sugerir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to suggest",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "advertir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to warn",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "referir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to refer",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "invertir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to invest",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "transferir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to transfer",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "diferir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to differ/postpone",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "inferir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to infer",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "herir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to wound",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "adquirir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to acquire",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "encontrar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to find",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "contar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to count/tell",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "recordar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to remember",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "mostrar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to show",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "probar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to try/taste",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "soñar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to dream",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "volar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to fly",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "costar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to cost",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "acordar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to agree/remember",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "apostar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to bet",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "aprobar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to approve/pass",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "consolar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to console",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "demostrar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to demonstrate",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "renovar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to renovate",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "rodar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to roll/film",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "soltar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to release/let go",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "sonar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to sound/ring",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "forzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to force",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      },
+      "spellingChange": "zar_cé"
+    }
+  },
+  "esforzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to make an effort",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      },
+      "spellingChange": "zar_cé"
+    }
+  },
+  "torcer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to twist",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "almorzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to have lunch",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      },
+      "spellingChange": "zar_cé"
+    }
+  },
+  "colgar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to hang",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      },
+      "spellingChange": "gar_gué"
+    }
+  },
+  "rogar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to beg",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      },
+      "spellingChange": "gar_gué"
+    }
+  },
+  "volver": {
+    "type": "er",
+    "regular": false,
+    "translation": "to return",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "mover": {
+    "type": "er",
+    "regular": false,
+    "translation": "to move",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "llover": {
+    "type": "er",
+    "regular": false,
+    "translation": "to rain",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "devolver": {
+    "type": "er",
+    "regular": false,
+    "translation": "to return (something)",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "resolver": {
+    "type": "er",
+    "regular": false,
+    "translation": "to solve",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "envolver": {
+    "type": "er",
+    "regular": false,
+    "translation": "to wrap",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "promover": {
+    "type": "er",
+    "regular": false,
+    "translation": "to promote",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "remover": {
+    "type": "er",
+    "regular": false,
+    "translation": "to remove/stir",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "disolver": {
+    "type": "er",
+    "regular": false,
+    "translation": "to dissolve",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "conmover": {
+    "type": "er",
+    "regular": false,
+    "translation": "to move (emotionally)",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "soler": {
+    "type": "er",
+    "regular": false,
+    "translation": "to usually do",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "doler": {
+    "type": "er",
+    "regular": false,
+    "translation": "to hurt/ache",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "morder": {
+    "type": "er",
+    "regular": false,
+    "translation": "to bite",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "poder": {
+    "type": "er",
+    "regular": false,
+    "translation": "to be able to",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      },
+      "irregularPreteriteStem": "pud",
+      "irregularFutureStem": "podr"
+    }
+  },
+  "dormir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to sleep",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue",
+        "preterite": "o_ue"
+      }
+    }
+  },
+  "morir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to die",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue",
+        "preterite": "o_ue"
+      }
+    }
+  },
+  "pedir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to ask for/order",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "seguir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to follow/continue",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      },
+      "spellingChange": "guir_ga"
+    }
+  },
+  "repetir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to repeat",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "servir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to serve",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "vestir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to dress",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "competir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to compete",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "despedir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to fire/say goodbye",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "impedir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to prevent",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "medir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to measure",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "rendir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to yield/surrender",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "derretir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to melt",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "gemir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to groan/moan",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    }
+  },
+  "perseguir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to pursue",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      },
+      "spellingChange": "guir_ga"
+    }
+  },
+  "conseguir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to get/obtain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      },
+      "spellingChange": "guir_ga"
+    }
+  },
+  "proseguir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to continue/proceed",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      },
+      "spellingChange": "guir_ga"
+    }
+  },
+  "elegir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to choose",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      },
+      "spellingChange": "gir_ja"
+    }
+  },
+  "corregir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to correct",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      },
+      "spellingChange": "gir_ja"
+    }
+  },
+  "jugar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to play",
+    "pattern": {
+      "stemChange": {
+        "present": "u_ue"
+      },
+      "spellingChange": "gar_gué"
+    }
+  },
+  "conocer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to know (people/places)",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "agradecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to thank",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "parecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to seem",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "ofrecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to offer",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "pertenecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to belong",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "crecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to grow",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "nacer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to be born",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "aparecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to appear",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "desaparecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to disappear",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "establecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to establish",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "merecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to deserve",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "obedecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to obey",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "permanecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to remain",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "reconocer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to recognize",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "fortalecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to strengthen",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "favorecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to favor",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "enriquecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to enrich",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "empobrecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to impoverish",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "oscurecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to darken",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "amanecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to dawn",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "anochecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to get dark",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "envejecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to age",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "rejuvenecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to rejuvenate",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "humedecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to moisten",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "endurecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to harden",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "entristecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to sadden",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "enfurecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to infuriate",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "embellecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to beautify",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "complacer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to please",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "padecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to suffer/endure",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "carecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to lack",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "florecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to bloom",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "palidecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to turn pale",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "prevalecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to prevail",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "aborrecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to hate/loathe",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "desobedecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to disobey",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "desconocer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to not know",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "enloquecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to go crazy",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "estremecer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to shudder",
+    "pattern": {
+      "yoZco": true
+    }
+  },
+  "producir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to produce",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "produj"
+    }
+  },
+  "traducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to translate",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "traduj"
+    }
+  },
+  "conducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to drive",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "conduj"
+    }
+  },
+  "reducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to reduce",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "reduj"
+    }
+  },
+  "introducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to introduce",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "introduj"
+    }
+  },
+  "reproducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to reproduce",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "reproduj"
+    }
+  },
+  "deducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to deduce",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "deduj"
+    }
+  },
+  "inducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to induce",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "induj"
+    }
+  },
+  "seducir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to seduce",
+    "pattern": {
+      "yoZco": true,
+      "irregularPreteriteStem": "seduj"
+    }
+  },
+  "construir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to build",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "destruir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to destroy",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "incluir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to include",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "huir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to flee",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "contribuir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to contribute",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "distribuir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to distribute",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "concluir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to conclude",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "influir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to influence",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "sustituir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to substitute",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "excluir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to exclude",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "constituir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to constitute",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "instruir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to instruct",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "obstruir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to obstruct",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "reconstruir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to rebuild",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "disminuir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to diminish",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "atribuir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to attribute",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "intuir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to sense/intuit",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "diluir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to dilute",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "fluir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to flow",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "restituir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to restore",
+    "pattern": {
+      "spellingChange": "uir_uy"
+    }
+  },
+  "buscar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to search",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "tocar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to touch/play",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "sacar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to take out",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "explicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to explain",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "practicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to practice",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "indicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to indicate",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "publicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to publish",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "dedicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to dedicate",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "comunicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to communicate",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "aplicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to apply",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "clasificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to classify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "colocar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to place",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "complicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to complicate",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "criticar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to criticize",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "duplicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to duplicate",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "educar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to educate",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "embarcar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to board/embark",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "equivocar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to mistake",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "fabricar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to manufacture",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "identificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to identify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "justificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to justify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "marcar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to mark/score",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "masticar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to chew",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "modificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to modify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "notificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to notify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "pecar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to sin",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "pescar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to fish",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "picar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to sting/chop",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "platicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to chat",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "provocar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to provoke",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "rectificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to rectify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "sacrificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to sacrifice",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "secar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to dry",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "significar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to mean/signify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "suplicar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to beg/implore",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "verificar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to verify",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "chocar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to crash/collide",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "destacar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to stand out",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "arrancar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to start/pull out",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "atacar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to attack",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "rascar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to scratch",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "roncar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to snore",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "volcar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to overturn",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
+  },
+  "pagar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to pay",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "llegar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to arrive",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "entregar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to deliver/hand in",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "apagar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to turn off",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "cargar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to load/charge",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "castigar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to punish",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "investigar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to investigate",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "juzgar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to judge",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "madrugar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to get up early",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "navegar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to navigate/sail",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "obligar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to force/oblige",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "otorgar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to grant",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "pegar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to hit/stick",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "prolongar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to prolong",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "tragar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to swallow",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "vagar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to wander",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "arriesgar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to risk",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "encargar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to order/entrust",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "halagar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to flatter",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "ahogar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to drown",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "agregar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to add",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "congregar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to congregate",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "delegar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to delegate",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "divulgar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to spread/divulge",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "interrogar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to interrogate",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "ligar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to tie/flirt",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
+  },
+  "cruzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to cross",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "alcanzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to reach",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "lanzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to throw/launch",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "organizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to organize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "realizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to carry out",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "abrazar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to hug",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "utilizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to utilize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "avanzar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to advance",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "rezar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to pray",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "gozar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to enjoy",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "amenazar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to threaten",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "analizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to analyze",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "autorizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to authorize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "bautizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to baptize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "caracterizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to characterize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "civilizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to civilize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "colonizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to colonize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "deslizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to slide",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "destrozar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to destroy/shatter",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "disfrazar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to disguise",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "dramatizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to dramatize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "economizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to economize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "especializar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to specialize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "garantizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to guarantee",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "generalizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to generalize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "harmonizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to harmonize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "hospitalizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to hospitalize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "localizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to locate",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "memorizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to memorize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "minimizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to minimize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "modernizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to modernize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "normalizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to normalize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "optimizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to optimize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "paralizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to paralyze",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "personalizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to personalize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "polarizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to polarize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "privatizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to privatize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "protagonizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to star in",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "simbolizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to symbolize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "sincronizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to synchronize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "suavizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to soften",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "tranquilizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to calm down",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "valorizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to value",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "visualizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to visualize",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "cazar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to hunt",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "rechazar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to reject",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "trazar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to trace/draw",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "aterrizar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to land",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "rebotar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to bounce",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "emplazar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to summon/place",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "bostezar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to yawn",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
+  },
+  "hablar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to speak"
+  },
+  "trabajar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to work"
+  },
+  "caminar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to walk"
+  },
+  "estudiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to study"
+  },
+  "comprar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to buy"
+  },
+  "cantar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to sing"
+  },
+  "llamar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to call"
+  },
+  "llevar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to carry/wear"
+  },
+  "pasar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pass/happen"
+  },
+  "quedar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to stay/remain"
+  },
+  "tomar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to take/drink"
+  },
+  "dejar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to leave/let"
+  },
+  "necesitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to need"
+  },
+  "mirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to look/watch"
+  },
+  "esperar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to wait/hope"
+  },
+  "preguntar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to ask"
+  },
+  "entrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to enter"
+  },
+  "usar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to use"
+  },
+  "ayudar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to help"
+  },
+  "cocinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cook"
+  },
+  "bailar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to dance"
+  },
+  "nadar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to swim"
+  },
+  "viajar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to travel"
+  },
+  "descansar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to rest"
+  },
+  "enseñar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to teach"
+  },
+  "escuchar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to listen"
+  },
+  "limpiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to clean"
+  },
+  "ganar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to win/earn"
+  },
+  "mandar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to send/order"
+  },
+  "acabar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to finish"
+  },
+  "cambiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to change"
+  },
+  "cortar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cut"
+  },
+  "gritar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to shout"
+  },
+  "lavar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to wash"
+  },
+  "contestar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to answer"
+  },
+  "desear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to wish/desire"
+  },
+  "invitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to invite"
+  },
+  "llorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cry"
+  },
+  "pintar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to paint"
+  },
+  "tirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to throw"
+  },
+  "olvidar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to forget"
+  },
+  "preparar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to prepare"
+  },
+  "regalar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to give a gift"
+  },
+  "regresar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to return"
+  },
+  "aceptar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to accept"
+  },
+  "anunciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to announce"
+  },
+  "borrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to erase"
+  },
+  "celebrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to celebrate"
+  },
+  "copiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to copy"
+  },
+  "dibujar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to draw"
+  },
+  "durar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to last"
+  },
+  "funcionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to work/function"
+  },
+  "guardar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to keep/save"
+  },
+  "lograr": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to achieve"
+  },
+  "mejorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to improve"
+  },
+  "observar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to observe"
+  },
+  "participar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to participate"
+  },
+  "señalar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to point out"
+  },
+  "tratar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to try/treat"
+  },
+  "visitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to visit"
+  },
+  "abandonar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to abandon"
+  },
+  "acompañar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to accompany"
+  },
+  "acostumbrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to be accustomed"
+  },
+  "administrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to manage"
+  },
+  "admirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to admire"
+  },
+  "adoptar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to adopt"
+  },
+  "adorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to adore/worship"
+  },
+  "ahorrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to save (money)"
+  },
+  "alimentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to feed"
+  },
+  "amar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to love"
+  },
+  "aportar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to contribute/provide"
+  },
+  "arreglar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fix/arrange"
+  },
+  "asegurar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to assure/insure"
+  },
+  "aumentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to increase"
+  },
+  "bañar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to bathe"
+  },
+  "bastar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to be enough"
+  },
+  "calmar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to calm"
+  },
+  "cancelar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cancel"
+  },
+  "capturar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to capture"
+  },
+  "causar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cause"
+  },
+  "cenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to have dinner"
+  },
+  "charlar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to chat"
+  },
+  "citar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cite/quote"
+  },
+  "cobrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to charge/collect"
+  },
+  "comparar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to compare"
+  },
+  "completar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to complete"
+  },
+  "concentrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to concentrate"
+  },
+  "condenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to condemn"
+  },
+  "confiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to trust/confide"
+  },
+  "confirmar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to confirm"
+  },
+  "conservar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to conserve/preserve"
+  },
+  "considerar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to consider"
+  },
+  "contaminar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to contaminate/pollute"
+  },
+  "contratar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to hire"
+  },
+  "controlar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to control"
+  },
+  "conversar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to converse"
+  },
+  "crear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to create"
+  },
+  "cuidar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to take care of"
+  },
+  "cultivar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cultivate"
+  },
+  "curar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cure"
+  },
+  "dañar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to damage"
+  },
+  "debatir": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to debate"
+  },
+  "declarar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to declare"
+  },
+  "decorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to decorate"
+  },
+  "demandar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to demand/sue"
+  },
+  "derramar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to spill"
+  },
+  "desarrollar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to develop"
+  },
+  "desayunar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to have breakfast"
+  },
+  "descargar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to download/unload"
+  },
+  "determinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to determine"
+  },
+  "disfrutar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to enjoy"
+  },
+  "diseñar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to design"
+  },
+  "disparar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to shoot"
+  },
+  "dominar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to dominate"
+  },
+  "donar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to donate"
+  },
+  "duchar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to shower"
+  },
+  "echar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to throw/pour"
+  },
+  "eliminar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to eliminate"
+  },
+  "emocionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to move/excite"
+  },
+  "emplear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to employ/use"
+  },
+  "enamorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fall in love"
+  },
+  "encantar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to enchant/love"
+  },
+  "enfadar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to anger"
+  },
+  "enfocar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to focus"
+  },
+  "engañar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to deceive"
+  },
+  "enojar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to annoy/anger"
+  },
+  "ensayar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to rehearse"
+  },
+  "enviar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to send"
+  },
+  "escapar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to escape"
+  },
+  "estacionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to park"
+  },
+  "estimar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to estimate/esteem"
+  },
+  "evaluar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to evaluate"
+  },
+  "evitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to avoid"
+  },
+  "examinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to examine"
+  },
+  "experimentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to experience/experiment"
+  },
+  "exportar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to export"
+  },
+  "expresar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to express"
+  },
+  "faltar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lack/be missing"
+  },
+  "fascinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fascinate"
+  },
+  "felicitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to congratulate"
+  },
+  "festejar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to celebrate/party"
+  },
+  "filmar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to film"
+  },
+  "firmar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to sign"
+  },
+  "flotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to float"
+  },
+  "formar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to form"
+  },
+  "fumar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to smoke"
+  },
+  "generar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to generate"
+  },
+  "girar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to turn/rotate"
+  },
+  "golpear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to hit/strike"
+  },
+  "grabar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to record"
+  },
+  "habitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to inhabit"
+  },
+  "honrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to honor"
+  },
+  "ignorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to ignore"
+  },
+  "imaginar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to imagine"
+  },
+  "importar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to matter/import"
+  },
+  "impresionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to impress"
+  },
+  "informar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to inform"
+  },
+  "instalar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to install"
+  },
+  "intentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to try/attempt"
+  },
+  "interesar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to interest"
+  },
+  "inventar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to invent"
+  },
+  "juntar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to join/gather"
+  },
+  "lamentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to regret/lament"
+  },
+  "levantar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lift/raise"
+  },
+  "liberar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to free/liberate"
+  },
+  "limitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to limit"
+  },
+  "luchar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fight/struggle"
+  },
+  "manejar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to drive/handle"
+  },
+  "matar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to kill"
+  },
+  "mezclar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to mix"
+  },
+  "molestar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to bother"
+  },
+  "montar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to mount/ride"
+  },
+  "mudar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to move (house)"
+  },
+  "notar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to notice"
+  },
+  "ocupar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to occupy"
+  },
+  "odiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to hate"
+  },
+  "operar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to operate"
+  },
+  "parar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to stop"
+  },
+  "patinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to skate/slip"
+  },
+  "pelear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fight"
+  },
+  "perdonar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to forgive"
+  },
+  "planchar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to iron"
+  },
+  "planear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to plan"
+  },
+  "preocupar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to worry"
+  },
+  "presentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to present/introduce"
+  },
+  "prestar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lend"
+  },
+  "programar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to program"
+  },
+  "pronunciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pronounce"
+  },
+  "protestar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to protest"
+  },
+  "quejar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to complain"
+  },
+  "reclamar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to claim/complain"
+  },
+  "reformar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to reform"
+  },
+  "regañar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to scold"
+  },
+  "registrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to register/search"
+  },
+  "repasar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to review"
+  },
+  "representar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to represent"
+  },
+  "reservar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to reserve"
+  },
+  "respetar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to respect"
+  },
+  "respirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to breathe"
+  },
+  "retirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to withdraw/retire"
+  },
+  "robar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to rob/steal"
+  },
+  "saludar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to greet"
+  },
+  "salvar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to save/rescue"
+  },
+  "separar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to separate"
+  },
+  "soportar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to bear/support"
+  },
+  "soplar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to blow"
+  },
+  "sumar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to add up"
+  },
+  "superar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to overcome"
+  },
+  "tardar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to take time/be late"
+  },
+  "terminar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to finish"
+  },
+  "transformar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to transform"
+  },
+  "trasladar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to move/transfer"
+  },
+  "ubicar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to locate"
+  },
+  "vacilar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to hesitate"
+  },
+  "comer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to eat"
+  },
+  "beber": {
+    "type": "er",
+    "regular": true,
+    "translation": "to drink"
+  },
+  "correr": {
+    "type": "er",
+    "regular": true,
+    "translation": "to run"
+  },
+  "aprender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to learn"
+  },
+  "vender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to sell"
+  },
+  "creer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to believe"
+  },
+  "deber": {
+    "type": "er",
+    "regular": true,
+    "translation": "to owe/must"
+  },
+  "meter": {
+    "type": "er",
+    "regular": true,
+    "translation": "to put in"
+  },
+  "responder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to respond"
+  },
+  "temer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to fear"
+  },
+  "toser": {
+    "type": "er",
+    "regular": true,
+    "translation": "to cough"
+  },
+  "comprender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to understand"
+  },
+  "prometer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to promise"
+  },
+  "romper": {
+    "type": "er",
+    "regular": true,
+    "translation": "to break"
+  },
+  "absorber": {
+    "type": "er",
+    "regular": true,
+    "translation": "to absorb"
+  },
+  "acceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to access/agree"
+  },
+  "barrer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to sweep"
+  },
+  "ceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to yield/give in"
+  },
+  "coger": {
+    "type": "er",
+    "regular": true,
+    "translation": "to grab/catch"
+  },
+  "cometer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to commit"
+  },
+  "componer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to compose"
+  },
+  "conceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to grant/concede"
+  },
+  "corresponder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to correspond"
+  },
+  "depender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to depend"
+  },
+  "esconder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to hide"
+  },
+  "exceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to exceed"
+  },
+  "lamer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to lick"
+  },
+  "ofender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to offend"
+  },
+  "poseer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to possess"
+  },
+  "preceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to precede"
+  },
+  "pretender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to intend/claim"
+  },
+  "proceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to proceed"
+  },
+  "proteger": {
+    "type": "er",
+    "regular": true,
+    "translation": "to protect"
+  },
+  "recoger": {
+    "type": "er",
+    "regular": true,
+    "translation": "to pick up/collect"
+  },
+  "recorrer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to travel through"
+  },
+  "sorprender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to surprise"
+  },
+  "suceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to happen"
+  },
+  "suspender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to suspend/fail"
+  },
+  "tejer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to weave/knit"
+  },
+  "emprender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to undertake"
+  },
+  "socorrer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to help/rescue"
+  },
+  "reprender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to scold"
+  },
+  "contener": {
+    "type": "er",
+    "regular": true,
+    "translation": "to contain"
+  },
+  "sostener": {
+    "type": "er",
+    "regular": true,
+    "translation": "to sustain"
+  },
+  "mantener": {
+    "type": "er",
+    "regular": true,
+    "translation": "to maintain"
+  },
+  "retener": {
+    "type": "er",
+    "regular": true,
+    "translation": "to retain"
+  },
+  "obtener": {
+    "type": "er",
+    "regular": true,
+    "translation": "to obtain"
+  },
+  "detener": {
+    "type": "er",
+    "regular": true,
+    "translation": "to stop/detain"
+  },
+  "entretener": {
+    "type": "er",
+    "regular": true,
+    "translation": "to entertain"
+  },
+  "convencer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to convince"
+  },
+  "ejercer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to practice/exert"
+  },
+  "vencer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to defeat"
+  },
+  "coser": {
+    "type": "er",
+    "regular": true,
+    "translation": "to sew"
+  },
+  "vivir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to live"
+  },
+  "escribir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to write"
+  },
+  "abrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to open"
+  },
+  "recibir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to receive"
+  },
+  "subir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to go up"
+  },
+  "decidir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to decide"
+  },
+  "compartir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to share"
+  },
+  "describir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to describe"
+  },
+  "discutir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to argue/discuss"
+  },
+  "existir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to exist"
+  },
+  "permitir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to permit"
+  },
+  "sufrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to suffer"
+  },
+  "unir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to unite"
+  },
+  "asistir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to attend"
+  },
+  "cumplir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to fulfill"
+  },
+  "insistir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to insist"
+  },
+  "ocurrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to occur"
+  },
+  "añadir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to add"
+  },
+  "admitir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to admit"
+  },
+  "partir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to depart/split"
+  },
+  "aplaudir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to applaud"
+  },
+  "aburrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to bore"
+  },
+  "imprimir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to print"
+  },
+  "interrumpir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to interrupt"
+  },
+  "sacudir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to shake"
+  },
+  "acudir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to attend/come"
+  },
+  "combatir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to combat"
+  },
+  "confundir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to confuse"
+  },
+  "consumir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to consume"
+  },
+  "cubrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to cover"
+  },
+  "definir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to define"
+  },
+  "deprimir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to depress"
+  },
+  "descubrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to discover"
+  },
+  "difundir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to spread/broadcast"
+  },
+  "dirigir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to direct/manage"
+  },
+  "distinguir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to distinguish"
+  },
+  "dividir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to divide"
+  },
+  "emitir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to emit/broadcast"
+  },
+  "evadir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to evade"
+  },
+  "exhibir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to exhibit"
+  },
+  "exigir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to demand/require"
+  },
+  "exprimir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to squeeze"
+  },
+  "fundir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to melt/merge"
+  },
+  "inhibir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to inhibit"
+  },
+  "inscribir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to inscribe/register"
+  },
+  "nutrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to nourish"
+  },
+  "omitir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to omit"
+  },
+  "oprimir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to oppress"
+  },
+  "percibir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to perceive"
+  },
+  "persistir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to persist"
+  },
+  "persuadir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to persuade"
+  },
+  "presumir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to presume/show off"
+  },
+  "prohibir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to prohibit"
+  },
+  "pulir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to polish"
+  },
+  "recurrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to resort to"
+  },
+  "resistir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to resist"
+  },
+  "resumir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to summarize"
+  },
+  "sobrevivir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to survive"
+  },
+  "suscribir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to subscribe"
+  },
+  "transmitir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to transmit"
+  },
+  "zurcir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to mend/darn"
+  },
+  "abusar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to abuse"
+  },
+  "acelerar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to accelerate"
+  },
+  "aclarar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to clarify"
+  },
+  "aconsolar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to console"
+  },
+  "acumular": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to accumulate"
+  },
+  "adaptar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to adapt"
+  },
+  "adivinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to guess"
+  },
+  "agitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to shake/agitate"
+  },
+  "agotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to exhaust"
+  },
+  "agradar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to please"
+  },
+  "agrupar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to group"
+  },
+  "ajustar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to adjust"
+  },
+  "alarmar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to alarm"
+  },
+  "alejar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to move away"
+  },
+  "aliviar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to relieve"
+  },
+  "almacenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to store"
+  },
+  "alquilar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to rent"
+  },
+  "alterar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to alter"
+  },
+  "alumbrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to light up"
+  },
+  "animar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to encourage"
+  },
+  "anotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to note down"
+  },
+  "anticipar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to anticipate"
+  },
+  "apartar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to separate/set aside"
+  },
+  "apelar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to appeal"
+  },
+  "apreciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to appreciate"
+  },
+  "aprovechar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to take advantage of"
+  },
+  "arañar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to scratch"
+  },
+  "armar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to arm/assemble"
+  },
+  "arrastrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to drag"
+  },
+  "asaltar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to assault/rob"
+  },
+  "asesinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to murder"
+  },
+  "asignar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to assign"
+  },
+  "asociar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to associate"
+  },
+  "aspirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to aspire/inhale"
+  },
+  "asustar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to scare"
+  },
+  "atar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to tie"
+  },
+  "atrapar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to catch/trap"
+  },
+  "bajar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to go down/lower"
+  },
+  "besar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to kiss"
+  },
+  "bloquear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to block"
+  },
+  "brillar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to shine"
+  },
+  "bromear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to joke"
+  },
+  "bucear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to dive/scuba dive"
+  },
+  "calcular": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to calculate"
+  },
+  "calificar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to grade/qualify"
+  },
+  "callar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to be quiet"
+  },
+  "camuflar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to camouflage"
+  },
+  "casar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to marry"
+  },
+  "circular": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to circulate"
+  },
+  "clonar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to clone"
+  },
+  "colaborar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to collaborate"
+  },
+  "coleccionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to collect"
+  },
+  "comentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to comment"
+  },
+  "comprobar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to check/verify"
+  },
+  "conectar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to connect"
+  },
+  "confiscar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to confiscate"
+  },
+  "congelar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to freeze"
+  },
+  "conquistar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to conquer"
+  },
+  "consultar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to consult"
+  },
+  "contagiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to infect"
+  },
+  "contemplar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to contemplate"
+  },
+  "cooperar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to cooperate"
+  },
+  "coordinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to coordinate"
+  },
+  "coronar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to crown"
+  },
+  "cotizar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to quote (price)"
+  },
+  "cuestionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to question"
+  },
+  "demorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to delay"
+  },
+  "depositar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to deposit"
+  },
+  "derrotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to defeat"
+  },
+  "desafiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to challenge"
+  },
+  "desconfiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to distrust"
+  },
+  "despachar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to dispatch"
+  },
+  "desperdiciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to waste"
+  },
+  "destinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to destine/assign"
+  },
+  "detallar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to detail"
+  },
+  "detectar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to detect"
+  },
+  "dialogar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to dialogue"
+  },
+  "discriminar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to discriminate"
+  },
+  "disculpar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to excuse/forgive"
+  },
+  "disputar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to dispute"
+  },
+  "doblar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fold/double"
+  },
+  "documentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to document"
+  },
+  "elaborar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to elaborate/produce"
+  },
+  "elevar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to elevate"
+  },
+  "embalar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pack"
+  },
+  "empapar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to soak"
+  },
+  "empastar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fill (tooth)"
+  },
+  "empatar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to tie (score)"
+  },
+  "encerrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lock up"
+  },
+  "enfermar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to get sick"
+  },
+  "engordar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to gain weight"
+  },
+  "enlazar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to link"
+  },
+  "ensuciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to dirty"
+  },
+  "enterar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to inform/find out"
+  },
+  "enterrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to bury"
+  },
+  "entrenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to train"
+  },
+  "enumerar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to enumerate"
+  },
+  "escalar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to climb"
+  },
+  "escanear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to scan"
+  },
+  "estafar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to scam"
+  },
+  "estornudar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to sneeze"
+  },
+  "estrenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to premiere"
+  },
+  "evacuar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to evacuate"
+  },
+  "exagerar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to exaggerate"
+  },
+  "exclamar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to exclaim"
+  },
+  "explorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to explore"
+  },
+  "explotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to exploit/explode"
+  },
+  "extrañar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to miss (someone)"
+  },
+  "filtrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to filter"
+  },
+  "financiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to finance"
+  },
+  "formular": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to formulate"
+  },
+  "fracasar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fail"
+  },
+  "frenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to brake"
+  },
+  "frotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to rub"
+  },
+  "gotear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to drip"
+  },
+  "gravar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to tax/record"
+  },
+  "heredar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to inherit"
+  },
+  "hurtar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to steal"
+  },
+  "ilustrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to illustrate"
+  },
+  "implementar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to implement"
+  },
+  "implicar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to imply/involve"
+  },
+  "impulsar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to drive/boost"
+  },
+  "inaugurar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to inaugurate"
+  },
+  "incorporar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to incorporate"
+  },
+  "infectar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to infect"
+  },
+  "inspirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to inspire"
+  },
+  "integrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to integrate"
+  },
+  "intercambiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to exchange"
+  },
+  "interpretar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to interpret"
+  },
+  "inyectar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to inject"
+  },
+  "irritar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to irritate"
+  },
+  "labrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to carve/plow"
+  },
+  "lastimar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to hurt/injure"
+  },
+  "legislar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to legislate"
+  },
+  "limar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to file (metal)"
+  },
+  "manchar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to stain"
+  },
+  "manipular": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to manipulate"
+  },
+  "masajear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to massage"
+  },
+  "meditar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to meditate"
+  },
+  "mencionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to mention"
+  },
+  "mimar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pamper"
+  },
+  "motivar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to motivate"
+  },
+  "multiplicar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to multiply"
+  },
+  "murmurar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to murmur"
+  },
+  "negociar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to negotiate"
+  },
+  "nombrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to name/appoint"
+  },
+  "noquear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to knock out"
+  },
+  "objetar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to object"
+  },
+  "opinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to have an opinion"
+  },
+  "orar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pray"
+  },
+  "orientar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to orient/guide"
+  },
+  "originar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to originate"
+  },
+  "patrocinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to sponsor"
+  },
+  "pausar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pause"
+  },
+  "peinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to comb"
+  },
+  "penetrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to penetrate"
+  },
+  "perfeccionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to perfect"
+  },
+  "pilotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pilot"
+  },
+  "plantar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to plant"
+  },
+  "poblar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to populate"
+  },
+  "podar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to prune"
+  },
+  "ponderar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to ponder"
+  },
+  "postergar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to postpone"
+  },
+  "precisar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to specify"
+  },
+  "presionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pressure"
+  },
+  "presupuestar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to budget"
+  },
+  "procesar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to process"
+  },
+  "proclamar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to proclaim"
+  },
+  "progresar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to progress"
+  },
+  "propagar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to spread/propagate"
+  },
+  "proporcionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to provide"
+  },
+  "purificar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to purify"
+  },
+  "quemar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to burn"
+  },
+  "rajar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to crack/split"
+  },
+  "raptar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to kidnap"
+  },
+  "rastrear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to track"
+  },
+  "rayar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to scratch/line"
+  },
+  "rebajar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lower/reduce"
+  },
+  "reciclar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to recycle"
+  },
+  "reconfortar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to comfort"
+  },
+  "recuperar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to recover"
+  },
+  "refugiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to take refuge"
+  },
+  "regatear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to haggle"
+  },
+  "relatar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to relate/tell"
+  },
+  "relajar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to relax"
+  },
+  "relevar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to relieve/replace"
+  },
+  "rellenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fill in"
+  },
+  "rematar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to finish off"
+  },
+  "remontar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to go back (in time)"
+  },
+  "renunciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to resign/give up"
+  },
+  "reparar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to repair"
+  },
+  "replicar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to reply"
+  },
+  "reportar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to report"
+  },
+  "rescatar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to rescue"
+  },
+  "resignar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to resign oneself"
+  },
+  "restaurar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to restore"
+  },
+  "resultar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to result"
+  },
+  "retar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to challenge"
+  },
+  "revelar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to reveal"
+  },
+  "revisar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to review/check"
+  },
+  "ridiculizar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to ridicule"
+  },
+  "rodear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to surround"
+  },
+  "solicitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to request"
+  },
+  "solucionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to solve"
+  },
+  "sospechar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to suspect"
+  },
+  "subastar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to auction"
+  },
+  "supervisar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to supervise"
+  },
+  "suspirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to sigh"
+  },
+  "tapizar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to upholster"
+  },
+  "tatuar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to tattoo"
+  },
+  "telefonear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to telephone"
+  },
+  "tolerar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to tolerate"
+  },
+  "torturar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to torture"
+  },
+  "tramitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to process (paperwork)"
+  },
+  "transitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to pass through"
+  },
+  "transportar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to transport"
+  },
+  "trepar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to climb"
+  },
+  "triunfar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to triumph"
+  },
+  "tumbar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to knock down"
+  },
+  "tutear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to address informally"
+  },
+  "aprehender": {
+    "type": "er",
+    "regular": true,
+    "translation": "to apprehend"
+  },
+  "asumir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to assume"
+  },
+  "batir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to beat/whip"
+  },
+  "coincidir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to coincide"
+  },
+  "concebir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to conceive"
+  },
+  "concurrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to concur"
+  },
+  "consentir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to consent"
+  },
+  "convivir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to coexist"
+  },
+  "corromper": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to corrupt"
+  },
+  "crujir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to creak/crunch"
+  },
+  "demoler": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to demolish"
+  },
+  "desistir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to desist"
+  },
+  "dimitir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to resign"
+  },
+  "discernir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to discern"
+  },
+  "erigir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to erect"
+  },
+  "escupir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to spit"
+  },
+  "esparcir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to scatter"
+  },
+  "fingir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to pretend"
+  },
+  "gruñir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to growl"
+  },
+  "hundir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to sink"
+  },
+  "irrumpir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to burst in"
+  },
+  "lucir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to shine/show off"
+  },
+  "malvivir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to live poorly"
+  },
+  "predecir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to predict"
+  },
+  "prevenir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to prevent"
+  },
+  "pudrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to rot"
+  },
+  "surgir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to arise/emerge"
+  },
+  "tañir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to play (bells)"
+  },
+  "teñir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to dye"
+  },
+  "ungir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to anoint"
+  },
+  "urdir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to plot/scheme"
+  },
+  "zambullir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to dive/plunge"
+  },
+  "abdicar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to abdicate"
+  },
+  "abolir": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to abolish"
+  },
+  "abordar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to board/approach"
+  },
+  "abrigar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to shelter/wrap up"
+  },
+  "abstraer": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to abstract"
+  },
+  "acampar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to camp"
+  },
+  "acariciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to caress"
+  },
+  "achatar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to flatten"
+  },
+  "aclamar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to acclaim"
+  },
+  "acomodar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to accommodate"
+  },
+  "acortar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to shorten"
+  },
+  "acrecentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to increase"
+  },
+  "activar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to activate"
+  },
+  "actualizar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to update"
+  },
+  "adelantar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to advance/overtake"
+  },
+  "adelgazar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lose weight"
+  },
+  "adentrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to go deeper"
+  },
+  "adornar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to decorate/adorn"
+  },
+  "aferrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to grip/cling"
+  },
+  "afirmar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to affirm"
+  },
+  "aflojar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to loosen"
+  },
+  "agravar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to aggravate"
+  },
+  "aguantar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to bear/endure"
+  },
+  "aislar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to isolate"
+  },
+  "alabar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to praise"
+  },
+  "alegrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to make happy"
+  },
+  "aligerar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lighten"
+  },
+  "alojar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to lodge/host"
+  },
+  "alquiler": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to rent"
+  },
+  "amasar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to knead"
+  },
+  "ambicionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to aspire to"
+  },
+  "ampliar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to expand"
+  },
+  "anclar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to anchor"
+  },
+  "apaciguar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to appease"
+  },
+  "aparcar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to park"
+  },
+  "apoyar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to support"
+  },
+  "archivar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to file/archive"
+  },
+  "argumentar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to argue (a point)"
+  },
+  "arrojar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to throw/hurl"
+  },
+  "articular": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to articulate"
+  },
+  "asar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to roast"
+  },
+  "asfixiar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to suffocate"
+  },
+  "atrasar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to delay"
+  },
+  "atropellar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to run over"
+  },
+  "automatizar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to automate"
+  },
+  "avecindar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to settle nearby"
+  },
+  "aventurar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to venture"
+  },
+  "averiguar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to find out"
+  },
+  "avisar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to warn/notify"
+  },
+  "brindar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to toast/offer"
+  },
+  "camuflajear": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to camouflage"
+  },
+  "capacitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to train/qualify"
+  },
+  "captar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to capture/grasp"
+  },
+  "catalogar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to catalog"
+  },
+  "cautivar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to captivate"
+  },
+  "cegar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to blind"
+  },
+  "censurar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to censor"
+  },
+  "cifrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to encrypt"
+  },
+  "codificar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to codify/encode"
+  },
+  "colar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to strain/sneak in"
+  },
+  "combinar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to combine"
+  },
+  "comerciar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to trade"
+  },
+  "comisionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to commission"
+  },
+  "compatibilizar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to make compatible"
+  },
+  "compensar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to compensate"
+  },
+  "compilar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to compile"
+  },
+  "complementar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to complement"
+  },
+  "comprometer": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to compromise"
+  },
+  "computar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to compute"
+  },
+  "concretar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to specify"
+  },
+  "condicionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to condition"
+  },
+  "confederar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to confederate"
+  },
+  "confeccionar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to make/produce"
+  },
+  "configurar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to configure"
+  },
+  "confrontar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to confront"
+  },
+  "conmemorar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to commemorate"
+  },
+  "connotar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to connote"
+  },
+  "consagrar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to consecrate"
+  },
+  "consolidar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to consolidate"
+  },
+  "conspirar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to conspire"
+  },
+  "constar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to be evident"
+  },
+  "consumar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to consummate"
+  },
+  "contradecir": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to contradict"
+  },
+  "contrastar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to contrast"
+  },
+  "convidar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to invite/treat"
+  },
+  "convocar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to convene/summon"
+  },
+  "acontecer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to happen"
+  },
+  "acoger": {
+    "type": "er",
+    "regular": true,
+    "translation": "to welcome/take in"
+  },
+  "adolecer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to suffer from"
+  },
+  "anteceder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to precede"
+  },
+  "apetecer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to feel like/crave"
+  },
+  "arder": {
+    "type": "er",
+    "regular": true,
+    "translation": "to burn"
+  },
+  "atardecer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to get dark (evening)"
+  },
+  "atrever": {
+    "type": "er",
+    "regular": true,
+    "translation": "to dare"
+  },
+  "bendecir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to bless"
+  },
+  "competer": {
+    "type": "er",
+    "regular": true,
+    "translation": "to be within one's competence"
+  },
+  "desmentir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to deny"
+  },
+  "desvivir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to go out of one's way"
+  },
+  "disuadir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to dissuade"
+  },
+  "embestir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to charge/attack"
+  },
+  "encubrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to cover up"
+  },
+  "refundir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to recast"
+  },
+  "retransmitir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to broadcast"
+  },
+  "revivir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to revive"
+  },
+  "sumergir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to submerge"
+  },
+  "transcurrir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to pass (time)"
+  },
+  "transgredir": {
+    "type": "ir",
+    "regular": true,
+    "translation": "to transgress"
+  }
+}

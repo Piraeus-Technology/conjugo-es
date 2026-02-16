@@ -1,0 +1,317 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  SectionList,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Fuse from 'fuse.js';
+import verbs from '../data/verbs.json';
+import { VerbData, conjugate, allTenses, tenseNames, Tense } from '../utils/conjugate';
+import { useHistoryStore } from '../store/historyStore';
+import { useFavoritesStore } from '../store/favoritesStore';
+import { useColors, fonts, spacing, radius } from '../utils/theme';
+
+const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
+  ([infinitive, data]) => ({
+    infinitive,
+    ...data,
+  })
+);
+
+interface ConjMatch {
+  infinitive: string;
+  translation: string;
+  tense: Tense;
+  pronoun: string;
+  form: string;
+}
+
+const conjugationIndex: ConjMatch[] = [];
+
+verbEntries.forEach((entry) => {
+  allTenses.forEach((tense) => {
+    const results = conjugate(entry.infinitive, entry, tense);
+    results.forEach((r) => {
+      if (!r.disabled && r.form !== '—') {
+        const cleanForm = r.form.replace(/^no\s+/, '');
+        conjugationIndex.push({
+          infinitive: entry.infinitive,
+          translation: entry.translation,
+          tense,
+          pronoun: r.pronoun,
+          form: cleanForm,
+        });
+      }
+    });
+  });
+});
+
+const verbFuse = new Fuse(verbEntries, {
+  keys: ['infinitive', 'translation'],
+  threshold: 0.3,
+});
+
+const conjFuse = new Fuse(conjugationIndex, {
+  keys: ['form'],
+  threshold: 0.2,
+});
+
+interface SearchResult {
+  infinitive: string;
+  translation: string;
+  matchType: 'infinitive' | 'conjugation' | 'favorite' | 'history';
+  matchDetail?: string;
+  matchTense?: string;
+  matchForm?: string;
+}
+
+export default function HomeScreen({ navigation }: any) {
+  const [search, setSearch] = useState('');
+  const { history, loaded, loadHistory, addToHistory, clearHistory } =
+    useHistoryStore();
+  const { favorites, loadFavorites } = useFavoritesStore();
+  const colors = useColors();
+
+  useEffect(() => {
+    loadHistory();
+    loadFavorites();
+  }, []);
+
+  const results = useMemo((): SearchResult[] => {
+    if (!search.trim()) return [];
+
+    const query = search.trim().toLowerCase();
+
+    const exactConjMatches = conjugationIndex.filter(
+      (c) => c.form.toLowerCase() === query
+    );
+
+    if (exactConjMatches.length > 0) {
+      const seen = new Set<string>();
+      const exactResults: SearchResult[] = [];
+
+      exactConjMatches.forEach((c) => {
+        if (!seen.has(c.infinitive)) {
+          seen.add(c.infinitive);
+          exactResults.push({
+            infinitive: c.infinitive,
+            translation: c.translation,
+            matchType: 'conjugation',
+            matchDetail: `"${c.form}" — ${tenseNames[c.tense]}, ${c.pronoun}`,
+            matchTense: c.tense,
+            matchForm: c.form,
+          });
+        }
+      });
+
+      const verbResults = verbFuse.search(search);
+      verbResults.forEach((r) => {
+        if (!seen.has(r.item.infinitive)) {
+          seen.add(r.item.infinitive);
+          exactResults.push({
+            infinitive: r.item.infinitive,
+            translation: r.item.translation,
+            matchType: 'infinitive',
+          });
+        }
+      });
+
+      return exactResults.slice(0, 20);
+    }
+
+    const verbResults = verbFuse.search(search).map((r) => ({
+      infinitive: r.item.infinitive,
+      translation: r.item.translation,
+      matchType: 'infinitive' as const,
+    }));
+
+    const conjResults = conjFuse.search(search);
+    const seenConj = new Set<string>(verbResults.map((r) => r.infinitive));
+    const conjGrouped: SearchResult[] = [];
+
+    conjResults.forEach((r) => {
+      if (!seenConj.has(r.item.infinitive)) {
+        seenConj.add(r.item.infinitive);
+        conjGrouped.push({
+          infinitive: r.item.infinitive,
+          translation: r.item.translation,
+          matchType: 'conjugation',
+          matchDetail: `"${r.item.form}" — ${tenseNames[r.item.tense]}, ${r.item.pronoun}`,
+          matchTense: r.item.tense,
+          matchForm: r.item.form,
+        });
+      }
+    });
+
+    return [...verbResults, ...conjGrouped].slice(0, 20);
+  }, [search]);
+
+  const handleVerbPress = (infinitive: string, tense?: string, form?: string) => {
+    addToHistory(infinitive);
+    navigation.navigate('Conjugation', { infinitive, initialTense: tense, highlightForm: form });
+  };
+
+  const sections = useMemo(() => {
+    if (search.trim()) {
+      return results.length > 0 ? [{ title: '', data: results }] : [];
+    }
+
+    const s: { title: string; data: SearchResult[]; clearable?: boolean }[] = [];
+
+    if (favorites.length > 0) {
+      s.push({
+        title: 'Favorites',
+        data: favorites.map((infinitive) => ({
+          infinitive,
+          translation: (verbs as Record<string, VerbData>)[infinitive]?.translation || '',
+          matchType: 'favorite' as const,
+        })),
+      });
+    }
+
+    if (history.length > 0) {
+      s.push({
+        title: 'Recent',
+        data: history.map((infinitive) => ({
+          infinitive,
+          translation: (verbs as Record<string, VerbData>)[infinitive]?.translation || '',
+          matchType: 'history' as const,
+        })),
+        clearable: true,
+      });
+    }
+
+    return s;
+  }, [search, results, favorites, history]);
+
+  const renderItem = ({ item }: { item: SearchResult }) => (
+    <TouchableOpacity
+      style={styles.verbItem}
+      onPress={() => handleVerbPress(item.infinitive, item.matchTense, item.matchForm)}
+      activeOpacity={0.6}
+    >
+      <View style={styles.verbInfo}>
+        <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
+        <Text style={[styles.verbTranslation, { color: colors.textSecondary }]}>{item.translation}</Text>
+        {item.matchType === 'conjugation' && item.matchDetail && (
+          <Text style={[styles.matchDetail, { color: colors.primary }]}>{item.matchDetail}</Text>
+        )}
+      </View>
+      {item.matchType === 'favorite' ? (
+        <Ionicons name="heart" size={16} color={colors.primary} />
+      ) : (
+        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+      )}
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View style={[styles.searchContainer, { backgroundColor: colors.searchBg }]}>
+        <Ionicons name="search" size={20} color={colors.textMuted} style={styles.searchIcon} />
+        <TextInput
+          style={[styles.searchBar, { color: colors.textPrimary }]}
+          placeholder="Search verbs or conjugations..."
+          placeholderTextColor={colors.textMuted}
+          value={search}
+          onChangeText={setSearch}
+          autoCorrect={false}
+          autoCapitalize="none"
+        />
+        {search.length > 0 && (
+          <TouchableOpacity onPress={() => setSearch('')}>
+            <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <SectionList
+        sections={sections}
+        keyExtractor={(item, index) => item.infinitive + item.matchType + index}
+        renderItem={renderItem}
+        renderSectionHeader={({ section }) =>
+          section.title ? (
+            <View style={[styles.sectionHeader, { backgroundColor: colors.bg }]}>
+              <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{section.title}</Text>
+              {(section as any).clearable && (
+                <TouchableOpacity onPress={clearHistory}>
+                  <Text style={[styles.clearButton, { color: colors.primary }]}>Clear</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : null
+        }
+        ItemSeparatorComponent={() => (
+          <View style={[styles.separator, { backgroundColor: colors.divider }]} />
+        )}
+        SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
+        ListEmptyComponent={
+          search.trim() ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="search-outline" size={48} color={colors.border} />
+              <Text style={[styles.emptyText, { color: colors.textMuted }]}>No verbs found</Text>
+            </View>
+          ) : sections.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.heroEmoji}>🇪🇸</Text>
+              <Text style={[styles.heroTitle, { color: colors.textPrimary }]}>ConjuGo!</Text>
+              <Text style={[styles.heroSubtitle, { color: colors.textSecondary }]}>
+                Search for any Spanish verb or conjugation
+              </Text>
+            </View>
+          ) : null
+        }
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+  },
+  searchIcon: { marginRight: spacing.sm },
+  searchBar: { flex: 1, paddingVertical: 14, fontSize: fonts.sizes.md },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+  },
+  sectionTitle: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  clearButton: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.medium },
+  verbItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: spacing.lg,
+  },
+  verbInfo: { flex: 1 },
+  verbName: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold },
+  verbTranslation: { fontSize: fonts.sizes.sm, marginTop: 2 },
+  matchDetail: { fontSize: fonts.sizes.xs, marginTop: 4, fontStyle: 'italic' },
+  separator: { height: 1, marginHorizontal: spacing.lg },
+  sectionSeparator: { height: spacing.sm },
+  emptyContainer: { alignItems: 'center', paddingTop: 80 },
+  emptyText: { fontSize: fonts.sizes.md, marginTop: spacing.md },
+  heroEmoji: { fontSize: 48 },
+  heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
+  heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.xs },
+});

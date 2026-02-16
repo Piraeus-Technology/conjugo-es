@@ -1,0 +1,90 @@
+import React, { useEffect, useCallback } from 'react';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StatusBar, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as SplashScreen from 'expo-splash-screen';
+
+import HomeScreen from './src/screens/HomeScreen';
+import ConjugationScreen from './src/screens/ConjugationScreen';
+import { useThemeStore } from './src/store/themeStore';
+import { useColors, fonts } from './src/utils/theme';
+
+SplashScreen.preventAutoHideAsync();
+
+const Stack = createNativeStackNavigator<any>();
+
+export default function App() {
+  const { isDark, loaded, loadTheme, toggleTheme } = useThemeStore();
+  const colors = useColors();
+
+  useEffect(() => {
+    loadTheme();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (loaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) return null;
+
+  const navTheme = {
+    ...(isDark ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(isDark ? DarkTheme : DefaultTheme).colors,
+      background: colors.bg,
+      card: colors.bg,
+      text: colors.textPrimary,
+      primary: colors.primary,
+    },
+  };
+
+  return (
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.bg}
+      />
+      <NavigationContainer theme={navTheme}>
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: { backgroundColor: colors.bg },
+            headerTintColor: colors.primary,
+            headerTitleStyle: {
+              fontWeight: fonts.weights.semibold,
+              color: colors.textPrimary,
+            },
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: colors.bg },
+          }}
+        >
+          <Stack.Screen
+            name="Search"
+            component={HomeScreen}
+            options={{
+              title: 'ConjuGo!',
+              headerRight: () => (
+                <TouchableOpacity onPress={toggleTheme}>
+                  <Ionicons
+                    name={isDark ? 'sunny' : 'moon'}
+                    size={22}
+                    color={colors.textPrimary}
+                  />
+                </TouchableOpacity>
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="Conjugation"
+            component={ConjugationScreen}
+            options={({ route }: any) => ({
+              title: route.params.infinitive,
+            })}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
+  );
+}
