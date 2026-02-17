@@ -12,8 +12,8 @@
       "backgroundColor": "#F4B942"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.klee.conjugo",
+      "supportsTablet": false,
+      "bundleIdentifier": "com.lkh9596.conjugo",
       "buildNumber": "1",
       "infoPlist": {
         "CFBundleDisplayName": "ConjuGo!",
@@ -25,8 +25,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F4B942"
       },
-      "package": "com.klee.conjugo",
-      "versionCode": 1
+      "package": "com.lkh9596.conjugo",
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -8,6 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import HomeScreen from './src/screens/HomeScreen';
 import ConjugationScreen from './src/screens/ConjugationScreen';
 import TipJarScreen from './src/screens/TipJarScreen';
+import FeedbackScreen from './src/screens/FeedbackScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 
@@ -75,6 +76,13 @@ export default function App() {
                       color={colors.textPrimary}
                     />
                   </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('Feedback')} style={{ marginLeft: 16 }}>
+                    <Ionicons
+                      name="mail-outline"
+                      size={22}
+                      color={colors.textPrimary}
+                    />
+                  </TouchableOpacity>
                   <TouchableOpacity onPress={toggleTheme} style={{ marginLeft: 16 }}>
                     <Ionicons
                       name={isDark ? 'sunny' : 'moon'}
@@ -98,6 +106,13 @@ export default function App() {
             component={TipJarScreen}
             options={{
               title: 'Support ConjuGo!',
+            }}
+          />
+          <Stack.Screen
+            name="Feedback"
+            component={FeedbackScreen}
+            options={{
+              title: 'Feedback',
             }}
           />
         </Stack.Navigator>
