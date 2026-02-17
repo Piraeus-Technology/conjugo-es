@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar, TouchableOpacity, View } from 'react-native';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { StatusBar, Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -14,7 +14,7 @@ import { useColors, fonts } from './src/utils/theme';
 
 SplashScreen.preventAutoHideAsync();
 
-const Stack = createNativeStackNavigator<any>();
+const Stack = createStackNavigator<any>();
 
 export default function App() {
   const { isDark, loaded, loadTheme, toggleTheme } = useThemeStore();
@@ -52,14 +52,14 @@ export default function App() {
       <NavigationContainer theme={navTheme}>
         <Stack.Navigator
           screenOptions={{
-            headerStyle: { backgroundColor: colors.bg },
+            headerStyle: { backgroundColor: colors.bg, elevation: 0, shadowOpacity: 0 },
             headerTintColor: colors.primary,
             headerTitleStyle: {
               fontWeight: fonts.weights.semibold,
               color: colors.textPrimary,
             },
-            headerShadowVisible: false,
-            contentStyle: { backgroundColor: colors.bg },
+            cardStyle: { backgroundColor: colors.bg },
+            ...TransitionPresets.SlideFromRightIOS,
           }}
         >
           <Stack.Screen
@@ -68,28 +68,40 @@ export default function App() {
             options={({ navigation }) => ({
               title: 'ConjuGo!',
               headerRight: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => navigation.navigate('TipJar')}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginRight: 16 }}>
+                  <Pressable
+                    onPress={() => navigation.navigate('TipJar')}
+                    hitSlop={8}
+                    style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+                  >
                     <Ionicons
                       name="cafe-outline"
                       size={22}
                       color={colors.textPrimary}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('Feedback')} style={{ marginLeft: 16 }}>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => navigation.navigate('Feedback')}
+                    hitSlop={8}
+                    style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+                  >
                     <Ionicons
                       name="mail-outline"
                       size={22}
                       color={colors.textPrimary}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={toggleTheme} style={{ marginLeft: 16 }}>
+                  </Pressable>
+                  <Pressable
+                    onPress={toggleTheme}
+                    hitSlop={8}
+                    style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+                  >
                     <Ionicons
                       name={isDark ? 'sunny' : 'moon'}
                       size={22}
                       color={colors.textPrimary}
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               ),
             })}

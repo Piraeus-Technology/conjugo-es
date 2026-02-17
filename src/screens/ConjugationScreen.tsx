@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
+  Pressable,
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
@@ -40,7 +41,7 @@ const tenseGroups = [
   },
 ];
 
-export default function ConjugationScreen({ route }: any) {
+export default function ConjugationScreen({ route, navigation }: any) {
   const { infinitive } = route.params;
   const verb = (verbs as Record<string, VerbData>)[infinitive];
   const initialTense = route.params?.initialTense || 'present';
@@ -51,6 +52,24 @@ export default function ConjugationScreen({ route }: any) {
   const favorited = isFavorite(infinitive);
   const colors = useColors();
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+          <Pressable
+            onPress={() => toggleFavorite(infinitive)}
+            hitSlop={8}
+            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, marginRight: 16 })}
+          >
+            <Ionicons
+              name={favorited ? 'heart' : 'heart-outline'}
+              size={22}
+              color={favorited ? colors.primary : colors.textMuted}
+            />
+          </Pressable>
+      ),
+    });
+  }, [navigation, favorited, colors]);
+
   const toggleTense = (tense: Tense) => {
     setOpenTense(openTense === tense ? null : tense);
   };
@@ -58,16 +77,7 @@ export default function ConjugationScreen({ route }: any) {
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
       <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <Text style={[styles.infinitive, { color: colors.textPrimary }]}>{infinitive}</Text>
-          <TouchableOpacity onPress={() => toggleFavorite(infinitive)} style={styles.heartButton}>
-            <Ionicons
-              name={favorited ? 'heart' : 'heart-outline'}
-              size={28}
-              color={favorited ? colors.primary : colors.textMuted}
-            />
-          </TouchableOpacity>
-        </View>
+        <Text style={[styles.infinitive, { color: colors.textPrimary }]}>{infinitive}</Text>
         <Text style={[styles.translation, { color: colors.textSecondary }]}>{verb.translation}</Text>
         <View
           style={[
@@ -182,9 +192,7 @@ export default function ConjugationScreen({ route }: any) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { padding: spacing.lg, alignItems: 'center' },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
-  heartButton: { padding: spacing.xs },
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
   tag: { marginTop: spacing.sm, paddingHorizontal: 14, paddingVertical: 5, borderRadius: radius.full },
   tagText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.medium },
