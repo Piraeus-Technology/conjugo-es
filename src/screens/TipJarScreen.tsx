@@ -13,9 +13,9 @@ import {
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 
 const tips = [
-  { id: 'tip_small', emoji: '☕', label: 'Small Tip', price: '$0.99', description: 'Buy me a coffee' },
-  { id: 'tip_medium', emoji: '🌮', label: 'Medium Tip', price: '$2.99', description: 'Buy me a taco' },
-  { id: 'tip_large', emoji: '🎉', label: 'Big Tip', price: '$4.99', description: "You're amazing!" },
+  { id: 'tip_small', emoji: '☕', label: 'Small Tip', price: '$1.99', description: 'Buy me a coffee' },
+  { id: 'tip_medium', emoji: '🌮', label: 'Medium Tip', price: '$3.99', description: 'Buy me a taco' },
+  { id: 'tip_large', emoji: '🎉', label: 'Big Tip', price: '$5.99', description: "You're amazing!" },
 ];
 
 export default function TipJarScreen() {
