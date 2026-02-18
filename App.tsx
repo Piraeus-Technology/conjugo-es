@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar, Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SplashScreen from 'expo-splash-screen';
@@ -14,7 +14,7 @@ import { useColors, fonts } from './src/utils/theme';
 
 SplashScreen.preventAutoHideAsync();
 
-const Stack = createStackNavigator<any>();
+const Stack = createNativeStackNavigator<any>();
 
 export default function App() {
   const { isDark, loaded, loadTheme, toggleTheme } = useThemeStore();
@@ -52,14 +52,14 @@ export default function App() {
       <NavigationContainer theme={navTheme}>
         <Stack.Navigator
           screenOptions={{
-            headerStyle: { backgroundColor: colors.bg, elevation: 0, shadowOpacity: 0 },
+            headerStyle: { backgroundColor: colors.bg },
             headerTintColor: colors.primary,
             headerTitleStyle: {
               fontWeight: fonts.weights.semibold,
               color: colors.textPrimary,
             },
-            cardStyle: { backgroundColor: colors.bg },
-            ...TransitionPresets.SlideFromRightIOS,
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: colors.bg },
           }}
         >
           <Stack.Screen
@@ -68,7 +68,7 @@ export default function App() {
             options={({ navigation }) => ({
               title: 'ConjuGo!',
               headerRight: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20, marginRight: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
                   <Pressable
                     onPress={() => navigation.navigate('TipJar')}
                     hitSlop={8}

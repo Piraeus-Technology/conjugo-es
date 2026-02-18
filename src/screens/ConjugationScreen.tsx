@@ -55,17 +55,23 @@ export default function ConjugationScreen({ route, navigation }: any) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-          <Pressable
-            onPress={() => toggleFavorite(infinitive)}
-            hitSlop={8}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, marginRight: 16 })}
-          >
-            <Ionicons
-              name={favorited ? 'heart' : 'heart-outline'}
-              size={22}
-              color={favorited ? colors.primary : colors.textMuted}
-            />
-          </Pressable>
+        <Pressable
+          onPress={() => toggleFavorite(infinitive)}
+          hitSlop={8}
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.5 : 1,
+            width: 30,
+            height: 30,
+            justifyContent: 'center',
+            alignItems: 'center',
+          })}
+        >
+          <Ionicons
+            name={favorited ? 'heart' : 'heart-outline'}
+            size={22}
+            color={favorited ? colors.primary : colors.textMuted}
+          />
+        </Pressable>
       ),
     });
   }, [navigation, favorited, colors]);
