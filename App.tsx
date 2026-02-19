@@ -1,13 +1,12 @@
 import React, { useEffect, useCallback } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StatusBar, Pressable, View } from 'react-native';
+import { StatusBar, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SplashScreen from 'expo-splash-screen';
 
 import HomeScreen from './src/screens/HomeScreen';
 import ConjugationScreen from './src/screens/ConjugationScreen';
-import TipJarScreen from './src/screens/TipJarScreen';
 import FeedbackScreen from './src/screens/FeedbackScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
@@ -66,42 +65,23 @@ export default function App() {
             name="Search"
             component={HomeScreen}
             options={({ navigation }) => ({
-              title: 'ConjuGo!',
+              title: 'ConjuGo ES',
               headerRight: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-                  <Pressable
-                    onPress={() => navigation.navigate('TipJar')}
-                    hitSlop={8}
-                    style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-                  >
-                    <Ionicons
-                      name="cafe-outline"
-                      size={22}
-                      color={colors.textPrimary}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => navigation.navigate('Feedback')}
-                    hitSlop={8}
-                    style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-                  >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => navigation.navigate('Feedback')}>
                     <Ionicons
                       name="mail-outline"
                       size={22}
                       color={colors.textPrimary}
                     />
-                  </Pressable>
-                  <Pressable
-                    onPress={toggleTheme}
-                    hitSlop={8}
-                    style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-                  >
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={toggleTheme} style={{ marginLeft: 16 }}>
                     <Ionicons
                       name={isDark ? 'sunny' : 'moon'}
                       size={22}
                       color={colors.textPrimary}
                     />
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               ),
             })}
@@ -112,13 +92,6 @@ export default function App() {
             options={({ route }: any) => ({
               title: route.params.infinitive,
             })}
-          />
-          <Stack.Screen
-            name="TipJar"
-            component={TipJarScreen}
-            options={{
-              title: 'Support ConjuGo!',
-            }}
           />
           <Stack.Screen
             name="Feedback"
