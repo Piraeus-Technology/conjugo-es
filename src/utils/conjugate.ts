@@ -246,6 +246,134 @@ function getGerund(infinitive: string, type: string): string {
 
 // ============ SMART CONJUGATION ENGINE ============
 
+interface ConjugationContext {
+  infinitive: string;
+  stem: string;
+  verb: VerbData;
+  pattern: IrregularPattern | undefined;
+  tense: SimpleTense;
+  endings: string[];
+  isImperative: boolean;
+}
+
+function makeResult(pronoun: string, form: string, disabled: boolean): ConjugationResult {
+  return { pronoun, form, disabled };
+}
+
+/** Check for full overrides (truly irregular verbs like ser, ir) */
+function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
+  const overrides = ctx.verb.overrides?.[ctx.tense] ?? ctx.pattern?.fullOverrides?.[ctx.tense];
+  if (!overrides) return null;
+  return pronouns.map((pronoun, i) =>
+    makeResult(pronoun, overrides[i], ctx.isImperative && i === 0)
+  );
+}
+
+/** Handle irregular future/conditional stems (tendr-, harr-, etc.) */
+function tryIrregularFutureConditional(ctx: ConjugationContext, i: number): string | null {
+  if ((ctx.tense === 'future' || ctx.tense === 'conditional') && ctx.pattern?.irregularFutureStem) {
+    return ctx.pattern.irregularFutureStem + ctx.endings[i];
+  }
+  return null;
+}
+
+/** Handle irregular preterite stems (tuv-, sup-, etc.) */
+function tryIrregularPreterite(ctx: ConjugationContext, i: number): string | null {
+  if (ctx.tense === 'preterite' && ctx.pattern?.irregularPreteriteStem) {
+    const pretEndings = ['e', 'iste', 'o', 'imos', 'isteis', 'ieron'];
+    return ctx.pattern.irregularPreteriteStem + pretEndings[i];
+  }
+  return null;
+}
+
+/** Handle yo-go verbs in present tense (tengo, vengo, etc.) */
+function tryYoGo(ctx: ConjugationContext, i: number): string | null {
+  if (ctx.tense === 'present' && i === 0 && ctx.pattern?.yoGo) {
+    return ctx.stem + 'go';
+  }
+  return null;
+}
+
+/** Handle yo-zco verbs (conozco, aparezco, etc.) */
+function tryYoZco(ctx: ConjugationContext, i: number): string | null {
+  if (ctx.tense === 'present' && i === 0 && ctx.pattern?.yoZco) {
+    return ctx.stem.slice(0, -1) + 'zco';
+  }
+  if (ctx.tense === 'subjunctive_present' && ctx.pattern?.yoZco) {
+    return ctx.stem.slice(0, -1) + 'zc' + ctx.endings[i];
+  }
+  return null;
+}
+
+/** Handle spelling changes in preterite yo form (busqué, pagué, etc.) */
+function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string | null {
+  if (ctx.tense !== 'preterite' || i !== 0 || !ctx.pattern?.spellingChange) return null;
+  switch (ctx.pattern.spellingChange) {
+    case 'car_qué': return ctx.stem.slice(0, -1) + 'qué';
+    case 'gar_gué': return ctx.stem + 'ué';
+    case 'zar_cé': return ctx.stem.slice(0, -1) + 'cé';
+    default: return null;
+  }
+}
+
+/** Handle UIR verbs with y-insertion (construyo, destruyen, etc.) */
+function tryUirVerb(ctx: ConjugationContext, i: number): string | null {
+  if (ctx.pattern?.spellingChange !== 'uir_uy') return null;
+  const uirStem = ctx.stem.slice(0, -1) + 'uy';
+  if (ctx.tense === 'present' && [0, 1, 2, 5].includes(i)) {
+    return uirStem + ctx.endings[i];
+  }
+  if (ctx.tense === 'preterite' && [2, 5].includes(i)) {
+    return uirStem + (i === 2 ? 'ó' : 'eron');
+  }
+  return null;
+}
+
+/** Handle subjunctive imperfect with irregular preterite stems */
+function trySubjunctiveImperfect(ctx: ConjugationContext, i: number): string | null {
+  if (ctx.tense !== 'subjunctive_imperfect' || !ctx.pattern?.irregularPreteriteStem) return null;
+  const subjImpEndings = ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran'];
+  return ctx.pattern.irregularPreteriteStem + subjImpEndings[i];
+}
+
+/** Apply stem changes based on tense and person */
+function applyStemChanges(ctx: ConjugationContext, i: number, currentStem: string): string {
+  const { tense, stem, verb, pattern } = ctx;
+
+  // Present tense: boot pattern stem changes
+  if (tense === 'present' && pattern?.stemChange?.present) {
+    if (bootPositions.includes(i)) {
+      return applyStemChange(stem, pattern.stemChange.present);
+    }
+  }
+
+  // Preterite: 3rd person stem changes for -ir verbs
+  if (tense === 'preterite' && pattern?.stemChange?.preterite) {
+    if (preteriteChangePositions.includes(i)) {
+      return applyStemChange(stem, pattern.stemChange.preterite);
+    }
+  }
+
+  // Subjunctive present: boot pattern + nosotros/vosotros for -ir
+  if (tense === 'subjunctive_present' && pattern?.stemChange?.present) {
+    if (bootPositions.includes(i)) {
+      return applyStemChange(stem, pattern.stemChange.present);
+    }
+    if (verb.type === 'ir' && pattern?.stemChange?.preterite && (i === 3 || i === 4)) {
+      return applyStemChange(stem, pattern.stemChange.preterite);
+    }
+  }
+
+  // Subjunctive imperfect: stem changes for -ir verbs
+  if (tense === 'subjunctive_imperfect' && pattern?.stemChange?.preterite && verb.type === 'ir') {
+    if (preteriteChangePositions.includes(i) || i === 3 || i === 4) {
+      return applyStemChange(stem, pattern.stemChange.preterite);
+    }
+  }
+
+  return currentStem;
+}
+
 function conjugateSimple(
   infinitive: string,
   verb: VerbData,
@@ -253,168 +381,52 @@ function conjugateSimple(
 ): ConjugationResult[] {
   const isImperative = imperativeTenses.includes(tense);
   const stem = infinitive.slice(0, -2);
-  const pattern = verb.pattern;
-
-  // 1. Check full overrides first (for truly irregular verbs)
-  if (verb.overrides && verb.overrides[tense]) {
-    return pronouns.map((pronoun, i) => ({
-      pronoun,
-      form: verb.overrides![tense]![i],
-      disabled: isImperative && i === 0,
-    }));
-  }
-
-  // Also check pattern-level full overrides
-  if (pattern?.fullOverrides && pattern.fullOverrides[tense]) {
-    return pronouns.map((pronoun, i) => ({
-      pronoun,
-      form: pattern.fullOverrides![tense]![i],
-      disabled: isImperative && i === 0,
-    }));
-  }
-
-  // 2. Build forms using patterns
   const endings = regularEndings[tense][verb.type];
+  const ctx: ConjugationContext = {
+    infinitive, stem, verb, pattern: verb.pattern, tense, endings, isImperative,
+  };
 
+  // 1. Check full overrides first
+  const overrideResult = tryOverrides(ctx);
+  if (overrideResult) return overrideResult;
+
+  // 2. Build forms per person
   return pronouns.map((pronoun, i) => {
-    let currentStem = stem;
-    let currentEndings = endings;
-    let useFullInfinitive = tense === 'future' || tense === 'conditional';
+    const disabled = isImperative && i === 0;
 
-    // Irregular future/conditional stem
-    if (useFullInfinitive && pattern?.irregularFutureStem) {
-      return {
-        pronoun,
-        form: pattern.irregularFutureStem + currentEndings[i],
-        disabled: isImperative && i === 0,
-      };
-    }
+    // Try special patterns (each returns early if matched)
+    const irregFutCond = tryIrregularFutureConditional(ctx, i);
+    if (irregFutCond) return makeResult(pronoun, irregFutCond, disabled);
 
-    // Irregular preterite stem
-    if (tense === 'preterite' && pattern?.irregularPreteriteStem) {
-      const pretEndings = ['e', 'iste', 'o', 'imos', 'isteis', 'ieron'];
-      return {
-        pronoun,
-        form: pattern.irregularPreteriteStem + pretEndings[i],
-        disabled: isImperative && i === 0,
-      };
-    }
+    const irregPret = tryIrregularPreterite(ctx, i);
+    if (irregPret) return makeResult(pronoun, irregPret, disabled);
 
-    if (useFullInfinitive) {
-      currentStem = infinitive;
-    }
+    const yoGo = tryYoGo(ctx, i);
+    if (yoGo) return makeResult(pronoun, yoGo, false);
 
-    // Yo-go verbs (present tense, yo form only) — check before stem change
-    if (tense === 'present' && i === 0 && pattern?.yoGo) {
-      return {
-        pronoun,
-        form: stem + 'go',
-        disabled: false,
-      };
-    }
+    const yoZco = tryYoZco(ctx, i);
+    if (yoZco) return makeResult(pronoun, yoZco, disabled);
 
-    // Stem changes in present
-    if (tense === 'present' && pattern?.stemChange?.present) {
-      if (bootPositions.includes(i)) {
-        currentStem = applyStemChange(stem, pattern.stemChange.present);
-      }
-    }
+    const subjImp = trySubjunctiveImperfect(ctx, i);
+    if (subjImp) return makeResult(pronoun, subjImp, disabled);
 
-    // Stem changes in preterite (e→i, o→u for -ir verbs, 3rd person only)
-    if (tense === 'preterite' && pattern?.stemChange?.preterite) {
-      if (preteriteChangePositions.includes(i)) {
-        currentStem = applyStemChange(stem, pattern.stemChange.preterite);
-      }
-    }
+    const spellingPret = trySpellingChangePreterite(ctx, i);
+    if (spellingPret) return makeResult(pronoun, spellingPret, false);
 
-    // Stem changes in subjunctive present
-    if (tense === 'subjunctive_present' && pattern?.stemChange?.present) {
-      if (bootPositions.includes(i)) {
-        currentStem = applyStemChange(stem, pattern.stemChange.present);
-      }
-      // For -ir verbs with e→ie or e→i, nosotros/vosotros get e→i
-      if (verb.type === 'ir' && pattern?.stemChange?.preterite && (i === 3 || i === 4)) {
-        currentStem = applyStemChange(stem, pattern.stemChange.preterite);
-      }
-    }
+    const uir = tryUirVerb(ctx, i);
+    if (uir) return makeResult(pronoun, uir, false);
 
-    // Subjunctive imperfect uses preterite stem
-    if (tense === 'subjunctive_imperfect') {
-      if (pattern?.irregularPreteriteStem) {
-        currentStem = pattern.irregularPreteriteStem;
-        const subjImpEndings = ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran'];
-        return {
-          pronoun,
-          form: currentStem + subjImpEndings[i],
-          disabled: isImperative && i === 0,
-        };
-      }
-      if (pattern?.stemChange?.preterite && verb.type === 'ir') {
-        if (preteriteChangePositions.includes(i) || i === 3 || i === 4) {
-          currentStem = applyStemChange(stem, pattern.stemChange.preterite);
-        }
-      }
-    }
+    // Regular path: determine stem
+    let currentStem = (tense === 'future' || tense === 'conditional') ? infinitive : stem;
+    currentStem = applyStemChanges(ctx, i, currentStem);
 
-    // Yo-zco verbs (present tense, yo form only)
-    if (tense === 'present' && i === 0 && pattern?.yoZco) {
-      return {
-        pronoun,
-        form: stem.slice(0, -1) + 'zco',
-        disabled: false,
-      };
-    }
+    // Build final form
+    const form = currentStem + endings[i];
+    const finalForm = isImperative && tense === 'imperative_negative' && i !== 0
+      ? `no ${form}`
+      : form;
 
-    // Subjunctive present for yo-zco verbs (all forms based on yo)
-    if (tense === 'subjunctive_present' && pattern?.yoZco) {
-      const zcoStem = stem.slice(0, -1) + 'zc';
-      return {
-        pronoun,
-        form: zcoStem + currentEndings[i],
-        disabled: isImperative && i === 0,
-      };
-    }
-
-    // Spelling changes in preterite (yo form only)
-    if (tense === 'preterite' && i === 0 && pattern?.spellingChange) {
-      switch (pattern.spellingChange) {
-        case 'car_qué': return { pronoun, form: stem.slice(0, -1) + 'qué', disabled: false };
-        case 'gar_gué': return { pronoun, form: stem + 'ué', disabled: false };
-        case 'zar_cé': return { pronoun, form: stem.slice(0, -1) + 'cé', disabled: false };
-      }
-    }
-
-    // UIR verbs: insert 'y' before vowel endings
-    if (pattern?.spellingChange === 'uir_uy') {
-      if (tense === 'present' && [0, 1, 2, 5].includes(i)) {
-        return {
-          pronoun,
-          form: stem.slice(0, -1) + 'uy' + currentEndings[i],
-          disabled: false,
-        };
-      }
-      if (tense === 'preterite' && [2, 5].includes(i)) {
-        const ending = i === 2 ? 'ó' : 'eron';
-        return {
-          pronoun,
-          form: stem.slice(0, -1) + 'uy' + ending,
-          disabled: false,
-        };
-      }
-    }
-
-    // Negative imperative: prepend "no"
-    const form = currentStem + currentEndings[i];
-    const finalForm =
-      isImperative && tense === 'imperative_negative' && i !== 0
-        ? `no ${form}`
-        : form;
-
-    return {
-      pronoun,
-      form: finalForm,
-      disabled: isImperative && i === 0,
-    };
+    return makeResult(pronoun, finalForm, disabled);
   });
 }
 
