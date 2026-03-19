@@ -10,10 +10,11 @@ import ConjugationScreen from './src/screens/ConjugationScreen';
 import FeedbackScreen from './src/screens/FeedbackScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
+import type { RootStackParamList } from './src/types/navigation';
 
 SplashScreen.preventAutoHideAsync();
 
-const Stack = createNativeStackNavigator<any>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   const { isDark, loaded, loadTheme, toggleTheme } = useThemeStore();
@@ -89,7 +90,7 @@ export default function App() {
           <Stack.Screen
             name="Conjugation"
             component={ConjugationScreen}
-            options={({ route }: any) => ({
+            options={({ route }) => ({
               title: route.params.infinitive,
             })}
           />

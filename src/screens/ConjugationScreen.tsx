@@ -17,6 +17,7 @@ import {
 } from '../utils/conjugate';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
+import type { ConjugationScreenProps } from '../types/navigation';
 
 const tenseGroups = [
   {
@@ -41,7 +42,7 @@ const tenseGroups = [
   },
 ];
 
-export default function ConjugationScreen({ route, navigation }: any) {
+export default function ConjugationScreen({ route, navigation }: ConjugationScreenProps) {
   const { infinitive } = route.params;
   const verb = (verbs as Record<string, VerbData>)[infinitive];
   const initialTense = route.params?.initialTense || 'present';

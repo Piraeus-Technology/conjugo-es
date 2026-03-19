@@ -14,6 +14,7 @@ import { VerbData, conjugate, allTenses, tenseNames, Tense } from '../utils/conj
 import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
+import type { SearchScreenProps } from '../types/navigation';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
   ([infinitive, data]) => ({
@@ -80,7 +81,7 @@ interface SearchResult {
   matchForm?: string;
 }
 
-export default function HomeScreen({ navigation }: any) {
+export default function HomeScreen({ navigation }: SearchScreenProps) {
   const [search, setSearch] = useState('');
   const { history, loaded, loadHistory, addToHistory, clearHistory } =
     useHistoryStore();
@@ -248,7 +249,7 @@ export default function HomeScreen({ navigation }: any) {
           section.title ? (
             <View style={[styles.sectionHeader, { backgroundColor: colors.bg }]}>
               <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{section.title}</Text>
-              {(section as any).clearable && (
+              {(section as { clearable?: boolean }).clearable && (
                 <TouchableOpacity onPress={clearHistory}>
                   <Text style={[styles.clearButton, { color: colors.primary }]}>Clear</Text>
                 </TouchableOpacity>
