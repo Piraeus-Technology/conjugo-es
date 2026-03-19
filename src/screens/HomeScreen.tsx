@@ -30,35 +30,46 @@ interface ConjMatch {
   form: string;
 }
 
-const conjugationIndex: ConjMatch[] = [];
-
-verbEntries.forEach((entry) => {
-  allTenses.forEach((tense) => {
-    const results = conjugate(entry.infinitive, entry, tense);
-    results.forEach((r) => {
-      if (!r.disabled && r.form !== '—') {
-        const cleanForm = r.form.replace(/^no\s+/, '');
-        conjugationIndex.push({
-          infinitive: entry.infinitive,
-          translation: entry.translation,
-          tense,
-          pronoun: r.pronoun,
-          form: cleanForm,
-        });
-      }
-    });
-  });
-});
-
 const verbFuse = new Fuse(verbEntries, {
   keys: ['infinitive', 'translation'],
   threshold: 0.3,
 });
 
-const conjFuse = new Fuse(conjugationIndex, {
-  keys: ['form'],
-  threshold: 0.2,
-});
+// Lazy-built conjugation index — only created on first search
+let conjugationIndex: ConjMatch[] | null = null;
+let conjFuse: Fuse<ConjMatch> | null = null;
+
+function getConjugationIndex(): ConjMatch[] {
+  if (conjugationIndex) return conjugationIndex;
+  conjugationIndex = [];
+  verbEntries.forEach((entry) => {
+    allTenses.forEach((tense) => {
+      const results = conjugate(entry.infinitive, entry, tense);
+      results.forEach((r) => {
+        if (!r.disabled && r.form !== '—') {
+          const cleanForm = r.form.replace(/^no\s+/, '');
+          conjugationIndex!.push({
+            infinitive: entry.infinitive,
+            translation: entry.translation,
+            tense,
+            pronoun: r.pronoun,
+            form: cleanForm,
+          });
+        }
+      });
+    });
+  });
+  return conjugationIndex;
+}
+
+function getConjFuse(): Fuse<ConjMatch> {
+  if (conjFuse) return conjFuse;
+  conjFuse = new Fuse(getConjugationIndex(), {
+    keys: ['form'],
+    threshold: 0.2,
+  });
+  return conjFuse;
+}
 
 interface SearchResult {
   infinitive: string;
@@ -86,7 +97,7 @@ export default function HomeScreen({ navigation }: any) {
 
     const query = search.trim().toLowerCase();
 
-    const exactConjMatches = conjugationIndex.filter(
+    const exactConjMatches = getConjugationIndex().filter(
       (c) => c.form.toLowerCase() === query
     );
 
@@ -129,7 +140,7 @@ export default function HomeScreen({ navigation }: any) {
       matchType: 'infinitive' as const,
     }));
 
-    const conjResults = conjFuse.search(search);
+    const conjResults = getConjFuse().search(search);
     const seenConj = new Set<string>(verbResults.map((r) => r.infinitive));
     const conjGrouped: SearchResult[] = [];
 
