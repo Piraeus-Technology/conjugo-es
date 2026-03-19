@@ -14,6 +14,7 @@ import { VerbData, conjugate, allTenses, tenseNames, Tense } from '../utils/conj
 import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
+import { MAX_SEARCH_RESULTS } from '../utils/constants';
 import type { SearchScreenProps } from '../types/navigation';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
@@ -132,7 +133,7 @@ export default function HomeScreen({ navigation }: SearchScreenProps) {
         }
       });
 
-      return exactResults.slice(0, 20);
+      return exactResults.slice(0, MAX_SEARCH_RESULTS);
     }
 
     const verbResults = verbFuse.search(search).map((r) => ({
@@ -159,7 +160,7 @@ export default function HomeScreen({ navigation }: SearchScreenProps) {
       }
     });
 
-    return [...verbResults, ...conjGrouped].slice(0, 20);
+    return [...verbResults, ...conjGrouped].slice(0, MAX_SEARCH_RESULTS);
   }, [search]);
 
   const handleVerbPress = (infinitive: string, tense?: string, form?: string) => {

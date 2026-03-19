@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MAX_HISTORY_SIZE } from '../utils/constants';
 
 interface HistoryStore {
   history: string[];
@@ -28,7 +29,7 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
 
   addToHistory: async (verb: string) => {
     const current = get().history.filter((v) => v !== verb);
-    const updated = [verb, ...current].slice(0, 20); // keep last 20
+    const updated = [verb, ...current].slice(0, MAX_HISTORY_SIZE);
     set({ history: updated });
     await AsyncStorage.setItem('verb_history', JSON.stringify(updated));
   },
