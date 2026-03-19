@@ -304,6 +304,15 @@ function conjugateSimple(
       currentStem = infinitive;
     }
 
+    // Yo-go verbs (present tense, yo form only) — check before stem change
+    if (tense === 'present' && i === 0 && pattern?.yoGo) {
+      return {
+        pronoun,
+        form: stem + 'go',
+        disabled: false,
+      };
+    }
+
     // Stem changes in present
     if (tense === 'present' && pattern?.stemChange?.present) {
       if (bootPositions.includes(i)) {
@@ -333,7 +342,6 @@ function conjugateSimple(
     if (tense === 'subjunctive_imperfect') {
       if (pattern?.irregularPreteriteStem) {
         currentStem = pattern.irregularPreteriteStem;
-        // Use special endings for irregular preterite stems
         const subjImpEndings = ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran'];
         return {
           pronoun,
@@ -346,15 +354,6 @@ function conjugateSimple(
           currentStem = applyStemChange(stem, pattern.stemChange.preterite);
         }
       }
-    }
-
-    // Yo-go verbs (present tense, yo form only)
-    if (tense === 'present' && i === 0 && pattern?.yoGo) {
-      return {
-        pronoun,
-        form: currentStem + 'go',
-        disabled: false,
-      };
     }
 
     // Yo-zco verbs (present tense, yo form only)
@@ -378,13 +377,11 @@ function conjugateSimple(
 
     // Spelling changes in preterite (yo form only)
     if (tense === 'preterite' && i === 0 && pattern?.spellingChange) {
-      let modStem = currentStem;
       switch (pattern.spellingChange) {
-        case 'car_qué': modStem = stem.slice(0, -1) + 'qu'; break;
-        case 'gar_gué': modStem = stem + 'u'; break;
-        case 'zar_cé': modStem = stem.slice(0, -1) + 'c'; break;
+        case 'car_qué': return { pronoun, form: stem.slice(0, -1) + 'qué', disabled: false };
+        case 'gar_gué': return { pronoun, form: stem + 'ué', disabled: false };
+        case 'zar_cé': return { pronoun, form: stem.slice(0, -1) + 'cé', disabled: false };
       }
-      return { pronoun, form: modStem + 'é', disabled: false };
     }
 
     // UIR verbs: insert 'y' before vowel endings
