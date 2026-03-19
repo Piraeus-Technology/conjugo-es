@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ConjuGo!",
+    "name": "ConjuGo ES",
     "slug": "conjuGo",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,7 @@
       "bundleIdentifier": "com.lkh9596.conjugo",
       "buildNumber": "2",
       "infoPlist": {
-        "CFBundleDisplayName": "ConjuGo!",
+        "CFBundleDisplayName": "ConjuGo ES",
         "ITSAppUsesNonExemptEncryption": false
       }
     },

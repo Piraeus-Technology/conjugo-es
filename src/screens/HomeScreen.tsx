@@ -271,7 +271,7 @@ export default function HomeScreen({ navigation }: SearchScreenProps) {
           ) : sections.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.heroEmoji}>🇪🇸</Text>
-              <Text style={[styles.heroTitle, { color: colors.textPrimary }]}>ConjuGo!</Text>
+              <Text style={[styles.heroTitle, { color: colors.textPrimary }]}>ConjuGo ES</Text>
               <Text style={[styles.heroSubtitle, { color: colors.textSecondary }]}>
                 Search for any Spanish verb or conjugation
               </Text>

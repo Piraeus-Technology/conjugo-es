@@ -24,7 +24,7 @@ export default function FeedbackScreen() {
       return;
     }
 
-    const subject = encodeURIComponent('ConjuGo! Feedback');
+    const subject = encodeURIComponent('ConjuGo ES Feedback');
     const body = encodeURIComponent(message);
     const url = `mailto:lkh9596@gmail.com?subject=${subject}&body=${body}`;
 
@@ -105,7 +105,7 @@ export default function FeedbackScreen() {
         >
           <Text style={styles.rateEmoji}>⭐</Text>
           <View style={styles.rateInfo}>
-            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Enjoying ConjuGo!?</Text>
+            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Enjoying ConjuGo ES?</Text>
             <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Rate us on the App Store</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
