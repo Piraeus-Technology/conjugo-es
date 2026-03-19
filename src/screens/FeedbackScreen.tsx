@@ -37,11 +37,16 @@ export default function FeedbackScreen() {
   };
 
   const handleRateApp = () => {
-    // TODO: Replace with actual App Store / Play Store URL when live
-    Alert.alert(
-      'Coming Soon!',
-      'You will be able to rate ConjuGo! once it is available on the App Store.'
-    );
+    // App Store IDs ready for when deployed:
+    // iOS: 6759270074, Android: com.lkh9596.conjugo
+    const url = Platform.select({
+      ios: 'https://apps.apple.com/app/id6759270074?action=write-review',
+      android: 'market://details?id=com.lkh9596.conjugo',
+      default: 'https://apps.apple.com/app/id6759270074',
+    });
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Not Available Yet', 'Rating will be available once the app is on the App Store.');
+    });
   };
 
   return (
