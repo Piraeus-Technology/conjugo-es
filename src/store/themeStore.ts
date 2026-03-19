@@ -20,7 +20,8 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       } else {
         set({ loaded: true });
       }
-    } catch {
+    } catch (e) {
+      console.warn('Failed to load theme:', e);
       set({ loaded: true });
     }
   },

@@ -21,7 +21,8 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
       } else {
         set({ loaded: true });
       }
-    } catch {
+    } catch (e) {
+      console.warn('Failed to load favorites:', e);
       set({ loaded: true });
     }
   },

@@ -22,7 +22,8 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
       } else {
         set({ loaded: true });
       }
-    } catch {
+    } catch (e) {
+      console.warn('Failed to load history:', e);
       set({ loaded: true });
     }
   },
