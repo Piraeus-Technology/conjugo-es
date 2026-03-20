@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ConjuGo ES",
-    "slug": "conjuGo",
+    "slug": "conjugo-es",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
