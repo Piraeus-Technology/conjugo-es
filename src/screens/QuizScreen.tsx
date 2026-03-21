@@ -20,6 +20,7 @@ const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/e
 
 interface Question {
   verb: string;
+  translation: string;
   tense: Tense;
   personIndex: number;
   correctAnswer: string;
@@ -82,7 +83,7 @@ function generateQuestion(): Question {
     [options[i], options[j]] = [options[j], options[i]];
   }
 
-  return { verb, tense, personIndex, correctAnswer, options };
+  return { verb, translation: data.translation, tense, personIndex, correctAnswer, options };
 }
 
 export default function QuizScreen() {
@@ -164,6 +165,9 @@ export default function QuizScreen() {
         </Text>
         <Text style={[styles.questionVerb, { color: colors.primary }]}>
           {question.verb}
+        </Text>
+        <Text style={[styles.questionTranslation, { color: colors.textSecondary }]}>
+          {question.translation}
         </Text>
         <Text style={[styles.questionPronoun, { color: colors.textPrimary }]}>
           {pronounLabels[question.personIndex]}
@@ -248,6 +252,11 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: fonts.weights.bold,
     marginBottom: spacing.xs,
+  },
+  questionTranslation: {
+    fontSize: fonts.sizes.md,
+    fontStyle: 'italic' as const,
+    marginBottom: spacing.sm,
   },
   questionPronoun: {
     fontSize: fonts.sizes.xl,
