@@ -25,7 +25,15 @@ const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
     infinitive,
     ...data,
   })
+
 );
+
+function getVerbOfTheDay() {
+  const today = new Date();
+  const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
+  const index = daysSinceEpoch % verbEntries.length;
+  return verbEntries[index];
+}
 
 interface ConjMatch {
   infinitive: string;
@@ -293,6 +301,27 @@ export default function HomeScreen({ navigation }: SearchScreenProps) {
         sections={sections}
         keyExtractor={(item, index) => item.infinitive + item.matchType + index}
         renderItem={renderItem}
+        ListHeaderComponent={
+          !search.trim() ? (
+            <TouchableOpacity
+              style={[styles.vodCard, { backgroundColor: colors.card }]}
+              onPress={() => {
+                const votd = getVerbOfTheDay();
+                handleVerbPress(votd.infinitive);
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.vodLabel, { color: colors.textMuted }]}>VERB OF THE DAY</Text>
+              <Text style={[styles.vodVerb, { color: colors.primary }]}>{getVerbOfTheDay().infinitive}</Text>
+              <Text style={[styles.vodTranslation, { color: colors.textSecondary }]}>{getVerbOfTheDay().translation}</Text>
+              <View style={[styles.vodBadge, { backgroundColor: colors.primary + '15' }]}>
+                <Text style={[styles.vodBadgeText, { color: colors.primary }]}>
+                  {getVerbOfTheDay().regular ? 'Regular' : 'Irregular'} • -{getVerbOfTheDay().type}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ) : null
+        }
         renderSectionHeader={({ section }) =>
           section.title ? (
             <View style={[styles.sectionHeader, { backgroundColor: colors.bg }]}>
@@ -374,6 +403,41 @@ const styles = StyleSheet.create({
   heroEmoji: { fontSize: 48 },
   heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
   heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.xs },
+  vodCard: {
+    margin: spacing.md,
+    padding: spacing.lg,
+    borderRadius: radius.md,
+    alignItems: 'center' as const,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  vodLabel: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+    letterSpacing: 2,
+    marginBottom: spacing.sm,
+  },
+  vodVerb: {
+    fontSize: fonts.sizes.xxl || 28,
+    fontWeight: fonts.weights.bold,
+    marginBottom: 4,
+  },
+  vodTranslation: {
+    fontSize: fonts.sizes.md,
+    marginBottom: spacing.md,
+  },
+  vodBadge: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+    borderRadius: radius.full,
+  },
+  vodBadgeText: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+  },
   deleteAction: {
     backgroundColor: '#E53935',
     justifyContent: 'center',
