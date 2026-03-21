@@ -111,8 +111,20 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           </Text>
         </View>
 
-        {/* Example sentence */}
+        {/* Example sentences */}
         {(() => {
+          if (verb.examples && verb.examples.length > 0) {
+            return (
+              <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
+                <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
+                {verb.examples.map((ex, i) => (
+                  <Text key={i} style={[styles.exampleText, { color: colors.textSecondary }]}>
+                    {ex}
+                  </Text>
+                ))}
+              </View>
+            );
+          }
           const present = conjugate(infinitive, verb, 'present');
           const yoForm = present[0].form;
           const elForm = present[2].form;

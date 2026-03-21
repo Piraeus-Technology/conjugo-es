@@ -76,7 +76,11 @@
         "no seáis",
         "no sean"
       ]
-    }
+    },
+    "examples": [
+      "Soy estudiante de medicina.",
+      "Fue un día increíble."
+    ]
   },
   "estar": {
     "type": "ar",
@@ -115,7 +119,11 @@
         "estuvierais",
         "estuvieran"
       ]
-    }
+    },
+    "examples": [
+      "Estoy muy contento con los resultados.",
+      "Ayer estuvimos en la playa todo el día."
+    ]
   },
   "ir": {
     "type": "ir",
@@ -178,7 +186,11 @@
         "no vayáis",
         "no vayan"
       ]
-    }
+    },
+    "examples": [
+      "Vamos al cine esta noche.",
+      "Fui al supermercado después del trabajo."
+    ]
   },
   "haber": {
     "type": "er",
@@ -241,7 +253,11 @@
         "hubierais",
         "hubieran"
       ]
-    }
+    },
+    "examples": [
+      "Ha llovido mucho esta semana.",
+      "Había muchas personas en la fiesta."
+    ]
   },
   "hacer": {
     "type": "er",
@@ -283,7 +299,11 @@
         "haced",
         "hagan"
       ]
-    }
+    },
+    "examples": [
+      "¿Qué haces los fines de semana?",
+      "Hicimos una torta para su cumpleaños."
+    ]
   },
   "decir": {
     "type": "ir",
@@ -325,7 +345,11 @@
         "decid",
         "digan"
       ]
-    }
+    },
+    "examples": [
+      "Siempre dice la verdad.",
+      "¿Qué dijiste? No te escuché."
+    ]
   },
   "dar": {
     "type": "ar",
@@ -364,7 +388,11 @@
         "dierais",
         "dieran"
       ]
-    }
+    },
+    "examples": [
+      "Le di un regalo a mi madre.",
+      "El profesor nos da mucha tarea."
+    ]
   },
   "ver": {
     "type": "er",
@@ -403,7 +431,11 @@
         "veáis",
         "vean"
       ]
-    }
+    },
+    "examples": [
+      "¿Viste la película nueva?",
+      "Desde aquí se ve toda la ciudad."
+    ]
   },
   "oír": {
     "type": "ir",
@@ -434,7 +466,11 @@
         "oigáis",
         "oigan"
       ]
-    }
+    },
+    "examples": [
+      "¿Oyes esa música?",
+      "Oí un ruido extraño por la noche."
+    ]
   },
   "leer": {
     "type": "er",
@@ -449,7 +485,11 @@
         "leísteis",
         "leyeron"
       ]
-    }
+    },
+    "examples": [
+      "Leo un libro antes de dormir.",
+      "Leyó toda la novela en un fin de semana."
+    ]
   },
   "reír": {
     "type": "ir",
@@ -480,7 +520,11 @@
         "riáis",
         "rían"
       ]
-    }
+    },
+    "examples": [
+      "Nos reímos mucho con esa película.",
+      "El bebé se ríe todo el tiempo."
+    ]
   },
   "sonreír": {
     "type": "ir",
@@ -511,7 +555,11 @@
         "sonriáis",
         "sonrían"
       ]
-    }
+    },
+    "examples": [
+      "Ella siempre sonríe cuando me ve.",
+      "Sonrió al recibir la buena noticia."
+    ]
   },
   "saber": {
     "type": "er",
@@ -538,7 +586,11 @@
         "sepáis",
         "sepan"
       ]
-    }
+    },
+    "examples": [
+      "¿Sabes dónde está la estación?",
+      "No sabía que hablabas francés."
+    ]
   },
   "caber": {
     "type": "er",
@@ -565,7 +617,11 @@
         "quepáis",
         "quepan"
       ]
-    }
+    },
+    "examples": [
+      "No cabe más ropa en la maleta.",
+      "¿Crees que este sofá cabrá por la puerta?"
+    ]
   },
   "tener": {
     "type": "er",
@@ -578,7 +634,11 @@
       "yoGo": true,
       "irregularPreteriteStem": "tuv",
       "irregularFutureStem": "tendr"
-    }
+    },
+    "examples": [
+      "Tengo dos hermanos mayores.",
+      "Tenía mucho frío esa noche."
+    ]
   },
   "venir": {
     "type": "ir",
@@ -591,7 +651,11 @@
       "yoGo": true,
       "irregularPreteriteStem": "vin",
       "irregularFutureStem": "vendr"
-    }
+    },
+    "examples": [
+      "¿Vienes a la fiesta el sábado?",
+      "Vinieron todos mis amigos a visitarme."
+    ]
   },
   "poner": {
     "type": "er",
@@ -601,7 +665,11 @@
       "yoGo": true,
       "irregularPreteriteStem": "pus",
       "irregularFutureStem": "pondr"
-    }
+    },
+    "examples": [
+      "Pon los platos en la mesa, por favor.",
+      "Se puso nerviosa antes del examen."
+    ]
   },
   "salir": {
     "type": "ir",
@@ -610,7 +678,11 @@
     "pattern": {
       "yoGo": true,
       "irregularFutureStem": "saldr"
-    }
+    },
+    "examples": [
+      "Salimos a cenar todos los viernes.",
+      "Salió el sol después de la tormenta."
+    ]
   },
   "valer": {
     "type": "er",
@@ -619,7 +691,11 @@
     "pattern": {
       "yoGo": true,
       "irregularFutureStem": "valdr"
-    }
+    },
+    "examples": [
+      "¿Cuánto vale este reloj?",
+      "No vale la pena preocuparse por eso."
+    ]
   },
   "caer": {
     "type": "er",
@@ -627,7 +703,11 @@
     "translation": "to fall",
     "pattern": {
       "yoGo": true
-    }
+    },
+    "examples": [
+      "Se cayó de la bicicleta.",
+      "Las hojas caen en otoño."
+    ]
   },
   "traer": {
     "type": "er",
@@ -636,7 +716,11 @@
     "pattern": {
       "yoGo": true,
       "irregularPreteriteStem": "traj"
-    }
+    },
+    "examples": [
+      "¿Puedes traer pan cuando vengas?",
+      "Traje los documentos que me pediste."
+    ]
   },
   "pensar": {
     "type": "ar",
@@ -646,7 +730,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Pienso que es una buena idea.",
+      "Pensábamos ir a la montaña este verano."
+    ]
   },
   "cerrar": {
     "type": "ar",
@@ -656,7 +744,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Cierra la puerta, por favor.",
+      "La tienda cerró a las nueve."
+    ]
   },
   "despertar": {
     "type": "ar",
@@ -666,7 +758,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Me despierto a las seis todos los días.",
+      "El ruido lo despertó a medianoche."
+    ]
   },
   "recomendar": {
     "type": "ar",
@@ -676,7 +772,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Te recomiendo este restaurante.",
+      "El médico le recomendó descansar más."
+    ]
   },
   "calentar": {
     "type": "ar",
@@ -686,7 +786,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Voy a calentar la sopa.",
+      "El sol calentó la arena de la playa."
+    ]
   },
   "confesar": {
     "type": "ar",
@@ -696,7 +800,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Confesó que había tomado el dinero.",
+      "Tengo que confesar algo importante."
+    ]
   },
   "sentar": {
     "type": "ar",
@@ -706,7 +814,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Siéntate aquí, por favor.",
+      "Nos sentamos en la primera fila."
+    ]
   },
   "acertar": {
     "type": "ar",
@@ -716,7 +828,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Acertaste la respuesta correcta.",
+      "No siempre se acierta en las decisiones."
+    ]
   },
   "apretar": {
     "type": "ar",
@@ -726,7 +842,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Aprieta el botón para encender la máquina.",
+      "Estos zapatos me aprietan mucho."
+    ]
   },
   "atravesar": {
     "type": "ar",
@@ -736,7 +856,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Atravesamos el puente con cuidado.",
+      "El río atraviesa toda la ciudad."
+    ]
   },
   "gobernar": {
     "type": "ar",
@@ -746,7 +870,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Ese partido gobernó el país durante diez años.",
+      "Es difícil gobernar sin el apoyo del pueblo."
+    ]
   },
   "helar": {
     "type": "ar",
@@ -756,7 +884,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Anoche heló y las plantas se dañaron.",
+      "El viento helaba los dedos de las manos."
+    ]
   },
   "manifestar": {
     "type": "ar",
@@ -766,7 +898,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Los ciudadanos se manifestaron en la plaza.",
+      "Manifestó su desacuerdo con la nueva ley."
+    ]
   },
   "merendar": {
     "type": "ar",
@@ -776,7 +912,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Los niños meriendan fruta y galletas.",
+      "Merendamos en el parque ayer por la tarde."
+    ]
   },
   "nevar": {
     "type": "ar",
@@ -786,7 +926,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Nevó mucho en las montañas este invierno.",
+      "¿Crees que nevará mañana?"
+    ]
   },
   "sembrar": {
     "type": "ar",
@@ -796,7 +940,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Mi abuelo siembra tomates cada primavera.",
+      "Sembraron árboles en todo el barrio."
+    ]
   },
   "temblar": {
     "type": "ar",
@@ -806,7 +954,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Me temblaban las manos de nervios.",
+      "La tierra tembló durante treinta segundos."
+    ]
   },
   "tropezar": {
     "type": "ar",
@@ -817,7 +969,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Tropecé con una piedra en el camino.",
+      "Ten cuidado, no tropieces con ese escalón."
+    ]
   },
   "fregar": {
     "type": "ar",
@@ -828,7 +984,11 @@
         "present": "e_ie"
       },
       "spellingChange": "gar_gué"
-    }
+    },
+    "examples": [
+      "Después de comer, fregamos los platos.",
+      "¿Ya fregaste el suelo de la cocina?"
+    ]
   },
   "comenzar": {
     "type": "ar",
@@ -839,7 +999,11 @@
         "present": "e_ie"
       },
       "spellingChange": "zar_cé"
-    }
+    },
+    "examples": [
+      "La clase comienza a las ocho.",
+      "Comenzó a llover de repente."
+    ]
   },
   "empezar": {
     "type": "ar",
@@ -850,7 +1014,11 @@
         "present": "e_ie"
       },
       "spellingChange": "zar_cé"
-    }
+    },
+    "examples": [
+      "Voy a empezar a estudiar español.",
+      "La película empezó hace diez minutos."
+    ]
   },
   "negar": {
     "type": "ar",
@@ -861,7 +1029,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Negó haber estado en ese lugar.",
+      "No puedes negar la evidencia."
+    ]
   },
   "entender": {
     "type": "er",
@@ -871,7 +1043,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "¿Entiendes lo que digo?",
+      "Al principio no entendía nada de español."
+    ]
   },
   "perder": {
     "type": "er",
@@ -881,7 +1057,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Perdí las llaves del coche.",
+      "El equipo perdió el partido por dos goles."
+    ]
   },
   "defender": {
     "type": "er",
@@ -891,7 +1071,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "El abogado defendió a su cliente con pasión.",
+      "Siempre defiende sus ideas con argumentos sólidos."
+    ]
   },
   "encender": {
     "type": "er",
@@ -901,7 +1085,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Enciende la luz, por favor.",
+      "Encendimos una fogata en el camping."
+    ]
   },
   "ascender": {
     "type": "er",
@@ -911,7 +1099,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Ascendió al puesto de directora el año pasado.",
+      "Los montañistas ascendieron hasta la cima."
+    ]
   },
   "descender": {
     "type": "er",
@@ -921,7 +1113,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "La temperatura descendió diez grados en una hora.",
+      "Descendimos por un sendero estrecho."
+    ]
   },
   "atender": {
     "type": "er",
@@ -931,7 +1127,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "La enfermera atiende a los pacientes con cariño.",
+      "¿Quién me atiende, por favor?"
+    ]
   },
   "tender": {
     "type": "er",
@@ -941,7 +1141,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Voy a tender la ropa al sol.",
+      "Tiende a olvidar las cosas importantes."
+    ]
   },
   "verter": {
     "type": "er",
@@ -951,7 +1155,11 @@
       "stemChange": {
         "present": "e_ie"
       }
-    }
+    },
+    "examples": [
+      "Vertió el agua en el vaso con cuidado.",
+      "No viertas el aceite en el fregadero."
+    ]
   },
   "querer": {
     "type": "er",
@@ -963,7 +1171,11 @@
       },
       "irregularPreteriteStem": "quis",
       "irregularFutureStem": "querr"
-    }
+    },
+    "examples": [
+      "Te quiero mucho.",
+      "Quería comprar un coche nuevo, pero era muy caro."
+    ]
   },
   "sentir": {
     "type": "ir",
@@ -974,7 +1186,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Siento mucho lo que pasó.",
+      "Se sentía cansada después del viaje."
+    ]
   },
   "preferir": {
     "type": "ir",
@@ -985,7 +1201,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Prefiero el café sin azúcar.",
+      "Prefirieron quedarse en casa por la lluvia."
+    ]
   },
   "mentir": {
     "type": "ir",
@@ -996,7 +1216,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "No me mientas, dime la verdad.",
+      "Mintió sobre su edad para entrar al club."
+    ]
   },
   "divertir": {
     "type": "ir",
@@ -1007,7 +1231,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Los niños se divierten en el parque.",
+      "Nos divertimos mucho en la fiesta de anoche."
+    ]
   },
   "convertir": {
     "type": "ir",
@@ -1018,7 +1246,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Convirtieron la oficina en una sala de juegos.",
+      "El agua se convierte en hielo a cero grados."
+    ]
   },
   "hervir": {
     "type": "ir",
@@ -1029,7 +1261,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "El agua ya está hirviendo.",
+      "Hierve las verduras durante diez minutos."
+    ]
   },
   "sugerir": {
     "type": "ir",
@@ -1040,7 +1276,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Te sugiero que llegues temprano.",
+      "El camarero nos sugirió el plato del día."
+    ]
   },
   "advertir": {
     "type": "ir",
@@ -1051,7 +1291,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Te advierto que el camino es peligroso.",
+      "Nos advirtieron sobre la tormenta."
+    ]
   },
   "referir": {
     "type": "ir",
@@ -1062,7 +1306,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Se refiere al artículo que leímos ayer.",
+      "El doctor lo refirió a un especialista."
+    ]
   },
   "invertir": {
     "type": "ir",
@@ -1073,7 +1321,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Invirtió su dinero en un negocio nuevo.",
+      "Es importante invertir tiempo en aprender."
+    ]
   },
   "transferir": {
     "type": "ir",
@@ -1084,7 +1336,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Voy a transferir el dinero a tu cuenta.",
+      "Transfirieron al empleado a otra oficina."
+    ]
   },
   "diferir": {
     "type": "ir",
@@ -1095,7 +1351,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Nuestras opiniones difieren en ese tema.",
+      "Decidieron diferir la reunión para la próxima semana."
+    ]
   },
   "inferir": {
     "type": "ir",
@@ -1106,7 +1366,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "De sus palabras puedo inferir que está molesto.",
+      "Infirieron la causa del problema tras el análisis."
+    ]
   },
   "herir": {
     "type": "ir",
@@ -1117,7 +1381,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Sus palabras me hirieron profundamente.",
+      "El soldado fue herido en la batalla."
+    ]
   },
   "adquirir": {
     "type": "ir",
@@ -1128,7 +1396,11 @@
         "present": "e_ie",
         "preterite": "e_i"
       }
-    }
+    },
+    "examples": [
+      "Adquirieron una casa en el centro de la ciudad.",
+      "Es importante adquirir buenos hábitos desde joven."
+    ]
   },
   "encontrar": {
     "type": "ar",
@@ -1138,7 +1410,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Encontré las llaves debajo del sofá.",
+      "¿Dónde puedo encontrar una farmacia?"
+    ]
   },
   "contar": {
     "type": "ar",
@@ -1148,7 +1424,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Mi abuela me contaba historias antes de dormir.",
+      "¿Puedes contar hasta cien en español?"
+    ]
   },
   "recordar": {
     "type": "ar",
@@ -1158,7 +1438,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "¿Recuerdas la primera vez que nos vimos?",
+      "No recordaba su nombre."
+    ]
   },
   "mostrar": {
     "type": "ar",
@@ -1168,7 +1452,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Muéstrame las fotos de tu viaje.",
+      "El guía nos mostró los lugares más importantes."
+    ]
   },
   "probar": {
     "type": "ar",
@@ -1178,7 +1466,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Prueba este pastel, está delicioso.",
+      "Probaron un nuevo método de enseñanza."
+    ]
   },
   "soñar": {
     "type": "ar",
@@ -1188,7 +1480,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Anoche soñé que volaba por el cielo.",
+      "Sueña con viajar por todo el mundo."
+    ]
   },
   "volar": {
     "type": "ar",
@@ -1198,7 +1494,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Los pájaros vuelan hacia el sur en invierno.",
+      "Volamos de Madrid a Buenos Aires en doce horas."
+    ]
   },
   "costar": {
     "type": "ar",
@@ -1208,7 +1508,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "¿Cuánto cuesta este vestido?",
+      "Me costó mucho aprender a conducir."
+    ]
   },
   "acordar": {
     "type": "ar",
@@ -1218,7 +1522,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Acordamos vernos el próximo lunes.",
+      "No me acuerdo de dónde dejé el libro."
+    ]
   },
   "apostar": {
     "type": "ar",
@@ -1228,7 +1536,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Apuesto a que mañana hace sol.",
+      "Apostaron todo su dinero en ese proyecto."
+    ]
   },
   "aprobar": {
     "type": "ar",
@@ -1238,7 +1550,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Aprobé todos los exámenes del semestre.",
+      "El gobierno aprobó una nueva ley de educación."
+    ]
   },
   "consolar": {
     "type": "ar",
@@ -1248,7 +1564,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Intenté consolar a mi amiga después de la mala noticia.",
+      "Su madre lo consoló con un abrazo."
+    ]
   },
   "demostrar": {
     "type": "ar",
@@ -1258,7 +1578,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Demostró su talento en el concurso.",
+      "Los datos demuestran que el plan funciona."
+    ]
   },
   "renovar": {
     "type": "ar",
@@ -1268,7 +1592,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Necesito renovar mi pasaporte antes del viaje.",
+      "Renovaron toda la cocina el año pasado."
+    ]
   },
   "rodar": {
     "type": "ar",
@@ -1278,7 +1606,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "La pelota rodó hasta el otro lado de la calle.",
+      "Rodaron la película en una ciudad pequeña."
+    ]
   },
   "soltar": {
     "type": "ar",
@@ -1288,7 +1620,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Suelta la cuerda cuando yo te diga.",
+      "El niño soltó el globo y voló al cielo."
+    ]
   },
   "sonar": {
     "type": "ar",
@@ -1298,7 +1634,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Sonó el teléfono a las tres de la mañana.",
+      "Esa canción me suena, pero no recuerdo el nombre."
+    ]
   },
   "forzar": {
     "type": "ar",
@@ -1309,7 +1649,11 @@
         "present": "o_ue"
       },
       "spellingChange": "zar_cé"
-    }
+    },
+    "examples": [
+      "No me fuerces a tomar una decisión ahora.",
+      "Forzaron la cerradura para entrar al edificio."
+    ]
   },
   "esforzar": {
     "type": "ar",
@@ -1320,7 +1664,11 @@
         "present": "o_ue"
       },
       "spellingChange": "zar_cé"
-    }
+    },
+    "examples": [
+      "Me esfuerzo cada día para mejorar mi español.",
+      "Se esforzó mucho para conseguir ese trabajo."
+    ]
   },
   "torcer": {
     "type": "er",
@@ -1330,7 +1678,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Tuerce a la derecha en la próxima esquina.",
+      "Me torcí el tobillo jugando al fútbol."
+    ]
   },
   "almorzar": {
     "type": "ar",
@@ -1341,7 +1693,11 @@
         "present": "o_ue"
       },
       "spellingChange": "zar_cé"
-    }
+    },
+    "examples": [
+      "Almorzamos juntos en la cafetería del trabajo.",
+      "¿A qué hora almuerzas normalmente?"
+    ]
   },
   "colgar": {
     "type": "ar",
@@ -1352,7 +1708,11 @@
         "present": "o_ue"
       },
       "spellingChange": "gar_gué"
-    }
+    },
+    "examples": [
+      "Cuelga el abrigo en el perchero.",
+      "Colgaron las luces de Navidad en el balcón."
+    ]
   },
   "rogar": {
     "type": "ar",
@@ -1363,7 +1723,11 @@
         "present": "o_ue"
       },
       "spellingChange": "gar_gué"
-    }
+    },
+    "examples": [
+      "Te ruego que me escuches un momento.",
+      "Le rogó una segunda oportunidad."
+    ]
   },
   "volver": {
     "type": "er",
@@ -1373,7 +1737,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Volveré a casa antes de las diez.",
+      "Volvimos del viaje muy cansados."
+    ]
   },
   "mover": {
     "type": "er",
@@ -1383,7 +1751,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "¿Me ayudas a mover esta mesa?",
+      "Se mudó a otra ciudad por trabajo."
+    ]
   },
   "llover": {
     "type": "er",
@@ -1393,7 +1765,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Está lloviendo mucho hoy.",
+      "Llovió durante toda la semana pasada."
+    ]
   },
   "devolver": {
     "type": "er",
@@ -1403,7 +1779,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Tengo que devolver este libro a la biblioteca.",
+      "Le devolvieron el dinero por el producto defectuoso."
+    ]
   },
   "resolver": {
     "type": "er",
@@ -1413,7 +1793,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Resolvimos el problema en menos de una hora.",
+      "¿Cómo podemos resolver esta situación?"
+    ]
   },
   "envolver": {
     "type": "er",
@@ -1423,7 +1807,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "¿Puedes envolver este regalo, por favor?",
+      "Envolvió los libros en papel de periódico."
+    ]
   },
   "promover": {
     "type": "er",
@@ -1433,7 +1821,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "La empresa promueve un ambiente de trabajo saludable.",
+      "Lo promovieron a gerente regional."
+    ]
   },
   "remover": {
     "type": "er",
@@ -1443,7 +1835,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Remueve la salsa para que no se pegue.",
+      "Removieron los escombros después del terremoto."
+    ]
   },
   "disolver": {
     "type": "er",
@@ -1453,7 +1849,11 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "examples": [
+      "Disuelve el azúcar en el agua caliente.",
+      "El parlamento fue disuelto por el presidente."
+    ]
   },
   "conmover": {
     "type": "er",

@@ -229,6 +229,7 @@ export interface VerbData {
   type: 'ar' | 'er' | 'ir';
   regular: boolean;
   translation: string;
+  examples?: string[];
   pattern?: IrregularPattern;
   overrides?: Partial<Record<SimpleTense, string[]>>;
 }
