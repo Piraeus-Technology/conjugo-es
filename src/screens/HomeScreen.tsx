@@ -342,32 +342,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           <View style={[styles.separator, { backgroundColor: colors.divider }]} />
         )}
         SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
-        ListFooterComponent={
-          !search.trim() ? (
-            <View style={styles.popularSection}>
-              <Text style={[styles.sectionTitle, { color: colors.textSecondary, paddingHorizontal: spacing.lg, marginBottom: spacing.sm }]}>
-                POPULAR VERBS
-              </Text>
-              <View style={[styles.popularGrid]}>
-                {['ser', 'estar', 'tener', 'hacer', 'ir', 'poder', 'decir', 'saber', 'querer', 'dar', 'venir', 'poner'].map((v) => {
-                  const data = (verbs as Record<string, VerbData>)[v];
-                  if (!data) return null;
-                  return (
-                    <TouchableOpacity
-                      key={v}
-                      style={[styles.popularChip, { backgroundColor: colors.card }]}
-                      onPress={() => handleVerbPress(v)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={[styles.popularVerb, { color: colors.primary }]}>{v}</Text>
-                      <Text style={[styles.popularTranslation, { color: colors.textMuted }]}>{data.translation}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
-          ) : null
-        }
         ListEmptyComponent={
           search.trim() ? (
             <View style={styles.emptyContainer}>
@@ -470,31 +444,6 @@ const styles = StyleSheet.create({
   vodBadgeText: {
     fontSize: fonts.sizes.xs,
     fontWeight: fonts.weights.semibold,
-  },
-  popularSection: {
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  popularGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-  },
-  popularChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: radius.md,
-    width: '31%',
-    alignItems: 'center',
-  },
-  popularVerb: {
-    fontSize: fonts.sizes.md,
-    fontWeight: fonts.weights.semibold,
-  },
-  popularTranslation: {
-    fontSize: fonts.sizes.xs,
-    marginTop: 2,
   },
   deleteAction: {
     backgroundColor: '#E53935',
