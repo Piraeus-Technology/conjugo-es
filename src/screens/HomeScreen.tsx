@@ -7,7 +7,9 @@ import {
   SectionList,
   TouchableOpacity,
   StyleSheet,
+  Animated,
 } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import Fuse from 'fuse.js';
 import verbs from '../data/verbs.json';
@@ -85,9 +87,9 @@ interface SearchResult {
 
 export default function HomeScreen({ navigation }: SearchScreenProps) {
   const [search, setSearch] = useState('');
-  const { history, loaded, loadHistory, addToHistory, clearHistory } =
+  const { history, loaded, loadHistory, addToHistory, removeFromHistory, clearHistory } =
     useHistoryStore();
-  const { favorites, loadFavorites } = useFavoritesStore();
+  const { favorites, loadFavorites, toggleFavorite } = useFavoritesStore();
   const colors = useColors();
 
   useEffect(() => {
@@ -203,26 +205,69 @@ export default function HomeScreen({ navigation }: SearchScreenProps) {
     return s;
   }, [search, results, favorites, history]);
 
-  const renderItem = ({ item }: { item: SearchResult }) => (
-    <TouchableOpacity
-      style={styles.verbItem}
-      onPress={() => handleVerbPress(item.infinitive, item.matchTense, item.matchForm)}
-      activeOpacity={0.6}
-    >
-      <View style={styles.verbInfo}>
-        <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
-        <Text style={[styles.verbTranslation, { color: colors.textSecondary }]}>{item.translation}</Text>
-        {item.matchType === 'conjugation' && item.matchDetail && (
-          <Text style={[styles.matchDetail, { color: colors.primary }]}>{item.matchDetail}</Text>
-        )}
+  const renderDeleteAction = (
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>,
+  ) => {
+    const scale = dragX.interpolate({
+      inputRange: [-80, 0],
+      outputRange: [1, 0.5],
+      extrapolate: 'clamp',
+    });
+    return (
+      <View style={styles.deleteAction}>
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <Ionicons name="trash-outline" size={20} color="#fff" />
+        </Animated.View>
       </View>
-      {item.matchType === 'favorite' ? (
-        <Ionicons name="heart" size={16} color={colors.primary} />
-      ) : (
-        <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-      )}
-    </TouchableOpacity>
-  );
+    );
+  };
+
+  const handleSwipeDelete = (item: SearchResult) => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (item.matchType === 'favorite') {
+      toggleFavorite(item.infinitive);
+    } else if (item.matchType === 'history') {
+      removeFromHistory(item.infinitive);
+    }
+  };
+
+  const renderItem = ({ item }: { item: SearchResult }) => {
+    const isSwipeable = item.matchType === 'favorite' || item.matchType === 'history';
+
+    const row = (
+      <TouchableOpacity
+        style={[styles.verbItem, { backgroundColor: colors.bg }]}
+        onPress={() => handleVerbPress(item.infinitive, item.matchTense, item.matchForm)}
+        activeOpacity={0.6}
+      >
+        <View style={styles.verbInfo}>
+          <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
+          <Text style={[styles.verbTranslation, { color: colors.textSecondary }]}>{item.translation}</Text>
+          {item.matchType === 'conjugation' && item.matchDetail && (
+            <Text style={[styles.matchDetail, { color: colors.primary }]}>{item.matchDetail}</Text>
+          )}
+        </View>
+        {item.matchType === 'favorite' ? (
+          <Ionicons name="heart" size={16} color={colors.primary} />
+        ) : (
+          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        )}
+      </TouchableOpacity>
+    );
+
+    if (!isSwipeable) return row;
+
+    return (
+      <Swipeable
+        renderRightActions={renderDeleteAction}
+        onSwipeableOpen={() => handleSwipeDelete(item)}
+        overshootRight={false}
+      >
+        {row}
+      </Swipeable>
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
@@ -329,4 +374,10 @@ const styles = StyleSheet.create({
   heroEmoji: { fontSize: 48 },
   heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
   heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.xs },
+  deleteAction: {
+    backgroundColor: '#E53935',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+  },
 });
