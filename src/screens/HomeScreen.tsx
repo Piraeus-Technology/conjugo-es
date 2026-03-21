@@ -305,23 +305,25 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         renderItem={renderItem}
         ListHeaderComponent={
           !search.trim() ? (
-            <TouchableOpacity
-              style={[styles.vodCard, { backgroundColor: colors.card }]}
-              onPress={() => {
-                const votd = getVerbOfTheDay();
-                handleVerbPress(votd.infinitive);
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.vodLabel, { color: colors.textMuted }]}>VERB OF THE DAY</Text>
-              <Text style={[styles.vodVerb, { color: colors.primary }]}>{getVerbOfTheDay().infinitive}</Text>
-              <Text style={[styles.vodTranslation, { color: colors.textSecondary }]}>{getVerbOfTheDay().translation}</Text>
-              <View style={[styles.vodBadge, { backgroundColor: colors.primary + '15' }]}>
-                <Text style={[styles.vodBadgeText, { color: colors.primary }]}>
-                  {getVerbOfTheDay().regular ? 'Regular' : 'Irregular'} • -{getVerbOfTheDay().type}
-                </Text>
-              </View>
-            </TouchableOpacity>
+            <View style={styles.vodWrapper}>
+              <TouchableOpacity
+                style={[styles.vodCard, { backgroundColor: colors.card }]}
+                onPress={() => {
+                  const votd = getVerbOfTheDay();
+                  handleVerbPress(votd.infinitive);
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.vodLabel, { color: colors.textMuted }]}>VERB OF THE DAY</Text>
+                <Text style={[styles.vodVerb, { color: colors.primary }]}>{getVerbOfTheDay().infinitive}</Text>
+                <Text style={[styles.vodTranslation, { color: colors.textSecondary }]}>{getVerbOfTheDay().translation}</Text>
+                <View style={[styles.vodBadge, { backgroundColor: colors.primary + '15' }]}>
+                  <Text style={[styles.vodBadgeText, { color: colors.primary }]}>
+                    {getVerbOfTheDay().regular ? 'Regular' : 'Irregular'} • -{getVerbOfTheDay().type}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           ) : null
         }
         renderSectionHeader={({ section }) =>
@@ -340,6 +342,32 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           <View style={[styles.separator, { backgroundColor: colors.divider }]} />
         )}
         SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
+        ListFooterComponent={
+          !search.trim() ? (
+            <View style={styles.popularSection}>
+              <Text style={[styles.sectionTitle, { color: colors.textSecondary, paddingHorizontal: spacing.lg, marginBottom: spacing.sm }]}>
+                POPULAR VERBS
+              </Text>
+              <View style={[styles.popularGrid]}>
+                {['ser', 'estar', 'tener', 'hacer', 'ir', 'poder', 'decir', 'saber', 'querer', 'dar', 'venir', 'poner'].map((v) => {
+                  const data = (verbs as Record<string, VerbData>)[v];
+                  if (!data) return null;
+                  return (
+                    <TouchableOpacity
+                      key={v}
+                      style={[styles.popularChip, { backgroundColor: colors.card }]}
+                      onPress={() => handleVerbPress(v)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.popularVerb, { color: colors.primary }]}>{v}</Text>
+                      <Text style={[styles.popularTranslation, { color: colors.textMuted }]}>{data.translation}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          ) : null
+        }
         ListEmptyComponent={
           search.trim() ? (
             <View style={styles.emptyContainer}>
@@ -405,6 +433,9 @@ const styles = StyleSheet.create({
   heroEmoji: { fontSize: 48 },
   heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
   heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.xs },
+  vodWrapper: {
+    marginTop: spacing.sm,
+  },
   vodCard: {
     margin: spacing.md,
     padding: spacing.lg,
@@ -439,6 +470,31 @@ const styles = StyleSheet.create({
   vodBadgeText: {
     fontSize: fonts.sizes.xs,
     fontWeight: fonts.weights.semibold,
+  },
+  popularSection: {
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+  popularGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+  },
+  popularChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: radius.md,
+    width: '31%',
+    alignItems: 'center',
+  },
+  popularVerb: {
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.semibold,
+  },
+  popularTranslation: {
+    fontSize: fonts.sizes.xs,
+    marginTop: 2,
   },
   deleteAction: {
     backgroundColor: '#E53935',
