@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { speak } from '../utils/speech';
 import verbs from '../data/verbs.json';
 import {
   conjugate,
@@ -192,7 +193,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                       row.form.toLowerCase() === highlightForm;
 
                     return (
-                      <View
+                      <TouchableOpacity
                         key={i}
                         style={[
                           styles.row,
@@ -201,6 +202,13 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                           row.disabled && styles.disabledRow,
                           isHighlighted && [styles.highlightedRow, { backgroundColor: colors.accentLight }],
                         ]}
+                        onPress={() => {
+                          if (!row.disabled) {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            speak(row.form);
+                          }
+                        }}
+                        activeOpacity={row.disabled ? 1 : 0.6}
                       >
                         <Text
                           style={[
@@ -212,20 +220,25 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                         >
                           {row.pronoun}
                         </Text>
-                        <Text
-                          style={
-                            row.disabled
-                              ? [styles.disabledForm, { color: colors.textMuted }]
-                              : [
-                                  styles.form,
-                                  { color: colors.primary },
-                                  isHighlighted && { color: colors.primaryDark, fontWeight: fonts.weights.bold },
-                                ]
-                          }
-                        >
-                          {row.disabled ? '—' : row.form}
-                        </Text>
-                      </View>
+                        <View style={styles.formContainer}>
+                          <Text
+                            style={
+                              row.disabled
+                                ? [styles.disabledForm, { color: colors.textMuted }]
+                                : [
+                                    styles.form,
+                                    { color: colors.primary },
+                                    isHighlighted && { color: colors.primaryDark, fontWeight: fonts.weights.bold },
+                                  ]
+                            }
+                          >
+                            {row.disabled ? '—' : row.form}
+                          </Text>
+                          {!row.disabled && (
+                            <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} style={{ marginLeft: 6 }} />
+                          )}
+                        </View>
+                      </TouchableOpacity>
                     );
                   })}
                 </View>
@@ -317,7 +330,8 @@ const styles = StyleSheet.create({
   disabledRow: { opacity: 0.35 },
   highlightedRow: { marginHorizontal: -8, paddingHorizontal: 16, borderRadius: radius.sm },
   pronoun: { flex: 1, fontSize: fonts.sizes.md },
-  form: { flex: 1, fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold, textAlign: 'right' },
+  formContainer: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' },
+  form: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold, textAlign: 'right' },
   disabledText: { textDecorationLine: 'line-through' },
   disabledForm: { flex: 1, fontSize: fonts.sizes.lg, fontWeight: fonts.weights.regular, textAlign: 'right' },
 });

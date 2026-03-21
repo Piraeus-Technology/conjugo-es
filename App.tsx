@@ -10,6 +10,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import HomeScreen from './src/screens/HomeScreen';
 import ConjugationScreen from './src/screens/ConjugationScreen';
 import FeedbackScreen from './src/screens/FeedbackScreen';
+import FlashcardScreen from './src/screens/FlashcardScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
@@ -128,6 +129,17 @@ export default function App() {
               tabBarLabel: 'Quiz',
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="school" size={size} color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Flashcards"
+            component={FlashcardScreen}
+            options={{
+              title: 'Flashcards',
+              tabBarLabel: 'Cards',
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="layers" size={size} color={color} />
               ),
             }}
           />

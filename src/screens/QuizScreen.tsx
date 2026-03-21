@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
+import * as StoreReview from 'expo-store-review';
+import { speak } from '../utils/speech';
 import verbs from '../data/verbs.json';
 import { conjugate, tenseNames, Tense, VerbData } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
@@ -167,12 +169,20 @@ export default function QuizScreen() {
       const newStreak = streak + 1;
       setStreak(newStreak);
       recordAnswer(true, newStreak);
+      // Prompt for rating after a streak of 10
+      if (newStreak === 10) {
+        StoreReview.isAvailableAsync().then((available) => {
+          if (available) StoreReview.requestReview();
+        });
+      }
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setStreak(0);
       recordAnswer(false, 0);
     }
     recordResult(question.verb, correct);
+    // Speak the correct answer
+    setTimeout(() => speak(question.correctAnswer), 300);
   };
 
   const handleNext = () => {
