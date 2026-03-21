@@ -106,6 +106,24 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
             {verb.regular ? 'Regular' : 'Irregular'} -{verb.type}
           </Text>
         </View>
+
+        {/* Example sentence */}
+        {(() => {
+          const present = conjugate(infinitive, verb, 'present');
+          const yoForm = present[0].form;
+          const elForm = present[2].form;
+          return (
+            <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
+              <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
+              <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
+                Yo <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{yoForm}</Text> todos los días.
+              </Text>
+              <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
+                Él <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{elForm}</Text> mucho.
+              </Text>
+            </View>
+          );
+        })()}
       </View>
 
       <View style={styles.tenseSection}>
@@ -208,6 +226,24 @@ const styles = StyleSheet.create({
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
   tag: { marginTop: spacing.sm, paddingHorizontal: 14, paddingVertical: 5, borderRadius: radius.full },
   tagText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.medium },
+  exampleBox: {
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    width: '100%',
+  },
+  exampleLabel: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+  },
+  exampleText: {
+    fontSize: fonts.sizes.md,
+    lineHeight: 24,
+    fontStyle: 'italic',
+    marginBottom: 4,
+  },
   tenseSection: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl },
   tenseGroup: { marginBottom: spacing.md },
   groupLabel: {

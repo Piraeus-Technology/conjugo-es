@@ -42,8 +42,12 @@ interface ConjMatch {
 }
 
 const verbFuse = new Fuse(verbEntries, {
-  keys: ['infinitive', 'translation'],
-  threshold: 0.3,
+  keys: [
+    { name: 'infinitive', weight: 2 },
+    { name: 'translation', weight: 1 },
+  ],
+  threshold: 0.4,
+  ignoreLocation: true,
 });
 
 // Lazy-built conjugation index — only created on first search
