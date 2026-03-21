@@ -40,17 +40,16 @@ function generateQuestion(
   getWeight: (verb: string) => number,
 ): Question {
   // Weighted random verb selection (spaced repetition)
-  const weights = verbEntries.map(([v]) => getWeight(v));
-  const totalWeight = weights.reduce((a, b) => a + b, 0);
-  let rand = Math.random() * totalWeight;
-  let verbIndex = 0;
-  for (let i = 0; i < weights.length; i++) {
-    rand -= weights[i];
-    if (rand <= 0) {
-      verbIndex = i;
-      break;
-    }
+  // Pick 10 random candidates, then choose the one with highest weight
+  const candidates: number[] = [];
+  for (let i = 0; i < 10; i++) {
+    candidates.push(Math.floor(Math.random() * verbEntries.length));
   }
+  const verbIndex = candidates.reduce((best, idx) => {
+    const bestWeight = getWeight(verbEntries[best][0]);
+    const thisWeight = getWeight(verbEntries[idx][0]);
+    return thisWeight > bestWeight ? idx : best;
+  }, candidates[0]);
 
   const [verb, data] = verbEntries[verbIndex];
   const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
@@ -105,7 +104,7 @@ function generateQuestion(
 export default function QuizScreen() {
   const colors = useColors();
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
-  const { loadWeights, recordResult, getWeight } = useSpacedRepStore();
+  const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const [activeTenses, setActiveTenses] = useState<Tense[]>(['present', 'preterite']);
   const [showFilter, setShowFilter] = useState(false);
   const [question, setQuestion] = useState<Question | null>(null);
@@ -120,10 +119,10 @@ export default function QuizScreen() {
   }, []);
 
   useEffect(() => {
-    if (activeTenses.length > 0 && !question) {
+    if (weightsLoaded && activeTenses.length > 0 && !question) {
       setQuestion(generateQuestion(activeTenses, getWeight));
     }
-  }, [activeTenses]);
+  }, [weightsLoaded, activeTenses]);
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
