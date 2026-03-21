@@ -4,18 +4,25 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
-import { conjugate, tenseNames, Tense, VerbData, allTenses } from '../utils/conjugate';
+import { conjugate, tenseNames, Tense, VerbData } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
+import { useSpacedRepStore } from '../store/spacedRepStore';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>);
-const simpleTenses: Tense[] = [
-  'present', 'preterite', 'imperfect', 'future', 'conditional',
-  'subjunctive_present', 'subjunctive_imperfect',
+const quizzableTenses: { key: Tense; label: string }[] = [
+  { key: 'present', label: 'Present' },
+  { key: 'preterite', label: 'Preterite' },
+  { key: 'imperfect', label: 'Imperfect' },
+  { key: 'future', label: 'Future' },
+  { key: 'conditional', label: 'Conditional' },
+  { key: 'subjunctive_present', label: 'Subj. Present' },
+  { key: 'subjunctive_imperfect', label: 'Subj. Imperfect' },
 ];
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
 
@@ -28,29 +35,40 @@ interface Question {
   options: string[];
 }
 
-function generateQuestion(): Question {
-  // Pick a random verb
-  const [verb, data] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
-  // Pick a random simple tense
-  const tense = simpleTenses[Math.floor(Math.random() * simpleTenses.length)];
-  // Pick a random person (0-5)
+function generateQuestion(
+  activeTenses: Tense[],
+  getWeight: (verb: string) => number,
+): Question {
+  // Weighted random verb selection (spaced repetition)
+  const weights = verbEntries.map(([v]) => getWeight(v));
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
+  let rand = Math.random() * totalWeight;
+  let verbIndex = 0;
+  for (let i = 0; i < weights.length; i++) {
+    rand -= weights[i];
+    if (rand <= 0) {
+      verbIndex = i;
+      break;
+    }
+  }
+
+  const [verb, data] = verbEntries[verbIndex];
+  const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
   const personIndex = Math.floor(Math.random() * 6);
 
   const results = conjugate(verb, data, tense);
   const correctAnswer = results[personIndex].form;
 
-  // Generate wrong answers from the same verb (different persons/tenses)
+  // Generate wrong answers
   const wrongAnswers = new Set<string>();
 
-  // Wrong from different persons same tense
   results.forEach((r, i) => {
     if (i !== personIndex && r.form !== '—' && !r.disabled && r.form !== correctAnswer) {
       wrongAnswers.add(r.form);
     }
   });
 
-  // Wrong from same person different tenses
-  for (const t of simpleTenses) {
+  for (const t of activeTenses) {
     if (t === tense) continue;
     const otherResults = conjugate(verb, data, t);
     const form = otherResults[personIndex].form;
@@ -59,7 +77,6 @@ function generateQuestion(): Question {
     }
   }
 
-  // Pick 3 wrong answers
   const wrongArray = Array.from(wrongAnswers);
   const selected: string[] = [];
   while (selected.length < 3 && wrongArray.length > 0) {
@@ -67,7 +84,6 @@ function generateQuestion(): Question {
     selected.push(wrongArray.splice(idx, 1)[0]);
   }
 
-  // If we don't have enough wrong answers, generate from other verbs
   while (selected.length < 3) {
     const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
     const otherResults = conjugate(otherVerb, otherData, tense);
@@ -77,7 +93,6 @@ function generateQuestion(): Question {
     }
   }
 
-  // Shuffle options
   const options = [correctAnswer, ...selected];
   for (let i = options.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -90,7 +105,10 @@ function generateQuestion(): Question {
 export default function QuizScreen() {
   const colors = useColors();
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
-  const [question, setQuestion] = useState<Question>(generateQuestion);
+  const { loadWeights, recordResult, getWeight } = useSpacedRepStore();
+  const [activeTenses, setActiveTenses] = useState<Tense[]>(['present', 'preterite']);
+  const [showFilter, setShowFilter] = useState(false);
+  const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [sessionScore, setSessionScore] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
@@ -98,17 +116,36 @@ export default function QuizScreen() {
 
   useEffect(() => {
     loadStats();
+    loadWeights();
   }, []);
 
-  const isCorrect = selectedAnswer === question.correctAnswer;
+  useEffect(() => {
+    if (activeTenses.length > 0 && !question) {
+      setQuestion(generateQuestion(activeTenses, getWeight));
+    }
+  }, [activeTenses]);
+
+  const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
 
+  const toggleTense = (tense: Tense) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActiveTenses(prev => {
+      if (prev.includes(tense)) {
+        if (prev.length <= 1) return prev; // Must have at least one
+        return prev.filter(t => t !== tense);
+      }
+      return [...prev, tense];
+    });
+  };
+
   const handleAnswer = (answer: string) => {
-    if (answered) return;
+    if (answered || !question) return;
     setSelectedAnswer(answer);
     setSessionTotal(t => t + 1);
 
-    if (answer === question.correctAnswer) {
+    const correct = answer === question.correctAnswer;
+    if (correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setSessionScore(s => s + 1);
       const newStreak = streak + 1;
@@ -119,16 +156,17 @@ export default function QuizScreen() {
       setStreak(0);
       recordAnswer(false, 0);
     }
+    recordResult(question.verb, correct);
   };
 
   const handleNext = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setQuestion(generateQuestion());
+    setQuestion(generateQuestion(activeTenses, getWeight));
     setSelectedAnswer(null);
   };
 
   const getOptionStyle = (option: string) => {
-    if (!answered) {
+    if (!answered || !question) {
       return { backgroundColor: colors.card, borderColor: colors.border };
     }
     if (option === question.correctAnswer) {
@@ -141,14 +179,63 @@ export default function QuizScreen() {
   };
 
   const getOptionTextColor = (option: string) => {
-    if (!answered) return colors.textPrimary;
+    if (!answered || !question) return colors.textPrimary;
     if (option === question.correctAnswer) return '#2E7D32';
     if (option === selectedAnswer && !isCorrect) return '#C62828';
     return colors.textMuted;
   };
 
+  if (!question) return null;
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
+      {/* Tense filter toggle */}
+      <TouchableOpacity
+        style={[styles.filterToggle, { backgroundColor: colors.card }]}
+        onPress={() => setShowFilter(!showFilter)}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.filterToggleText, { color: colors.textSecondary }]}>
+          {activeTenses.length === quizzableTenses.length
+            ? 'All tenses'
+            : `${activeTenses.length} tense${activeTenses.length > 1 ? 's' : ''} selected`}
+        </Text>
+        <Ionicons
+          name={showFilter ? 'chevron-up' : 'options-outline'}
+          size={16}
+          color={colors.textMuted}
+        />
+      </TouchableOpacity>
+
+      {/* Tense filter pills */}
+      {showFilter && (
+        <View style={styles.filterContainer}>
+          {quizzableTenses.map(({ key, label }) => {
+            const active = activeTenses.includes(key);
+            return (
+              <TouchableOpacity
+                key={key}
+                style={[
+                  styles.filterPill,
+                  {
+                    backgroundColor: active ? colors.primary : colors.card,
+                    borderColor: active ? colors.primary : colors.border,
+                  },
+                ]}
+                onPress={() => toggleTense(key)}
+              >
+                <Text style={[
+                  styles.filterPillText,
+                  { color: active ? '#fff' : colors.textSecondary },
+                ]}>
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
       {/* Session score bar */}
       <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
         <View style={styles.scoreItem}>
@@ -171,7 +258,7 @@ export default function QuizScreen() {
       {totalQuestions > 0 && (
         <View style={[styles.allTimeBar, { borderColor: colors.divider }]}>
           <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
-            All-time: {totalCorrect}/{totalQuestions} ({totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0}%) · Best streak: {bestStreak}
+            All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
           </Text>
         </View>
       )}
@@ -226,21 +313,47 @@ export default function QuizScreen() {
           <Ionicons name="arrow-forward" size={18} color="#fff" />
         </TouchableOpacity>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: spacing.lg,
+  container: { flex: 1 },
+  content: { padding: spacing.lg, paddingBottom: 40 },
+  filterToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.md,
+    borderRadius: radius.md,
+    marginBottom: spacing.sm,
+  },
+  filterToggleText: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.medium,
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+  },
+  filterPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+    borderWidth: 1,
+  },
+  filterPillText: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.medium,
   },
   scoreBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: spacing.md,
     borderRadius: radius.md,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.sm,
   },
   scoreItem: {
     alignItems: 'center',
@@ -283,7 +396,7 @@ const styles = StyleSheet.create({
   },
   questionTranslation: {
     fontSize: fonts.sizes.md,
-    fontStyle: 'italic' as const,
+    fontStyle: 'italic',
     marginBottom: spacing.sm,
   },
   questionPronoun: {
