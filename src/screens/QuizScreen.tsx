@@ -41,10 +41,15 @@ function generateQuestion(
   getWeight: (verb: string) => number,
 ): Question {
   // Weighted random verb selection (spaced repetition)
-  // Pick 10 random candidates, then choose the one with highest weight
+  // Bias toward common verbs (first 200): 70% chance from top 200, 30% from rest
   const candidates: number[] = [];
+  const commonCount = Math.min(200, verbEntries.length);
   for (let i = 0; i < 10; i++) {
-    candidates.push(Math.floor(Math.random() * verbEntries.length));
+    if (Math.random() < 0.7) {
+      candidates.push(Math.floor(Math.random() * commonCount));
+    } else {
+      candidates.push(Math.floor(Math.random() * verbEntries.length));
+    }
   }
   const verbIndex = candidates.reduce((best, idx) => {
     const bestWeight = getWeight(verbEntries[best][0]);
@@ -214,16 +219,15 @@ export default function QuizScreen() {
             <TouchableOpacity
               style={[
                 styles.chip,
-                {
-                  backgroundColor: active ? colors.primary : colors.card,
-                  borderColor: active ? colors.primary : colors.border,
-                },
+                active
+                  ? { backgroundColor: colors.primary, borderColor: colors.primary }
+                  : { backgroundColor: 'transparent', borderColor: colors.border, borderStyle: 'dashed' as const },
               ]}
               onPress={() => isAll ? toggleAll() : toggleTense(item.key)}
             >
               <Text style={[
                 styles.chipText,
-                { color: active ? '#fff' : colors.textSecondary },
+                { color: active ? '#fff' : colors.textMuted },
               ]}>
                 {item.label}
               </Text>
