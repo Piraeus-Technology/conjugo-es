@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     width: '48.5%',
   },
-  tenseText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.medium },
+  tenseText: { fontSize: fonts.sizes.xs, fontWeight: fonts.weights.medium },
   table: {
     borderRadius: radius.md,
     padding: spacing.md,
