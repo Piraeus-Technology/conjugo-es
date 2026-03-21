@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import * as Haptics from 'expo-haptics';
 import {
   View,
   Text,
@@ -164,6 +165,7 @@ export default function HomeScreen({ navigation }: SearchScreenProps) {
   }, [search]);
 
   const handleVerbPress = (infinitive: string, tense?: string, form?: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     addToHistory(infinitive);
     navigation.navigate('Conjugation', { infinitive, initialTense: tense, highlightForm: form });
   };
@@ -251,7 +253,7 @@ export default function HomeScreen({ navigation }: SearchScreenProps) {
             <View style={[styles.sectionHeader, { backgroundColor: colors.bg }]}>
               <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{section.title}</Text>
               {(section as { clearable?: boolean }).clearable && (
-                <TouchableOpacity onPress={clearHistory}>
+                <TouchableOpacity onPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); clearHistory(); }}>
                   <Text style={[styles.clearButton, { color: colors.primary }]}>Clear</Text>
                 </TouchableOpacity>
               )}

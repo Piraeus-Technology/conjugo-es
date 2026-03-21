@@ -1,4 +1,5 @@
 import React, { useState, useLayoutEffect } from 'react';
+import * as Haptics from 'expo-haptics';
 import {
   View,
   Text,
@@ -57,7 +58,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
     navigation.setOptions({
       headerRight: () => (
         <Pressable
-          onPress={() => toggleFavorite(infinitive)}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            toggleFavorite(infinitive);
+          }}
           hitSlop={8}
           style={({ pressed }) => ({
             opacity: pressed ? 0.5 : 1,
@@ -78,6 +82,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   }, [navigation, favorited, colors]);
 
   const toggleTense = (tense: Tense) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setOpenTense(openTense === tense ? null : tense);
   };
 
