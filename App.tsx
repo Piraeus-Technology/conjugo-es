@@ -8,6 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import HomeScreen from './src/screens/HomeScreen';
 import ConjugationScreen from './src/screens/ConjugationScreen';
 import FeedbackScreen from './src/screens/FeedbackScreen';
+import QuizScreen from './src/screens/QuizScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 import type { RootStackParamList } from './src/types/navigation';
@@ -69,7 +70,14 @@ export default function App() {
               title: 'ConjuGo ES',
               headerRight: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => navigation.navigate('Feedback')}>
+                  <TouchableOpacity onPress={() => navigation.navigate('Quiz')}>
+                    <Ionicons
+                      name="school-outline"
+                      size={22}
+                      color={colors.textPrimary}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('Feedback')} style={{ marginLeft: 16 }}>
                     <Ionicons
                       name="mail-outline"
                       size={22}
@@ -93,6 +101,13 @@ export default function App() {
             options={({ route }) => ({
               title: route.params.infinitive,
             })}
+          />
+          <Stack.Screen
+            name="Quiz"
+            component={QuizScreen}
+            options={{
+              title: 'Quiz',
+            }}
           />
           <Stack.Screen
             name="Feedback"
