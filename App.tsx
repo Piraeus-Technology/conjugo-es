@@ -3,6 +3,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar, TouchableOpacity, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -81,7 +82,7 @@ export default function App() {
   };
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={colors.bg}
@@ -152,6 +153,6 @@ export default function App() {
           />
         </Tab.Navigator>
       </NavigationContainer>
-    </View>
+    </GestureHandlerRootView>
   );
 }
