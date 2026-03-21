@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
 import { conjugate, tenseNames, Tense, VerbData, allTenses } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
+import { useQuizStore } from '../store/quizStore';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>);
 const simpleTenses: Tense[] = [
@@ -88,11 +89,16 @@ function generateQuestion(): Question {
 
 export default function QuizScreen() {
   const colors = useColors();
+  const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
   const [question, setQuestion] = useState<Question>(generateQuestion);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [score, setScore] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [sessionScore, setSessionScore] = useState(0);
+  const [sessionTotal, setSessionTotal] = useState(0);
   const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
 
   const isCorrect = selectedAnswer === question.correctAnswer;
   const answered = selectedAnswer !== null;
@@ -100,15 +106,18 @@ export default function QuizScreen() {
   const handleAnswer = (answer: string) => {
     if (answered) return;
     setSelectedAnswer(answer);
-    setTotal(t => t + 1);
+    setSessionTotal(t => t + 1);
 
     if (answer === question.correctAnswer) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setScore(s => s + 1);
-      setStreak(s => s + 1);
+      setSessionScore(s => s + 1);
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      recordAnswer(true, newStreak);
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setStreak(0);
+      recordAnswer(false, 0);
     }
   };
 
@@ -140,11 +149,11 @@ export default function QuizScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      {/* Score bar */}
+      {/* Session score bar */}
       <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
         <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: colors.primary }]}>{score}/{total}</Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Score</Text>
+          <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionScore}/{sessionTotal}</Text>
+          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Session</Text>
         </View>
         <View style={styles.scoreItem}>
           <Text style={[styles.scoreValue, { color: colors.accent || colors.primary }]}>{streak}</Text>
@@ -152,11 +161,20 @@ export default function QuizScreen() {
         </View>
         <View style={styles.scoreItem}>
           <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
-            {total > 0 ? Math.round((score / total) * 100) : 0}%
+            {sessionTotal > 0 ? Math.round((sessionScore / sessionTotal) * 100) : 0}%
           </Text>
           <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
         </View>
       </View>
+
+      {/* All-time stats */}
+      {totalQuestions > 0 && (
+        <View style={[styles.allTimeBar, { borderColor: colors.divider }]}>
+          <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
+            All-time: {totalCorrect}/{totalQuestions} ({totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0}%) · Best streak: {bestStreak}
+          </Text>
+        </View>
+      )}
 
       {/* Question */}
       <View style={styles.questionContainer}>
@@ -226,6 +244,16 @@ const styles = StyleSheet.create({
   },
   scoreItem: {
     alignItems: 'center',
+  },
+  allTimeBar: {
+    borderTopWidth: 1,
+    marginHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  allTimeText: {
+    fontSize: fonts.sizes.xs,
+    textAlign: 'center',
   },
   scoreValue: {
     fontSize: fonts.sizes.xl,

@@ -59,6 +59,13 @@ const haberForms: Record<string, string[]> = {
   conditional_perfect: ['habría', 'habrías', 'habría', 'habríamos', 'habríais', 'habrían'],
 };
 
+// ============ PROGRESSIVE TENSES ============
+
+const estarForms: Record<string, string[]> = {
+  present_progressive: ['estoy', 'estás', 'está', 'estamos', 'estáis', 'están'],
+  past_progressive: ['estaba', 'estabas', 'estaba', 'estábamos', 'estabais', 'estaban'],
+};
+
 // ============ IRREGULAR PARTICIPLES ============
 
 const irregularParticiples: Record<string, string> = {
@@ -172,7 +179,8 @@ export interface IrregularPattern {
 
 export type SimpleTense = keyof typeof regularEndings;
 export type CompoundTense = keyof typeof haberForms;
-export type Tense = SimpleTense | CompoundTense | 'gerund_participle';
+export type ProgressiveTense = keyof typeof estarForms;
+export type Tense = SimpleTense | CompoundTense | ProgressiveTense | 'gerund_participle';
 
 export const allTenses: Tense[] = [
   'present',
@@ -188,6 +196,8 @@ export const allTenses: Tense[] = [
   'past_perfect',
   'future_perfect',
   'conditional_perfect',
+  'present_progressive',
+  'past_progressive',
   'gerund_participle',
 ];
 
@@ -205,6 +215,8 @@ export const tenseNames: Record<Tense, string> = {
   past_perfect: 'Past Perfect',
   future_perfect: 'Fut. Perfect',
   conditional_perfect: 'Cond. Perfect',
+  present_progressive: 'Pres. Progressive',
+  past_progressive: 'Past Progressive',
   gerund_participle: 'Gerund & Participle',
 };
 
@@ -450,6 +462,15 @@ export function conjugate(
     return pronouns.map((pronoun, i) => ({
       pronoun,
       form: `${haber[i]} ${participle}`,
+    }));
+  }
+
+  if (tense in estarForms) {
+    const gerund = getGerund(infinitive, verb.type);
+    const estar = estarForms[tense as ProgressiveTense];
+    return pronouns.map((pronoun, i) => ({
+      pronoun,
+      form: `${estar[i]} ${gerund}`,
     }));
   }
 

@@ -38,6 +38,10 @@ const tenseGroups = [
     tenses: ['present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect'] as Tense[],
   },
   {
+    label: 'Progressive',
+    tenses: ['present_progressive', 'past_progressive'] as Tense[],
+  },
+  {
     label: 'Other',
     tenses: ['gerund_participle'] as Tense[],
   },
