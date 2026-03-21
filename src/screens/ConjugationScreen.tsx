@@ -98,7 +98,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
         <View
           style={[
             styles.tag,
-            { backgroundColor: verb.regular ? colors.regularTag : colors.irregularTag },
+            {
+              backgroundColor: verb.regular ? colors.regularTag : colors.irregularTag,
+              borderColor: verb.regular ? colors.regularTagText + '40' : colors.irregularTagText + '40',
+            },
           ]}
         >
           <Text
@@ -240,13 +243,26 @@ const styles = StyleSheet.create({
   header: { padding: spacing.lg, alignItems: 'center' },
   infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
-  tag: { marginTop: spacing.sm, paddingHorizontal: 14, paddingVertical: 5, borderRadius: radius.full },
-  tagText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.medium },
+  tag: {
+    marginTop: spacing.sm,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+    borderWidth: 1.5,
+  },
+  tagText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold },
   exampleBox: {
     marginTop: spacing.md,
     padding: spacing.md,
     borderRadius: radius.md,
     width: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
   },
   exampleLabel: {
     fontSize: fonts.sizes.xs,
