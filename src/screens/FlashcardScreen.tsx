@@ -10,7 +10,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
-import { conjugate, tenseNames, Tense, VerbData } from '../utils/conjugate';
+import { conjugate, tenseFullNames, Tense, VerbData } from '../utils/conjugate';
 import { speak } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 
@@ -103,7 +103,7 @@ export default function FlashcardScreen() {
         {/* Front */}
         <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: frontOpacity }]}>
           <Text style={[styles.tenseLabel, { color: colors.textMuted }]}>
-            {tenseNames[card.tense]}
+            {tenseFullNames[card.tense]}
           </Text>
           <Text style={[styles.verbText, { color: colors.primary }]}>
             {card.verb}
@@ -122,7 +122,7 @@ export default function FlashcardScreen() {
         {/* Back */}
         <Animated.View style={[styles.card, styles.cardBack, { backgroundColor: colors.primary + '10', opacity: backOpacity }]}>
           <Text style={[styles.tenseLabel, { color: colors.textMuted }]}>
-            {tenseNames[card.tense]}
+            {tenseFullNames[card.tense]}
           </Text>
           <Text style={[styles.answerText, { color: colors.primary }]}>
             {card.answer}

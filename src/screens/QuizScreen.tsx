@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as StoreReview from 'expo-store-review';
 import { speak } from '../utils/speech';
 import verbs from '../data/verbs.json';
-import { conjugate, tenseNames, Tense, VerbData } from '../utils/conjugate';
+import { conjugate, tenseNames, tenseFullNames, Tense, VerbData } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
@@ -276,7 +276,7 @@ export default function QuizScreen() {
       {/* Question */}
       <View style={styles.questionContainer}>
         <Text style={[styles.questionLabel, { color: colors.textMuted }]}>
-          {tenseNames[question.tense]}
+          {tenseFullNames[question.tense]}
         </Text>
         <Text style={[styles.questionVerb, { color: colors.primary }]}>
           {question.verb}

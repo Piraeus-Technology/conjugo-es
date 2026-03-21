@@ -220,6 +220,25 @@ export const tenseNames: Record<Tense, string> = {
   gerund_participle: 'Gerund & Participle',
 };
 
+export const tenseFullNames: Record<Tense, string> = {
+  present: 'Present',
+  preterite: 'Preterite',
+  imperfect: 'Imperfect',
+  future: 'Future',
+  conditional: 'Conditional',
+  subjunctive_present: 'Subjunctive Present',
+  subjunctive_imperfect: 'Subjunctive Imperfect',
+  imperative_affirmative: 'Imperative Affirmative',
+  imperative_negative: 'Imperative Negative',
+  present_perfect: 'Present Perfect',
+  past_perfect: 'Past Perfect',
+  future_perfect: 'Future Perfect',
+  conditional_perfect: 'Conditional Perfect',
+  present_progressive: 'Present Progressive',
+  past_progressive: 'Past Progressive',
+  gerund_participle: 'Gerund & Participle',
+};
+
 export const imperativeTenses: Tense[] = [
   'imperative_affirmative',
   'imperative_negative',
