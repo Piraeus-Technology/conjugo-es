@@ -74,9 +74,7 @@ export default function FlashcardScreen() {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
-      }).start(() => {
-        speak(card.answer);
-      });
+      }).start();
     }
   };
 
