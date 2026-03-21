@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -105,8 +106,7 @@ export default function QuizScreen() {
   const colors = useColors();
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
-  const [activeTenses, setActiveTenses] = useState<Tense[]>(['present', 'preterite']);
-  const [showFilter, setShowFilter] = useState(false);
+  const [activeTenses, setActiveTenses] = useState<Tense[]>(quizzableTenses.map(t => t.key));
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [sessionScore, setSessionScore] = useState(0);
@@ -119,23 +119,35 @@ export default function QuizScreen() {
   }, []);
 
   useEffect(() => {
-    if (weightsLoaded && activeTenses.length > 0 && !question) {
+    if (weightsLoaded && activeTenses.length > 0) {
       setQuestion(generateQuestion(activeTenses, getWeight));
+      setSelectedAnswer(null);
     }
   }, [weightsLoaded, activeTenses]);
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
 
+  const allSelected = activeTenses.length === quizzableTenses.length;
+
   const toggleTense = (tense: Tense) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setActiveTenses(prev => {
       if (prev.includes(tense)) {
-        if (prev.length <= 1) return prev; // Must have at least one
+        if (prev.length <= 1) return prev;
         return prev.filter(t => t !== tense);
       }
       return [...prev, tense];
     });
+  };
+
+  const toggleAll = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (allSelected) {
+      setActiveTenses(['present']);
+    } else {
+      setActiveTenses(quizzableTenses.map(t => t.key));
+    }
   };
 
   const handleAnswer = (answer: string) => {
@@ -188,52 +200,37 @@ export default function QuizScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
-      {/* Tense filter toggle */}
-      <TouchableOpacity
-        style={[styles.filterToggle, { backgroundColor: colors.card }]}
-        onPress={() => setShowFilter(!showFilter)}
-        activeOpacity={0.7}
-      >
-        <Text style={[styles.filterToggleText, { color: colors.textSecondary }]}>
-          {activeTenses.length === quizzableTenses.length
-            ? 'All tenses'
-            : `${activeTenses.length} tense${activeTenses.length > 1 ? 's' : ''} selected`}
-        </Text>
-        <Ionicons
-          name={showFilter ? 'chevron-up' : 'options-outline'}
-          size={16}
-          color={colors.textMuted}
-        />
-      </TouchableOpacity>
-
-      {/* Tense filter pills */}
-      {showFilter && (
-        <View style={styles.filterContainer}>
-          {quizzableTenses.map(({ key, label }) => {
-            const active = activeTenses.includes(key);
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[
-                  styles.filterPill,
-                  {
-                    backgroundColor: active ? colors.primary : colors.card,
-                    borderColor: active ? colors.primary : colors.border,
-                  },
-                ]}
-                onPress={() => toggleTense(key)}
-              >
-                <Text style={[
-                  styles.filterPillText,
-                  { color: active ? '#fff' : colors.textSecondary },
-                ]}>
-                  {label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      )}
+      {/* Tense chip bar */}
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={[{ key: 'all' as Tense, label: 'All' }, ...quizzableTenses]}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={styles.chipBar}
+        renderItem={({ item }) => {
+          const isAll = item.key === 'all';
+          const active = isAll ? allSelected : activeTenses.includes(item.key);
+          return (
+            <TouchableOpacity
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: active ? colors.primary : colors.card,
+                  borderColor: active ? colors.primary : colors.border,
+                },
+              ]}
+              onPress={() => isAll ? toggleAll() : toggleTense(item.key)}
+            >
+              <Text style={[
+                styles.chipText,
+                { color: active ? '#fff' : colors.textSecondary },
+              ]}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
 
       {/* Session score bar */}
       <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
@@ -319,33 +316,19 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg, paddingBottom: 40 },
-  filterToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-    borderRadius: radius.md,
-    marginBottom: spacing.sm,
-  },
-  filterToggleText: {
-    fontSize: fonts.sizes.sm,
-    fontWeight: fonts.weights.medium,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  chipBar: {
     gap: spacing.xs,
-    marginBottom: spacing.md,
+    paddingBottom: spacing.md,
   },
-  filterPill: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     borderRadius: radius.full,
     borderWidth: 1,
   },
-  filterPillText: {
+  chipText: {
     fontSize: fonts.sizes.xs,
-    fontWeight: fonts.weights.medium,
+    fontWeight: fonts.weights.semibold,
   },
   scoreBar: {
     flexDirection: 'row',
