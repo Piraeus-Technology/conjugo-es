@@ -18,8 +18,6 @@ import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { MAX_SEARCH_RESULTS } from '../utils/constants';
-import type { SearchScreenProps } from '../types/navigation';
-
 const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
   ([infinitive, data]) => ({
     infinitive,
@@ -93,7 +91,7 @@ interface SearchResult {
   matchForm?: string;
 }
 
-export default function HomeScreen({ navigation }: SearchScreenProps) {
+export default function HomeScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
   const { history, loaded, loadHistory, addToHistory, removeFromHistory, clearHistory } =
     useHistoryStore();

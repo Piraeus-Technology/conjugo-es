@@ -26,12 +26,12 @@ export default function FeedbackScreen() {
 
     const subject = encodeURIComponent('ConjuGo ES Feedback');
     const body = encodeURIComponent(message);
-    const url = `mailto:lkh9596@gmail.com?subject=${subject}&body=${body}`;
+    const url = `mailto:contact@piraeus.app?subject=${subject}&body=${body}`;
 
     Linking.openURL(url).catch(() => {
       Alert.alert(
         'No Email App',
-        'Could not open your email app. You can send feedback directly to lkh9596@gmail.com'
+        'Could not open your email app. You can send feedback directly to contact@piraeus.app'
       );
     });
   };

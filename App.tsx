@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,11 +12,46 @@ import FeedbackScreen from './src/screens/FeedbackScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
-import type { RootStackParamList } from './src/types/navigation';
 
 SplashScreen.preventAutoHideAsync();
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+// Search tab has its own stack (Search → Conjugation)
+const SearchStack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function SearchStackScreen() {
+  const colors = useColors();
+
+  return (
+    <SearchStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.bg },
+        headerTintColor: colors.primary,
+        headerTitleStyle: {
+          fontWeight: fonts.weights.semibold,
+          color: colors.textPrimary,
+        },
+        headerShadowVisible: false,
+        contentStyle: { backgroundColor: colors.bg },
+      }}
+    >
+      <SearchStack.Screen
+        name="SearchHome"
+        component={HomeScreen}
+        options={{
+          title: 'ConjuGo ES',
+        }}
+      />
+      <SearchStack.Screen
+        name="Conjugation"
+        component={ConjugationScreen}
+        options={({ route }: any) => ({
+          title: route.params.infinitive,
+        })}
+      />
+    </SearchStack.Navigator>
+  );
+}
 
 export default function App() {
   const { isDark, loaded, loadTheme, toggleTheme } = useThemeStore();
@@ -51,8 +87,18 @@ export default function App() {
         backgroundColor={colors.bg}
       />
       <NavigationContainer theme={navTheme}>
-        <Stack.Navigator
+        <Tab.Navigator
           screenOptions={{
+            tabBarActiveTintColor: colors.primary,
+            tabBarInactiveTintColor: colors.textMuted,
+            tabBarStyle: {
+              backgroundColor: colors.bg,
+              borderTopColor: colors.divider,
+            },
+            tabBarLabelStyle: {
+              fontSize: 11,
+              fontWeight: fonts.weights.medium,
+            },
             headerStyle: { backgroundColor: colors.bg },
             headerTintColor: colors.primary,
             headerTitleStyle: {
@@ -60,63 +106,51 @@ export default function App() {
               color: colors.textPrimary,
             },
             headerShadowVisible: false,
-            contentStyle: { backgroundColor: colors.bg },
           }}
         >
-          <Stack.Screen
+          <Tab.Screen
             name="Search"
-            component={HomeScreen}
-            options={({ navigation }) => ({
-              title: 'ConjuGo ES',
-              headerRight: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => navigation.navigate('Quiz')}>
-                    <Ionicons
-                      name="school-outline"
-                      size={22}
-                      color={colors.textPrimary}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('Feedback')} style={{ marginLeft: 16 }}>
-                    <Ionicons
-                      name="mail-outline"
-                      size={22}
-                      color={colors.textPrimary}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={toggleTheme} style={{ marginLeft: 16 }}>
-                    <Ionicons
-                      name={isDark ? 'sunny' : 'moon'}
-                      size={22}
-                      color={colors.textPrimary}
-                    />
-                  </TouchableOpacity>
-                </View>
+            component={SearchStackScreen}
+            options={{
+              headerShown: false,
+              tabBarLabel: 'Search',
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="search" size={size} color={color} />
               ),
-            })}
+            }}
           />
-          <Stack.Screen
-            name="Conjugation"
-            component={ConjugationScreen}
-            options={({ route }) => ({
-              title: route.params.infinitive,
-            })}
-          />
-          <Stack.Screen
+          <Tab.Screen
             name="Quiz"
             component={QuizScreen}
             options={{
               title: 'Quiz',
+              tabBarLabel: 'Quiz',
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="school" size={size} color={color} />
+              ),
             }}
           />
-          <Stack.Screen
-            name="Feedback"
+          <Tab.Screen
+            name="More"
             component={FeedbackScreen}
             options={{
-              title: 'Feedback',
+              title: 'More',
+              tabBarLabel: 'More',
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="ellipsis-horizontal" size={size} color={color} />
+              ),
+              headerRight: () => (
+                <TouchableOpacity onPress={toggleTheme} style={{ marginRight: 16 }}>
+                  <Ionicons
+                    name={isDark ? 'sunny' : 'moon'}
+                    size={22}
+                    color={colors.textPrimary}
+                  />
+                </TouchableOpacity>
+              ),
             }}
           />
-        </Stack.Navigator>
+        </Tab.Navigator>
       </NavigationContainer>
     </View>
   );
