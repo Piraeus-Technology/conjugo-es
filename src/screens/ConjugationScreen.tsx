@@ -89,23 +89,15 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           </TouchableOpacity>
         </View>
         <Text style={[styles.translation, { color: colors.textSecondary }]}>{verb.translation}</Text>
-        <View
-          style={[
-            styles.tag,
-            {
-              backgroundColor: verb.regular ? colors.regularTag : colors.irregularTag,
-              borderColor: verb.regular ? colors.regularTagText + '40' : colors.irregularTagText + '40',
-            },
-          ]}
-        >
-          <Text
-            style={[
-              styles.tagText,
-              { color: verb.regular ? colors.regularTagText : colors.irregularTagText },
-            ]}
-          >
-            {verb.regular ? 'Regular' : 'Irregular'} -{verb.type}
-          </Text>
+        <View style={styles.metaRow}>
+          <View style={[styles.tag, { backgroundColor: verb.regular ? colors.regularTag : colors.irregularTag }]}>
+            <Text style={[styles.tagText, { color: verb.regular ? colors.regularTagText : colors.irregularTagText }]}>
+              {verb.regular ? 'Regular' : 'Irregular'}
+            </Text>
+          </View>
+          <View style={[styles.tag, { backgroundColor: colors.pillBg }]}>
+            <Text style={[styles.tagText, { color: colors.textSecondary }]}>-{verb.type}</Text>
+          </View>
         </View>
 
       </View>
@@ -279,14 +271,13 @@ const styles = StyleSheet.create({
   infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
   speakButton: { padding: 4 },
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
+  metaRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.md, gap: spacing.sm },
   tag: {
-    marginTop: spacing.sm,
-    paddingHorizontal: 14,
-    paddingVertical: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: radius.full,
-    borderWidth: 1.5,
   },
-  tagText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold },
+  tagText: { fontSize: fonts.sizes.xs, fontWeight: fonts.weights.medium },
   exampleBox: {
     marginTop: spacing.md,
     marginHorizontal: spacing.md,
