@@ -41,7 +41,7 @@ function SearchStackScreen() {
         name="SearchHome"
         component={HomeScreen}
         options={{
-          title: 'ConjuGo ES',
+          title: 'Search',
         }}
       />
       <SearchStack.Screen
