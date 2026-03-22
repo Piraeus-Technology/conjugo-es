@@ -236,7 +236,11 @@ export default function QuizScreen() {
     return colors.textMuted;
   };
 
-  if (!question) return null;
+  if (!question) return (
+    <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' }]}>
+      <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>No matching verbs</Text>
+    </View>
+  );
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
