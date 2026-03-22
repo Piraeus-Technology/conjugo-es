@@ -333,6 +333,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
+        style={{ flexGrow: 0 }}
         data={[{ key: 'all', label: 'All' }, ...verbLevels.map((l) => ({ key: l, label: levelLabels[l] }))]}
         keyExtractor={(item) => item.key}
         contentContainerStyle={styles.levelChipBar}
