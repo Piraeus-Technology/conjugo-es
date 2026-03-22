@@ -10,12 +10,17 @@ import {
   Platform,
   Linking,
   ScrollView,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
+import { useThemeStore } from '../store/themeStore';
+
+const APP_VERSION = '1.0.1';
 
 export default function FeedbackScreen() {
   const colors = useColors();
+  const { isDark, toggleTheme } = useThemeStore();
   const [message, setMessage] = useState('');
 
   const handleSendEmail = () => {
@@ -37,8 +42,6 @@ export default function FeedbackScreen() {
   };
 
   const handleRateApp = () => {
-    // App Store IDs ready for when deployed:
-    // iOS: 6759270074, Android: com.lkh9596.conjugo
     const url = Platform.select({
       ios: 'https://apps.apple.com/app/id6759270074?action=write-review',
       android: 'market://details?id=com.lkh9596.conjugo',
@@ -55,18 +58,27 @@ export default function FeedbackScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.headerEmoji}>💬</Text>
-          <Text style={[styles.title, { color: colors.textPrimary }]}>We'd Love Your Feedback</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Found a bug? Have a suggestion? Missing a verb? Let us know!
-          </Text>
+        {/* Settings section */}
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Settings</Text>
+        <View style={[styles.settingsCard, { backgroundColor: colors.card }]}>
+          <View style={[styles.settingRow, { borderBottomColor: colors.divider }]}>
+            <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color={colors.textSecondary} />
+            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Dark Mode</Text>
+            <Switch
+              value={isDark}
+              onValueChange={toggleTheme}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#fff"
+            />
+          </View>
         </View>
 
+        {/* Feedback section */}
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Feedback</Text>
         <View style={[styles.inputCard, { backgroundColor: colors.card }]}>
           <TextInput
             style={[styles.textInput, { color: colors.textPrimary, borderColor: colors.divider }]}
-            placeholder="Write your feedback here..."
+            placeholder="Found a bug? Have a suggestion? Let us know!"
             placeholderTextColor={colors.textMuted}
             value={message}
             onChangeText={setMessage}
@@ -98,6 +110,7 @@ export default function FeedbackScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Rate */}
         <TouchableOpacity
           style={[styles.rateCard, { backgroundColor: colors.card }]}
           onPress={handleRateApp}
@@ -110,6 +123,22 @@ export default function FeedbackScreen() {
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
         </TouchableOpacity>
+
+        {/* Privacy Policy */}
+        <TouchableOpacity
+          style={[styles.linkRow, { backgroundColor: colors.card }]}
+          onPress={() => Linking.openURL('https://piraeus-technology.github.io/conjugo-es/')}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="shield-checkmark-outline" size={20} color={colors.textSecondary} />
+          <Text style={[styles.linkText, { color: colors.textPrimary }]}>Privacy Policy</Text>
+          <Ionicons name="open-outline" size={16} color={colors.textMuted} />
+        </TouchableOpacity>
+
+        {/* Version */}
+        <Text style={[styles.version, { color: colors.textMuted }]}>
+          ConjuGo ES v{APP_VERSION}
+        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -118,15 +147,33 @@ export default function FeedbackScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg },
-  header: { alignItems: 'center', paddingTop: spacing.md, paddingBottom: spacing.lg },
-  headerEmoji: { fontSize: 48 },
-  title: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.bold, marginTop: spacing.md },
-  subtitle: {
+  sectionTitle: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+  },
+  settingsCard: {
+    borderRadius: radius.md,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  settingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: spacing.md,
+  },
+  settingLabel: {
+    flex: 1,
     fontSize: fonts.sizes.md,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-    lineHeight: 22,
-    paddingHorizontal: spacing.md,
+    fontWeight: fonts.weights.medium,
   },
   inputCard: {
     borderRadius: radius.md,
@@ -139,7 +186,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: fonts.sizes.md,
-    minHeight: 140,
+    minHeight: 120,
     borderWidth: 1,
     borderRadius: radius.sm,
     padding: spacing.md,
@@ -171,4 +218,28 @@ const styles = StyleSheet.create({
   rateInfo: { flex: 1 },
   rateTitle: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold },
   rateSubtitle: { fontSize: fonts.sizes.sm, marginTop: 2 },
+  linkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: radius.md,
+    marginTop: spacing.md,
+    gap: spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  linkText: {
+    flex: 1,
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.medium,
+  },
+  version: {
+    fontSize: fonts.sizes.xs,
+    textAlign: 'center',
+    marginTop: spacing.xl,
+    marginBottom: spacing.md,
+  },
 });
