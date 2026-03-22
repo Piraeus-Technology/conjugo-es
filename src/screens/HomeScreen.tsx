@@ -18,7 +18,6 @@ import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { MAX_SEARCH_RESULTS } from '../utils/constants';
-import { speak } from '../utils/speech';
 const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
   ([infinitive, data]) => ({
     infinitive,
@@ -259,16 +258,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <Text style={[styles.matchDetail, { color: colors.primary }]}>{item.matchDetail}</Text>
           )}
         </View>
-        <TouchableOpacity
-          onPress={(e) => {
-            e.stopPropagation?.();
-            speak(item.infinitive);
-          }}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          style={styles.speakButton}
-        >
-          <Ionicons name="volume-medium-outline" size={18} color={colors.textMuted} />
-        </TouchableOpacity>
         {item.matchType === 'favorite' ? (
           <Ionicons name="heart" size={16} color={colors.primary} style={{ marginLeft: 8 }} />
         ) : (
@@ -408,7 +397,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   verbInfo: { flex: 1 },
-  speakButton: { padding: 4 },
   verbName: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold },
   verbTranslation: { fontSize: fonts.sizes.sm, marginTop: 2 },
   matchDetail: { fontSize: fonts.sizes.xs, marginTop: 4, fontStyle: 'italic' },

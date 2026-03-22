@@ -94,7 +94,16 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
       <View style={styles.header}>
-        <Text style={[styles.infinitive, { color: colors.textPrimary }]}>{infinitive}</Text>
+        <View style={styles.infinitiveRow}>
+          <Text style={[styles.infinitive, { color: colors.textPrimary }]}>{infinitive}</Text>
+          <TouchableOpacity
+            onPress={() => speak(infinitive)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.speakButton}
+          >
+            <Ionicons name="volume-medium-outline" size={22} color={colors.textMuted} />
+          </TouchableOpacity>
+        </View>
         <Text style={[styles.translation, { color: colors.textSecondary }]}>{verb.translation}</Text>
         <View
           style={[
@@ -254,7 +263,9 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { padding: spacing.lg, alignItems: 'center' },
+  infinitiveRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
+  speakButton: { padding: 4 },
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
   tag: {
     marginTop: spacing.sm,
