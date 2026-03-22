@@ -29,12 +29,12 @@ const lightColors = {
   irregularTag: '#FFF3E0',
   irregularTagText: '#E65100',
 
-  levelA1Bg: '#E8F5E9', levelA1Text: '#2E7D32',
+  levelA1Bg: '#E0F7FA', levelA1Text: '#00838F',
   levelA2Bg: '#E0F2F1', levelA2Text: '#00695C',
   levelB1Bg: '#E3F2FD', levelB1Text: '#1565C0',
   levelB2Bg: '#EDE7F6', levelB2Text: '#4527A0',
   levelC1Bg: '#FCE4EC', levelC1Text: '#AD1457',
-  levelC2Bg: '#FFF3E0', levelC2Text: '#E65100',
+  levelC2Bg: '#F3E5F5', levelC2Text: '#6A1B9A',
 };
 
 const darkColors = {
@@ -66,12 +66,12 @@ const darkColors = {
   irregularTag: '#3E2200',
   irregularTagText: '#FFB74D',
 
-  levelA1Bg: '#1B3A1B', levelA1Text: '#66BB6A',
+  levelA1Bg: '#0A2E30', levelA1Text: '#4DD0E1',
   levelA2Bg: '#0D2E2B', levelA2Text: '#4DB6AC',
   levelB1Bg: '#0D2137', levelB1Text: '#64B5F6',
   levelB2Bg: '#1A1035', levelB2Text: '#B39DDB',
   levelC1Bg: '#2D0E1E', levelC1Text: '#F48FB1',
-  levelC2Bg: '#3E2200', levelC2Text: '#FFB74D',
+  levelC2Bg: '#1F0D2B', levelC2Text: '#CE93D8',
 };
 
 export type ThemeColors = typeof lightColors;
