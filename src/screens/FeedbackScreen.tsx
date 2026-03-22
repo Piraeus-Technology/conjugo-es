@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
@@ -22,22 +21,15 @@ const APP_VERSION = '1.0.2';
 export default function FeedbackScreen() {
   const colors = useColors();
   const { isDark, toggleTheme } = useThemeStore();
-  const [message, setMessage] = useState('');
 
   const handleSendEmail = () => {
-    if (!message.trim()) {
-      Alert.alert('Empty Message', 'Please write your feedback before sending.');
-      return;
-    }
-
     const subject = encodeURIComponent('ConjuGo ES Feedback');
-    const body = encodeURIComponent(message);
-    const url = `mailto:contact@piraeus.app?subject=${subject}&body=${body}`;
+    const url = `mailto:contact@piraeus.app?subject=${subject}`;
 
     Linking.openURL(url).catch(() => {
       Alert.alert(
         'No Email App',
-        'Could not open your email app. You can send feedback directly to contact@piraeus.app'
+        'You can send feedback directly to contact@piraeus.app'
       );
     });
   };
@@ -74,42 +66,20 @@ export default function FeedbackScreen() {
           </View>
         </View>
 
-        {/* Feedback section */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Feedback</Text>
-        <View style={[styles.inputCard, { backgroundColor: colors.card }]}>
-          <TextInput
-            style={[styles.textInput, { color: colors.textPrimary, borderColor: colors.divider }]}
-            placeholder="Found a bug? Have a suggestion? Let us know!"
-            placeholderTextColor={colors.textMuted}
-            value={message}
-            onChangeText={setMessage}
-            multiline
-            numberOfLines={6}
-            textAlignVertical="top"
-          />
-          <TouchableOpacity
-            style={[
-              styles.sendButton,
-              { backgroundColor: message.trim() ? '#43A047' : colors.pillBg },
-            ]}
-            onPress={handleSendEmail}
-            disabled={!message.trim()}
-          >
-            <Ionicons
-              name="send"
-              size={18}
-              color={message.trim() ? '#FFFFFF' : colors.textMuted}
-            />
-            <Text
-              style={[
-                styles.sendText,
-                { color: message.trim() ? '#FFFFFF' : colors.textMuted },
-              ]}
-            >
-              Send Feedback
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {/* Feedback & Rate */}
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Support</Text>
+        <TouchableOpacity
+          style={[styles.rateCard, { backgroundColor: colors.card }]}
+          onPress={handleSendEmail}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.rateEmoji}>💬</Text>
+          <View style={styles.rateInfo}>
+            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Send Feedback</Text>
+            <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Bug reports, suggestions, missing verbs</Text>
+          </View>
+          <Ionicons name="mail-outline" size={20} color={colors.textMuted} />
+        </TouchableOpacity>
 
         {/* Rate */}
         <TouchableOpacity
@@ -194,33 +164,6 @@ const styles = StyleSheet.create({
     fontSize: fonts.sizes.md,
     fontWeight: fonts.weights.medium,
   },
-  inputCard: {
-    borderRadius: radius.md,
-    padding: spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  textInput: {
-    fontSize: fonts.sizes.md,
-    minHeight: 120,
-    borderWidth: 1,
-    borderRadius: radius.sm,
-    padding: spacing.md,
-    lineHeight: 22,
-  },
-  sendButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: radius.md,
-    marginTop: spacing.md,
-    gap: 8,
-  },
-  sendText: { fontSize: fonts.sizes.md, fontWeight: fonts.weights.semibold },
   rateCard: {
     flexDirection: 'row',
     alignItems: 'center',
