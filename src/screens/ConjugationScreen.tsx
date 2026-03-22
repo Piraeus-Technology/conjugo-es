@@ -99,8 +99,8 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
             <Text style={[styles.tagText, { color: colors.textSecondary }]}>-{verb.type}</Text>
           </View>
           {verb.level && (
-            <View style={[styles.tag, { backgroundColor: colors.pillBg }]}>
-              <Text style={[styles.tagText, { color: colors.textSecondary }]}>{verb.level}</Text>
+            <View style={[styles.tag, { backgroundColor: (colors as any)[`level${verb.level}Bg`] || colors.pillBg }]}>
+              <Text style={[styles.tagText, { color: (colors as any)[`level${verb.level}Text`] || colors.textSecondary }]}>{verb.level}</Text>
             </View>
           )}
         </View>
