@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Share,
   Linking,
   ScrollView,
   Switch,
@@ -16,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 
-const APP_VERSION = '1.0.1';
+const APP_VERSION = '1.0.2';
 
 export default function FeedbackScreen() {
   const colors = useColors();
@@ -122,6 +123,24 @@ export default function FeedbackScreen() {
             <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Rate us on the App Store</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+        </TouchableOpacity>
+
+        {/* Share */}
+        <TouchableOpacity
+          style={[styles.rateCard, { backgroundColor: colors.card }]}
+          onPress={() => {
+            Share.share({
+              message: 'Check out ConjuGo ES — a Spanish verb conjugation app! https://apps.apple.com/app/id6759270074',
+            });
+          }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.rateEmoji}>🔗</Text>
+          <View style={styles.rateInfo}>
+            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Share ConjuGo ES</Text>
+            <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Tell a friend about the app</Text>
+          </View>
+          <Ionicons name="share-outline" size={20} color={colors.textMuted} />
         </TouchableOpacity>
 
         {/* Privacy Policy */}
