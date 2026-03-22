@@ -108,35 +108,6 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           </Text>
         </View>
 
-        {/* Example sentences */}
-        {(() => {
-          if (verb.examples && verb.examples.length > 0) {
-            return (
-              <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
-                <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
-                {verb.examples.map((ex, i) => (
-                  <Text key={i} style={[styles.exampleText, { color: colors.textSecondary }]}>
-                    {ex}
-                  </Text>
-                ))}
-              </View>
-            );
-          }
-          const present = conjugate(infinitive, verb, 'present');
-          const yoForm = present[0].form;
-          const elForm = present[2].form;
-          return (
-            <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
-              <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
-              <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
-                Yo <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{yoForm}</Text> todos los días.
-              </Text>
-              <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
-                Él <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{elForm}</Text> mucho.
-              </Text>
-            </View>
-          );
-        })()}
       </View>
 
       <View style={styles.tenseSection}>
@@ -254,6 +225,38 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           </View>
         ))}
       </View>
+
+      {/* Example sentences */}
+      {(() => {
+        if (verb.examples && verb.examples.length > 0) {
+          return (
+            <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
+              <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
+              {verb.examples.map((ex, i) => (
+                <Text key={i} style={[styles.exampleText, { color: colors.textSecondary }]}>
+                  {ex}
+                </Text>
+              ))}
+            </View>
+          );
+        }
+        const present = conjugate(infinitive, verb, 'present');
+        const yoForm = present[0].form;
+        const elForm = present[2].form;
+        return (
+          <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
+            <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
+            <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
+              Yo <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{yoForm}</Text> todos los días.
+            </Text>
+            <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
+              Él <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{elForm}</Text> mucho.
+            </Text>
+          </View>
+        );
+      })()}
+
+      <View style={{ height: spacing.xl }} />
       </View>
     </ScrollView>
   );
@@ -286,9 +289,9 @@ const styles = StyleSheet.create({
   tagText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold },
   exampleBox: {
     marginTop: spacing.md,
+    marginHorizontal: spacing.md,
     padding: spacing.md,
     borderRadius: radius.md,
-    width: '100%',
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.06)',
     shadowColor: '#000',
