@@ -181,8 +181,6 @@ export default function QuizScreen() {
       recordAnswer(false, 0);
     }
     recordResult(question.verb, correct);
-    // Speak the correct answer
-    setTimeout(() => speak(question.correctAnswer), 300);
   };
 
   const handleNext = () => {
