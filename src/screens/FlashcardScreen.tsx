@@ -16,8 +16,7 @@ import { speak } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
-const verbLevels: VerbLevel[] = ['beginner', 'intermediate', 'advanced'];
-const levelLabels: Record<VerbLevel, string> = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
+const verbLevels: VerbLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
 const quizzableTenses: Tense[] = [
   'present', 'preterite', 'imperfect', 'future', 'conditional',
@@ -78,7 +77,7 @@ export default function FlashcardScreen() {
 
   const toggleAllLevels = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveLevels(allLevelsSelected ? ['beginner'] : [...verbLevels]);
+    setActiveLevels(allLevelsSelected ? ['A1'] : [...verbLevels]);
   };
 
   const flip = () => {
@@ -121,7 +120,7 @@ export default function FlashcardScreen() {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={[{ key: 'all', label: 'All' }, ...verbLevels.map(l => ({ key: l, label: levelLabels[l] }))]}
+          data={[{ key: 'all', label: 'All' }, ...verbLevels.map(l => ({ key: l, label: l }))]}
           keyExtractor={(item) => 'level-' + item.key}
           contentContainerStyle={styles.chipBar}
           renderItem={({ item }) => {

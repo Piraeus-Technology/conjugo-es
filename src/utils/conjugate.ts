@@ -225,7 +225,7 @@ export const imperativeTenses: Tense[] = [
   'imperative_negative',
 ];
 
-export type VerbLevel = 'beginner' | 'intermediate' | 'advanced';
+export type VerbLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 export interface VerbData {
   type: 'ar' | 'er' | 'ir';
