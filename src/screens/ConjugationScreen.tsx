@@ -1,10 +1,9 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import * as Haptics from 'expo-haptics';
 import {
   View,
   Text,
   ScrollView,
-  Pressable,
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
@@ -62,33 +61,6 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const highlightRef = useRef<View>(null);
   const scrollContentRef = useRef<View>(null);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Pressable
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            toggleFavorite(infinitive);
-          }}
-          hitSlop={8}
-          style={({ pressed }) => ({
-            opacity: pressed ? 0.5 : 1,
-            width: 30,
-            height: 30,
-            justifyContent: 'center',
-            alignItems: 'center',
-          })}
-        >
-          <Ionicons
-            name={favorited ? 'heart' : 'heart-outline'}
-            size={22}
-            color={favorited ? colors.primary : colors.textMuted}
-          />
-        </Pressable>
-      ),
-    });
-  }, [navigation, favorited, colors]);
-
   const toggleTense = (tense: Tense) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setOpenTense(openTense === tense ? null : tense);
@@ -97,15 +69,23 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   return (
     <ScrollView ref={scrollRef} style={[styles.container, { backgroundColor: colors.bg }]}>
       <View ref={scrollContentRef}>
-      <View style={styles.header}>
-        <View style={styles.infinitiveRow}>
-          <Text style={[styles.infinitive, { color: colors.textPrimary }]}>{infinitive}</Text>
-          <TouchableOpacity
-            onPress={() => speak(infinitive)}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={styles.speakButton}
-          >
-            <Ionicons name="volume-medium-outline" size={22} color={colors.textMuted} />
+      <View style={[styles.header, { backgroundColor: colors.card }]}>
+        <View style={styles.headerTop}>
+          <View style={styles.infinitiveRow}>
+            <Text style={[styles.infinitive, { color: colors.primary }]}>{infinitive}</Text>
+            <TouchableOpacity
+              onPress={() => speak(infinitive)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="volume-medium-outline" size={22} color={colors.textMuted} />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={() => toggleFavorite(infinitive)}>
+            <Ionicons
+              name={favorited ? 'heart' : 'heart-outline'}
+              size={28}
+              color={favorited ? colors.primary : colors.textMuted}
+            />
           </TouchableOpacity>
         </View>
         <Text style={[styles.translation, { color: colors.textSecondary }]}>{verb.translation}</Text>
@@ -281,7 +261,17 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { padding: spacing.lg, alignItems: 'center' },
+  header: {
+    padding: spacing.lg,
+    margin: spacing.md,
+    borderRadius: radius.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   infinitiveRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
   speakButton: { padding: 4 },
