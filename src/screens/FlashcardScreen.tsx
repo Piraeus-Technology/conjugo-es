@@ -125,8 +125,11 @@ export default function FlashcardScreen() {
           <Text style={[styles.answerText, { color: colors.primary }]}>
             {card.answer}
           </Text>
-          <Text style={[styles.contextText, { color: colors.textSecondary }]}>
-            {pronounLabels[card.personIndex]} · {card.verb} · {card.translation}
+          <Text style={[styles.answerTranslation, { color: colors.textSecondary }]}>
+            {card.translation}
+          </Text>
+          <Text style={[styles.contextText, { color: colors.textMuted }]}>
+            {pronounLabels[card.personIndex]} · {card.verb}
           </Text>
           <TouchableOpacity
             style={[styles.speakButton, { backgroundColor: colors.primary }]}
@@ -208,6 +211,11 @@ const styles = StyleSheet.create({
   answerText: {
     fontSize: 42,
     fontWeight: fonts.weights.bold,
+    marginBottom: spacing.xs,
+  },
+  answerTranslation: {
+    fontSize: fonts.sizes.md,
+    fontStyle: 'italic',
     marginBottom: spacing.md,
   },
   contextText: {
