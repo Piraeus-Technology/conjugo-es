@@ -98,6 +98,11 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           <View style={[styles.tag, { backgroundColor: colors.pillBg }]}>
             <Text style={[styles.tagText, { color: colors.textSecondary }]}>-{verb.type}</Text>
           </View>
+          {verb.level && (
+            <View style={[styles.tag, { backgroundColor: colors.pillBg }]}>
+              <Text style={[styles.tagText, { color: colors.textSecondary }]}>{verb.level}</Text>
+            </View>
+          )}
         </View>
 
       </View>
