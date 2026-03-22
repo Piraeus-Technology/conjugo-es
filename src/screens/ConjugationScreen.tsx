@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import * as Haptics from 'expo-haptics';
 import {
   View,
@@ -58,6 +58,9 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const favorited = isFavorite(infinitive);
   const colors = useColors();
+  const scrollRef = useRef<ScrollView>(null);
+  const highlightRef = useRef<View>(null);
+  const scrollContentRef = useRef<View>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,7 +95,8 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
+    <ScrollView ref={scrollRef} style={[styles.container, { backgroundColor: colors.bg }]}>
+      <View ref={scrollContentRef}>
       <View style={styles.header}>
         <View style={styles.infinitiveRow}>
           <Text style={[styles.infinitive, { color: colors.textPrimary }]}>{infinitive}</Text>
@@ -204,6 +208,20 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                     return (
                       <TouchableOpacity
                         key={i}
+                        ref={isHighlighted ? highlightRef as any : undefined}
+                        onLayout={isHighlighted ? () => {
+                          setTimeout(() => {
+                            if (highlightRef.current && scrollContentRef.current) {
+                              highlightRef.current.measureLayout(
+                                scrollContentRef.current as any,
+                                (_x, y) => {
+                                  scrollRef.current?.scrollTo({ y: Math.max(0, y - 150), animated: true });
+                                },
+                                () => {},
+                              );
+                            }
+                          }, 400);
+                        } : undefined}
                         style={[
                           styles.row,
                           { borderBottomColor: colors.divider },
@@ -255,6 +273,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
             })}
           </View>
         ))}
+      </View>
       </View>
     </ScrollView>
   );
