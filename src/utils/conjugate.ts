@@ -225,10 +225,13 @@ export const imperativeTenses: Tense[] = [
   'imperative_negative',
 ];
 
+export type VerbLevel = 'beginner' | 'intermediate' | 'advanced';
+
 export interface VerbData {
   type: 'ar' | 'er' | 'ir';
   regular: boolean;
   translation: string;
+  level?: VerbLevel;
   examples?: string[];
   pattern?: IrregularPattern;
   overrides?: Partial<Record<SimpleTense, string[]>>;

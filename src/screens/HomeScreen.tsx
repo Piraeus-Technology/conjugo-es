@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
 import {
   View,
   Text,
   TextInput,
   SectionList,
+  FlatList,
   TouchableOpacity,
   StyleSheet,
   Animated,
@@ -13,7 +14,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import Fuse from 'fuse.js';
 import verbs from '../data/verbs.json';
-import { VerbData, conjugate, allTenses, tenseNames, Tense } from '../utils/conjugate';
+import { VerbData, VerbLevel, conjugate, allTenses, tenseNames, Tense } from '../utils/conjugate';
 import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
@@ -95,12 +96,33 @@ interface SearchResult {
   matchForm?: string;
 }
 
+const verbLevels: VerbLevel[] = ['beginner', 'intermediate', 'advanced'];
+const levelLabels: Record<VerbLevel, string> = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
+
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
+  const [activeLevels, setActiveLevels] = useState<VerbLevel[]>([...verbLevels]);
+  const allLevelsSelected = activeLevels.length === verbLevels.length;
   const { history, loaded, loadHistory, addToHistory, removeFromHistory, clearHistory } =
     useHistoryStore();
   const { favorites, loadFavorites, toggleFavorite } = useFavoritesStore();
   const colors = useColors();
+
+  const toggleLevel = useCallback((level: VerbLevel) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActiveLevels((prev) => {
+      if (prev.includes(level)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((l) => l !== level);
+      }
+      return [...prev, level];
+    });
+  }, []);
+
+  const toggleAllLevels = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActiveLevels(allLevelsSelected ? ['beginner'] : [...verbLevels]);
+  }, [allLevelsSelected]);
 
   useEffect(() => {
     loadHistory();
@@ -176,6 +198,14 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return [...verbResults, ...conjGrouped].slice(0, MAX_SEARCH_RESULTS);
   }, [search]);
 
+  const filteredResults = useMemo(
+    () => results.filter((r) => {
+      const data = (verbs as Record<string, VerbData>)[r.infinitive];
+      return data && activeLevels.includes(data.level);
+    }),
+    [results, activeLevels],
+  );
+
   const handleVerbPress = (infinitive: string, tense?: string, form?: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     addToHistory(infinitive);
@@ -184,7 +214,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   const sections = useMemo(() => {
     if (search.trim()) {
-      return results.length > 0 ? [{ title: '', data: results }] : [];
+      return filteredResults.length > 0 ? [{ title: '', data: filteredResults }] : [];
     }
 
     const s: { title: string; data: SearchResult[]; clearable?: boolean }[] = [];
@@ -299,6 +329,34 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         )}
       </View>
 
+      {/* Level filter chips */}
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={[{ key: 'all', label: 'All' }, ...verbLevels.map((l) => ({ key: l, label: levelLabels[l] }))]}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={styles.levelChipBar}
+        renderItem={({ item }) => {
+          const isAll = item.key === 'all';
+          const active = isAll ? allLevelsSelected : activeLevels.includes(item.key as VerbLevel);
+          return (
+            <TouchableOpacity
+              style={[
+                styles.levelChip,
+                active
+                  ? { backgroundColor: colors.accent || colors.primary, borderColor: colors.accent || colors.primary }
+                  : { backgroundColor: 'transparent', borderColor: colors.border, borderStyle: 'dashed' as const },
+              ]}
+              onPress={() => (isAll ? toggleAllLevels() : toggleLevel(item.key as VerbLevel))}
+            >
+              <Text style={[styles.levelChipText, { color: active ? '#fff' : colors.textMuted }]}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+
       <SectionList
         sections={sections}
         keyExtractor={(item, index) => item.infinitive + item.matchType + index}
@@ -373,6 +431,21 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   searchIcon: { marginRight: spacing.sm },
+  levelChipBar: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.sm,
+    gap: spacing.xs,
+  },
+  levelChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+    borderWidth: 1,
+  },
+  levelChipText: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.medium,
+  },
   searchBar: { flex: 1, paddingVertical: 14, fontSize: fonts.sizes.md },
   sectionHeader: {
     flexDirection: 'row',

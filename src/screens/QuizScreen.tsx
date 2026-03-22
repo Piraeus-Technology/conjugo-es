@@ -12,12 +12,14 @@ import { Ionicons } from '@expo/vector-icons';
 import * as StoreReview from 'expo-store-review';
 import { speak } from '../utils/speech';
 import verbs from '../data/verbs.json';
-import { conjugate, tenseNames, Tense, VerbData } from '../utils/conjugate';
+import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
 
-const verbEntries = Object.entries(verbs as Record<string, VerbData>);
+const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
+const verbLevels: VerbLevel[] = ['beginner', 'intermediate', 'advanced'];
+const levelLabels: Record<VerbLevel, string> = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
 const quizzableTenses: { key: Tense; label: string }[] = [
   { key: 'present', label: 'Present' },
   { key: 'preterite', label: 'Preterite' },
@@ -41,7 +43,9 @@ interface Question {
 function generateQuestion(
   activeTenses: Tense[],
   getWeight: (verb: string) => number,
+  filteredEntries: [string, VerbData][],
 ): Question {
+  const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
   // Weighted random verb selection (spaced repetition)
   // Bias toward common verbs (first 200): 70% chance from top 200, 30% from rest
   const candidates: number[] = [];
@@ -114,6 +118,29 @@ export default function QuizScreen() {
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const [activeTenses, setActiveTenses] = useState<Tense[]>(quizzableTenses.map(t => t.key));
+  const [activeLevels, setActiveLevels] = useState<VerbLevel[]>([...verbLevels]);
+  const allLevelsSelected = activeLevels.length === verbLevels.length;
+
+  const filteredEntries = React.useMemo(() =>
+    allVerbEntries.filter(([, d]) => activeLevels.includes(d.level)),
+    [activeLevels]
+  );
+
+  const toggleLevel = (level: VerbLevel) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActiveLevels(prev => {
+      if (prev.includes(level)) {
+        if (prev.length <= 1) return prev;
+        return prev.filter(l => l !== level);
+      }
+      return [...prev, level];
+    });
+  };
+
+  const toggleAllLevels = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActiveLevels(allLevelsSelected ? ['beginner'] : [...verbLevels]);
+  };
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [sessionScore, setSessionScore] = useState(0);
@@ -126,11 +153,11 @@ export default function QuizScreen() {
   }, []);
 
   useEffect(() => {
-    if (weightsLoaded && activeTenses.length > 0) {
-      setQuestion(generateQuestion(activeTenses, getWeight));
+    if (weightsLoaded && activeTenses.length > 0 && filteredEntries.length > 0) {
+      setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries));
       setSelectedAnswer(null);
     }
-  }, [weightsLoaded, activeTenses]);
+  }, [weightsLoaded, activeTenses, filteredEntries]);
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
@@ -185,7 +212,7 @@ export default function QuizScreen() {
 
   const handleNext = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setQuestion(generateQuestion(activeTenses, getWeight));
+    setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries));
     setSelectedAnswer(null);
   };
 
@@ -237,6 +264,34 @@ export default function QuizScreen() {
                 styles.chipText,
                 { color: active ? '#fff' : colors.textMuted },
               ]}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+
+      {/* Level chip bar */}
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={[{ key: 'all', label: 'All' }, ...verbLevels.map((l) => ({ key: l, label: levelLabels[l] }))]}
+        keyExtractor={(item) => 'level-' + item.key}
+        contentContainerStyle={styles.chipBar}
+        renderItem={({ item }) => {
+          const isAll = item.key === 'all';
+          const active = isAll ? allLevelsSelected : activeLevels.includes(item.key as VerbLevel);
+          return (
+            <TouchableOpacity
+              style={[
+                styles.chip,
+                active
+                  ? { backgroundColor: colors.accent || colors.primary, borderColor: colors.accent || colors.primary }
+                  : { backgroundColor: 'transparent', borderColor: colors.border, borderStyle: 'dashed' as const },
+              ]}
+              onPress={() => (isAll ? toggleAllLevels() : toggleLevel(item.key as VerbLevel))}
+            >
+              <Text style={[styles.chipText, { color: active ? '#fff' : colors.textMuted }]}>
                 {item.label}
               </Text>
             </TouchableOpacity>
