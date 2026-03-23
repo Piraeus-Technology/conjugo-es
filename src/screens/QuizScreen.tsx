@@ -119,9 +119,10 @@ export default function QuizScreen() {
         <TouchableOpacity
           onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          style={{ marginRight: 8 }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 8 }}
         >
-          <Ionicons name="settings-outline" size={22} color={colors.textMuted} />
+          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
+          <Ionicons name="options-outline" size={18} color={colors.primary} />
         </TouchableOpacity>
       ),
     });
