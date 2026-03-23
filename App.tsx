@@ -13,6 +13,7 @@ import FeedbackScreen from './src/screens/FeedbackScreen';
 import FlashcardScreen from './src/screens/FlashcardScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import PracticeSettingsScreen from './src/screens/PracticeSettingsScreen';
+import StatsScreen from './src/screens/StatsScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 
@@ -50,6 +51,24 @@ function FlashcardStackScreen() {
       <FlashcardStack.Screen name="FlashcardHome" component={FlashcardScreen} options={{ title: 'Flashcards' }} />
       <FlashcardStack.Screen name="PracticeSettings" component={PracticeSettingsScreen} options={{ title: 'Settings', presentation: 'modal' }} />
     </FlashcardStack.Navigator>
+  );
+}
+
+const MoreStack = createNativeStackNavigator();
+
+function MoreStackScreen() {
+  const colors = useColors();
+  return (
+    <MoreStack.Navigator screenOptions={{
+      headerStyle: { backgroundColor: colors.bg },
+      headerTintColor: colors.textPrimary,
+      headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
+      headerTitleAlign: 'center' as const,
+      headerShadowVisible: false,
+    }}>
+      <MoreStack.Screen name="MoreHome" component={FeedbackScreen} options={{ title: 'More' }} />
+      <MoreStack.Screen name="Stats" component={StatsScreen} options={{ title: 'Quiz Stats' }} />
+    </MoreStack.Navigator>
   );
 }
 
@@ -182,9 +201,9 @@ export default function App() {
           />
           <Tab.Screen
             name="More"
-            component={FeedbackScreen}
+            component={MoreStackScreen}
             options={{
-              title: 'More',
+              headerShown: false,
               tabBarLabel: 'More',
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="ellipsis-horizontal" size={size} color={color} />

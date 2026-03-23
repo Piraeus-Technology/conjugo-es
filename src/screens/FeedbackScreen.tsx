@@ -13,23 +13,16 @@ import {
   Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
-import { useQuizStore } from '../store/quizStore';
-import { useSessionStore } from '../store/sessionStore';
 
 const APP_VERSION = '1.0.4';
 
 export default function FeedbackScreen() {
   const colors = useColors();
+  const nav = useNavigation<any>();
   const { isDark, toggleTheme } = useThemeStore();
-  const { totalQuestions, totalCorrect, bestStreak, loadStats } = useQuizStore();
-  const { sessions, loadSessions } = useSessionStore();
-
-  React.useEffect(() => {
-    loadStats();
-    loadSessions();
-  }, []);
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent('ConjuGo ES Feedback');
@@ -60,76 +53,22 @@ export default function FeedbackScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Stats section */}
-        {totalQuestions > 0 && (
-          <>
-            <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Quiz Stats</Text>
-            <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
-              <View style={styles.statsRow}>
-                <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: colors.primary }]}>{totalQuestions}</Text>
-                  <Text style={[styles.statLabel, { color: colors.textMuted }]}>Questions</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: colors.primary }]}>
-                    {totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0}%
-                  </Text>
-                  <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
-                </View>
-                <View style={styles.statItem}>
-                  <Text style={[styles.statValue, { color: colors.accent || colors.primary }]}>{bestStreak}</Text>
-                  <Text style={[styles.statLabel, { color: colors.textMuted }]}>Best Streak</Text>
-                </View>
-              </View>
-            </View>
-
-            {sessions.length > 0 && (() => {
-              // Aggregate sessions by day
-              const dailyMap: Record<string, { total: number; correct: number }> = {};
-              sessions.forEach(s => {
-                const key = new Date(s.date).toLocaleDateString('en-CA'); // YYYY-MM-DD
-                if (!dailyMap[key]) dailyMap[key] = { total: 0, correct: 0 };
-                dailyMap[key].total += s.total;
-                dailyMap[key].correct += s.correct;
-              });
-              const days = Object.entries(dailyMap)
-                .sort(([a], [b]) => b.localeCompare(a))
-                .slice(0, 7);
-
-              const formatDay = (dateStr: string) => {
-                const d = new Date(dateStr + 'T00:00:00');
-                const today = new Date();
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                if (d.toDateString() === today.toDateString()) return 'Today';
-                if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
-                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-              };
-
-              return (
-                <>
-                  <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Daily Activity</Text>
-                  {days.map(([date, data]) => (
-                    <View key={date} style={[styles.sessionRow, { backgroundColor: colors.card }]}>
-                      <Text style={[styles.sessionDate, { color: colors.textMuted }]}>
-                        {formatDay(date)}
-                      </Text>
-                      <Text style={[styles.sessionStat, { color: colors.textPrimary }]}>
-                        {data.correct}/{data.total}
-                      </Text>
-                      <Text style={[styles.sessionStat, { color: colors.primary }]}>
-                        {Math.round((data.correct / data.total) * 100)}%
-                      </Text>
-                    </View>
-                  ))}
-                </>
-              );
-            })()}
-          </>
-        )}
+        {/* Quiz Stats button */}
+        <TouchableOpacity
+          style={[styles.rateCard, { backgroundColor: colors.card }]}
+          onPress={() => nav.navigate('Stats')}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="bar-chart-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Quiz Stats</Text>
+            <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>View your progress and daily activity</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+        </TouchableOpacity>
 
         {/* Settings section */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: totalQuestions > 0 ? spacing.lg : 0 }]}>Settings</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Settings</Text>
         <View style={[styles.settingsCard, { backgroundColor: colors.card }]}>
           <View style={[styles.settingRow, { borderBottomColor: colors.divider }]}>
             <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color={colors.textSecondary} />
@@ -213,54 +152,6 @@ export default function FeedbackScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg },
-  statsCard: {
-    borderRadius: radius.md,
-    padding: spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: fonts.sizes.xl,
-    fontWeight: fonts.weights.bold,
-  },
-  statLabel: {
-    fontSize: fonts.sizes.xs,
-    marginTop: 2,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  sessionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: radius.md,
-    marginTop: spacing.xs,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sessionDate: {
-    fontSize: fonts.sizes.sm,
-    flex: 1,
-  },
-  sessionStat: {
-    fontSize: fonts.sizes.sm,
-    fontWeight: fonts.weights.semibold,
-    marginLeft: spacing.md,
-  },
   sectionTitle: {
     fontSize: fonts.sizes.sm,
     fontWeight: fonts.weights.semibold,
