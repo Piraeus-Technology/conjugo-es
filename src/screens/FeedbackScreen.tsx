@@ -15,12 +15,21 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
+import { useQuizStore } from '../store/quizStore';
+import { useSessionStore } from '../store/sessionStore';
 
 const APP_VERSION = '1.0.4';
 
 export default function FeedbackScreen() {
   const colors = useColors();
   const { isDark, toggleTheme } = useThemeStore();
+  const { totalQuestions, totalCorrect, bestStreak, loadStats } = useQuizStore();
+  const { sessions, loadSessions } = useSessionStore();
+
+  React.useEffect(() => {
+    loadStats();
+    loadSessions();
+  }, []);
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent('ConjuGo ES Feedback');
@@ -51,8 +60,52 @@ export default function FeedbackScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.content}>
+        {/* Stats section */}
+        {totalQuestions > 0 && (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Stats</Text>
+            <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
+              <View style={styles.statsRow}>
+                <View style={styles.statItem}>
+                  <Text style={[styles.statValue, { color: colors.primary }]}>{totalQuestions}</Text>
+                  <Text style={[styles.statLabel, { color: colors.textMuted }]}>Questions</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={[styles.statValue, { color: colors.primary }]}>
+                    {totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0}%
+                  </Text>
+                  <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
+                </View>
+                <View style={styles.statItem}>
+                  <Text style={[styles.statValue, { color: colors.accent || colors.primary }]}>{bestStreak}</Text>
+                  <Text style={[styles.statLabel, { color: colors.textMuted }]}>Best Streak</Text>
+                </View>
+              </View>
+            </View>
+
+            {sessions.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Recent Sessions</Text>
+                {sessions.slice(0, 5).map((s, i) => (
+                  <View key={i} style={[styles.sessionRow, { backgroundColor: colors.card }]}>
+                    <Text style={[styles.sessionDate, { color: colors.textMuted }]}>
+                      {new Date(s.date).toLocaleDateString()}
+                    </Text>
+                    <Text style={[styles.sessionStat, { color: colors.textPrimary }]}>
+                      {s.correct}/{s.total}
+                    </Text>
+                    <Text style={[styles.sessionStat, { color: colors.primary }]}>
+                      {Math.round((s.correct / s.total) * 100)}%
+                    </Text>
+                  </View>
+                ))}
+              </>
+            )}
+          </>
+        )}
+
         {/* Settings section */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Settings</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: totalQuestions > 0 ? spacing.lg : 0 }]}>Settings</Text>
         <View style={[styles.settingsCard, { backgroundColor: colors.card }]}>
           <View style={[styles.settingRow, { borderBottomColor: colors.divider }]}>
             <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color={colors.textSecondary} />
@@ -136,6 +189,54 @@ export default function FeedbackScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg },
+  statsCard: {
+    borderRadius: radius.md,
+    padding: spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: fonts.sizes.xl,
+    fontWeight: fonts.weights.bold,
+  },
+  statLabel: {
+    fontSize: fonts.sizes.xs,
+    marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  sessionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: radius.md,
+    marginTop: spacing.xs,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sessionDate: {
+    fontSize: fonts.sizes.sm,
+    flex: 1,
+  },
+  sessionStat: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+    marginLeft: spacing.md,
+  },
   sectionTitle: {
     fontSize: fonts.sizes.sm,
     fontWeight: fonts.weights.semibold,
