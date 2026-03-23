@@ -331,20 +331,23 @@ export default function QuizScreen() {
           ))}
         </View>
 
-        {/* Next + End Session */}
-        <View style={styles.bottomArea}>
+        {/* Next + End Session — same row, same size */}
+        <View style={[styles.bottomRow, { opacity: answered ? 1 : 0 }]} pointerEvents={answered ? 'auto' : 'none'}>
           <TouchableOpacity
-            style={[styles.nextButton, { backgroundColor: colors.primary, opacity: answered ? 1 : 0 }]}
-            onPress={answered ? handleNext : undefined}
+            style={[styles.bottomButton, { backgroundColor: colors.primary }]}
+            onPress={handleNext}
             activeOpacity={0.8}
-            disabled={!answered}
           >
-            <Text style={styles.nextButtonText}>Next</Text>
-            <Ionicons name="arrow-forward" size={18} color="#fff" />
+            <Text style={styles.bottomButtonText}>Next</Text>
+            <Ionicons name="arrow-forward" size={16} color="#fff" />
           </TouchableOpacity>
-          {sessionTotal > 0 && answered && (
-            <TouchableOpacity onPress={handleEndSession} activeOpacity={0.7}>
-              <Text style={[styles.endSessionText, { color: colors.textMuted }]}>End Session</Text>
+          {sessionTotal > 0 && (
+            <TouchableOpacity
+              style={[styles.bottomButton, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }]}
+              onPress={handleEndSession}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.bottomButtonText, { color: colors.textMuted }]}>End</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -425,9 +428,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   questionContainer: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: spacing.md,
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
@@ -465,28 +468,24 @@ const styles = StyleSheet.create({
     fontSize: fonts.sizes.lg,
     fontWeight: fonts.weights.semibold,
   },
-  nextButton: {
+  bottomRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  bottomButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    marginTop: spacing.md,
-    padding: spacing.md,
+    gap: 6,
+    paddingVertical: spacing.sm + 2,
     borderRadius: radius.md,
   },
-  nextButtonText: {
+  bottomButtonText: {
     color: '#fff',
     fontSize: fonts.sizes.md,
     fontWeight: fonts.weights.bold,
-  },
-  bottomArea: {
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  endSessionText: {
-    fontSize: fonts.sizes.xs,
-    fontWeight: fonts.weights.medium,
-    marginTop: spacing.xs,
   },
   historySection: {
     marginTop: spacing.lg,
