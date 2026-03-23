@@ -430,7 +430,8 @@ const styles = StyleSheet.create({
   questionContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
