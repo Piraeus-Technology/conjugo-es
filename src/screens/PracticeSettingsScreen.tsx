@@ -48,11 +48,10 @@ const tenseGroups: { title: string; tenses: { key: Tense; label: string }[] }[] 
     ],
   },
   {
-    title: 'Progressive & Other',
+    title: 'Progressive',
     tenses: [
       { key: 'present_progressive', label: 'Present Progressive' },
       { key: 'past_progressive', label: 'Past Progressive' },
-      { key: 'gerund_participle', label: 'Gerund / Participle' },
     ],
   },
 ];

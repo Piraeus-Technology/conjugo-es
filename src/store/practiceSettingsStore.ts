@@ -19,7 +19,6 @@ const allTenses: Tense[] = [
   'imperative_affirmative', 'imperative_negative',
   'present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect',
   'present_progressive', 'past_progressive',
-  'gerund_participle',
 ];
 
 const allLevels: VerbLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
