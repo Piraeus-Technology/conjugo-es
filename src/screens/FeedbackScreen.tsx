@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 
 export default function FeedbackScreen() {
   const colors = useColors();
