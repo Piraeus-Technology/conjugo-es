@@ -248,6 +248,10 @@ export default function QuizScreen() {
   );
 
   return (
+    <Pressable
+      style={{ flex: 1 }}
+      onPress={() => { if (answered) handleNext(); }}
+    >
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
       {/* Session score bar */}
       <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
@@ -269,11 +273,9 @@ export default function QuizScreen() {
 
       {/* All-time stats */}
       {totalQuestions > 0 && (
-        <View style={[styles.allTimeBar, { borderColor: colors.divider }]}>
-          <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
-            All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
-          </Text>
-        </View>
+        <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
+          All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
+        </Text>
       )}
 
       {/* Question */}
@@ -320,16 +322,9 @@ export default function QuizScreen() {
         ))}
       </View>
 
-      {/* Next button */}
+      {/* Tap to continue hint */}
       {answered && (
-        <TouchableOpacity
-          style={[styles.nextButton, { backgroundColor: colors.primary }]}
-          onPress={handleNext}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.nextButtonText}>Next</Text>
-          <Ionicons name="arrow-forward" size={18} color="#fff" />
-        </TouchableOpacity>
+        <Text style={[styles.tapHint, { color: colors.textMuted }]}>Tap anywhere to continue</Text>
       )}
 
       {/* End session button */}
@@ -401,6 +396,7 @@ export default function QuizScreen() {
         </Pressable>
       </Modal>
     </ScrollView>
+    </Pressable>
   );
 }
 
@@ -417,15 +413,10 @@ const styles = StyleSheet.create({
   scoreItem: {
     alignItems: 'center',
   },
-  allTimeBar: {
-    borderTopWidth: 1,
-    marginHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    marginBottom: spacing.md,
-  },
   allTimeText: {
     fontSize: fonts.sizes.xs,
     textAlign: 'center',
+    marginBottom: spacing.md,
   },
   scoreValue: {
     fontSize: fonts.sizes.xl,
@@ -478,19 +469,10 @@ const styles = StyleSheet.create({
     fontWeight: fonts.weights.semibold,
     flex: 1,
   },
-  nextButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginTop: spacing.xl,
-    padding: spacing.md,
-    borderRadius: radius.md,
-  },
-  nextButtonText: {
-    color: '#fff',
-    fontSize: fonts.sizes.md,
-    fontWeight: fonts.weights.bold,
+  tapHint: {
+    textAlign: 'center',
+    fontSize: fonts.sizes.sm,
+    marginTop: spacing.lg,
   },
   endSessionButton: {
     alignItems: 'center',
