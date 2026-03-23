@@ -25,6 +25,7 @@ export default function FeedbackScreen() {
   const { isDark, toggleTheme } = useThemeStore();
   const { totalQuestions, totalCorrect, bestStreak, loadStats } = useQuizStore();
   const { sessions, loadSessions } = useSessionStore();
+  const [showAllSessions, setShowAllSessions] = React.useState(false);
 
   React.useEffect(() => {
     loadStats();
@@ -63,7 +64,7 @@ export default function FeedbackScreen() {
         {/* Stats section */}
         {totalQuestions > 0 && (
           <>
-            <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Stats</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Quiz Stats</Text>
             <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
@@ -85,8 +86,8 @@ export default function FeedbackScreen() {
 
             {sessions.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Recent Sessions</Text>
-                {sessions.slice(0, 5).map((s, i) => (
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Quiz Sessions</Text>
+                {sessions.slice(0, showAllSessions ? sessions.length : 5).map((s, i) => (
                   <View key={i} style={[styles.sessionRow, { backgroundColor: colors.card }]}>
                     <Text style={[styles.sessionDate, { color: colors.textMuted }]}>
                       {new Date(s.date).toLocaleDateString()}
@@ -99,6 +100,17 @@ export default function FeedbackScreen() {
                     </Text>
                   </View>
                 ))}
+                {sessions.length > 5 && (
+                  <TouchableOpacity
+                    style={styles.seeAllButton}
+                    onPress={() => setShowAllSessions(!showAllSessions)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[styles.seeAllText, { color: colors.primary }]}>
+                      {showAllSessions ? 'Show Less' : `See All (${sessions.length})`}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </>
             )}
           </>
@@ -236,6 +248,15 @@ const styles = StyleSheet.create({
     fontSize: fonts.sizes.sm,
     fontWeight: fonts.weights.semibold,
     marginLeft: spacing.md,
+  },
+  seeAllButton: {
+    alignItems: 'center',
+    paddingVertical: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  seeAllText: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
   },
   sectionTitle: {
     fontSize: fonts.sizes.sm,
