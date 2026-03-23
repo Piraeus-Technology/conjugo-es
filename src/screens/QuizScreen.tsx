@@ -5,32 +5,23 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  FlatList,
   Modal,
   Pressable,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import * as StoreReview from 'expo-store-review';
+import { useNavigation } from '@react-navigation/native';
 import { speak } from '../utils/speech';
 import verbs from '../data/verbs.json';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
-import { useSessionStore, Session } from '../store/sessionStore';
+import { useSessionStore } from '../store/sessionStore';
+import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
-const verbLevels: VerbLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-const quizzableTenses: { key: Tense; label: string }[] = [
-  { key: 'present', label: 'Present' },
-  { key: 'preterite', label: 'Preterite' },
-  { key: 'imperfect', label: 'Imperfect' },
-  { key: 'future', label: 'Future' },
-  { key: 'conditional', label: 'Conditional' },
-  { key: 'subjunctive_present', label: 'Subj. Present' },
-  { key: 'subjunctive_imperfect', label: 'Subj. Imperfect' },
-];
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
 
 interface Question {
@@ -119,30 +110,27 @@ export default function QuizScreen() {
   const colors = useColors();
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
-  const [activeTenses, setActiveTenses] = useState<Tense[]>(quizzableTenses.map(t => t.key));
-  const [activeLevels, setActiveLevels] = useState<VerbLevel[]>([...verbLevels]);
-  const allLevelsSelected = activeLevels.length === verbLevels.length;
+  const { activeTenses, activeLevels, loadPracticeSettings } = usePracticeSettingsStore();
+  const nav = useNavigation<any>();
+
+  React.useLayoutEffect(() => {
+    nav.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ marginRight: 8 }}
+        >
+          <Ionicons name="settings-outline" size={22} color={colors.textMuted} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [nav, colors]);
 
   const filteredEntries = React.useMemo(() =>
-    allVerbEntries.filter(([, d]) => activeLevels.includes(d.level)),
+    allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
   );
-
-  const toggleLevel = (level: VerbLevel) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveLevels(prev => {
-      if (prev.includes(level)) {
-        if (prev.length <= 1) return prev;
-        return prev.filter(l => l !== level);
-      }
-      return [...prev, level];
-    });
-  };
-
-  const toggleAllLevels = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveLevels(allLevelsSelected ? ['A1'] : [...verbLevels]);
-  };
   const { sessions, loadSessions, saveSession } = useSessionStore();
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -157,6 +145,7 @@ export default function QuizScreen() {
     loadStats();
     loadWeights();
     loadSessions();
+    loadPracticeSettings();
   }, []);
 
   useEffect(() => {
@@ -168,28 +157,6 @@ export default function QuizScreen() {
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
-
-  const allSelected = activeTenses.length === quizzableTenses.length;
-
-  const toggleTense = (tense: Tense) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveTenses(prev => {
-      if (prev.includes(tense)) {
-        if (prev.length <= 1) return prev;
-        return prev.filter(t => t !== tense);
-      }
-      return [...prev, tense];
-    });
-  };
-
-  const toggleAll = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (allSelected) {
-      setActiveTenses(['present']);
-    } else {
-      setActiveTenses(quizzableTenses.map(t => t.key));
-    }
-  };
 
   const handleAnswer = (answer: string) => {
     if (answered || !question) return;
@@ -281,65 +248,6 @@ export default function QuizScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
-      {/* Tense chip bar */}
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={[{ key: 'all' as Tense, label: 'All' }, ...quizzableTenses]}
-        keyExtractor={(item) => item.key}
-        contentContainerStyle={styles.chipBar}
-        renderItem={({ item }) => {
-          const isAll = item.key === 'all';
-          const active = isAll ? allSelected : activeTenses.includes(item.key);
-          return (
-            <TouchableOpacity
-              style={[
-                styles.chip,
-                active
-                  ? { backgroundColor: colors.primary, borderColor: colors.primary }
-                  : { backgroundColor: 'transparent', borderColor: colors.border, borderStyle: 'dashed' as const },
-              ]}
-              onPress={() => isAll ? toggleAll() : toggleTense(item.key)}
-            >
-              <Text style={[
-                styles.chipText,
-                { color: active ? '#fff' : colors.textMuted },
-              ]}>
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        }}
-      />
-
-      {/* Level chip bar */}
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={[{ key: 'all', label: 'All' }, ...verbLevels.map((l) => ({ key: l, label: l }))]}
-        keyExtractor={(item) => 'level-' + item.key}
-        contentContainerStyle={styles.chipBar}
-        renderItem={({ item }) => {
-          const isAll = item.key === 'all';
-          const active = isAll ? allLevelsSelected : activeLevels.includes(item.key as VerbLevel);
-          return (
-            <TouchableOpacity
-              style={[
-                styles.chip,
-                active
-                  ? { backgroundColor: colors.accent || colors.primary, borderColor: colors.accent || colors.primary }
-                  : { backgroundColor: 'transparent', borderColor: colors.border, borderStyle: 'dashed' as const },
-              ]}
-              onPress={() => (isAll ? toggleAllLevels() : toggleLevel(item.key as VerbLevel))}
-            >
-              <Text style={[styles.chipText, { color: active ? '#fff' : colors.textMuted }]}>
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        }}
-      />
-
       {/* Session score bar */}
       <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
         <View style={styles.scoreItem}>
@@ -493,20 +401,6 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg, paddingBottom: 40 },
-  chipBar: {
-    gap: spacing.xs,
-    paddingBottom: spacing.md,
-  },
-  chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: radius.full,
-    borderWidth: 1,
-  },
-  chipText: {
-    fontSize: fonts.sizes.xs,
-    fontWeight: fonts.weights.semibold,
-  },
   scoreBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',

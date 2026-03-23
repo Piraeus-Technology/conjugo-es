@@ -6,19 +6,19 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
-  FlatList,
   Modal,
   Pressable,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
+import { useNavigation } from '@react-navigation/native';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
+import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { speak } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
-const verbLevels: VerbLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
 const quizzableTenses: Tense[] = [
   'present', 'preterite', 'imperfect', 'future', 'conditional',
@@ -33,14 +33,15 @@ interface Card {
   answer: string;
 }
 
-function generateCard(entries: [string, VerbData][]): Card {
+function generateCard(entries: [string, VerbData][], tenses: Tense[]): Card {
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
+  const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
   const commonCount = Math.min(200, verbEntries.length);
   const idx = Math.random() < 0.7
     ? Math.floor(Math.random() * commonCount)
     : Math.floor(Math.random() * verbEntries.length);
   const [verb, data] = verbEntries[idx];
-  const tense = quizzableTenses[Math.floor(Math.random() * quizzableTenses.length)];
+  const tense = activeTenseList[Math.floor(Math.random() * activeTenseList.length)];
   const personIndex = Math.floor(Math.random() * 6);
   const results = conjugate(verb, data, tense);
   return {
@@ -54,12 +55,31 @@ function generateCard(entries: [string, VerbData][]): Card {
 
 export default function FlashcardScreen() {
   const colors = useColors();
-  const [activeLevels, setActiveLevels] = useState<VerbLevel[]>([...verbLevels]);
+  const nav = useNavigation<any>();
+  const { activeTenses, activeLevels, loadPracticeSettings } = usePracticeSettingsStore();
   const filteredEntries = React.useMemo(() =>
-    allVerbEntries.filter(([, d]) => activeLevels.includes(d.level)),
+    allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
   );
-  const [card, setCard] = useState<Card>(() => generateCard(allVerbEntries));
+
+  React.useEffect(() => {
+    loadPracticeSettings();
+  }, []);
+
+  React.useLayoutEffect(() => {
+    nav.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => nav.navigate('PracticeSettings', { mode: 'flashcards' })}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ marginRight: 8 }}
+        >
+          <Ionicons name="settings-outline" size={22} color={colors.textMuted} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [nav, colors]);
+  const [card, setCard] = useState<Card>(() => generateCard(allVerbEntries, quizzableTenses));
   const [flipped, setFlipped] = useState(false);
   const [count, setCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
@@ -80,27 +100,9 @@ export default function FlashcardScreen() {
     setShowResults(false);
     setCount(0);
     sessionStart.current = Date.now();
-    setCard(generateCard(filteredEntries));
+    setCard(generateCard(filteredEntries, activeTenses));
     setFlipped(false);
     flipAnim.setValue(0);
-  };
-
-  const allLevelsSelected = activeLevels.length === verbLevels.length;
-
-  const toggleLevel = (level: VerbLevel) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveLevels(prev => {
-      if (prev.includes(level)) {
-        if (prev.length <= 1) return prev;
-        return prev.filter(l => l !== level);
-      }
-      return [...prev, level];
-    });
-  };
-
-  const toggleAllLevels = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setActiveLevels(allLevelsSelected ? ['A1'] : [...verbLevels]);
   };
 
   const flip = () => {
@@ -112,7 +114,7 @@ export default function FlashcardScreen() {
         duration: 200,
         useNativeDriver: true,
       }).start(() => {
-        setCard(generateCard(filteredEntries));
+        setCard(generateCard(filteredEntries, activeTenses));
         setFlipped(false);
         setCount(c => c + 1);
       });
@@ -138,39 +140,6 @@ export default function FlashcardScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      {/* Level chips */}
-      <View style={styles.chipBarWrapper}>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={[{ key: 'all', label: 'All' }, ...verbLevels.map(l => ({ key: l, label: l }))]}
-          keyExtractor={(item) => 'level-' + item.key}
-          contentContainerStyle={styles.chipBar}
-          renderItem={({ item }) => {
-            const isAll = item.key === 'all';
-            const active = isAll ? allLevelsSelected : activeLevels.includes(item.key as VerbLevel);
-            return (
-              <TouchableOpacity
-                style={[
-                  styles.chip,
-                  active
-                    ? { backgroundColor: colors.accent || colors.primary, borderColor: colors.accent || colors.primary }
-                    : { backgroundColor: 'transparent', borderColor: colors.border, borderStyle: 'dashed' as const },
-                ]}
-                onPress={() => isAll ? toggleAllLevels() : toggleLevel(item.key as VerbLevel)}
-              >
-                <Text style={[
-                  styles.chipText,
-                  { color: active ? '#fff' : colors.textMuted },
-                ]}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
-
       <Text style={[styles.counter, { color: colors.textMuted }]}>
         {count} cards reviewed
       </Text>
@@ -278,30 +247,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: spacing.lg,
   },
-  chipBarWrapper: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: 0,
-    right: 0,
-  },
-  chipBar: {
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-  },
-  chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: radius.full,
-    borderWidth: 1,
-  },
-  chipText: {
-    fontSize: fonts.sizes.xs,
-    fontWeight: fonts.weights.semibold,
-  },
   counter: {
     fontSize: fonts.sizes.sm,
     position: 'absolute',
-    top: spacing.lg + 40,
+    top: spacing.lg,
   },
   cardContainer: {
     width: width - spacing.lg * 2,

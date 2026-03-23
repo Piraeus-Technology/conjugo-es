@@ -12,10 +12,44 @@ import ConjugationScreen from './src/screens/ConjugationScreen';
 import FeedbackScreen from './src/screens/FeedbackScreen';
 import FlashcardScreen from './src/screens/FlashcardScreen';
 import QuizScreen from './src/screens/QuizScreen';
+import PracticeSettingsScreen from './src/screens/PracticeSettingsScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 
 SplashScreen.preventAutoHideAsync();
+
+const QuizStack = createNativeStackNavigator();
+const FlashcardStack = createNativeStackNavigator();
+
+function QuizStackScreen() {
+  const colors = useColors();
+  return (
+    <QuizStack.Navigator screenOptions={{
+      headerStyle: { backgroundColor: colors.bg },
+      headerTintColor: colors.textPrimary,
+      headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
+      headerShadowVisible: false,
+    }}>
+      <QuizStack.Screen name="QuizHome" component={QuizScreen} options={{ title: 'Quiz' }} />
+      <QuizStack.Screen name="PracticeSettings" component={PracticeSettingsScreen} options={{ title: 'Settings', presentation: 'modal' }} />
+    </QuizStack.Navigator>
+  );
+}
+
+function FlashcardStackScreen() {
+  const colors = useColors();
+  return (
+    <FlashcardStack.Navigator screenOptions={{
+      headerStyle: { backgroundColor: colors.bg },
+      headerTintColor: colors.textPrimary,
+      headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
+      headerShadowVisible: false,
+    }}>
+      <FlashcardStack.Screen name="FlashcardHome" component={FlashcardScreen} options={{ title: 'Flashcards' }} />
+      <FlashcardStack.Screen name="PracticeSettings" component={PracticeSettingsScreen} options={{ title: 'Settings', presentation: 'modal' }} />
+    </FlashcardStack.Navigator>
+  );
+}
 
 // Search tab has its own stack (Search → Conjugation)
 const SearchStack = createNativeStackNavigator();
@@ -123,9 +157,9 @@ export default function App() {
           />
           <Tab.Screen
             name="Quiz"
-            component={QuizScreen}
+            component={QuizStackScreen}
             options={{
-              title: 'Quiz',
+              headerShown: false,
               tabBarLabel: 'Quiz',
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="school" size={size} color={color} />
@@ -134,9 +168,9 @@ export default function App() {
           />
           <Tab.Screen
             name="Flashcards"
-            component={FlashcardScreen}
+            component={FlashcardStackScreen}
             options={{
-              title: 'Flashcards',
+              headerShown: false,
               tabBarLabel: 'Cards',
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="layers" size={size} color={color} />
