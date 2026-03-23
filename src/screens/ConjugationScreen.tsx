@@ -41,10 +41,6 @@ const tenseGroups = [
     label: 'Progressive',
     tenses: ['present_progressive', 'past_progressive'] as Tense[],
   },
-  {
-    label: 'Other',
-    tenses: ['gerund_participle'] as Tense[],
-  },
 ];
 
 export default function ConjugationScreen({ route, navigation }: ConjugationScreenProps) {
