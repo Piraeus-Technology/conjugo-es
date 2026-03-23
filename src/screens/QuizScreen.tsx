@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -148,7 +148,6 @@ export default function QuizScreen() {
   const [streak, setStreak] = useState(0);
   const [bestSessionStreak, setBestSessionStreak] = useState(0);
   const [showResults, setShowResults] = useState(false);
-  const sessionStart = useRef(Date.now());
 
   useEffect(() => {
     loadStats();
@@ -206,7 +205,7 @@ export default function QuizScreen() {
         total: sessionTotal,
         correct: sessionScore,
         streak: bestSessionStreak,
-        durationMs: Date.now() - sessionStart.current,
+        durationMs: 0,
       });
     }
     setShowResults(true);
@@ -218,15 +217,8 @@ export default function QuizScreen() {
     setSessionTotal(0);
     setStreak(0);
     setBestSessionStreak(0);
-    sessionStart.current = Date.now();
     setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries));
     setSelectedAnswer(null);
-  };
-
-  const formatDuration = (ms: number) => {
-    const mins = Math.floor(ms / 60000);
-    const secs = Math.floor((ms % 60000) / 1000);
-    return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
   };
 
   const getOptionStyle = (option: string) => {
@@ -378,9 +370,6 @@ export default function QuizScreen() {
                 <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Best Streak</Text>
               </View>
             </View>
-            <Text style={[styles.modalDuration, { color: colors.textMuted }]}>
-              {formatDuration(Date.now() - sessionStart.current)}
-            </Text>
             <TouchableOpacity
               style={[styles.modalButton, { backgroundColor: colors.primary }]}
               onPress={handleNewSession}
@@ -557,10 +546,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-  },
-  modalDuration: {
-    fontSize: fonts.sizes.sm,
-    marginBottom: spacing.lg,
   },
   modalButton: {
     paddingHorizontal: spacing.xl,

@@ -85,13 +85,6 @@ export default function FlashcardScreen() {
   const [count, setCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
-  const sessionStart = useRef(Date.now());
-
-  const formatDuration = (ms: number) => {
-    const mins = Math.floor(ms / 60000);
-    const secs = Math.floor((ms % 60000) / 1000);
-    return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-  };
 
   const handleEndSession = () => {
     setShowResults(true);
@@ -100,7 +93,6 @@ export default function FlashcardScreen() {
   const handleNewSession = () => {
     setShowResults(false);
     setCount(0);
-    sessionStart.current = Date.now();
     setCard(generateCard(filteredEntries, activeTenses));
     setFlipped(false);
     flipAnim.setValue(0);
@@ -223,12 +215,6 @@ export default function FlashcardScreen() {
               <View style={styles.modalStatItem}>
                 <Text style={[styles.modalStatValue, { color: colors.primary }]}>{count}</Text>
                 <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Cards</Text>
-              </View>
-              <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: colors.textSecondary }]}>
-                  {formatDuration(Date.now() - sessionStart.current)}
-                </Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Duration</Text>
               </View>
             </View>
             <TouchableOpacity
