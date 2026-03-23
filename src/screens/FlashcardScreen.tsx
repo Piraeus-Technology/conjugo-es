@@ -174,7 +174,12 @@ export default function FlashcardScreen() {
           <Text style={[styles.tenseLabel, { color: colors.textMuted }]}>
             {tenseNames[card.tense]}
           </Text>
-          <Text style={[styles.answerText, { color: colors.primary }]}>
+          <Text
+            style={[styles.answerText, { color: colors.primary }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.6}
+          >
             {card.answer}
           </Text>
           <Text style={[styles.contextText, { color: colors.textSecondary }]}>
