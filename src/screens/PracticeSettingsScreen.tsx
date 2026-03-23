@@ -13,14 +13,48 @@ import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { tenseNames, Tense, VerbLevel } from '../utils/conjugate';
 import { usePracticeSettingsStore, allTenses, allLevels } from '../store/practiceSettingsStore';
 
-const tenseLabels: { key: Tense; label: string }[] = [
-  { key: 'present', label: 'Present' },
-  { key: 'preterite', label: 'Preterite' },
-  { key: 'imperfect', label: 'Imperfect' },
-  { key: 'future', label: 'Future' },
-  { key: 'conditional', label: 'Conditional' },
-  { key: 'subjunctive_present', label: 'Subjunctive Present' },
-  { key: 'subjunctive_imperfect', label: 'Subjunctive Imperfect' },
+const tenseGroups: { title: string; tenses: { key: Tense; label: string }[] }[] = [
+  {
+    title: 'Indicative',
+    tenses: [
+      { key: 'present', label: 'Present' },
+      { key: 'preterite', label: 'Preterite' },
+      { key: 'imperfect', label: 'Imperfect' },
+      { key: 'future', label: 'Future' },
+      { key: 'conditional', label: 'Conditional' },
+    ],
+  },
+  {
+    title: 'Subjunctive',
+    tenses: [
+      { key: 'subjunctive_present', label: 'Present' },
+      { key: 'subjunctive_imperfect', label: 'Imperfect' },
+    ],
+  },
+  {
+    title: 'Imperative',
+    tenses: [
+      { key: 'imperative_affirmative', label: 'Affirmative' },
+      { key: 'imperative_negative', label: 'Negative' },
+    ],
+  },
+  {
+    title: 'Compound',
+    tenses: [
+      { key: 'present_perfect', label: 'Present Perfect' },
+      { key: 'past_perfect', label: 'Past Perfect' },
+      { key: 'future_perfect', label: 'Future Perfect' },
+      { key: 'conditional_perfect', label: 'Conditional Perfect' },
+    ],
+  },
+  {
+    title: 'Progressive & Other',
+    tenses: [
+      { key: 'present_progressive', label: 'Present Progressive' },
+      { key: 'past_progressive', label: 'Past Progressive' },
+      { key: 'gerund_participle', label: 'Gerund / Participle' },
+    ],
+  },
 ];
 
 export default function PracticeSettingsScreen() {
@@ -66,32 +100,37 @@ export default function PracticeSettingsScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={[styles.card, { backgroundColor: colors.card }]}>
-        {tenseLabels.map((item, i) => {
-          const active = activeTenses.includes(item.key);
-          return (
-            <TouchableOpacity
-              key={item.key}
-              style={[
-                styles.row,
-                i < tenseLabels.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.divider },
-              ]}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                toggleTense(item.key);
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.rowText, { color: colors.textPrimary }]}>{item.label}</Text>
-              <Ionicons
-                name={active ? 'checkmark-circle' : 'ellipse-outline'}
-                size={24}
-                color={active ? colors.primary : colors.border}
-              />
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      {tenseGroups.map((group) => (
+        <View key={group.title}>
+          <Text style={[styles.groupLabel, { color: colors.textMuted }]}>{group.title}</Text>
+          <View style={[styles.card, { backgroundColor: colors.card }]}>
+            {group.tenses.map((item, i) => {
+              const active = activeTenses.includes(item.key);
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  style={[
+                    styles.row,
+                    i < group.tenses.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.divider },
+                  ]}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    toggleTense(item.key);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.rowText, { color: colors.textPrimary }]}>{item.label}</Text>
+                  <Ionicons
+                    name={active ? 'checkmark-circle' : 'ellipse-outline'}
+                    size={24}
+                    color={active ? colors.primary : colors.border}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      ))}
 
       {/* Levels */}
       <View style={styles.sectionHeader}>
@@ -168,6 +207,15 @@ const styles = StyleSheet.create({
   selectAllText: {
     fontSize: fonts.sizes.sm,
     fontWeight: fonts.weights.medium,
+  },
+  groupLabel: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
+    marginLeft: spacing.xs,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   card: {
     borderRadius: radius.md,
