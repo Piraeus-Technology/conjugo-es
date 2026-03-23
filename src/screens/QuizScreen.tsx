@@ -257,10 +257,6 @@ export default function QuizScreen() {
   );
 
   return (
-    <Pressable
-      style={{ flex: 1 }}
-      onPress={() => { if (answered) handleNext(); }}
-    >
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
       {/* Session score bar */}
       <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
@@ -331,9 +327,16 @@ export default function QuizScreen() {
         ))}
       </View>
 
-      {/* Tap to continue hint */}
+      {/* Next button */}
       {answered && (
-        <Text style={[styles.tapHint, { color: colors.textMuted }]}>Tap anywhere to continue</Text>
+        <TouchableOpacity
+          style={[styles.nextButton, { backgroundColor: colors.primary }]}
+          onPress={handleNext}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.nextButtonText}>Next</Text>
+          <Ionicons name="arrow-forward" size={18} color="#fff" />
+        </TouchableOpacity>
       )}
 
       {/* End session button */}
@@ -405,7 +408,6 @@ export default function QuizScreen() {
         </Pressable>
       </Modal>
     </ScrollView>
-    </Pressable>
   );
 }
 
@@ -444,7 +446,7 @@ const styles = StyleSheet.create({
   },
   questionContainer: {
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
@@ -483,10 +485,19 @@ const styles = StyleSheet.create({
     fontWeight: fonts.weights.semibold,
     flex: 1,
   },
-  tapHint: {
-    textAlign: 'center',
-    fontSize: fonts.sizes.sm,
-    marginTop: spacing.lg,
+  nextButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+  },
+  nextButtonText: {
+    color: '#fff',
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.bold,
   },
   endSessionButton: {
     alignItems: 'center',
