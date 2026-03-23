@@ -25,7 +25,6 @@ export default function FeedbackScreen() {
   const { isDark, toggleTheme } = useThemeStore();
   const { totalQuestions, totalCorrect, bestStreak, loadStats } = useQuizStore();
   const { sessions, loadSessions } = useSessionStore();
-  const [showAllSessions, setShowAllSessions] = React.useState(false);
 
   React.useEffect(() => {
     loadStats();
@@ -84,35 +83,48 @@ export default function FeedbackScreen() {
               </View>
             </View>
 
-            {sessions.length > 0 && (
-              <>
-                <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Quiz Sessions</Text>
-                {sessions.slice(0, showAllSessions ? sessions.length : 5).map((s, i) => (
-                  <View key={i} style={[styles.sessionRow, { backgroundColor: colors.card }]}>
-                    <Text style={[styles.sessionDate, { color: colors.textMuted }]}>
-                      {new Date(s.date).toLocaleDateString()}
-                    </Text>
-                    <Text style={[styles.sessionStat, { color: colors.textPrimary }]}>
-                      {s.correct}/{s.total}
-                    </Text>
-                    <Text style={[styles.sessionStat, { color: colors.primary }]}>
-                      {Math.round((s.correct / s.total) * 100)}%
-                    </Text>
-                  </View>
-                ))}
-                {sessions.length > 5 && (
-                  <TouchableOpacity
-                    style={styles.seeAllButton}
-                    onPress={() => setShowAllSessions(!showAllSessions)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[styles.seeAllText, { color: colors.primary }]}>
-                      {showAllSessions ? 'Show Less' : `See All (${sessions.length})`}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            )}
+            {sessions.length > 0 && (() => {
+              // Aggregate sessions by day
+              const dailyMap: Record<string, { total: number; correct: number }> = {};
+              sessions.forEach(s => {
+                const key = new Date(s.date).toLocaleDateString('en-CA'); // YYYY-MM-DD
+                if (!dailyMap[key]) dailyMap[key] = { total: 0, correct: 0 };
+                dailyMap[key].total += s.total;
+                dailyMap[key].correct += s.correct;
+              });
+              const days = Object.entries(dailyMap)
+                .sort(([a], [b]) => b.localeCompare(a))
+                .slice(0, 7);
+
+              const formatDay = (dateStr: string) => {
+                const d = new Date(dateStr + 'T00:00:00');
+                const today = new Date();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (d.toDateString() === today.toDateString()) return 'Today';
+                if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              };
+
+              return (
+                <>
+                  <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Daily Activity</Text>
+                  {days.map(([date, data]) => (
+                    <View key={date} style={[styles.sessionRow, { backgroundColor: colors.card }]}>
+                      <Text style={[styles.sessionDate, { color: colors.textMuted }]}>
+                        {formatDay(date)}
+                      </Text>
+                      <Text style={[styles.sessionStat, { color: colors.textPrimary }]}>
+                        {data.correct}/{data.total}
+                      </Text>
+                      <Text style={[styles.sessionStat, { color: colors.primary }]}>
+                        {Math.round((data.correct / data.total) * 100)}%
+                      </Text>
+                    </View>
+                  ))}
+                </>
+              );
+            })()}
           </>
         )}
 
@@ -248,15 +260,6 @@ const styles = StyleSheet.create({
     fontSize: fonts.sizes.sm,
     fontWeight: fonts.weights.semibold,
     marginLeft: spacing.md,
-  },
-  seeAllButton: {
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  seeAllText: {
-    fontSize: fonts.sizes.sm,
-    fontWeight: fonts.weights.semibold,
   },
   sectionTitle: {
     fontSize: fonts.sizes.sm,
