@@ -88,6 +88,7 @@ function SearchStackScreen() {
           fontWeight: fonts.weights.semibold,
           color: colors.textPrimary,
         },
+        headerTitleAlign: 'center' as const,
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.bg },
       }}

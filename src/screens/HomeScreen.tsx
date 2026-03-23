@@ -317,10 +317,17 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 <Text style={[styles.vodLabel, { color: colors.textMuted }]}>VERB OF THE DAY</Text>
                 <Text style={[styles.vodVerb, { color: colors.primary }]}>{getVerbOfTheDay().infinitive}</Text>
                 <Text style={[styles.vodTranslation, { color: colors.textSecondary }]}>{getVerbOfTheDay().translation}</Text>
-                <View style={[styles.vodBadge, { backgroundColor: colors.primary + '15' }]}>
-                  <Text style={[styles.vodBadgeText, { color: colors.primary }]}>
-                    {getVerbOfTheDay().regular ? 'Regular' : 'Irregular'} • -{getVerbOfTheDay().type}
-                  </Text>
+                <View style={styles.vodBadgeRow}>
+                  <View style={[styles.vodBadge, { backgroundColor: getVerbOfTheDay().regular ? colors.regularTag : colors.irregularTag }]}>
+                    <Text style={[styles.vodBadgeText, { color: getVerbOfTheDay().regular ? colors.regularTagText : colors.irregularTagText }]}>
+                      {getVerbOfTheDay().regular ? 'Regular' : 'Irregular'}
+                    </Text>
+                  </View>
+                  <View style={[styles.vodBadge, { backgroundColor: colors.pillBg }]}>
+                    <Text style={[styles.vodBadgeText, { color: colors.textSecondary }]}>
+                      -{getVerbOfTheDay().type}
+                    </Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             </View>
@@ -435,6 +442,10 @@ const styles = StyleSheet.create({
   vodTranslation: {
     fontSize: fonts.sizes.md,
     marginBottom: spacing.md,
+  },
+  vodBadgeRow: {
+    flexDirection: 'row',
+    gap: spacing.xs,
   },
   vodBadge: {
     paddingHorizontal: spacing.md,
