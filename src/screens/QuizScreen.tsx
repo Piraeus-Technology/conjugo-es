@@ -58,10 +58,19 @@ function generateQuestion(
 
   const [verb, data] = verbEntries[verbIndex];
   const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
-  const personIndex = Math.floor(Math.random() * 6);
 
   const results = conjugate(verb, data, tense);
-  const correctAnswer = results[personIndex].form;
+  // Filter to valid (non-disabled) persons only
+  const validPersons = results
+    .map((r, i) => ({ index: i, ...r }))
+    .filter(r => !r.disabled && r.form !== '—');
+  if (validPersons.length === 0) {
+    // Retry with a different verb/tense
+    return generateQuestion(activeTenses, getWeight, filteredEntries);
+  }
+  const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
+  const personIndex = picked.index;
+  const correctAnswer = picked.form;
 
   // Generate wrong answers
   const wrongAnswers = new Set<string>();
