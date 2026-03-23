@@ -278,14 +278,12 @@ export default function QuizScreen() {
           </Text>
           <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
         </View>
+        {totalQuestions > 0 && (
+          <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
+            All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
+          </Text>
+        )}
       </View>
-
-      {/* All-time stats */}
-      {totalQuestions > 0 && (
-        <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
-          All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
-        </Text>
-      )}
 
       {/* Question */}
       <View style={styles.questionContainer}>
@@ -425,7 +423,10 @@ const styles = StyleSheet.create({
   allTimeText: {
     fontSize: fonts.sizes.xs,
     textAlign: 'center',
-    marginBottom: spacing.md,
+    paddingTop: spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0,0,0,0.06)',
+    marginHorizontal: spacing.md,
   },
   scoreValue: {
     fontSize: fonts.sizes.xl,
