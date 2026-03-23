@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Modal,
   Pressable,
 } from 'react-native';
@@ -121,7 +120,6 @@ export default function QuizScreen() {
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const { activeTenses, activeLevels, loadPracticeSettings } = usePracticeSettingsStore();
   const nav = useNavigation<any>();
-  const scrollRef = useRef<ScrollView>(null);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
@@ -259,107 +257,98 @@ export default function QuizScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-    <ScrollView
-      ref={scrollRef}
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.content}
-    >
-      {/* Session score bar */}
-      <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
-        <View style={styles.scoreRow}>
-          <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionScore}/{sessionTotal}</Text>
-            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Session</Text>
+      <View style={styles.content}>
+        {/* Session score bar */}
+        <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
+          <View style={styles.scoreRow}>
+            <View style={styles.scoreItem}>
+              <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionScore}/{sessionTotal}</Text>
+              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Session</Text>
+            </View>
+            <View style={styles.scoreItem}>
+              <Text style={[styles.scoreValue, { color: colors.accent || colors.primary }]}>{streak}</Text>
+              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Streak</Text>
+            </View>
+            <View style={styles.scoreItem}>
+              <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
+                {sessionTotal > 0 ? Math.round((sessionScore / sessionTotal) * 100) : 0}%
+              </Text>
+              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
+            </View>
           </View>
-          <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, { color: colors.accent || colors.primary }]}>{streak}</Text>
-            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Streak</Text>
-          </View>
-          <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
-              {sessionTotal > 0 ? Math.round((sessionScore / sessionTotal) * 100) : 0}%
+          {totalQuestions > 0 && (
+            <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
+              All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
             </Text>
-            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
-          </View>
+          )}
         </View>
-        {totalQuestions > 0 && (
-          <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
-            All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
+
+        {/* Question — fills remaining space */}
+        <View style={styles.questionContainer}>
+          <Text style={[styles.questionLabel, { color: colors.textMuted }]}>
+            {tenseNames[question.tense]}
           </Text>
-        )}
-      </View>
-
-      {/* Question */}
-      <View style={styles.questionContainer}>
-        <Text style={[styles.questionLabel, { color: colors.textMuted }]}>
-          {tenseNames[question.tense]}
-        </Text>
-        <Text
-          style={[styles.questionVerb, { color: colors.primary }]}
-          numberOfLines={1}
-          adjustsFontSizeToFit
-        >
-          {question.verb}
-        </Text>
-        <Text style={[styles.questionTranslation, { color: colors.textSecondary }]}>
-          {question.translation}
-        </Text>
-        <Text style={[styles.questionPronoun, { color: colors.textPrimary }]}>
-          {pronounLabels[question.personIndex]}
-        </Text>
-      </View>
-
-      {/* Options */}
-      <View style={styles.optionsContainer}>
-        {question.options.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.optionButton, getOptionStyle(option)]}
-            onPress={() => handleAnswer(option)}
-            activeOpacity={answered ? 1 : 0.7}
-            disabled={answered}
+          <Text
+            style={[styles.questionVerb, { color: colors.primary }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
           >
-            <Text
-              style={[styles.optionText, { color: getOptionTextColor(option) }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.7}
+            {question.verb}
+          </Text>
+          <Text style={[styles.questionTranslation, { color: colors.textSecondary }]}>
+            {question.translation}
+          </Text>
+          <Text style={[styles.questionPronoun, { color: colors.textPrimary }]}>
+            {pronounLabels[question.personIndex]}
+          </Text>
+        </View>
+
+        {/* Options */}
+        <View style={styles.optionsContainer}>
+          {question.options.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.optionButton, getOptionStyle(option)]}
+              onPress={() => handleAnswer(option)}
+              activeOpacity={answered ? 1 : 0.7}
+              disabled={answered}
             >
-              {option}
-            </Text>
-            {answered && option === question.correctAnswer && (
-              <Ionicons name="checkmark-circle" size={22} color="#4CAF50" />
-            )}
-            {answered && option === selectedAnswer && !isCorrect && option !== question.correctAnswer && (
-              <Ionicons name="close-circle" size={22} color="#E53935" />
-            )}
+              <Text
+                style={[styles.optionText, { color: getOptionTextColor(option) }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+              >
+                {option}
+              </Text>
+              {answered && option === question.correctAnswer && (
+                <Ionicons name="checkmark-circle" size={22} color="#4CAF50" style={{ marginLeft: 8 }} />
+              )}
+              {answered && option === selectedAnswer && !isCorrect && option !== question.correctAnswer && (
+                <Ionicons name="close-circle" size={22} color="#E53935" style={{ marginLeft: 8 }} />
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Next + End Session */}
+        <View style={styles.bottomArea}>
+          <TouchableOpacity
+            style={[styles.nextButton, { backgroundColor: colors.primary, opacity: answered ? 1 : 0 }]}
+            onPress={answered ? handleNext : undefined}
+            activeOpacity={0.8}
+            disabled={!answered}
+          >
+            <Text style={styles.nextButtonText}>Next</Text>
+            <Ionicons name="arrow-forward" size={18} color="#fff" />
           </TouchableOpacity>
-        ))}
+          {sessionTotal > 0 && answered && (
+            <TouchableOpacity onPress={handleEndSession} activeOpacity={0.7}>
+              <Text style={[styles.endSessionText, { color: colors.textMuted }]}>End Session</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-
-      {/* Next button — always takes space, visible only after answering */}
-      <TouchableOpacity
-        style={[styles.nextButton, { backgroundColor: colors.primary, opacity: answered ? 1 : 0 }]}
-        onPress={answered ? handleNext : undefined}
-        activeOpacity={0.8}
-        disabled={!answered}
-      >
-        <Text style={styles.nextButtonText}>Next</Text>
-        <Ionicons name="arrow-forward" size={18} color="#fff" />
-      </TouchableOpacity>
-
-      {/* End session button */}
-      {sessionTotal > 0 && (
-        <TouchableOpacity
-          style={[styles.endSessionButton, { borderColor: colors.border }]}
-          onPress={handleEndSession}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.endSessionText, { color: colors.textMuted }]}>End Session</Text>
-        </TouchableOpacity>
-      )}
-
-    </ScrollView>
 
       {/* Results modal */}
       <Modal visible={showResults} transparent animationType="fade">
@@ -404,7 +393,7 @@ export default function QuizScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.lg },
+  content: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.sm },
   scoreCard: {
     padding: spacing.md,
     borderRadius: radius.md,
@@ -436,8 +425,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   questionContainer: {
+    flex: 1,
     alignItems: 'center',
-    marginBottom: spacing.md,
+    justifyContent: 'center',
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
@@ -489,16 +479,14 @@ const styles = StyleSheet.create({
     fontSize: fonts.sizes.md,
     fontWeight: fonts.weights.bold,
   },
-  endSessionButton: {
+  bottomArea: {
     alignItems: 'center',
-    marginTop: spacing.md,
-    padding: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
+    marginTop: spacing.sm,
   },
   endSessionText: {
-    fontSize: fonts.sizes.sm,
+    fontSize: fonts.sizes.xs,
     fontWeight: fonts.weights.medium,
+    marginTop: spacing.xs,
   },
   historySection: {
     marginTop: spacing.lg,
