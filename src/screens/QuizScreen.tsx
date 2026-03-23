@@ -302,7 +302,12 @@ export default function QuizScreen() {
             activeOpacity={answered ? 1 : 0.7}
             disabled={answered}
           >
-            <Text style={[styles.optionText, { color: getOptionTextColor(option) }]}>
+            <Text
+              style={[styles.optionText, { color: getOptionTextColor(option) }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+            >
               {option}
             </Text>
             {answered && option === question.correctAnswer && (
