@@ -396,11 +396,16 @@ export default function QuizScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.sm },
+  content: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+    justifyContent: 'space-between',
+  },
   scoreCard: {
     padding: spacing.md,
     borderRadius: radius.md,
-    marginBottom: spacing.sm,
   },
   scoreRow: {
     flexDirection: 'row',
@@ -430,8 +435,6 @@ const styles = StyleSheet.create({
   questionContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
@@ -472,7 +475,6 @@ const styles = StyleSheet.create({
   bottomRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginTop: spacing.sm,
   },
   bottomButton: {
     flex: 1,
