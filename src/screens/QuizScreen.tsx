@@ -411,11 +411,11 @@ export default function QuizScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: spacing.lg, paddingBottom: 40 },
+  content: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: 40 },
   scoreCard: {
     padding: spacing.md,
     borderRadius: radius.md,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.lg,
   },
   scoreRow: {
     flexDirection: 'row',
