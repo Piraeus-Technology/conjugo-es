@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
   optionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: spacing.sm + 2,
     borderRadius: radius.md,
     borderWidth: 1.5,
@@ -474,7 +474,6 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: fonts.sizes.lg,
     fontWeight: fonts.weights.semibold,
-    flex: 1,
   },
   nextButton: {
     flexDirection: 'row',
