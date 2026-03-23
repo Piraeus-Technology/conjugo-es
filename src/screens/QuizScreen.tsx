@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Modal,
   Pressable,
 } from 'react-native';
@@ -257,7 +256,8 @@ export default function QuizScreen() {
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
+    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View style={styles.content}>
       {/* Session score bar */}
       <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
         <View style={styles.scoreRow}>
@@ -288,7 +288,11 @@ export default function QuizScreen() {
         <Text style={[styles.questionLabel, { color: colors.textMuted }]}>
           {tenseNames[question.tense]}
         </Text>
-        <Text style={[styles.questionVerb, { color: colors.primary }]}>
+        <Text
+          style={[styles.questionVerb, { color: colors.primary }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
           {question.verb}
         </Text>
         <Text style={[styles.questionTranslation, { color: colors.textSecondary }]}>
@@ -339,6 +343,8 @@ export default function QuizScreen() {
         </TouchableOpacity>
       )}
 
+    </View>
+
       {/* End session button */}
       {sessionTotal > 0 && (
         <TouchableOpacity
@@ -348,26 +354,6 @@ export default function QuizScreen() {
         >
           <Text style={[styles.endSessionText, { color: colors.textMuted }]}>End Session</Text>
         </TouchableOpacity>
-      )}
-
-      {/* Session history */}
-      {sessions.length > 0 && sessionTotal === 0 && (
-        <View style={styles.historySection}>
-          <Text style={[styles.historyTitle, { color: colors.textSecondary }]}>Past Sessions</Text>
-          {sessions.slice(0, 5).map((s, i) => (
-            <View key={i} style={[styles.historyRow, { backgroundColor: colors.card }]}>
-              <Text style={[styles.historyDate, { color: colors.textMuted }]}>
-                {new Date(s.date).toLocaleDateString()}
-              </Text>
-              <Text style={[styles.historyStat, { color: colors.textPrimary }]}>
-                {s.correct}/{s.total} ({Math.round((s.correct / s.total) * 100)}%)
-              </Text>
-              <Text style={[styles.historyStat, { color: colors.textMuted }]}>
-                {formatDuration(s.durationMs)}
-              </Text>
-            </View>
-          ))}
-        </View>
       )}
 
       {/* Results modal */}
@@ -407,13 +393,13 @@ export default function QuizScreen() {
           </Pressable>
         </Pressable>
       </Modal>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: 40 },
+  content: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.sm },
   scoreCard: {
     padding: spacing.md,
     borderRadius: radius.md,
@@ -445,8 +431,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   questionContainer: {
+    flex: 1,
     alignItems: 'center',
-    marginBottom: spacing.md,
+    justifyContent: 'center',
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
@@ -501,7 +488,8 @@ const styles = StyleSheet.create({
   },
   endSessionButton: {
     alignItems: 'center',
-    marginTop: spacing.md,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
     padding: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1,
