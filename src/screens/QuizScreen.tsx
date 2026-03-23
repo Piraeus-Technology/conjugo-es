@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
   Modal,
   Pressable,
 } from 'react-native';
@@ -120,6 +121,7 @@ export default function QuizScreen() {
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const { activeTenses, activeLevels, loadPracticeSettings } = usePracticeSettingsStore();
   const nav = useNavigation<any>();
+  const scrollRef = useRef<ScrollView>(null);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
@@ -192,6 +194,10 @@ export default function QuizScreen() {
       recordAnswer(false, 0);
     }
     recordResult(question.verb, correct);
+    // Auto-scroll to show Next button
+    setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }, 100);
   };
 
   const handleNext = () => {
@@ -257,7 +263,11 @@ export default function QuizScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-    <View style={styles.content}>
+    <ScrollView
+      ref={scrollRef}
+      style={{ flex: 1 }}
+      contentContainerStyle={styles.content}
+    >
       {/* Session score bar */}
       <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
         <View style={styles.scoreRow}>
@@ -343,8 +353,6 @@ export default function QuizScreen() {
         </TouchableOpacity>
       )}
 
-    </View>
-
       {/* End session button */}
       {sessionTotal > 0 && (
         <TouchableOpacity
@@ -355,6 +363,8 @@ export default function QuizScreen() {
           <Text style={[styles.endSessionText, { color: colors.textMuted }]}>End Session</Text>
         </TouchableOpacity>
       )}
+
+    </ScrollView>
 
       {/* Results modal */}
       <Modal visible={showResults} transparent animationType="fade">
@@ -399,7 +409,7 @@ export default function QuizScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.sm },
+  content: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.lg },
   scoreCard: {
     padding: spacing.md,
     borderRadius: radius.md,
@@ -431,9 +441,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   questionContainer: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: spacing.md,
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
@@ -488,8 +497,7 @@ const styles = StyleSheet.create({
   },
   endSessionButton: {
     alignItems: 'center',
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
+    marginTop: spacing.md,
     padding: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1,
