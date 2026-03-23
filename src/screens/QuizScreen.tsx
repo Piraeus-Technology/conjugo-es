@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   scoreCard: {
     padding: spacing.md,
     borderRadius: radius.md,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.sm,
   },
   scoreRow: {
     flexDirection: 'row',
