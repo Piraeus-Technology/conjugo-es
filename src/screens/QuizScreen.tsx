@@ -194,10 +194,6 @@ export default function QuizScreen() {
       recordAnswer(false, 0);
     }
     recordResult(question.verb, correct);
-    // Auto-scroll to show Next button
-    setTimeout(() => {
-      scrollRef.current?.scrollToEnd({ animated: true });
-    }, 100);
   };
 
   const handleNext = () => {
@@ -341,17 +337,16 @@ export default function QuizScreen() {
         ))}
       </View>
 
-      {/* Next button */}
-      {answered && (
-        <TouchableOpacity
-          style={[styles.nextButton, { backgroundColor: colors.primary }]}
-          onPress={handleNext}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.nextButtonText}>Next</Text>
-          <Ionicons name="arrow-forward" size={18} color="#fff" />
-        </TouchableOpacity>
-      )}
+      {/* Next button — always takes space, visible only after answering */}
+      <TouchableOpacity
+        style={[styles.nextButton, { backgroundColor: colors.primary, opacity: answered ? 1 : 0 }]}
+        onPress={answered ? handleNext : undefined}
+        activeOpacity={0.8}
+        disabled={!answered}
+      >
+        <Text style={styles.nextButtonText}>Next</Text>
+        <Ionicons name="arrow-forward" size={18} color="#fff" />
+      </TouchableOpacity>
 
       {/* End session button */}
       {sessionTotal > 0 && (
