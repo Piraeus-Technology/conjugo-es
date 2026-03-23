@@ -28,6 +28,7 @@ function QuizStackScreen() {
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.textPrimary,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
+      headerTitleAlign: 'center' as const,
       headerShadowVisible: false,
     }}>
       <QuizStack.Screen name="QuizHome" component={QuizScreen} options={{ title: 'Quiz' }} />
@@ -43,6 +44,7 @@ function FlashcardStackScreen() {
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.textPrimary,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
+      headerTitleAlign: 'center' as const,
       headerShadowVisible: false,
     }}>
       <FlashcardStack.Screen name="FlashcardHome" component={FlashcardScreen} options={{ title: 'Flashcards' }} />
@@ -141,6 +143,7 @@ export default function App() {
               fontWeight: fonts.weights.semibold,
               color: colors.textPrimary,
             },
+            headerTitleAlign: 'center' as const,
             headerShadowVisible: false,
           }}
         >
