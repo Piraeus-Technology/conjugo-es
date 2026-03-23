@@ -263,20 +263,22 @@ export default function QuizScreen() {
     >
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
       {/* Session score bar */}
-      <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
-        <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionScore}/{sessionTotal}</Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Session</Text>
-        </View>
-        <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: colors.accent || colors.primary }]}>{streak}</Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Streak</Text>
-        </View>
-        <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
-            {sessionTotal > 0 ? Math.round((sessionScore / sessionTotal) * 100) : 0}%
-          </Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
+      <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
+        <View style={styles.scoreRow}>
+          <View style={styles.scoreItem}>
+            <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionScore}/{sessionTotal}</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Session</Text>
+          </View>
+          <View style={styles.scoreItem}>
+            <Text style={[styles.scoreValue, { color: colors.accent || colors.primary }]}>{streak}</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Streak</Text>
+          </View>
+          <View style={styles.scoreItem}>
+            <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
+              {sessionTotal > 0 ? Math.round((sessionScore / sessionTotal) * 100) : 0}%
+            </Text>
+            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
+          </View>
         </View>
         {totalQuestions > 0 && (
           <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
@@ -410,12 +412,14 @@ export default function QuizScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg, paddingBottom: 40 },
-  scoreBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  scoreCard: {
     padding: spacing.md,
     borderRadius: radius.md,
     marginBottom: spacing.sm,
+  },
+  scoreRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   scoreItem: {
     alignItems: 'center',
@@ -423,10 +427,10 @@ const styles = StyleSheet.create({
   allTimeText: {
     fontSize: fonts.sizes.xs,
     textAlign: 'center',
+    marginTop: spacing.sm,
     paddingTop: spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(0,0,0,0.06)',
-    marginHorizontal: spacing.md,
+    borderTopColor: 'rgba(0,0,0,0.08)',
   },
   scoreValue: {
     fontSize: fonts.sizes.xl,
