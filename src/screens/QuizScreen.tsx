@@ -430,17 +430,17 @@ const styles = StyleSheet.create({
     fontWeight: fonts.weights.semibold,
     letterSpacing: 1,
     textTransform: 'uppercase',
-    marginBottom: spacing.xs,
+    marginBottom: spacing.md,
   },
   questionVerb: {
     fontSize: 28,
     fontWeight: fonts.weights.bold,
-    marginBottom: 2,
+    marginBottom: spacing.xs,
   },
   questionTranslation: {
     fontSize: fonts.sizes.sm,
     fontStyle: 'italic',
-    marginBottom: 2,
+    marginBottom: spacing.sm,
   },
   questionPronoun: {
     fontSize: fonts.sizes.lg,
