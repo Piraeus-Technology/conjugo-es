@@ -67,6 +67,20 @@ export default function FeedbackScreen() {
           <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
         </TouchableOpacity>
 
+        {/* Flashcard Stats button */}
+        <TouchableOpacity
+          style={[styles.rateCard, { backgroundColor: colors.card, marginTop: spacing.sm }]}
+          onPress={() => nav.navigate('FlashcardStats')}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="layers-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Flashcard Stats</Text>
+            <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>View your flashcard progress</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+        </TouchableOpacity>
+
         {/* Settings section */}
         <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Settings</Text>
         <View style={[styles.settingsCard, { backgroundColor: colors.card }]}>

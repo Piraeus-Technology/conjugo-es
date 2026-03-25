@@ -15,6 +15,7 @@ import verbs from '../data/verbs.json';
 import { useNavigation } from '@react-navigation/native';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
+import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { speak } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 
@@ -57,6 +58,7 @@ export default function FlashcardScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loadPracticeSettings } = usePracticeSettingsStore();
+  const { saveSession } = useFlashcardSessionStore();
   const filteredEntries = React.useMemo(() =>
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
@@ -115,6 +117,9 @@ export default function FlashcardScreen() {
   };
 
   const handleEndSession = () => {
+    if (reviewed > 0) {
+      saveSession({ reviewed, correct });
+    }
     setShowResults(true);
   };
 

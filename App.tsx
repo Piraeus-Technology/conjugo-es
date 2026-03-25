@@ -14,6 +14,7 @@ import FlashcardScreen from './src/screens/FlashcardScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import PracticeSettingsScreen from './src/screens/PracticeSettingsScreen';
 import StatsScreen from './src/screens/StatsScreen';
+import FlashcardStatsScreen from './src/screens/FlashcardStatsScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 
@@ -68,6 +69,7 @@ function MoreStackScreen() {
     }}>
       <MoreStack.Screen name="MoreHome" component={FeedbackScreen} options={{ title: 'More' }} />
       <MoreStack.Screen name="Stats" component={StatsScreen} options={{ title: 'Quiz Stats' }} />
+      <MoreStack.Screen name="FlashcardStats" component={FlashcardStatsScreen} options={{ title: 'Flashcard Stats' }} />
     </MoreStack.Navigator>
   );
 }
