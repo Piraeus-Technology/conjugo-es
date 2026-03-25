@@ -80,11 +80,39 @@ export default function FlashcardScreen() {
       ),
     });
   }, [nav, colors]);
+
   const [card, setCard] = useState<Card>(() => generateCard(allVerbEntries, quizzableTenses));
   const [flipped, setFlipped] = useState(false);
-  const [count, setCount] = useState(0);
+  const [reviewed, setReviewed] = useState(0);
+  const [correct, setCorrect] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
+
+  const flipToFront = () => {
+    Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
+      setCard(generateCard(filteredEntries, activeTenses));
+      setFlipped(false);
+    });
+  };
+
+  const flipToBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setFlipped(true);
+    Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+  };
+
+  const handleGotIt = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setReviewed(r => r + 1);
+    setCorrect(c => c + 1);
+    flipToFront();
+  };
+
+  const handleMissed = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    setReviewed(r => r + 1);
+    flipToFront();
+  };
 
   const handleEndSession = () => {
     setShowResults(true);
@@ -92,55 +120,45 @@ export default function FlashcardScreen() {
 
   const handleNewSession = () => {
     setShowResults(false);
-    setCount(0);
+    setReviewed(0);
+    setCorrect(0);
     setCard(generateCard(filteredEntries, activeTenses));
     setFlipped(false);
     flipAnim.setValue(0);
   };
 
-  const flip = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (flipped) {
-      // Already flipped — go to next card
-      Animated.timing(flipAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => {
-        setCard(generateCard(filteredEntries, activeTenses));
-        setFlipped(false);
-        setCount(c => c + 1);
-      });
-    } else {
-      // Flip to reveal
-      setFlipped(true);
-      Animated.timing(flipAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const frontOpacity = flipAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 0, 0],
-  });
-  const backOpacity = flipAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0, 0, 1],
-  });
+  const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
+  const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      <Text style={[styles.counter, { color: colors.textMuted }]}>
-        {count} cards reviewed
-      </Text>
+      {/* Score bar */}
+      <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
+        <View style={styles.scoreItem}>
+          <Text style={[styles.scoreValue, { color: colors.primary }]}>{reviewed}</Text>
+          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Reviewed</Text>
+        </View>
+        <View style={styles.scoreItem}>
+          <Text style={[styles.scoreValue, { color: '#2E7D32' }]}>{correct}</Text>
+          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Got It</Text>
+        </View>
+        <View style={styles.scoreItem}>
+          <Text style={[styles.scoreValue, { color: '#C62828' }]}>{reviewed - correct}</Text>
+          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Missed</Text>
+        </View>
+        <View style={styles.scoreItem}>
+          <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
+            {reviewed > 0 ? Math.round((correct / reviewed) * 100) : 0}%
+          </Text>
+          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
+        </View>
+      </View>
 
+      {/* Card */}
       <TouchableOpacity
         style={styles.cardContainer}
-        onPress={flip}
-        activeOpacity={0.95}
+        onPress={!flipped ? flipToBack : undefined}
+        activeOpacity={flipped ? 1 : 0.95}
       >
         {/* Front */}
         <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: frontOpacity }]}>
@@ -182,27 +200,41 @@ export default function FlashcardScreen() {
           </Text>
           <TouchableOpacity
             style={[styles.speakButton, { backgroundColor: colors.primary }]}
-            onPress={(e) => {
-              e.stopPropagation?.();
-              speak(card.answer);
-            }}
+            onPress={() => speak(card.answer)}
           >
             <Ionicons name="volume-medium" size={20} color="#fff" />
           </TouchableOpacity>
-          <Text style={[styles.tapHint, { color: colors.textMuted }]}>
-            Tap for next card
-          </Text>
         </Animated.View>
       </TouchableOpacity>
 
-      {/* End session button */}
-      {count > 0 && (
+      {/* Got it / Missed buttons */}
+      <View style={[styles.buttonRow, { opacity: flipped ? 1 : 0 }]} pointerEvents={flipped ? 'auto' : 'none'}>
         <TouchableOpacity
-          style={[styles.endSessionButton, { borderColor: colors.border }]}
+          style={[styles.actionButton, { backgroundColor: '#FFEBEE', borderColor: '#C62828' }]}
+          onPress={handleMissed}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="close" size={20} color="#C62828" />
+          <Text style={[styles.actionButtonText, { color: '#C62828' }]}>Missed</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionButton, { backgroundColor: '#E8F5E9', borderColor: '#2E7D32' }]}
+          onPress={handleGotIt}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="checkmark" size={20} color="#2E7D32" />
+          <Text style={[styles.actionButtonText, { color: '#2E7D32' }]}>Got it</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* End session */}
+      {reviewed > 0 && !flipped && (
+        <TouchableOpacity
+          style={[styles.endButton, { borderColor: colors.border }]}
           onPress={handleEndSession}
           activeOpacity={0.7}
         >
-          <Text style={[styles.endSessionText, { color: colors.textMuted }]}>End Session</Text>
+          <Text style={[styles.endButtonText, { color: colors.textMuted }]}>End Session</Text>
         </TouchableOpacity>
       )}
 
@@ -213,8 +245,18 @@ export default function FlashcardScreen() {
             <Text style={[styles.modalTitle, { color: colors.primary }]}>Session Complete!</Text>
             <View style={styles.modalStats}>
               <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: colors.primary }]}>{count}</Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Cards</Text>
+                <Text style={[styles.modalStatValue, { color: colors.primary }]}>{reviewed}</Text>
+                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Reviewed</Text>
+              </View>
+              <View style={styles.modalStatItem}>
+                <Text style={[styles.modalStatValue, { color: '#2E7D32' }]}>{correct}</Text>
+                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Got It</Text>
+              </View>
+              <View style={styles.modalStatItem}>
+                <Text style={[styles.modalStatValue, { color: colors.textSecondary }]}>
+                  {reviewed > 0 ? Math.round((correct / reviewed) * 100) : 0}%
+                </Text>
+                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Accuracy</Text>
               </View>
             </View>
             <TouchableOpacity
@@ -233,147 +275,59 @@ export default function FlashcardScreen() {
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
-  counter: {
-    fontSize: fonts.sizes.sm,
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
+  scoreBar: {
     position: 'absolute',
-    top: spacing.lg,
-  },
-  cardContainer: {
-    width: width - spacing.lg * 2,
-    height: 360,
-  },
-  card: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: radius.lg || 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  cardBack: {
-    borderWidth: 2,
-    borderColor: 'rgba(0,0,0,0.05)',
-  },
-  tenseLabel: {
-    fontSize: fonts.sizes.sm,
-    fontWeight: fonts.weights.semibold,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: spacing.md,
-  },
-  verbText: {
-    fontSize: 36,
-    fontWeight: fonts.weights.bold,
-    marginBottom: spacing.xs,
-  },
-  translationText: {
-    fontSize: fonts.sizes.md,
-    fontStyle: 'italic',
-    marginBottom: spacing.lg,
-  },
-  pronounText: {
-    fontSize: fonts.sizes.xl,
-    fontWeight: fonts.weights.medium,
-  },
-  answerText: {
-    fontSize: 42,
-    fontWeight: fonts.weights.bold,
-    marginBottom: spacing.xs,
-  },
-  answerTranslation: {
-    fontSize: fonts.sizes.md,
-    fontStyle: 'italic',
-    marginBottom: spacing.md,
-  },
-  contextText: {
-    fontSize: fonts.sizes.sm,
-    marginBottom: spacing.lg,
-  },
-  speakButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
-  tapHint: {
-    fontSize: fonts.sizes.xs,
-    position: 'absolute',
-    bottom: spacing.lg,
-  },
-  endSessionButton: {
-    position: 'absolute',
-    bottom: spacing.lg + 20,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
-  },
-  endSessionText: {
-    fontSize: fonts.sizes.sm,
-    fontWeight: fonts.weights.medium,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '80%',
-    borderRadius: radius.lg,
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: fonts.sizes.xl,
-    fontWeight: fonts.weights.bold,
-    marginBottom: spacing.lg,
-  },
-  modalStats: {
+    top: spacing.sm,
+    left: spacing.lg,
+    right: spacing.lg,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: spacing.lg,
-  },
-  modalStatItem: {
-    alignItems: 'center',
-  },
-  modalStatValue: {
-    fontSize: 28,
-    fontWeight: fonts.weights.bold,
-  },
-  modalStatLabel: {
-    fontSize: fonts.sizes.xs,
-    marginTop: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  modalButton: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
+    padding: spacing.sm,
     borderRadius: radius.md,
-    width: '100%',
-    alignItems: 'center',
   },
-  modalButtonText: {
-    color: '#fff',
-    fontSize: fonts.sizes.md,
-    fontWeight: fonts.weights.bold,
+  scoreItem: { alignItems: 'center' },
+  scoreValue: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.bold },
+  scoreLabel: { fontSize: 10, marginTop: 1, textTransform: 'uppercase', letterSpacing: 0.5 },
+  cardContainer: { width: width - spacing.lg * 2, height: 320 },
+  card: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', padding: spacing.xl,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 4,
   },
+  cardBack: { borderWidth: 2, borderColor: 'rgba(0,0,0,0.05)' },
+  tenseLabel: {
+    fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold,
+    letterSpacing: 1, textTransform: 'uppercase', marginBottom: spacing.md,
+  },
+  verbText: { fontSize: 36, fontWeight: fonts.weights.bold, marginBottom: spacing.xs },
+  translationText: { fontSize: fonts.sizes.md, fontStyle: 'italic', marginBottom: spacing.lg },
+  pronounText: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.medium },
+  answerText: { fontSize: 42, fontWeight: fonts.weights.bold, marginBottom: spacing.xs },
+  answerTranslation: { fontSize: fonts.sizes.md, fontStyle: 'italic', marginBottom: spacing.md },
+  contextText: { fontSize: fonts.sizes.sm, marginBottom: spacing.md },
+  speakButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  tapHint: { fontSize: fonts.sizes.xs, position: 'absolute', bottom: spacing.lg },
+  buttonRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
+  actionButton: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: spacing.xs, paddingVertical: spacing.sm + 2, paddingHorizontal: spacing.xl,
+    borderRadius: radius.md, borderWidth: 1.5,
+  },
+  actionButtonText: { fontSize: fonts.sizes.md, fontWeight: fonts.weights.bold },
+  endButton: {
+    position: 'absolute', bottom: spacing.lg,
+    paddingHorizontal: spacing.lg, paddingVertical: spacing.sm,
+    borderRadius: radius.md, borderWidth: 1,
+  },
+  endButtonText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.medium },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
+  modalContent: { width: '80%', borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 8 },
+  modalTitle: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.bold, marginBottom: spacing.lg },
+  modalStats: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginBottom: spacing.lg },
+  modalStatItem: { alignItems: 'center' },
+  modalStatValue: { fontSize: 28, fontWeight: fonts.weights.bold },
+  modalStatLabel: { fontSize: fonts.sizes.xs, marginTop: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
+  modalButton: { paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: radius.md, width: '100%', alignItems: 'center' },
+  modalButtonText: { color: '#fff', fontSize: fonts.sizes.md, fontWeight: fonts.weights.bold },
 });
