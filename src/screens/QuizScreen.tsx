@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   questionTranslation: {
     fontSize: fonts.sizes.sm,
     fontStyle: 'italic',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
   },
   questionPronoun: {
     fontSize: fonts.sizes.lg,
