@@ -71,31 +71,52 @@ function generateQuestion(
   const personIndex = picked.index;
   const correctAnswer = picked.form;
 
-  // Generate wrong answers
-  const wrongAnswers = new Set<string>();
-
+  // Generate wrong answers — prioritize hard distractors
+  // Priority 1: Same verb, same tense, different person (hardest)
+  const sameVerbSameTense: string[] = [];
   results.forEach((r, i) => {
     if (i !== personIndex && r.form !== '—' && !r.disabled && r.form !== correctAnswer) {
-      wrongAnswers.add(r.form);
+      sameVerbSameTense.push(r.form);
     }
   });
 
+  // Priority 2: Same verb, different tense, same person
+  const sameVerbDiffTense: string[] = [];
   for (const t of activeTenses) {
     if (t === tense) continue;
     const otherResults = conjugate(verb, data, t);
     const form = otherResults[personIndex].form;
-    if (form !== '—' && !otherResults[personIndex].disabled && form !== correctAnswer) {
-      wrongAnswers.add(form);
+    if (form !== '—' && !otherResults[personIndex].disabled && form !== correctAnswer && !sameVerbSameTense.includes(form)) {
+      sameVerbDiffTense.push(form);
     }
   }
 
-  const wrongArray = Array.from(wrongAnswers);
+  // Pick distractors: 1-2 from same tense different person, 1-2 from different tense same person
   const selected: string[] = [];
-  while (selected.length < 3 && wrongArray.length > 0) {
-    const idx = Math.floor(Math.random() * wrongArray.length);
-    selected.push(wrongArray.splice(idx, 1)[0]);
+
+  // Shuffle both pools
+  for (let i = sameVerbSameTense.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sameVerbSameTense[i], sameVerbSameTense[j]] = [sameVerbSameTense[j], sameVerbSameTense[i]]; }
+  for (let i = sameVerbDiffTense.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sameVerbDiffTense[i], sameVerbDiffTense[j]] = [sameVerbDiffTense[j], sameVerbDiffTense[i]]; }
+
+  // Mix: try to get at least 1 from each pool, fill the rest
+  if (sameVerbSameTense.length > 0 && sameVerbDiffTense.length > 0) {
+    // At least 1 same-tense-diff-person, at least 1 diff-tense-same-person
+    selected.push(sameVerbSameTense.shift()!);
+    selected.push(sameVerbDiffTense.shift()!);
+    // Fill third from whichever has more
+    const remaining = [...sameVerbSameTense, ...sameVerbDiffTense];
+    if (remaining.length > 0) {
+      selected.push(remaining[Math.floor(Math.random() * remaining.length)]);
+    }
+  } else {
+    // Only one pool available, use it
+    const pool = sameVerbSameTense.length > 0 ? sameVerbSameTense : sameVerbDiffTense;
+    while (selected.length < 3 && pool.length > 0) {
+      selected.push(pool.shift()!);
+    }
   }
 
+  // Fallback: same tense, different verb (only if needed)
   while (selected.length < 3) {
     const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
     const otherResults = conjugate(otherVerb, otherData, tense);
