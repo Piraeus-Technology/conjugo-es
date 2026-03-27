@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Image,
 } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
@@ -357,8 +358,8 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             </View>
           ) : sections.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.heroEmoji}>📖</Text>
-              <Text style={[styles.heroTitle, { color: colors.textPrimary }]}>ConjuGo ES</Text>
+              <Image source={require('../../assets/logo.png')} style={styles.heroLogo} />
+              <Text style={[styles.heroTitle, { color: colors.textPrimary }]}>ConjuGo</Text>
               <Text style={[styles.heroSubtitle, { color: colors.textSecondary }]}>
                 Search for any Spanish verb or conjugation
               </Text>
@@ -411,7 +412,7 @@ const styles = StyleSheet.create({
   sectionSeparator: { height: spacing.sm },
   emptyContainer: { alignItems: 'center', paddingTop: 80 },
   emptyText: { fontSize: fonts.sizes.md, marginTop: spacing.md },
-  heroEmoji: { fontSize: 48 },
+  heroLogo: { width: 80, height: 80, borderRadius: 16 },
   heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
   heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.xs },
   vodWrapper: {
