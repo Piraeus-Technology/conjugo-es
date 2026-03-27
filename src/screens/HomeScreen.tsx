@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   sectionSeparator: { height: spacing.sm },
   emptyContainer: { alignItems: 'center', paddingTop: spacing.lg },
   emptyText: { fontSize: fonts.sizes.md, marginTop: spacing.md },
-  heroLogo: { width: 120, height: 120, borderRadius: 24 },
+  heroLogo: { width: 160, height: 160, borderRadius: 32 },
   heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
   heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.md },
   vodWrapper: {
