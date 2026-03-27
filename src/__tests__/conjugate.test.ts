@@ -375,6 +375,88 @@ describe('Irregular participles', () => {
   });
 });
 
+// ============ COMPOUND VERB PARTICIPLES (envolvisto bug) ============
+
+describe('Compound verb participles - longest base match', () => {
+  test('envolver → envuelto (not envolvisto)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to wrap',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    const result = forms('envolver', verb, 'gerund_participle');
+    expect(result[1]).toBe('envuelto');
+  });
+
+  test('envolver present perfect → he envuelto', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to wrap',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    const result = forms('envolver', verb, 'present_perfect');
+    expect(result[0]).toBe('he envuelto');
+    expect(result[3]).toBe('hemos envuelto');
+  });
+
+  test('devolver → devuelto (not devolvisto)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to return',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    expect(forms('devolver', verb, 'gerund_participle')[1]).toBe('devuelto');
+  });
+
+  test('revolver → revuelto', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to stir',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    expect(forms('revolver', verb, 'gerund_participle')[1]).toBe('revuelto');
+  });
+
+  test('componer → compuesto (not componisto)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to compose',
+    };
+    expect(forms('componer', verb, 'gerund_participle')[1]).toBe('compuesto');
+  });
+
+  test('proponer → propuesto', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to propose',
+    };
+    expect(forms('proponer', verb, 'gerund_participle')[1]).toBe('propuesto');
+  });
+
+  test('deshacer → deshecho', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to undo',
+    };
+    expect(forms('deshacer', verb, 'gerund_participle')[1]).toBe('deshecho');
+  });
+
+  test('prever → previsto (not previsto via ver)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to foresee',
+    };
+    // Both should give "previsto" — ver→visto, prefix "pre"
+    expect(forms('prever', verb, 'gerund_participle')[1]).toBe('previsto');
+  });
+
+  test('descubrir → descubierto (not descubristo)', () => {
+    const verb: VerbData = {
+      type: 'ir', regular: false, translation: 'to discover',
+    };
+    expect(forms('descubrir', verb, 'gerund_participle')[1]).toBe('descubierto');
+  });
+
+  test('describir → descrito (not describisto)', () => {
+    const verb: VerbData = {
+      type: 'ir', regular: false, translation: 'to describe',
+    };
+    expect(forms('describir', verb, 'gerund_participle')[1]).toBe('descrito');
+  });
+});
+
 // ============ IRREGULAR GERUNDS ============
 
 describe('Irregular gerunds', () => {
