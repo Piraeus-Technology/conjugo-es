@@ -92,7 +92,9 @@ const irregularParticiples: Record<string, string> = {
 function getIrregularParticiple(infinitive: string): string | null {
   if (irregularParticiples[infinitive]) return irregularParticiples[infinitive];
   // Check if verb ends with a known irregular base
-  for (const [base, participle] of Object.entries(irregularParticiples)) {
+  // Sort by length (longest first) so "volver" matches before "ver"
+  const sorted = Object.entries(irregularParticiples).sort((a, b) => b[0].length - a[0].length);
+  for (const [base, participle] of sorted) {
     if (infinitive.endsWith(base) && infinitive !== base) {
       const prefix = infinitive.slice(0, -base.length);
       return prefix + participle;
