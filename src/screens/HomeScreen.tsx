@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: fonts.sizes.md, marginTop: spacing.md },
   heroLogo: { width: 120, height: 120, borderRadius: 24 },
   heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
-  heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.xs },
+  heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.md },
   vodWrapper: {
     marginTop: spacing.sm,
   },
