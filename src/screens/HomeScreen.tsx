@@ -359,7 +359,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           ) : sections.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Image source={require('../../assets/logo.png')} style={styles.heroLogo} />
-              <Text style={[styles.heroTitle, { color: colors.textPrimary }]}>ConjuGo</Text>
               <Text style={[styles.heroSubtitle, { color: colors.textSecondary }]}>
                 Search for any Spanish verb or conjugation
               </Text>
@@ -412,7 +411,7 @@ const styles = StyleSheet.create({
   sectionSeparator: { height: spacing.sm },
   emptyContainer: { alignItems: 'center', paddingTop: 80 },
   emptyText: { fontSize: fonts.sizes.md, marginTop: spacing.md },
-  heroLogo: { width: 80, height: 80, borderRadius: 16 },
+  heroLogo: { width: 120, height: 120, borderRadius: 24 },
   heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
   heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.xs },
   vodWrapper: {
