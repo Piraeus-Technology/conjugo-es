@@ -342,11 +342,23 @@ function tryYoGo(ctx: ConjugationContext, i: number): string | null {
 
 /** Handle yo-zco verbs (conozco, aparezco, etc.) */
 function tryYoZco(ctx: ConjugationContext, i: number): string | null {
-  if (ctx.tense === 'present' && i === 0 && ctx.pattern?.yoZco) {
-    return ctx.stem.slice(0, -1) + 'zco';
+  if (!ctx.pattern?.yoZco) return null;
+  const zcStem = ctx.stem.slice(0, -1) + 'zc';
+  if (ctx.tense === 'present' && i === 0) {
+    return zcStem + 'o';
   }
-  if (ctx.tense === 'subjunctive_present' && ctx.pattern?.yoZco) {
-    return ctx.stem.slice(0, -1) + 'zc' + ctx.endings[i];
+  if (ctx.tense === 'subjunctive_present') {
+    return zcStem + ctx.endings[i];
+  }
+  // Imperative affirmative: usted/nosotros/ustedes use subjunctive (zc+a) forms
+  if (ctx.tense === 'imperative_affirmative' && [2, 3, 5].includes(i)) {
+    const subjEndings: Record<number, string> = { 2: 'a', 3: 'amos', 5: 'an' };
+    return zcStem + subjEndings[i];
+  }
+  // Imperative negative: all persons use subjunctive (zc+a) forms
+  if (ctx.tense === 'imperative_negative' && i !== 0) {
+    const negEndings: Record<number, string> = { 1: 'as', 2: 'a', 3: 'amos', 4: 'áis', 5: 'an' };
+    return 'no ' + zcStem + negEndings[i];
   }
   return null;
 }

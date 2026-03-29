@@ -242,6 +242,20 @@ describe('Yo-zco verb: conocer', () => {
       'conozca', 'conozcas', 'conozca', 'conozcamos', 'conozcáis', 'conozcan',
     ]);
   });
+
+  test('imperative affirmative - usted/nosotros/ustedes use zc stem', () => {
+    const result = conjugate('conocer', verb, 'imperative_affirmative');
+    expect(result[2].form).toBe('conozca');      // usted
+    expect(result[3].form).toBe('conozcamos');    // nosotros
+    expect(result[5].form).toBe('conozcan');      // ustedes
+  });
+
+  test('imperative negative - all use zc stem', () => {
+    const result = conjugate('conocer', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no conozcas');   // tú
+    expect(result[2].form).toBe('no conozca');    // usted
+    expect(result[3].form).toBe('no conozcamos'); // nosotros
+  });
 });
 
 // ============ SPELLING CHANGES ============
