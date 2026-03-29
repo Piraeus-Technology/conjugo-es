@@ -438,7 +438,11 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
   // Present yo (-cer_z, -ger_j, -gir_j, -guir_g): yo form changes
   if (ctx.tense === 'present' && i === 0) {
     if (sc === 'cer_z' || sc === 'ger_j' || sc === 'gir_j' || sc === 'guir_g') {
-      return modStem + 'o';
+      let finalStem = modStem;
+      if (ctx.pattern?.stemChange?.present) {
+        finalStem = applyStemChange(modStem, ctx.pattern.stemChange.present);
+      }
+      return finalStem + 'o';
     }
   }
 
@@ -534,6 +538,11 @@ function applyStemChanges(ctx: ConjugationContext, i: number, currentStem: strin
     if (bootPositions.includes(i)) {
       return applyStemChange(stem, pattern.stemChange.present);
     }
+  }
+
+  // Imperative affirmative: tú (index 1) uses stem change like present boot positions
+  if (tense === 'imperative_affirmative' && pattern?.stemChange?.present && i === 1) {
+    return applyStemChange(stem, pattern.stemChange.present);
   }
 
   // Preterite: 3rd person stem changes for -ir verbs

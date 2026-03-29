@@ -273,6 +273,59 @@ describe('Spelling change car→qué: buscar', () => {
   });
 });
 
+describe('Spelling change cer_z: torcer', () => {
+  const verb: VerbData = {
+    type: 'er', regular: false, translation: 'to twist',
+    pattern: { stemChange: { present: 'o_ue' }, spellingChange: 'cer_z' },
+  };
+
+  test('present yo: tuerzo', () => {
+    expect(forms('torcer', verb, 'present')[0]).toBe('tuerzo');
+  });
+
+  test('imperative tú: tuerce (3rd person present with stem change)', () => {
+    const result = conjugate('torcer', verb, 'imperative_affirmative');
+    expect(result[1].form).toBe('tuerce');
+  });
+
+  test('imperative usted: tuerza', () => {
+    const result = conjugate('torcer', verb, 'imperative_affirmative');
+    expect(result[2].form).toBe('tuerza');
+  });
+
+  test('imperative nosotros: torzamos', () => {
+    const result = conjugate('torcer', verb, 'imperative_affirmative');
+    expect(result[3].form).toBe('torzamos');
+  });
+
+  test('subjunctive present', () => {
+    const result = forms('torcer', verb, 'subjunctive_present');
+    expect(result[0]).toBe('tuerza');
+    expect(result[3]).toBe('torzamos');
+  });
+});
+
+describe('Spelling change ger_j: coger', () => {
+  const verb: VerbData = {
+    type: 'er', regular: false, translation: 'to take',
+    pattern: { spellingChange: 'ger_j' },
+  };
+
+  test('present yo: cojo', () => {
+    expect(forms('coger', verb, 'present')[0]).toBe('cojo');
+  });
+
+  test('imperative usted: coja', () => {
+    const result = conjugate('coger', verb, 'imperative_affirmative');
+    expect(result[2].form).toBe('coja');
+  });
+
+  test('imperative negative tú: no cojas', () => {
+    const result = conjugate('coger', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no cojas');
+  });
+});
+
 describe('Spelling change uir→uy: construir', () => {
   const verb: VerbData = {
     type: 'ir', regular: false, translation: 'to build',
