@@ -278,6 +278,26 @@ describe('Spelling change uir→uy: construir', () => {
     expect(result[5]).toBe('construyeron');
     expect(result[0]).toBe('construí'); // yo normal
   });
+
+  test('imperative affirmative - tú uses uy+e', () => {
+    const result = conjugate('construir', verb, 'imperative_affirmative');
+    expect(result[0].disabled).toBe(true); // yo disabled
+    expect(result[1].form).toBe('construye'); // tú
+    expect(result[2].form).toBe('construya'); // usted
+  });
+
+  test('imperative negative - uses uy+a forms', () => {
+    const result = conjugate('construir', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no construyas');
+    expect(result[2].form).toBe('no construya');
+  });
+
+  test('subjunctive present - all use uy stem', () => {
+    const result = forms('construir', verb, 'subjunctive_present');
+    expect(result[0]).toBe('construya');
+    expect(result[1]).toBe('construyas');
+    expect(result[3]).toBe('construyamos');
+  });
 });
 
 // ============ FULLY IRREGULAR VERBS (OVERRIDES) ============

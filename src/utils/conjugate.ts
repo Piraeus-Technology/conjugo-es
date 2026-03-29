@@ -372,6 +372,21 @@ function tryUirVerb(ctx: ConjugationContext, i: number): string | null {
   if (ctx.tense === 'preterite' && [2, 5].includes(i)) {
     return uirStem + (i === 2 ? 'ó' : 'eron');
   }
+  // Imperative affirmative: tú uses 3rd person present (uy+e), others use subjunctive (uy+a)
+  if (ctx.tense === 'imperative_affirmative' && i !== 0 && i !== 4) {
+    const impEndings: Record<number, string> = { 1: 'e', 2: 'a', 3: 'amos', 5: 'an' };
+    return uirStem + impEndings[i];
+  }
+  // Imperative negative: all use subjunctive forms (uy+a)
+  if (ctx.tense === 'imperative_negative' && i !== 0) {
+    const negEndings: Record<number, string> = { 1: 'as', 2: 'a', 3: 'amos', 4: 'áis', 5: 'an' };
+    return 'no ' + uirStem + negEndings[i];
+  }
+  // Subjunctive present: all persons use uy stem
+  if (ctx.tense === 'subjunctive_present') {
+    const subjEndings = ['a', 'as', 'a', 'amos', 'áis', 'an'];
+    return uirStem + subjEndings[i];
+  }
   return null;
 }
 
