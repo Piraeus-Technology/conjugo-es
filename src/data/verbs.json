@@ -5893,13 +5893,16 @@
   },
   "descargar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to download/unload",
     "examples": [
       "Descargué la aplicación en mi teléfono.",
       "Descarga el archivo desde el enlace."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
   },
   "determinar": {
     "type": "ar",
@@ -6043,13 +6046,16 @@
   },
   "enfocar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to focus",
     "examples": [
       "Enfoca la cámara antes de tomar la foto.",
       "Se enfocaron en mejorar la calidad."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "engañar": {
     "type": "ar",
@@ -6933,13 +6939,16 @@
   },
   "ubicar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to locate",
     "examples": [
       "Ubiqué el restaurante en el mapa.",
       "¿Puedes ubicar dónde queda la estación?"
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "vacilar": {
     "type": "ar",
@@ -8533,13 +8542,16 @@
   },
   "calificar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to grade/qualify",
     "examples": [
       "El profesor calificó los exámenes.",
       "Lo calificaron como el mejor del año."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "callar": {
     "type": "ar",
@@ -8643,13 +8655,16 @@
   },
   "confiscar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to confiscate",
     "examples": [
       "Confiscaron los productos ilegales.",
       "Le confiscaron el teléfono en clase."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "congelar": {
     "type": "ar",
@@ -8733,13 +8748,16 @@
   },
   "cotizar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to quote (price)",
     "examples": [
       "Las acciones cotizan en la bolsa.",
       "Cotizaron el precio de la reparación."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "cuestionar": {
     "type": "ar",
@@ -8853,13 +8871,16 @@
   },
   "dialogar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to dialogue",
     "examples": [
       "Dialogamos para resolver el conflicto.",
       "Es importante dialogar con respeto."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
   },
   "discriminar": {
     "type": "ar",
@@ -9003,13 +9024,16 @@
   },
   "enlazar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to link",
     "examples": [
       "Enlazaron las dos ciudades con un puente.",
       "Enlaza los documentos en un solo archivo."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "ensuciar": {
     "type": "ar",
@@ -9293,13 +9317,16 @@
   },
   "implicar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to imply/involve",
     "examples": [
       "Esto implica más trabajo para todos.",
       "Lo implicaron en el escándalo."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "impulsar": {
     "type": "ar",
@@ -9513,13 +9540,16 @@
   },
   "multiplicar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to multiply",
     "examples": [
       "Multiplica cinco por tres.",
       "Los problemas se multiplican con el tiempo."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "murmurar": {
     "type": "ar",
@@ -9713,13 +9743,16 @@
   },
   "postergar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to postpone",
     "examples": [
       "Postergaron la reunión para la próxima semana.",
       "No postergues lo que puedes hacer hoy."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
   },
   "precisar": {
     "type": "ar",
@@ -9783,13 +9816,16 @@
   },
   "propagar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to spread/propagate",
     "examples": [
       "El fuego se propagó rápidamente.",
       "Propagan noticias falsas por internet."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
   },
   "proporcionar": {
     "type": "ar",
@@ -9803,13 +9839,16 @@
   },
   "purificar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to purify",
     "examples": [
       "Purifican el agua con un filtro.",
       "El aire fresco purifica los pulmones."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "quemar": {
     "type": "ar",
@@ -10003,13 +10042,16 @@
   },
   "replicar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to reply",
     "examples": [
       "Replicó con ironía al comentario.",
       "Replicaron el experimento con éxito."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "reportar": {
     "type": "ar",
@@ -10093,13 +10135,16 @@
   },
   "ridiculizar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to ridicule",
     "examples": [
       "No ridiculices a los demás.",
       "Lo ridiculizaron frente a todos."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "rodear": {
     "type": "ar",
@@ -10173,13 +10218,16 @@
   },
   "tapizar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to upholster",
     "examples": [
       "Tapizaron los sillones con tela nueva.",
       "Quiero tapizar las sillas del comedor."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "tatuar": {
     "type": "ar",
@@ -10613,13 +10661,16 @@
   },
   "abdicar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to abdicate",
     "examples": [
       "El rey abdicó en favor de su hijo.",
       "Abdicó del trono por amor."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "abolir": {
     "type": "ar",
@@ -10643,13 +10694,16 @@
   },
   "abrigar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to shelter/wrap up",
     "examples": [
       "Abriga bien al niño, hace frío.",
       "Abrigaba la esperanza de volver a verla."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
   },
   "abstraer": {
     "type": "ar",
@@ -10743,13 +10797,16 @@
   },
   "actualizar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to update",
     "examples": [
       "Actualiza tu teléfono a la última versión.",
       "Actualizamos la base de datos."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "adelantar": {
     "type": "ar",
@@ -10763,13 +10820,16 @@
   },
   "adelgazar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to lose weight",
     "examples": [
       "Adelgazó diez kilos en tres meses.",
       "Quiero adelgazar para el verano."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "adentrar": {
     "type": "ar",
@@ -10953,13 +11013,16 @@
   },
   "aparcar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to park",
     "examples": [
       "Aparqué el coche frente a la tienda.",
       "Es difícil aparcar en el centro."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "apoyar": {
     "type": "ar",
@@ -11053,13 +11116,16 @@
   },
   "automatizar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to automate",
     "examples": [
       "Automatizaron el proceso de producción.",
       "Quieren automatizar las tareas repetitivas."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "avecindar": {
     "type": "ar",
@@ -11143,13 +11209,16 @@
   },
   "catalogar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to catalog",
     "examples": [
       "Catalogaron todos los libros de la biblioteca.",
       "Cataloga las especies de plantas."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
   },
   "cautivar": {
     "type": "ar",
@@ -11163,13 +11232,16 @@
   },
   "cegar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to blind",
     "examples": [
       "La luz me cegó por un instante.",
       "Lo ciega la ambición."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "gar_gué"
+    }
   },
   "censurar": {
     "type": "ar",
@@ -11193,13 +11265,16 @@
   },
   "codificar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to codify/encode",
     "examples": [
       "Codificaron la información en un formato nuevo.",
       "Hay que codificar los archivos."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "colar": {
     "type": "ar",
@@ -11243,13 +11318,16 @@
   },
   "compatibilizar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to make compatible",
     "examples": [
       "Compatibiliza el trabajo con los estudios.",
       "Compatibilizaron los dos sistemas informáticos."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "zar_cé"
+    }
   },
   "compensar": {
     "type": "ar",
@@ -11463,13 +11541,16 @@
   },
   "convocar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to convene/summon",
     "examples": [
       "Convocaron una reunión urgente.",
       "Convocan a los estudiantes a la asamblea."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "car_qué"
+    }
   },
   "acontecer": {
     "type": "er",

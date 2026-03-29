@@ -334,8 +334,27 @@ function tryIrregularPreterite(ctx: ConjugationContext, i: number): string | nul
 
 /** Handle yo-go verbs in present tense (tengo, vengo, etc.) */
 function tryYoGo(ctx: ConjugationContext, i: number): string | null {
-  if (ctx.tense === 'present' && i === 0 && ctx.pattern?.yoGo) {
-    return ctx.stem + 'go';
+  if (!ctx.pattern?.yoGo) return null;
+  const goStem = ctx.stem + 'g';
+  if (ctx.tense === 'present' && i === 0) {
+    return goStem + 'o';
+  }
+  // Subjunctive present: all persons use g stem
+  if (ctx.tense === 'subjunctive_present') {
+    const subjEndings = ctx.verb.type === 'ar'
+      ? ['e', 'es', 'e', 'emos', 'éis', 'en']
+      : ['a', 'as', 'a', 'amos', 'áis', 'an'];
+    return goStem + subjEndings[i];
+  }
+  // Imperative affirmative: usted/nosotros/ustedes use subjunctive (g+a) forms
+  if (ctx.tense === 'imperative_affirmative' && [2, 3, 5].includes(i)) {
+    const impEndings: Record<number, string> = { 2: 'a', 3: 'amos', 5: 'an' };
+    return goStem + impEndings[i];
+  }
+  // Imperative negative: all persons use subjunctive (g+a) forms
+  if (ctx.tense === 'imperative_negative' && i !== 0) {
+    const negEndings: Record<number, string> = { 1: 'as', 2: 'a', 3: 'amos', 4: 'áis', 5: 'an' };
+    return 'no ' + goStem + negEndings[i];
   }
   return null;
 }
@@ -363,15 +382,49 @@ function tryYoZco(ctx: ConjugationContext, i: number): string | null {
   return null;
 }
 
-/** Handle spelling changes in preterite yo form (busqué, pagué, etc.) */
+/** Handle spelling changes for -car, -gar, -zar verbs */
 function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string | null {
-  if (ctx.tense !== 'preterite' || i !== 0 || !ctx.pattern?.spellingChange) return null;
-  switch (ctx.pattern.spellingChange) {
-    case 'car_qué': return ctx.stem.slice(0, -1) + 'qué';
-    case 'gar_gué': return ctx.stem + 'ué';
-    case 'zar_cé': return ctx.stem.slice(0, -1) + 'cé';
-    default: return null;
+  if (!ctx.pattern?.spellingChange) return null;
+  const sc = ctx.pattern.spellingChange;
+  if (sc !== 'car_qué' && sc !== 'gar_gué' && sc !== 'zar_cé') return null;
+
+  // Get the modified stem for subjunctive/imperative contexts
+  const getModStem = () => {
+    switch (sc) {
+      case 'car_qué': return ctx.stem.slice(0, -1) + 'qu';
+      case 'gar_gué': return ctx.stem + 'u';
+      case 'zar_cé': return ctx.stem.slice(0, -1) + 'c';
+      default: return ctx.stem;
+    }
+  };
+
+  // Preterite yo
+  if (ctx.tense === 'preterite' && i === 0) {
+    switch (sc) {
+      case 'car_qué': return ctx.stem.slice(0, -1) + 'qué';
+      case 'gar_gué': return ctx.stem + 'ué';
+      case 'zar_cé': return ctx.stem.slice(0, -1) + 'cé';
+    }
   }
+
+  // Subjunctive present: all persons use modified stem
+  if (ctx.tense === 'subjunctive_present') {
+    return getModStem() + ctx.endings[i];
+  }
+
+  // Imperative affirmative: usted/nosotros/ustedes use subjunctive forms
+  if (ctx.tense === 'imperative_affirmative' && [2, 3, 5].includes(i)) {
+    const subjEndings: Record<number, string> = { 2: 'e', 3: 'emos', 5: 'en' };
+    return getModStem() + subjEndings[i];
+  }
+
+  // Imperative negative: all persons use subjunctive forms
+  if (ctx.tense === 'imperative_negative' && i !== 0) {
+    const negEndings: Record<number, string> = { 1: 'es', 2: 'e', 3: 'emos', 4: 'éis', 5: 'en' };
+    return 'no ' + getModStem() + negEndings[i];
+  }
+
+  return null;
 }
 
 /** Handle UIR verbs with y-insertion (construyo, destruyen, etc.) */
