@@ -1764,7 +1764,8 @@
     "pattern": {
       "stemChange": {
         "present": "o_ue"
-      }
+      },
+      "spellingChange": "cer_z"
     },
     "examples": [
       "Tuerce a la derecha en la próxima esquina.",
@@ -2089,7 +2090,7 @@
         "present": "e_i",
         "preterite": "e_i"
       },
-      "spellingChange": "guir_ga"
+      "spellingChange": "guir_g"
     },
     "examples": [
       "Sigue recto hasta la esquina.",
@@ -2266,7 +2267,7 @@
         "present": "e_i",
         "preterite": "e_i"
       },
-      "spellingChange": "guir_ga"
+      "spellingChange": "guir_g"
     },
     "examples": [
       "La policía persiguió al ladrón.",
@@ -2283,7 +2284,7 @@
         "present": "e_i",
         "preterite": "e_i"
       },
-      "spellingChange": "guir_ga"
+      "spellingChange": "guir_g"
     },
     "examples": [
       "Conseguí el trabajo que quería.",
@@ -2300,7 +2301,7 @@
         "present": "e_i",
         "preterite": "e_i"
       },
-      "spellingChange": "guir_ga"
+      "spellingChange": "guir_g"
     },
     "examples": [
       "Prosiguieron el viaje después del descanso.",
@@ -2317,7 +2318,7 @@
         "present": "e_i",
         "preterite": "e_i"
       },
-      "spellingChange": "gir_ja"
+      "spellingChange": "gir_j"
     },
     "examples": [
       "Elegí el vestido azul.",
@@ -2334,7 +2335,7 @@
         "present": "e_i",
         "preterite": "e_i"
       },
-      "spellingChange": "gir_ja"
+      "spellingChange": "gir_j"
     },
     "examples": [
       "El profesor corrigió los exámenes.",
@@ -7142,13 +7143,16 @@
   },
   "coger": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to grab/catch",
     "examples": [
       "Cogí el tren de las ocho.",
       "Coge un abrigo, hace frío."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "ger_j"
+    }
   },
   "cometer": {
     "type": "er",
@@ -7282,23 +7286,29 @@
   },
   "proteger": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to protect",
     "examples": [
       "Protege tu piel del sol.",
       "Protegieron a los animales en peligro."
     ],
-    "level": "A2"
+    "level": "A2",
+    "pattern": {
+      "spellingChange": "ger_j"
+    }
   },
   "recoger": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to pick up/collect",
     "examples": [
       "Recogí a los niños del colegio.",
       "Recoge tus cosas antes de salir."
     ],
-    "level": "A2"
+    "level": "A2",
+    "pattern": {
+      "spellingChange": "ger_j"
+    }
   },
   "recorrer": {
     "type": "er",
@@ -7452,33 +7462,42 @@
   },
   "convencer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to convince",
     "examples": [
       "Me convenció con sus argumentos.",
       "No logro convencerlo de cambiar de opinión."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "cer_z"
+    }
   },
   "ejercer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to practice/exert",
     "examples": [
       "Ejerce como abogado desde hace diez años.",
       "Ejerció gran influencia en su comunidad."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "cer_z"
+    }
   },
   "vencer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to defeat",
     "examples": [
       "Vencimos al equipo contrario.",
       "Venció su miedo a las alturas."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "cer_z"
+    }
   },
   "coser": {
     "type": "er",
@@ -7832,23 +7851,29 @@
   },
   "dirigir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to direct/manage",
     "examples": [
       "Dirige una empresa de tecnología.",
       "Dirigió la orquesta con elegancia."
     ],
-    "level": "A2"
+    "level": "A2",
+    "pattern": {
+      "spellingChange": "gir_j"
+    }
   },
   "distinguir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to distinguish",
     "examples": [
       "Distingo los colores con dificultad.",
       "Se distingue por su amabilidad."
     ],
-    "level": "B1"
+    "level": "B1",
+    "pattern": {
+      "spellingChange": "guir_g"
+    }
   },
   "dividir": {
     "type": "ir",
@@ -7892,13 +7917,16 @@
   },
   "exigir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to demand/require",
     "examples": [
       "Exijo una explicación.",
       "Exigieron mejores condiciones de trabajo."
     ],
-    "level": "B1"
+    "level": "B1",
+    "pattern": {
+      "spellingChange": "gir_j"
+    }
   },
   "exprimir": {
     "type": "ir",
@@ -10481,13 +10509,16 @@
   },
   "erigir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to erect",
     "examples": [
       "Erigieron un monumento en la plaza.",
       "Quieren erigir una estatua en su honor."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "gir_j"
+    }
   },
   "escupir": {
     "type": "ir",
@@ -10511,13 +10542,16 @@
   },
   "fingir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to pretend",
     "examples": [
       "Fingió estar enfermo para no ir al trabajo.",
       "No finjas, sé que estás triste."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "gir_j"
+    }
   },
   "gruñir": {
     "type": "ir",
@@ -10604,13 +10638,16 @@
   },
   "surgir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to arise/emerge",
     "examples": [
       "Surgió un problema inesperado.",
       "Surgen nuevas oportunidades cada día."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "gir_j"
+    }
   },
   "tañir": {
     "type": "ir",
@@ -10634,13 +10671,16 @@
   },
   "ungir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to anoint",
     "examples": [
       "Lo ungieron como nuevo líder.",
       "Ungieron al rey con aceites sagrados."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "spellingChange": "gir_j"
+    }
   },
   "urdir": {
     "type": "ir",
@@ -11570,13 +11610,16 @@
   },
   "acoger": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to welcome/take in",
     "examples": [
       "Nos acogieron con los brazos abiertos.",
       "Acoge a los refugiados con generosidad."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "spellingChange": "ger_j"
+    }
   },
   "adolecer": {
     "type": "er",
@@ -11749,13 +11792,16 @@
   },
   "sumergir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to submerge",
     "examples": [
       "Se sumergió en el agua cristalina.",
       "Sumerge las verduras en agua fría."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "gir_j"
+    }
   },
   "transcurrir": {
     "type": "ir",

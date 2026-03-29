@@ -201,7 +201,7 @@ export interface IrregularPattern {
   yoZco?: boolean; // yo form ends in -zco (conozco, etc.)
   irregularPreteriteStem?: string; // e.g. "tuv" for tener
   irregularFutureStem?: string; // e.g. "tendr" for tener
-  spellingChange?: 'car_qué' | 'gar_gué' | 'zar_cé' | 'ger_ja' | 'gir_ja' | 'guir_ga' | 'uir_uy';
+  spellingChange?: 'car_qué' | 'gar_gué' | 'zar_cé' | 'cer_z' | 'ger_j' | 'gir_j' | 'guir_g' | 'uir_uy';
   fullOverrides?: Partial<Record<SimpleTense, string[]>>;
 }
 
@@ -404,23 +404,29 @@ function tryYoZco(ctx: ConjugationContext, i: number): string | null {
   return null;
 }
 
-/** Handle spelling changes for -car, -gar, -zar verbs */
+/** Handle spelling changes for -car, -gar, -zar, -cer, -ger, -gir, -guir verbs */
 function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string | null {
   if (!ctx.pattern?.spellingChange) return null;
   const sc = ctx.pattern.spellingChange;
-  if (sc !== 'car_qué' && sc !== 'gar_gué' && sc !== 'zar_cé') return null;
 
-  // Get the modified stem for subjunctive/imperative contexts
-  const getModStem = () => {
+  // Get the modified stem for subjunctive/imperative contexts (before a/o)
+  const getModStem = (): string | null => {
     switch (sc) {
       case 'car_qué': return ctx.stem.slice(0, -1) + 'qu';
       case 'gar_gué': return ctx.stem + 'u';
       case 'zar_cé': return ctx.stem.slice(0, -1) + 'c';
-      default: return ctx.stem;
+      case 'cer_z': return ctx.stem.slice(0, -1) + 'z';   // torcer → tuerz/torz
+      case 'ger_j': return ctx.stem.slice(0, -1) + 'j';   // coger → coj
+      case 'gir_j': return ctx.stem.slice(0, -1) + 'j';   // dirigir → dirij
+      case 'guir_g': return ctx.stem.slice(0, -2) + 'g';  // distinguir → disting
+      default: return null;
     }
   };
 
-  // Preterite yo
+  const modStem = getModStem();
+  if (!modStem) return null;
+
+  // Preterite yo (-car/-gar/-zar only)
   if (ctx.tense === 'preterite' && i === 0) {
     switch (sc) {
       case 'car_qué': return ctx.stem.slice(0, -1) + 'qué';
@@ -429,21 +435,56 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
     }
   }
 
+  // Present yo (-cer_z, -ger_j, -gir_j, -guir_g): yo form changes
+  if (ctx.tense === 'present' && i === 0) {
+    if (sc === 'cer_z' || sc === 'ger_j' || sc === 'gir_j' || sc === 'guir_g') {
+      return modStem + 'o';
+    }
+  }
+
   // Subjunctive present: all persons use modified stem
   if (ctx.tense === 'subjunctive_present') {
-    return getModStem() + ctx.endings[i];
+    if (sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé') {
+      return modStem + ctx.endings[i];
+    }
+    // -cer/-ger/-gir/-guir: subjunctive uses modified stem + -ar subjunctive endings
+    const subjEndings = ctx.verb.type === 'ir'
+      ? ['a', 'as', 'a', 'amos', 'áis', 'an']
+      : ['a', 'as', 'a', 'amos', 'áis', 'an'];
+    // Apply stem change if present (e.g. torcer o→ue in boot positions)
+    let finalStem = modStem;
+    if (ctx.pattern?.stemChange?.present && [0, 1, 2, 5].includes(i)) {
+      finalStem = applyStemChange(modStem, ctx.pattern.stemChange.present);
+    }
+    return finalStem + subjEndings[i];
   }
 
   // Imperative affirmative: usted/nosotros/ustedes use subjunctive forms
   if (ctx.tense === 'imperative_affirmative' && [2, 3, 5].includes(i)) {
-    const subjEndings: Record<number, string> = { 2: 'e', 3: 'emos', 5: 'en' };
-    return getModStem() + subjEndings[i];
+    if (sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé') {
+      const impEndings: Record<number, string> = { 2: 'e', 3: 'emos', 5: 'en' };
+      return modStem + impEndings[i];
+    }
+    const impEndings: Record<number, string> = { 2: 'a', 3: 'amos', 5: 'an' };
+    let finalStem = modStem;
+    if (ctx.pattern?.stemChange?.present && [2, 5].includes(i)) {
+      finalStem = applyStemChange(modStem, ctx.pattern.stemChange.present);
+    }
+    return finalStem + impEndings[i];
   }
 
   // Imperative negative: all persons use subjunctive forms
   if (ctx.tense === 'imperative_negative' && i !== 0) {
-    const negEndings: Record<number, string> = { 1: 'es', 2: 'e', 3: 'emos', 4: 'éis', 5: 'en' };
-    return 'no ' + getModStem() + negEndings[i];
+    if (sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé') {
+      const negEndings: Record<number, string> = { 1: 'es', 2: 'e', 3: 'emos', 4: 'éis', 5: 'en' };
+      return 'no ' + modStem + negEndings[i];
+    }
+    const negEndings: Record<number, string> = { 1: 'as', 2: 'a', 3: 'amos', 4: 'áis', 5: 'an' };
+    let finalStem = modStem;
+    if (ctx.pattern?.stemChange?.present && [1, 2, 5].includes(i)) {
+      finalStem = applyStemChange(modStem, ctx.pattern.stemChange.present);
+    }
+    return 'no ' + finalStem + negEndings[i];
   }
 
   return null;
