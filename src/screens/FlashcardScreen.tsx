@@ -43,14 +43,21 @@ function generateCard(entries: [string, VerbData][], tenses: Tense[]): Card {
     : Math.floor(Math.random() * verbEntries.length);
   const [verb, data] = verbEntries[idx];
   const tense = activeTenseList[Math.floor(Math.random() * activeTenseList.length)];
-  const personIndex = Math.floor(Math.random() * 6);
   const results = conjugate(verb, data, tense);
+  // Filter to valid (non-disabled) persons only
+  const validPersons = results
+    .map((r, i) => ({ index: i, ...r }))
+    .filter(r => !r.disabled && r.form !== '—');
+  if (validPersons.length === 0) {
+    return generateCard(entries, tenses);
+  }
+  const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
   return {
     verb,
     translation: data.translation,
     tense,
-    personIndex,
-    answer: results[personIndex].form,
+    personIndex: picked.index,
+    answer: picked.form,
   };
 }
 
