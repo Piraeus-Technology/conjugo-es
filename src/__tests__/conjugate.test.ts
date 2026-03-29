@@ -314,6 +314,36 @@ describe('Spelling change uir→uy: construir', () => {
   });
 });
 
+// ============ VERBS WITH SUBJUNCTIVE OVERRIDES (imperative derived) ============
+
+describe('Imperative from subjunctive overrides: caber', () => {
+  const verb: VerbData = {
+    type: 'er', regular: false, translation: 'to fit',
+    pattern: { irregularPreteriteStem: 'cup', irregularFutureStem: 'cabr' },
+    overrides: {
+      present: ['quepo', 'cabes', 'cabe', 'cabemos', 'cabéis', 'caben'],
+      subjunctive_present: ['quepa', 'quepas', 'quepa', 'quepamos', 'quepáis', 'quepan'],
+    },
+  };
+
+  test('imperative affirmative uses subjunctive forms', () => {
+    const result = conjugate('caber', verb, 'imperative_affirmative');
+    expect(result[0].disabled).toBe(true);
+    expect(result[1].form).toBe('cabe');       // tú = 3rd person present
+    expect(result[2].form).toBe('quepa');      // usted
+    expect(result[3].form).toBe('quepamos');   // nosotros
+    expect(result[5].form).toBe('quepan');     // ustedes
+  });
+
+  test('imperative negative uses subjunctive forms', () => {
+    const result = conjugate('caber', verb, 'imperative_negative');
+    expect(result[0].disabled).toBe(true);
+    expect(result[1].form).toBe('no quepas');
+    expect(result[2].form).toBe('no quepa');
+    expect(result[3].form).toBe('no quepamos');
+  });
+});
+
 // ============ FULLY IRREGULAR VERBS (OVERRIDES) ============
 
 describe('Fully irregular verb: ser', () => {

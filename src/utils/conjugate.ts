@@ -309,10 +309,32 @@ function makeResult(pronoun: string, form: string, disabled: boolean): Conjugati
 /** Check for full overrides (truly irregular verbs like ser, ir) */
 function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
   const overrides = ctx.verb.overrides?.[ctx.tense] ?? ctx.pattern?.fullOverrides?.[ctx.tense];
-  if (!overrides) return null;
-  return pronouns.map((pronoun, i) =>
-    makeResult(pronoun, overrides[i], ctx.isImperative && i === 0)
-  );
+  if (overrides) {
+    return pronouns.map((pronoun, i) =>
+      makeResult(pronoun, overrides[i], ctx.isImperative && i === 0)
+    );
+  }
+
+  // Derive imperative from subjunctive overrides if available
+  const subjOverrides = ctx.verb.overrides?.subjunctive_present ?? ctx.pattern?.fullOverrides?.subjunctive_present;
+  if (subjOverrides && ctx.tense === 'imperative_affirmative') {
+    // tú (index 1) uses 3rd person present (handled elsewhere), rest use subjunctive
+    const presentOverrides = ctx.verb.overrides?.present;
+    return pronouns.map((pronoun, i) => {
+      if (i === 0) return makeResult(pronoun, '—', true);
+      if (i === 1 && presentOverrides) return makeResult(pronoun, presentOverrides[2], false); // tú = 3rd person present
+      if (i === 4) return makeResult(pronoun, ctx.stem + ctx.endings[i], false); // vosotros regular
+      return makeResult(pronoun, subjOverrides[i], false);
+    });
+  }
+  if (subjOverrides && ctx.tense === 'imperative_negative') {
+    return pronouns.map((pronoun, i) => {
+      if (i === 0) return makeResult(pronoun, '—', true);
+      return makeResult(pronoun, 'no ' + subjOverrides[i], false);
+    });
+  }
+
+  return null;
 }
 
 /** Handle irregular future/conditional stems (tendr-, harr-, etc.) */
