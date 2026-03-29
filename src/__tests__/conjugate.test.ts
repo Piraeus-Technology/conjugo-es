@@ -455,6 +455,39 @@ describe('Compound verb participles - longest base match', () => {
     };
     expect(forms('describir', verb, 'gerund_participle')[1]).toBe('descrito');
   });
+
+  test('remover → removido (regular, NOT removisto)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to stir',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    expect(forms('remover', verb, 'gerund_participle')[1]).toBe('removido');
+    expect(forms('remover', verb, 'present_perfect')[0]).toBe('he removido');
+  });
+
+  test('mover → movido (regular)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to move',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    expect(forms('mover', verb, 'gerund_participle')[1]).toBe('movido');
+  });
+
+  test('promover → promovido (regular)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to promote',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    expect(forms('promover', verb, 'gerund_participle')[1]).toBe('promovido');
+  });
+
+  test('disolver → disuelto (irregular)', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to dissolve',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+    expect(forms('disolver', verb, 'gerund_participle')[1]).toBe('disuelto');
+  });
 });
 
 // ============ IRREGULAR GERUNDS ============

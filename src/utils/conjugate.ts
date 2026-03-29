@@ -68,7 +68,11 @@ const estarForms: Record<string, string[]> = {
 
 // ============ IRREGULAR PARTICIPLES ============
 
+// Explicit list of ALL verbs with irregular participles.
+// No more auto-matching compound verbs — too error-prone
+// (e.g. "remover" matched "ver" → "removisto")
 const irregularParticiples: Record<string, string> = {
+  // Base irregulars
   abrir: 'abierto',
   cubrir: 'cubierto',
   decir: 'dicho',
@@ -80,27 +84,51 @@ const irregularParticiples: Record<string, string> = {
   romper: 'roto',
   ver: 'visto',
   volver: 'vuelto',
-  devolver: 'devuelto',
-  describir: 'descrito',
-  descubrir: 'descubierto',
-  satisfacer: 'satisfecho',
   imprimir: 'impreso',
   freír: 'frito',
+  satisfacer: 'satisfecho',
+  // Compound -volver
+  devolver: 'devuelto',
+  envolver: 'envuelto',
+  revolver: 'revuelto',
+  // Compound -poner
+  componer: 'compuesto',
+  disponer: 'dispuesto',
+  exponer: 'expuesto',
+  imponer: 'impuesto',
+  oponer: 'opuesto',
+  proponer: 'propuesto',
+  suponer: 'supuesto',
+  descomponer: 'descompuesto',
+  // Compound -hacer
+  deshacer: 'deshecho',
+  rehacer: 'rehecho',
+  // Compound -cubrir
+  descubrir: 'descubierto',
+  encubrir: 'encubierto',
+  recubrir: 'recubierto',
+  // Compound -escribir
+  describir: 'descrito',
+  inscribir: 'inscrito',
+  prescribir: 'prescrito',
+  suscribir: 'suscrito',
+  transcribir: 'transcrito',
+  // Compound -ver
+  prever: 'previsto',
+  entrever: 'entrevisto',
+  // Compound -decir
+  bendecir: 'bendecido', // regular participle (unlike decir)
+  maldecir: 'maldecido', // regular participle
+  predecir: 'predicho',
+  contradecir: 'contradicho',
+  // Compound -abrir
+  entreabrir: 'entreabierto',
+  // Compound -resolver
+  disolver: 'disuelto',
 };
 
-// Also check compound verbs (e.g. "descubrir" → "cubrir" base)
 function getIrregularParticiple(infinitive: string): string | null {
-  if (irregularParticiples[infinitive]) return irregularParticiples[infinitive];
-  // Check if verb ends with a known irregular base
-  // Sort by length (longest first) so "volver" matches before "ver"
-  const sorted = Object.entries(irregularParticiples).sort((a, b) => b[0].length - a[0].length);
-  for (const [base, participle] of sorted) {
-    if (infinitive.endsWith(base) && infinitive !== base) {
-      const prefix = infinitive.slice(0, -base.length);
-      return prefix + participle;
-    }
-  }
-  return null;
+  return irregularParticiples[infinitive] || null;
 }
 
 // ============ IRREGULAR GERUNDS ============
