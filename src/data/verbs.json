@@ -10551,13 +10551,16 @@
   },
   "lucir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to shine/show off",
     "examples": [
       "Luce un vestido precioso esta noche.",
       "El jardín lucía espléndido en primavera."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "yoZco": true
+    }
   },
   "malvivir": {
     "type": "ir",
@@ -11554,13 +11557,16 @@
   },
   "acontecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to happen",
     "examples": [
       "Aconteció un milagro en el pueblo.",
       "¿Qué acontece en la ciudad?"
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "yoZco": true
+    }
   },
   "acoger": {
     "type": "er",
@@ -11574,13 +11580,16 @@
   },
   "adolecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to suffer from",
     "examples": [
       "Adolece de falta de experiencia.",
       "El sistema adolece de varios problemas."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "yoZco": true
+    }
   },
   "anteceder": {
     "type": "er",
@@ -11594,13 +11603,16 @@
   },
   "apetecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to feel like/crave",
     "examples": [
       "¿Te apetece un helado?",
       "No me apetecía salir con ese frío."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "yoZco": true
+    }
   },
   "arder": {
     "type": "er",
@@ -11614,13 +11626,16 @@
   },
   "atardecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to get dark (evening)",
     "examples": [
       "Atardece más tarde en verano.",
       "Atardeció mientras paseábamos por la playa."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "yoZco": true
+    }
   },
   "atrever": {
     "type": "er",
