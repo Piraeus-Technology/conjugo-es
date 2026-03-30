@@ -286,6 +286,10 @@ function getGerund(infinitive: string, type: string): string {
   if (irregularGerundPatterns[infinitive]) {
     return irregularGerundPatterns[infinitive];
   }
+  // -uir verbs: i between vowels → y (distribuir → distribuyendo)
+  if (infinitive.endsWith('uir')) {
+    return infinitive.slice(0, -2) + 'yendo';
+  }
   const stem = infinitive.slice(0, -2);
   return type === 'ar' ? stem + 'ando' : stem + 'iendo';
 }
