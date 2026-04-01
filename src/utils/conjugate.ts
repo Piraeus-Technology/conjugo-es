@@ -544,9 +544,18 @@ function applyStemChanges(ctx: ConjugationContext, i: number, currentStem: strin
     }
   }
 
-  // Imperative affirmative: tú (index 1) uses stem change like present boot positions
-  if (tense === 'imperative_affirmative' && pattern?.stemChange?.present && i === 1) {
-    return applyStemChange(stem, pattern.stemChange.present);
+  // Imperative affirmative: tú (index 1) and usted/ustedes (2, 5) use stem change in boot positions
+  if (tense === 'imperative_affirmative' && pattern?.stemChange?.present) {
+    if (i === 1 || i === 2 || i === 5) {
+      return applyStemChange(stem, pattern.stemChange.present);
+    }
+  }
+
+  // Imperative negative: uses subjunctive forms, so boot positions get stem change
+  if (tense === 'imperative_negative' && pattern?.stemChange?.present) {
+    if (bootPositions.includes(i)) {
+      return applyStemChange(stem, pattern.stemChange.present);
+    }
   }
 
   // Preterite: 3rd person stem changes for -ir verbs

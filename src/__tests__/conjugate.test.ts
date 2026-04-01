@@ -150,6 +150,44 @@ describe('Stem change o→ue: encontrar', () => {
       'encuentro', 'encuentras', 'encuentra', 'encontramos', 'encontráis', 'encuentran',
     ]);
   });
+
+  test('imperative affirmative - stem change in boot positions', () => {
+    const result = conjugate('encontrar', verb, 'imperative_affirmative');
+    expect(result[1].form).toBe('encuentra');    // tú
+    expect(result[2].form).toBe('encuentre');    // usted
+    expect(result[3].form).toBe('encontremos');  // nosotros (no stem change)
+    expect(result[5].form).toBe('encuentren');   // ustedes
+  });
+
+  test('imperative negative - stem change in boot positions', () => {
+    const result = conjugate('encontrar', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no encuentres');
+    expect(result[2].form).toBe('no encuentre');
+    expect(result[3].form).toBe('no encontremos');  // no stem change
+    expect(result[5].form).toBe('no encuentren');
+  });
+});
+
+describe('Stem change o→ue imperative: sonar', () => {
+  const verb: VerbData = {
+    type: 'ar', regular: false, translation: 'to sound',
+    pattern: { stemChange: { present: 'o_ue' } },
+  };
+
+  test('imperative usted: suene', () => {
+    const result = conjugate('sonar', verb, 'imperative_affirmative');
+    expect(result[2].form).toBe('suene');
+  });
+
+  test('imperative tú: suena', () => {
+    const result = conjugate('sonar', verb, 'imperative_affirmative');
+    expect(result[1].form).toBe('suena');
+  });
+
+  test('imperative negative tú: no suenes', () => {
+    const result = conjugate('sonar', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no suenes');
+  });
 });
 
 describe('Stem change e→i: pedir (-ir)', () => {
