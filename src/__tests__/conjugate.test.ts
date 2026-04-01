@@ -139,6 +139,28 @@ describe('Stem change e→ie: pensar', () => {
   });
 });
 
+describe('Stem change e→ie imperative: defender (-er)', () => {
+  const verb: VerbData = {
+    type: 'er', regular: false, translation: 'to defend',
+    pattern: { stemChange: { present: 'e_ie' } },
+  };
+
+  test('imperative negative tú: no defiendas', () => {
+    const result = conjugate('defender', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no defiendas');
+  });
+
+  test('imperative affirmative usted: defienda', () => {
+    const result = conjugate('defender', verb, 'imperative_affirmative');
+    expect(result[2].form).toBe('defienda');
+  });
+
+  test('imperative affirmative tú: defiende', () => {
+    const result = conjugate('defender', verb, 'imperative_affirmative');
+    expect(result[1].form).toBe('defiende');
+  });
+});
+
 describe('Stem change o→ue: encontrar', () => {
   const verb: VerbData = {
     type: 'ar', regular: false, translation: 'to find',
