@@ -455,14 +455,16 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
     if (sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé') {
       return modStem + ctx.endings[i];
     }
-    // -cer/-ger/-gir/-guir: subjunctive uses modified stem + -ar subjunctive endings
-    const subjEndings = ctx.verb.type === 'ir'
-      ? ['a', 'as', 'a', 'amos', 'áis', 'an']
-      : ['a', 'as', 'a', 'amos', 'áis', 'an'];
-    // Apply stem change if present (e.g. torcer o→ue in boot positions)
+    // -cer/-ger/-gir/-guir: subjunctive uses modified stem + subjunctive endings
+    const subjEndings = ['a', 'as', 'a', 'amos', 'áis', 'an'];
     let finalStem = modStem;
+    // Boot positions get present stem change
     if (ctx.pattern?.stemChange?.present && [0, 1, 2, 5].includes(i)) {
       finalStem = applyStemChange(modStem, ctx.pattern.stemChange.present);
+    }
+    // -ir verbs: nosotros/vosotros get preterite stem change in subjunctive
+    if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite && (i === 3 || i === 4)) {
+      finalStem = applyStemChange(modStem, ctx.pattern.stemChange.preterite);
     }
     return finalStem + subjEndings[i];
   }
@@ -478,6 +480,10 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
     if (ctx.pattern?.stemChange?.present && [2, 5].includes(i)) {
       finalStem = applyStemChange(modStem, ctx.pattern.stemChange.present);
     }
+    // -ir verbs: nosotros gets preterite stem change
+    if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite && i === 3) {
+      finalStem = applyStemChange(modStem, ctx.pattern.stemChange.preterite);
+    }
     return finalStem + impEndings[i];
   }
 
@@ -491,6 +497,10 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
     let finalStem = modStem;
     if (ctx.pattern?.stemChange?.present && [1, 2, 5].includes(i)) {
       finalStem = applyStemChange(modStem, ctx.pattern.stemChange.present);
+    }
+    // -ir verbs: nosotros/vosotros get preterite stem change
+    if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite && (i === 3 || i === 4)) {
+      finalStem = applyStemChange(modStem, ctx.pattern.stemChange.preterite);
     }
     return 'no ' + finalStem + negEndings[i];
   }
@@ -549,12 +559,20 @@ function applyStemChanges(ctx: ConjugationContext, i: number, currentStem: strin
     if (i === 1 || i === 2 || i === 5) {
       return applyStemChange(stem, pattern.stemChange.present);
     }
+    // -ir verbs: nosotros gets preterite stem change
+    if (verb.type === 'ir' && pattern?.stemChange?.preterite && i === 3) {
+      return applyStemChange(stem, pattern.stemChange.preterite);
+    }
   }
 
   // Imperative negative: uses subjunctive forms, so boot positions get stem change
   if (tense === 'imperative_negative' && pattern?.stemChange?.present) {
     if (bootPositions.includes(i)) {
       return applyStemChange(stem, pattern.stemChange.present);
+    }
+    // -ir verbs: nosotros/vosotros get preterite stem change
+    if (verb.type === 'ir' && pattern?.stemChange?.preterite && (i === 3 || i === 4)) {
+      return applyStemChange(stem, pattern.stemChange.preterite);
     }
   }
 

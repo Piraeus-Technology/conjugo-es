@@ -386,6 +386,41 @@ describe('Spelling change ger_j: coger', () => {
   });
 });
 
+describe('Spelling change guir_g + stem change: seguir', () => {
+  const verb: VerbData = {
+    type: 'ir', regular: false, translation: 'to follow',
+    pattern: { stemChange: { present: 'e_i', preterite: 'e_i' }, spellingChange: 'guir_g' },
+  };
+
+  test('present yo: sigo', () => {
+    expect(forms('seguir', verb, 'present')[0]).toBe('sigo');
+  });
+
+  test('imperative nosotros: sigamos', () => {
+    const result = conjugate('seguir', verb, 'imperative_affirmative');
+    expect(result[3].form).toBe('sigamos');
+  });
+
+  test('imperative tú: sigue', () => {
+    const result = conjugate('seguir', verb, 'imperative_affirmative');
+    expect(result[1].form).toBe('sigue');
+  });
+
+  test('imperative usted: siga', () => {
+    const result = conjugate('seguir', verb, 'imperative_affirmative');
+    expect(result[2].form).toBe('siga');
+  });
+
+  test('imperative negative nosotros: no sigamos', () => {
+    const result = conjugate('seguir', verb, 'imperative_negative');
+    expect(result[3].form).toBe('no sigamos');
+  });
+
+  test('subjunctive nosotros: sigamos', () => {
+    expect(forms('seguir', verb, 'subjunctive_present')[3]).toBe('sigamos');
+  });
+});
+
 describe('Spelling change uir→uy: construir', () => {
   const verb: VerbData = {
     type: 'ir', regular: false, translation: 'to build',
