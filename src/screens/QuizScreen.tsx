@@ -139,7 +139,7 @@ export default function QuizScreen() {
   const colors = useColors();
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
-  const { activeTenses, activeLevels, loadPracticeSettings } = usePracticeSettingsStore();
+  const { activeTenses, activeLevels, loaded: settingsLoaded, loadPracticeSettings } = usePracticeSettingsStore();
   const nav = useNavigation<any>();
 
   React.useLayoutEffect(() => {
@@ -178,11 +178,11 @@ export default function QuizScreen() {
   }, []);
 
   useEffect(() => {
-    if (weightsLoaded && activeTenses.length > 0 && filteredEntries.length > 0) {
+    if (weightsLoaded && settingsLoaded && activeTenses.length > 0 && filteredEntries.length > 0) {
       setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries));
       setSelectedAnswer(null);
     }
-  }, [weightsLoaded, activeTenses, filteredEntries]);
+  }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries]);
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
@@ -261,6 +261,14 @@ export default function QuizScreen() {
     if (option === selectedAnswer && !isCorrect) return '#C62828';
     return colors.textMuted;
   };
+
+  if (!weightsLoaded || !settingsLoaded) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading quiz...</Text>
+      </View>
+    );
+  }
 
   if (!question) return (
     <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' }]}>

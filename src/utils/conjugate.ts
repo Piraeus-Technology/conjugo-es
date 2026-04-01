@@ -158,14 +158,16 @@ const irregularGerundPatterns: Record<string, string> = {
   caer: 'cayendo',
   traer: 'trayendo',
   creer: 'creyendo',
+  poseer: 'poseyendo',
   reír: 'riendo',
   sonreír: 'sonriendo',
   huir: 'huyendo',
+  abstraer: 'abstrayendo',
 };
 
 // ============ STEM CHANGE PATTERNS ============
 
-type StemChangePattern = 'e_ie' | 'e_i' | 'o_ue' | 'u_ue';
+type StemChangePattern = 'e_ie' | 'e_i' | 'o_ue' | 'o_u' | 'u_ue';
 
 // Which persons get the stem change (0=yo, 1=tú, 2=él, 3=nos, 4=vos, 5=ellos)
 // Boot verbs: change in yo, tú, él, ellos (not nosotros/vosotros)
@@ -181,6 +183,7 @@ function applyStemChange(
     e_ie: ['e', 'ie'],
     e_i: ['e', 'i'],
     o_ue: ['o', 'ue'],
+    o_u: ['o', 'u'],
     u_ue: ['u', 'ue'],
   };
   const [from, to] = changes[pattern];
@@ -310,6 +313,44 @@ function makeResult(pronoun: string, form: string, disabled: boolean): Conjugati
   return { pronoun, form, disabled };
 }
 
+function accentLastVowel(value: string): string {
+  const accentMap: Record<string, string> = {
+    a: 'á',
+    e: 'é',
+    i: 'í',
+    o: 'ó',
+    u: 'ú',
+  };
+
+  for (let index = value.length - 1; index >= 0; index -= 1) {
+    const accented = accentMap[value[index]];
+    if (accented) {
+      return value.slice(0, index) + accented + value.slice(index + 1);
+    }
+  }
+
+  return value;
+}
+
+function removeAccents(value: string): string {
+  const accentMap: Record<string, string> = {
+    á: 'a',
+    é: 'e',
+    í: 'i',
+    ó: 'o',
+    ú: 'u',
+  };
+
+  return value.replace(/[áéíóú]/g, char => accentMap[char] ?? char);
+}
+
+function getAffirmativeVosotrosForm(ctx: ConjugationContext): string {
+  if (ctx.verb.type === 'ir' && ctx.infinitive.endsWith('ír')) {
+    return ctx.stem + 'íd';
+  }
+  return ctx.stem + ctx.endings[4];
+}
+
 /** Check for full overrides (truly irregular verbs like ser, ir) */
 function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
   const overrides = ctx.verb.overrides?.[ctx.tense] ?? ctx.pattern?.fullOverrides?.[ctx.tense];
@@ -327,7 +368,7 @@ function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
     return pronouns.map((pronoun, i) => {
       if (i === 0) return makeResult(pronoun, '—', true);
       if (i === 1 && presentOverrides) return makeResult(pronoun, presentOverrides[2], false); // tú = 3rd person present
-      if (i === 4) return makeResult(pronoun, ctx.stem + ctx.endings[i], false); // vosotros regular
+      if (i === 4) return makeResult(pronoun, getAffirmativeVosotrosForm(ctx), false); // vosotros regular
       return makeResult(pronoun, subjOverrides[i], false);
     });
   }
@@ -538,9 +579,30 @@ function tryUirVerb(ctx: ConjugationContext, i: number): string | null {
 
 /** Handle subjunctive imperfect with irregular preterite stems */
 function trySubjunctiveImperfect(ctx: ConjugationContext, i: number): string | null {
-  if (ctx.tense !== 'subjunctive_imperfect' || !ctx.pattern?.irregularPreteriteStem) return null;
-  const subjImpEndings = ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran'];
-  return ctx.pattern.irregularPreteriteStem + subjImpEndings[i];
+  if (ctx.tense !== 'subjunctive_imperfect') return null;
+
+  const subjImpEndings = ['ra', 'ras', 'ra', 'ramos', 'rais', 'ran'];
+  let subjStem: string;
+  const preteriteOverrides = ctx.verb.overrides?.preterite ?? ctx.pattern?.fullOverrides?.preterite;
+
+  if (preteriteOverrides?.[5]?.endsWith('ron')) {
+    subjStem = preteriteOverrides[5].slice(0, -3);
+  } else if (ctx.pattern?.irregularPreteriteStem) {
+    subjStem = ctx.pattern.irregularPreteriteStem.endsWith('j')
+      ? ctx.pattern.irregularPreteriteStem + 'e'
+      : ctx.pattern.irregularPreteriteStem + 'ie';
+  } else if (ctx.pattern?.spellingChange === 'uir_uy') {
+    subjStem = ctx.stem.slice(0, -1) + 'uye';
+  } else {
+    let preteriteStem = ctx.stem;
+    if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite) {
+      preteriteStem = applyStemChange(preteriteStem, ctx.pattern.stemChange.preterite);
+    }
+    subjStem = preteriteStem + (ctx.verb.type === 'ar' ? 'a' : 'ie');
+  }
+
+  const accentStem = i === 3 ? accentLastVowel(subjStem) : subjStem;
+  return accentStem + subjImpEndings[i];
 }
 
 /** Apply stem changes based on tense and person */
@@ -646,11 +708,13 @@ function conjugateSimple(
     if (uir) return makeResult(pronoun, uir, false);
 
     // Regular path: determine stem
-    let currentStem = (tense === 'future' || tense === 'conditional') ? infinitive : stem;
+    let currentStem = (tense === 'future' || tense === 'conditional') ? removeAccents(infinitive) : stem;
     currentStem = applyStemChanges(ctx, i, currentStem);
 
     // Build final form
-    const form = currentStem + endings[i];
+    const form = tense === 'imperative_affirmative' && i === 4
+      ? getAffirmativeVosotrosForm(ctx)
+      : currentStem + endings[i];
     const finalForm = isImperative && tense === 'imperative_negative' && i !== 0
       ? `no ${form}`
       : form;

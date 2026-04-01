@@ -238,6 +238,67 @@ describe('Stem change e→i: pedir (-ir)', () => {
   });
 });
 
+describe('Stem change o→u: dormir (-ir)', () => {
+  const verb: VerbData = {
+    type: 'ir', regular: false, translation: 'to sleep',
+    pattern: { stemChange: { present: 'o_ue', preterite: 'o_u' } },
+  };
+
+  test('preterite - 3rd person stem change', () => {
+    const result = forms('dormir', verb, 'preterite');
+    expect(result[2]).toBe('durmió');
+    expect(result[5]).toBe('durmieron');
+  });
+});
+
+describe('Y preterite and derived imperfect subjunctive', () => {
+  test('caer preterite uses y in 3rd person', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to fall',
+      pattern: { yoGo: true },
+      overrides: {
+        preterite: ['caí', 'caíste', 'cayó', 'caímos', 'caísteis', 'cayeron'],
+      },
+    };
+    const result = forms('caer', verb, 'preterite');
+    expect(result[2]).toBe('cayó');
+    expect(result[5]).toBe('cayeron');
+  });
+
+  test('creer imperfect subjunctive is creyera', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to believe',
+      overrides: {
+        preterite: ['creí', 'creíste', 'creyó', 'creímos', 'creísteis', 'creyeron'],
+      },
+    };
+    expect(forms('creer', verb, 'subjunctive_imperfect')[2]).toBe('creyera');
+  });
+
+  test('oír imperfect subjunctive is oyera', () => {
+    const verb: VerbData = {
+      type: 'ir', regular: false, translation: 'to hear',
+      overrides: {
+        present: ['oigo', 'oyes', 'oye', 'oímos', 'oís', 'oyen'],
+        preterite: ['oí', 'oíste', 'oyó', 'oímos', 'oísteis', 'oyeron'],
+        subjunctive_present: ['oiga', 'oigas', 'oiga', 'oigamos', 'oigáis', 'oigan'],
+      },
+    };
+    expect(forms('oír', verb, 'subjunctive_imperfect')[2]).toBe('oyera');
+  });
+
+  test('poseer preterite and imperfect subjunctive use y forms', () => {
+    const verb: VerbData = {
+      type: 'er', regular: false, translation: 'to possess',
+      overrides: {
+        preterite: ['poseí', 'poseíste', 'poseyó', 'poseímos', 'poseísteis', 'poseyeron'],
+      },
+    };
+    expect(forms('poseer', verb, 'preterite')[2]).toBe('poseyó');
+    expect(forms('poseer', verb, 'subjunctive_imperfect')[2]).toBe('poseyera');
+  });
+});
+
 // ============ YO-GO VERBS ============
 
 describe('Yo-go verb: tener', () => {
@@ -459,6 +520,25 @@ describe('Spelling change uir→uy: construir', () => {
     expect(result[0]).toBe('construya');
     expect(result[1]).toBe('construyas');
     expect(result[3]).toBe('construyamos');
+  });
+
+  test('subjunctive imperfect - keeps y from preterite stem', () => {
+    const result = forms('construir', verb, 'subjunctive_imperfect');
+    expect(result).toEqual([
+      'construyera', 'construyeras', 'construyera', 'construyéramos', 'construyerais', 'construyeran',
+    ]);
+  });
+});
+
+describe('Spelling change uir→uy: instruir', () => {
+  const verb: VerbData = {
+    type: 'ir', regular: false, translation: 'to instruct',
+    pattern: { spellingChange: 'uir_uy' },
+  };
+
+  test('subjunctive imperfect - uses instruyera, not instruiera', () => {
+    const result = forms('instruir', verb, 'subjunctive_imperfect');
+    expect(result[2]).toBe('instruyera');
   });
 });
 
@@ -727,6 +807,246 @@ describe('Irregular gerunds', () => {
     const verb: VerbData = { type: 'ir', regular: false, translation: 'to build' };
     const result = forms('construir', verb, 'gerund_participle');
     expect(result[0]).toBe('construyendo');
+  });
+
+  test('poseer → poseyendo', () => {
+    const verb: VerbData = { type: 'er', regular: false, translation: 'to possess' };
+    const result = forms('poseer', verb, 'gerund_participle');
+    expect(result[0]).toBe('poseyendo');
+  });
+
+  test('abstraer → abstrayendo', () => {
+    const verb: VerbData = { type: 'er', regular: false, translation: 'to abstract' };
+    const result = forms('abstraer', verb, 'gerund_participle');
+    expect(result[0]).toBe('abstrayendo');
+  });
+});
+
+describe('Accented infinitives', () => {
+  test('reír future drops infinitive accent', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to laugh',
+      overrides: {
+        present: ['río', 'ríes', 'ríe', 'reímos', 'reís', 'ríen'],
+        preterite: ['reí', 'reíste', 'rio', 'reímos', 'reísteis', 'rieron'],
+        subjunctive_present: ['ría', 'rías', 'ría', 'riamos', 'riáis', 'rían'],
+      },
+    };
+    expect(forms('reír', verb, 'future')[0]).toBe('reiré');
+    expect(conjugate('oír', {
+      type: 'ir',
+      regular: false,
+      translation: 'to hear',
+      overrides: {
+        present: ['oigo', 'oyes', 'oye', 'oímos', 'oís', 'oyen'],
+        preterite: ['oí', 'oíste', 'oyó', 'oímos', 'oísteis', 'oyeron'],
+        subjunctive_present: ['oiga', 'oigas', 'oiga', 'oigamos', 'oigáis', 'oigan'],
+      },
+    }, 'imperative_affirmative')[4].form).toBe('oíd');
+  });
+
+  test('reír and sonreír keep accented 3rd-person preterite forms', () => {
+    const reir: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to laugh',
+      overrides: {
+        present: ['río', 'ríes', 'ríe', 'reímos', 'reís', 'ríen'],
+        preterite: ['reí', 'reíste', 'rió', 'reímos', 'reísteis', 'rieron'],
+        subjunctive_present: ['ría', 'rías', 'ría', 'riamos', 'riáis', 'rían'],
+      },
+    };
+    const sonreir: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to smile',
+      overrides: {
+        present: ['sonrío', 'sonríes', 'sonríe', 'sonreímos', 'sonreís', 'sonríen'],
+        preterite: ['sonreí', 'sonreíste', 'sonrió', 'sonreímos', 'sonreísteis', 'sonrieron'],
+        subjunctive_present: ['sonría', 'sonrías', 'sonría', 'sonriamos', 'sonriáis', 'sonrían'],
+      },
+    };
+    expect(forms('reír', reir, 'preterite')[2]).toBe('rió');
+    expect(forms('sonreír', sonreir, 'preterite')[2]).toBe('sonrió');
+  });
+});
+
+describe('Traer family compounds', () => {
+  test('abstraer behaves like traer in key irregular forms', () => {
+    const verb: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to abstract',
+      pattern: { irregularPreteriteStem: 'abstraj' },
+      overrides: {
+        present: ['abstraigo', 'abstraes', 'abstrae', 'abstraemos', 'abstraéis', 'abstraen'],
+        subjunctive_present: ['abstraiga', 'abstraigas', 'abstraiga', 'abstraigamos', 'abstraigáis', 'abstraigan'],
+      },
+    };
+    expect(forms('abstraer', verb, 'present')[0]).toBe('abstraigo');
+    expect(forms('abstraer', verb, 'preterite')[2]).toBe('abstrajo');
+    expect(forms('abstraer', verb, 'subjunctive_imperfect')[2]).toBe('abstrajera');
+  });
+
+  test('decir imperfect subjunctive is dijera', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to say/tell',
+      pattern: { irregularFutureStem: 'dir', irregularPreteriteStem: 'dij' },
+      overrides: {
+        present: ['digo', 'dices', 'dice', 'decimos', 'decís', 'dicen'],
+        preterite: ['dije', 'dijiste', 'dijo', 'dijimos', 'dijisteis', 'dijeron'],
+        subjunctive_present: ['diga', 'digas', 'diga', 'digamos', 'digáis', 'digan'],
+      },
+    };
+    expect(forms('decir', verb, 'subjunctive_imperfect')[2]).toBe('dijera');
+  });
+
+  test('contradecir follows decir-family irregular patterns', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to contradict',
+      pattern: { irregularPreteriteStem: 'contradij', irregularFutureStem: 'contradir' },
+      overrides: {
+        present: ['contradigo', 'contradices', 'contradice', 'contradecimos', 'contradecís', 'contradicen'],
+        subjunctive_present: ['contradiga', 'contradigas', 'contradiga', 'contradigamos', 'contradigáis', 'contradigan'],
+      },
+    };
+    expect(forms('contradecir', verb, 'present')[0]).toBe('contradigo');
+    expect(forms('contradecir', verb, 'preterite')[2]).toBe('contradijo');
+    expect(forms('contradecir', verb, 'subjunctive_imperfect')[2]).toBe('contradijera');
+    expect(forms('contradecir', verb, 'future')[0]).toBe('contradiré');
+  });
+
+  test('predecir keeps regular future but irregular decir-family stems elsewhere', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to predict',
+      pattern: { irregularPreteriteStem: 'predij' },
+      overrides: {
+        present: ['predigo', 'predices', 'predice', 'predecimos', 'predecís', 'predicen'],
+        subjunctive_present: ['prediga', 'predigas', 'prediga', 'predigamos', 'predigáis', 'predigan'],
+      },
+    };
+    expect(forms('predecir', verb, 'present')[0]).toBe('predigo');
+    expect(forms('predecir', verb, 'preterite')[2]).toBe('predijo');
+    expect(forms('predecir', verb, 'subjunctive_imperfect')[2]).toBe('predijera');
+    expect(forms('predecir', verb, 'future')[0]).toBe('predeciré');
+  });
+
+  test('bendecir follows decir-family present and preterite patterns', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to bless',
+      pattern: { irregularPreteriteStem: 'bendij' },
+      overrides: {
+        present: ['bendigo', 'bendices', 'bendice', 'bendecimos', 'bendecís', 'bendicen'],
+        subjunctive_present: ['bendiga', 'bendigas', 'bendiga', 'bendigamos', 'bendigáis', 'bendigan'],
+      },
+    };
+    expect(forms('bendecir', verb, 'present')[0]).toBe('bendigo');
+    expect(forms('bendecir', verb, 'preterite')[2]).toBe('bendijo');
+    expect(forms('bendecir', verb, 'subjunctive_imperfect')[2]).toBe('bendijera');
+    expect(forms('bendecir', verb, 'future')[0]).toBe('bendeciré');
+  });
+});
+
+describe('Missing compound irregulars added to dataset', () => {
+  test('deshacer follows hacer-family patterns', () => {
+    const verb: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to undo',
+      pattern: { irregularFutureStem: 'deshar' },
+      overrides: {
+        present: ['deshago', 'deshaces', 'deshace', 'deshacemos', 'deshacéis', 'deshacen'],
+        preterite: ['deshice', 'deshiciste', 'deshizo', 'deshicimos', 'deshicisteis', 'deshicieron'],
+        subjunctive_present: ['deshaga', 'deshagas', 'deshaga', 'deshagamos', 'deshagáis', 'deshagan'],
+      },
+    };
+    expect(forms('deshacer', verb, 'present')[0]).toBe('deshago');
+    expect(forms('deshacer', verb, 'preterite')[2]).toBe('deshizo');
+    expect(forms('deshacer', verb, 'subjunctive_imperfect')[2]).toBe('deshiciera');
+    expect(forms('deshacer', verb, 'future')[0]).toBe('desharé');
+  });
+
+  test('maldecir follows decir-family patterns with regular future', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to curse',
+      overrides: {
+        present: ['maldigo', 'maldices', 'maldice', 'maldecimos', 'maldecís', 'maldicen'],
+        preterite: ['maldije', 'maldijiste', 'maldijo', 'maldijimos', 'maldijisteis', 'maldijeron'],
+        subjunctive_present: ['maldiga', 'maldigas', 'maldiga', 'maldigamos', 'maldigáis', 'maldigan'],
+      },
+    };
+    expect(forms('maldecir', verb, 'present')[0]).toBe('maldigo');
+    expect(forms('maldecir', verb, 'preterite')[2]).toBe('maldijo');
+    expect(forms('maldecir', verb, 'subjunctive_imperfect')[2]).toBe('maldijera');
+    expect(forms('maldecir', verb, 'future')[0]).toBe('maldeciré');
+  });
+
+  test('proponer follows poner-family patterns', () => {
+    const verb: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to propose',
+      pattern: { yoGo: true, irregularPreteriteStem: 'propus', irregularFutureStem: 'propondr' },
+    };
+    expect(forms('proponer', verb, 'present')[0]).toBe('propongo');
+    expect(forms('proponer', verb, 'preterite')[2]).toBe('propuso');
+    expect(forms('proponer', verb, 'subjunctive_imperfect')[2]).toBe('propusiera');
+    expect(forms('proponer', verb, 'future')[0]).toBe('propondré');
+  });
+
+  test('prever follows ver-family present and participle patterns', () => {
+    const verb: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to foresee',
+      overrides: {
+        present: ['preveo', 'prevés', 'prevé', 'preveemos', 'prevéis', 'prevén'],
+        subjunctive_present: ['prevea', 'preveas', 'prevea', 'preveamos', 'preveáis', 'prevean'],
+      },
+    };
+    expect(forms('prever', verb, 'present')[0]).toBe('preveo');
+    expect(forms('prever', verb, 'present')[2]).toBe('prevé');
+    expect(forms('prever', verb, 'subjunctive_present')[0]).toBe('prevea');
+    expect(forms('prever', verb, 'gerund_participle')[1]).toBe('previsto');
+  });
+
+  test('entrever follows ver-family present and participle patterns', () => {
+    const verb: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to glimpse',
+      overrides: {
+        present: ['entreveo', 'entrevés', 'entrevé', 'entreveemos', 'entrevéis', 'entrevén'],
+        subjunctive_present: ['entrevea', 'entreveas', 'entrevea', 'entreveamos', 'entreveáis', 'entrevean'],
+      },
+    };
+    expect(forms('entrever', verb, 'present')[0]).toBe('entreveo');
+    expect(forms('entrever', verb, 'present')[2]).toBe('entrevé');
+    expect(forms('entrever', verb, 'subjunctive_present')[0]).toBe('entrevea');
+    expect(forms('entrever', verb, 'gerund_participle')[1]).toBe('entrevisto');
+  });
+});
+
+describe('Dataset integrity regressions', () => {
+  test('fixed regular verb type mismatches conjugate with the correct class', () => {
+    expect(forms('debatir', { type: 'ir', regular: true, translation: 'to debate' }, 'present')[3]).toBe('debatimos');
+    expect(forms('corromper', { type: 'er', regular: true, translation: 'to corrupt' }, 'present')[3]).toBe('corrompemos');
+    expect(forms('demoler', { type: 'er', regular: true, translation: 'to demolish' }, 'present')[0]).toBe('demolo');
+    expect(forms('abolir', { type: 'ir', regular: true, translation: 'to abolish' }, 'imperfect')[0]).toBe('abolía');
+    expect(forms('comprometer', { type: 'er', regular: true, translation: 'to compromise' }, 'present')[3]).toBe('comprometemos');
+    expect(forms('alquilar', { type: 'ar', regular: true, translation: 'to rent' }, 'present')[0]).toBe('alquilo');
   });
 });
 

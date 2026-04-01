@@ -310,6 +310,123 @@
     ],
     "level": "A1"
   },
+  "deshacer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to undo",
+    "pattern": {
+      "irregularFutureStem": "deshar"
+    },
+    "overrides": {
+      "present": [
+        "deshago",
+        "deshaces",
+        "deshace",
+        "deshacemos",
+        "deshacéis",
+        "deshacen"
+      ],
+      "preterite": [
+        "deshice",
+        "deshiciste",
+        "deshizo",
+        "deshicimos",
+        "deshicisteis",
+        "deshicieron"
+      ],
+      "subjunctive_present": [
+        "deshaga",
+        "deshagas",
+        "deshaga",
+        "deshagamos",
+        "deshagáis",
+        "deshagan"
+      ]
+    },
+    "examples": [
+      "Deshice la maleta al llegar al hotel.",
+      "No puedo deshacer ese nudo."
+    ],
+    "level": "B2"
+  },
+  "rehacer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to redo/remake",
+    "pattern": {
+      "irregularFutureStem": "rehar"
+    },
+    "overrides": {
+      "present": [
+        "rehago",
+        "rehaces",
+        "rehace",
+        "rehacemos",
+        "rehacéis",
+        "rehacen"
+      ],
+      "preterite": [
+        "rehice",
+        "rehiciste",
+        "rehizo",
+        "rehicimos",
+        "rehicisteis",
+        "rehicieron"
+      ],
+      "subjunctive_present": [
+        "rehaga",
+        "rehagas",
+        "rehaga",
+        "rehagamos",
+        "rehagáis",
+        "rehagan"
+      ]
+    },
+    "examples": [
+      "Rehice el informe después de los comentarios.",
+      "Tendremos que rehacer el trabajo."
+    ],
+    "level": "B2"
+  },
+  "satisfacer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to satisfy",
+    "pattern": {
+      "irregularFutureStem": "satisfar"
+    },
+    "overrides": {
+      "present": [
+        "satisfago",
+        "satisfaces",
+        "satisface",
+        "satisfacemos",
+        "satisfacéis",
+        "satisfacen"
+      ],
+      "preterite": [
+        "satisfice",
+        "satisficiste",
+        "satisfizo",
+        "satisficimos",
+        "satisficisteis",
+        "satisficieron"
+      ],
+      "subjunctive_present": [
+        "satisfaga",
+        "satisfagas",
+        "satisfaga",
+        "satisfagamos",
+        "satisfagáis",
+        "satisfagan"
+      ]
+    },
+    "examples": [
+      "La respuesta no satisfizo al comité.",
+      "Queremos satisfacer las necesidades del cliente."
+    ],
+    "level": "C1"
+  },
   "decir": {
     "type": "ir",
     "regular": false,
@@ -356,6 +473,42 @@
       "¿Qué dijiste? No te escuché."
     ],
     "level": "A1"
+  },
+  "maldecir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to curse",
+    "overrides": {
+      "present": [
+        "maldigo",
+        "maldices",
+        "maldice",
+        "maldecimos",
+        "maldecís",
+        "maldicen"
+      ],
+      "preterite": [
+        "maldije",
+        "maldijiste",
+        "maldijo",
+        "maldijimos",
+        "maldijisteis",
+        "maldijeron"
+      ],
+      "subjunctive_present": [
+        "maldiga",
+        "maldigas",
+        "maldiga",
+        "maldigamos",
+        "maldigáis",
+        "maldigan"
+      ]
+    },
+    "examples": [
+      "Maldijo su mala suerte en voz baja.",
+      "No debes maldecir a nadie."
+    ],
+    "level": "C1"
   },
   "dar": {
     "type": "ar",
@@ -445,6 +598,62 @@
     ],
     "level": "A1"
   },
+  "prever": {
+    "type": "er",
+    "regular": false,
+    "translation": "to foresee",
+    "overrides": {
+      "present": [
+        "preveo",
+        "prevés",
+        "prevé",
+        "preveemos",
+        "prevéis",
+        "prevén"
+      ],
+      "subjunctive_present": [
+        "prevea",
+        "preveas",
+        "prevea",
+        "preveamos",
+        "preveáis",
+        "prevean"
+      ]
+    },
+    "examples": [
+      "No prevemos problemas durante el evento.",
+      "La empresa prevé un aumento en las ventas."
+    ],
+    "level": "C1"
+  },
+  "entrever": {
+    "type": "er",
+    "regular": false,
+    "translation": "to glimpse",
+    "overrides": {
+      "present": [
+        "entreveo",
+        "entrevés",
+        "entrevé",
+        "entreveemos",
+        "entrevéis",
+        "entrevén"
+      ],
+      "subjunctive_present": [
+        "entrevea",
+        "entreveas",
+        "entrevea",
+        "entreveamos",
+        "entreveáis",
+        "entrevean"
+      ]
+    },
+    "examples": [
+      "Desde aquí entreveo la montaña entre la niebla.",
+      "Entrevén una solución posible al problema."
+    ],
+    "level": "C2"
+  },
   "oír": {
     "type": "ir",
     "regular": false,
@@ -517,7 +726,7 @@
       "preterite": [
         "reí",
         "reíste",
-        "rio",
+        "rió",
         "reímos",
         "reísteis",
         "rieron"
@@ -553,7 +762,7 @@
       "preterite": [
         "sonreí",
         "sonreíste",
-        "sonrio",
+        "sonrió",
         "sonreímos",
         "sonreísteis",
         "sonrieron"
@@ -688,6 +897,66 @@
     ],
     "level": "A1"
   },
+  "proponer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to propose",
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "propus",
+      "irregularFutureStem": "propondr"
+    },
+    "examples": [
+      "Propuso una solución razonable.",
+      "Voy a proponer otra fecha para la reunión."
+    ],
+    "level": "B1"
+  },
+  "suponer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to suppose/assume",
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "supus",
+      "irregularFutureStem": "supondr"
+    },
+    "examples": [
+      "Supusieron que llegaríamos tarde.",
+      "No quiero suponer nada sin pruebas."
+    ],
+    "level": "B1"
+  },
+  "imponer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to impose",
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "impus",
+      "irregularFutureStem": "impondr"
+    },
+    "examples": [
+      "El juez impuso una multa elevada.",
+      "No puedes imponer tus ideas a todos."
+    ],
+    "level": "C1"
+  },
+  "disponer": {
+    "type": "er",
+    "regular": false,
+    "translation": "to arrange/have available",
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "dispus",
+      "irregularFutureStem": "dispondr"
+    },
+    "examples": [
+      "Dispusieron las sillas en círculo.",
+      "No dispongo de mucho tiempo hoy."
+    ],
+    "level": "C1"
+  },
   "salir": {
     "type": "ir",
     "regular": false,
@@ -722,6 +991,16 @@
     "translation": "to fall",
     "pattern": {
       "yoGo": true
+    },
+    "overrides": {
+      "preterite": [
+        "caí",
+        "caíste",
+        "cayó",
+        "caímos",
+        "caísteis",
+        "cayeron"
+      ]
     },
     "examples": [
       "Se cayó de la bicicleta.",
@@ -2040,7 +2319,7 @@
     "pattern": {
       "stemChange": {
         "present": "o_ue",
-        "preterite": "o_ue"
+        "preterite": "o_u"
       }
     },
     "examples": [
@@ -2056,7 +2335,7 @@
     "pattern": {
       "stemChange": {
         "present": "o_ue",
-        "preterite": "o_ue"
+        "preterite": "o_u"
       }
     },
     "examples": [
@@ -5823,7 +6102,7 @@
     "level": "B2"
   },
   "debatir": {
-    "type": "ar",
+    "type": "ir",
     "regular": true,
     "translation": "to debate",
     "examples": [
@@ -7013,8 +7292,18 @@
   },
   "creer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to believe",
+    "overrides": {
+      "preterite": [
+        "creí",
+        "creíste",
+        "creyó",
+        "creímos",
+        "creísteis",
+        "creyeron"
+      ]
+    },
     "examples": [
       "No creo en las coincidencias.",
       "Creyeron que era una broma."
@@ -7246,8 +7535,18 @@
   },
   "poseer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to possess",
+    "overrides": {
+      "preterite": [
+        "poseí",
+        "poseíste",
+        "poseyó",
+        "poseímos",
+        "poseísteis",
+        "poseyeron"
+      ]
+    },
     "examples": [
       "Posee una colección de arte impresionante.",
       "Poseían tierras en el sur del país."
@@ -10448,7 +10747,7 @@
     "level": "C1"
   },
   "corromper": {
-    "type": "ir",
+    "type": "er",
     "regular": true,
     "translation": "to corrupt",
     "examples": [
@@ -10468,7 +10767,7 @@
     "level": "C2"
   },
   "demoler": {
-    "type": "ir",
+    "type": "er",
     "regular": true,
     "translation": "to demolish",
     "examples": [
@@ -10608,8 +10907,29 @@
   },
   "predecir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to predict",
+    "pattern": {
+      "irregularPreteriteStem": "predij"
+    },
+    "overrides": {
+      "present": [
+        "predigo",
+        "predices",
+        "predice",
+        "predecimos",
+        "predecís",
+        "predicen"
+      ],
+      "subjunctive_present": [
+        "prediga",
+        "predigas",
+        "prediga",
+        "predigamos",
+        "predigáis",
+        "predigan"
+      ]
+    },
     "examples": [
       "Nadie puede predecir el futuro.",
       "Predijeron lluvia para el fin de semana."
@@ -10716,7 +11036,7 @@
     }
   },
   "abolir": {
-    "type": "ar",
+    "type": "ir",
     "regular": true,
     "translation": "to abolish",
     "examples": [
@@ -10749,14 +11069,45 @@
     }
   },
   "abstraer": {
-    "type": "ar",
-    "regular": true,
+    "type": "er",
+    "regular": false,
     "translation": "to abstract",
+    "pattern": {
+      "irregularPreteriteStem": "abstraj"
+    },
+    "overrides": {
+      "present": [
+        "abstraigo",
+        "abstraes",
+        "abstrae",
+        "abstraemos",
+        "abstraéis",
+        "abstraen"
+      ],
+      "subjunctive_present": [
+        "abstraiga",
+        "abstraigas",
+        "abstraiga",
+        "abstraigamos",
+        "abstraigáis",
+        "abstraigan"
+      ]
+    },
     "examples": [
       "Se abstrajo del ruido para estudiar.",
       "Es difícil abstraer la teoría de la práctica."
     ],
     "level": "C1"
+  },
+  "afilar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to sharpen",
+    "examples": [
+      "Afiló el cuchillo antes de cocinar.",
+      "Necesito afilar los lápices para la clase."
+    ],
+    "level": "B2"
   },
   "acampar": {
     "type": "ar",
@@ -10994,13 +11345,13 @@
     ],
     "level": "C2"
   },
-  "alquiler": {
+  "alquilar": {
     "type": "ar",
     "regular": true,
     "translation": "to rent",
     "examples": [
-      "El alquiler sube cada año.",
-      "Pagamos el alquiler el primer día del mes."
+      "Alquilamos un apartamento cerca de la playa.",
+      "Quiere alquilar un coche para el viaje."
     ],
     "level": "B2"
   },
@@ -11403,7 +11754,7 @@
     "level": "C2"
   },
   "comprometer": {
-    "type": "ar",
+    "type": "er",
     "regular": true,
     "translation": "to compromise",
     "examples": [
@@ -11553,9 +11904,31 @@
     "level": "C2"
   },
   "contradecir": {
-    "type": "ar",
-    "regular": true,
+    "type": "ir",
+    "regular": false,
     "translation": "to contradict",
+    "pattern": {
+      "irregularPreteriteStem": "contradij",
+      "irregularFutureStem": "contradir"
+    },
+    "overrides": {
+      "present": [
+        "contradigo",
+        "contradices",
+        "contradice",
+        "contradecimos",
+        "contradecís",
+        "contradicen"
+      ],
+      "subjunctive_present": [
+        "contradiga",
+        "contradigas",
+        "contradiga",
+        "contradigamos",
+        "contradigáis",
+        "contradigan"
+      ]
+    },
     "examples": [
       "No me contradigas delante de todos.",
       "Se contradijo en su declaración."
@@ -11692,8 +12065,29 @@
   },
   "bendecir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to bless",
+    "pattern": {
+      "irregularPreteriteStem": "bendij"
+    },
+    "overrides": {
+      "present": [
+        "bendigo",
+        "bendices",
+        "bendice",
+        "bendecimos",
+        "bendecís",
+        "bendicen"
+      ],
+      "subjunctive_present": [
+        "bendiga",
+        "bendigas",
+        "bendiga",
+        "bendigamos",
+        "bendigáis",
+        "bendigan"
+      ]
+    },
     "examples": [
       "El sacerdote bendijo a los fieles.",
       "Dios te bendiga."

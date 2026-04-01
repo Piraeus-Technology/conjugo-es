@@ -64,7 +64,7 @@ function generateCard(entries: [string, VerbData][], tenses: Tense[]): Card {
 export default function FlashcardScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
-  const { activeTenses, activeLevels, loadPracticeSettings } = usePracticeSettingsStore();
+  const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
   const { saveSession } = useFlashcardSessionStore();
   const filteredEntries = React.useMemo(() =>
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
@@ -90,12 +90,19 @@ export default function FlashcardScreen() {
     });
   }, [nav, colors]);
 
-  const [card, setCard] = useState<Card>(() => generateCard(allVerbEntries, quizzableTenses));
+  const [card, setCard] = useState<Card | null>(null);
   const [flipped, setFlipped] = useState(false);
   const [reviewed, setReviewed] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    if (!loaded || activeTenses.length === 0 || filteredEntries.length === 0) return;
+    setCard(generateCard(filteredEntries, activeTenses));
+    setFlipped(false);
+    flipAnim.setValue(0);
+  }, [loaded, activeTenses, filteredEntries, flipAnim]);
 
   const flipToFront = () => {
     Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
@@ -141,6 +148,22 @@ export default function FlashcardScreen() {
 
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
+
+  if (!loaded) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center' }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading flashcards...</Text>
+      </View>
+    );
+  }
+
+  if (filteredEntries.length === 0 || activeTenses.length === 0 || !card) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center' }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>No matching flashcards</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>

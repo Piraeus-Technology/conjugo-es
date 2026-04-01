@@ -62,6 +62,17 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
     setOpenTense(openTense === tense ? null : tense);
   };
 
+  if (!verb) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center', padding: spacing.lg }]}>
+        <Text style={[styles.infinitive, { color: colors.primary, marginBottom: spacing.sm }]}>{infinitive}</Text>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md, textAlign: 'center' }}>
+          This verb is not available in the current dataset.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView ref={scrollRef} style={[styles.container, { backgroundColor: colors.bg }]}>
       <View ref={scrollContentRef}>
