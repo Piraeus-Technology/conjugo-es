@@ -10,6 +10,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
 import { useSessionStore } from '../store/sessionStore';
+import { useSpacedRepStore } from '../store/spacedRepStore';
+import { buildPracticeInsights } from '../utils/practiceInsights';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -17,13 +19,17 @@ export default function StatsScreen() {
   const colors = useColors();
   const { totalQuestions, totalCorrect, bestStreak, loadStats } = useQuizStore();
   const { sessions, loadSessions } = useSessionStore();
+  const { weights, loaded: weightsLoaded, loadWeights } = useSpacedRepStore();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   React.useEffect(() => {
     loadStats();
     loadSessions();
+    loadWeights();
   }, []);
+
+  const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
   // Aggregate sessions by day
   const dailyMap: Record<string, { total: number; correct: number }> = {};
@@ -262,6 +268,46 @@ export default function StatsScreen() {
         </View>
       </View>
 
+      {weightsLoaded && insights.weakForms.length > 0 && (
+        <>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Weak Areas</Text>
+
+          <View style={[styles.insightCard, { backgroundColor: colors.card }]}>
+            <Text style={[styles.insightTitle, { color: colors.textPrimary }]}>Most missed forms</Text>
+            {insights.weakForms.map(item => (
+              <View key={item.label} style={styles.insightRow}>
+                <Text style={[styles.insightLabel, { color: colors.textPrimary }]}>{item.label}</Text>
+                <Text style={[styles.insightValue, { color: colors.primary }]}>{item.weight.toFixed(1)}x</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={[styles.insightCard, { backgroundColor: colors.card }]}>
+            <Text style={[styles.insightTitle, { color: colors.textPrimary }]}>Weakest tenses</Text>
+            {insights.weakTenses.map(item => (
+              <View key={item.label} style={styles.insightRow}>
+                <Text style={[styles.insightLabel, { color: colors.textPrimary }]}>{item.label}</Text>
+                <Text style={[styles.insightMeta, { color: colors.textMuted }]}>
+                  {item.count} forms · {item.weight.toFixed(1)}x
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={[styles.insightCard, { backgroundColor: colors.card }]}>
+            <Text style={[styles.insightTitle, { color: colors.textPrimary }]}>Weakest persons</Text>
+            {insights.weakPersons.map(item => (
+              <View key={item.label} style={styles.insightRow}>
+                <Text style={[styles.insightLabel, { color: colors.textPrimary }]}>{item.label}</Text>
+                <Text style={[styles.insightMeta, { color: colors.textMuted }]}>
+                  {item.count} forms · {item.weight.toFixed(1)}x
+                </Text>
+              </View>
+            ))}
+          </View>
+        </>
+      )}
+
       {/* Empty state */}
       {totalQuestions === 0 && (
         <View style={styles.emptyContainer}>
@@ -395,6 +441,39 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   legendText: {
+    fontSize: fonts.sizes.xs,
+  },
+  insightCard: {
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginTop: spacing.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  insightTitle: {
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.semibold,
+    marginBottom: spacing.sm,
+  },
+  insightRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  insightLabel: {
+    flex: 1,
+    fontSize: fonts.sizes.sm,
+  },
+  insightValue: {
+    fontSize: fonts.sizes.sm,
+    fontWeight: fonts.weights.semibold,
+  },
+  insightMeta: {
     fontSize: fonts.sizes.xs,
   },
   emptyContainer: {

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Modal,
   Pressable,
+  Alert,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,44 +33,64 @@ interface Question {
   options: string[];
 }
 
+interface PromptCandidate {
+  verb: string;
+  data: VerbData;
+  tense: Tense;
+  personIndex: number;
+  answer: string;
+}
+
+function pickWeightedPrompt(
+  activeTenses: Tense[],
+  getWeight: (verb: string, tense: Tense, personIndex: number) => number,
+  filteredEntries: [string, VerbData][],
+): PromptCandidate {
+  const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
+  const commonCount = Math.min(200, verbEntries.length);
+  const candidates: PromptCandidate[] = [];
+
+  while (candidates.length < 10) {
+    const idx = Math.random() < 0.7
+      ? Math.floor(Math.random() * commonCount)
+      : Math.floor(Math.random() * verbEntries.length);
+    const [verb, data] = verbEntries[idx];
+    const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
+    const results = conjugate(verb, data, tense);
+    const validPersons = results
+      .map((r, i) => ({ index: i, ...r }))
+      .filter(r => !r.disabled && r.form !== '—');
+
+    if (validPersons.length === 0) continue;
+
+    const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
+    candidates.push({
+      verb,
+      data,
+      tense,
+      personIndex: picked.index,
+      answer: picked.form,
+    });
+  }
+
+  return candidates.reduce((best, candidate) =>
+    getWeight(candidate.verb, candidate.tense, candidate.personIndex) >
+      getWeight(best.verb, best.tense, best.personIndex)
+      ? candidate
+      : best
+  );
+}
+
 function generateQuestion(
   activeTenses: Tense[],
-  getWeight: (verb: string) => number,
+  getWeight: (verb: string, tense: Tense, personIndex: number) => number,
   filteredEntries: [string, VerbData][],
 ): Question {
   const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
-  // Weighted random verb selection (spaced repetition)
-  // Bias toward common verbs (first 200): 70% chance from top 200, 30% from rest
-  const candidates: number[] = [];
-  const commonCount = Math.min(200, verbEntries.length);
-  for (let i = 0; i < 10; i++) {
-    if (Math.random() < 0.7) {
-      candidates.push(Math.floor(Math.random() * commonCount));
-    } else {
-      candidates.push(Math.floor(Math.random() * verbEntries.length));
-    }
-  }
-  const verbIndex = candidates.reduce((best, idx) => {
-    const bestWeight = getWeight(verbEntries[best][0]);
-    const thisWeight = getWeight(verbEntries[idx][0]);
-    return thisWeight > bestWeight ? idx : best;
-  }, candidates[0]);
-
-  const [verb, data] = verbEntries[verbIndex];
-  const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
-
+  const prompt = pickWeightedPrompt(activeTenses, getWeight, filteredEntries);
+  const { verb, data, tense, personIndex } = prompt;
+  const correctAnswer = prompt.answer;
   const results = conjugate(verb, data, tense);
-  // Filter to valid (non-disabled) persons only
-  const validPersons = results
-    .map((r, i) => ({ index: i, ...r }))
-    .filter(r => !r.disabled && r.form !== '—');
-  if (validPersons.length === 0) {
-    // Retry with a different verb/tense
-    return generateQuestion(activeTenses, getWeight, filteredEntries);
-  }
-  const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
-  const personIndex = picked.index;
-  const correctAnswer = picked.form;
 
   // Generate wrong answers — prioritize hard distractors
   // Priority 1: Same verb, same tense, different person (hardest)
@@ -142,21 +163,6 @@ export default function QuizScreen() {
   const { activeTenses, activeLevels, loaded: settingsLoaded, loadPracticeSettings } = usePracticeSettingsStore();
   const nav = useNavigation<any>();
 
-  React.useLayoutEffect(() => {
-    nav.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 8 }}
-        >
-          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
-          <Ionicons name="options-outline" size={18} color={colors.primary} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [nav, colors]);
-
   const filteredEntries = React.useMemo(() =>
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
@@ -169,6 +175,45 @@ export default function QuizScreen() {
   const [streak, setStreak] = useState(0);
   const [bestSessionStreak, setBestSessionStreak] = useState(0);
   const [showResults, setShowResults] = useState(false);
+
+  const confirmEndSession = React.useCallback(() => {
+    if (sessionTotal === 0) {
+      setShowResults(true);
+      return;
+    }
+
+    Alert.alert(
+      'End session?',
+      'Your progress will be saved.',
+      [
+        { text: 'Keep Going', style: 'cancel' },
+        { text: 'End Session', style: 'destructive', onPress: handleEndSession },
+      ],
+    );
+  }, [sessionTotal, sessionScore, bestSessionStreak]);
+
+  React.useLayoutEffect(() => {
+    nav.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginRight: 8 }}>
+          <TouchableOpacity
+            onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+          >
+            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
+            <Ionicons name="options-outline" size={18} color={colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={confirmEndSession}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Text style={{ color: colors.textMuted, fontSize: 14, fontWeight: '600' }}>End</Text>
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, [nav, colors, confirmEndSession]);
 
   useEffect(() => {
     loadStats();
@@ -211,7 +256,7 @@ export default function QuizScreen() {
       setStreak(0);
       recordAnswer(false, 0);
     }
-    recordResult(question.verb, correct);
+    recordResult(question.verb, question.tense, question.personIndex, correct);
   };
 
   const handleNext = () => {
@@ -297,11 +342,6 @@ export default function QuizScreen() {
               <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
             </View>
           </View>
-          {totalQuestions > 0 && (
-            <Text style={[styles.allTimeText, { color: colors.textMuted }]}>
-              All-time: {totalCorrect}/{totalQuestions} ({Math.round((totalCorrect / totalQuestions) * 100)}%) · Best streak: {bestStreak}
-            </Text>
-          )}
         </View>
 
         {/* Question — fills remaining space */}
@@ -352,7 +392,7 @@ export default function QuizScreen() {
           ))}
         </View>
 
-        {/* Next + End Session — same row, same size */}
+        {/* Next */}
         <View style={[styles.bottomRow, { opacity: answered ? 1 : 0 }]} pointerEvents={answered ? 'auto' : 'none'}>
           <TouchableOpacity
             style={[styles.bottomButton, { backgroundColor: colors.primary }]}
@@ -362,15 +402,6 @@ export default function QuizScreen() {
             <Text style={styles.bottomButtonText}>Next</Text>
             <Ionicons name="arrow-forward" size={16} color="#fff" />
           </TouchableOpacity>
-          {sessionTotal > 0 && (
-            <TouchableOpacity
-              style={[styles.bottomButton, { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }]}
-              onPress={handleEndSession}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.bottomButtonText, { color: colors.textMuted }]}>End</Text>
-            </TouchableOpacity>
-          )}
         </View>
       </View>
 
@@ -422,7 +453,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   scoreCard: {
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: radius.md,
   },
   scoreRow: {
@@ -432,16 +464,8 @@ const styles = StyleSheet.create({
   scoreItem: {
     alignItems: 'center',
   },
-  allTimeText: {
-    fontSize: fonts.sizes.xs,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-    paddingTop: spacing.sm,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(0,0,0,0.08)',
-  },
   scoreValue: {
-    fontSize: fonts.sizes.xl,
+    fontSize: fonts.sizes.lg,
     fontWeight: fonts.weights.bold,
   },
   scoreLabel: {
@@ -453,6 +477,7 @@ const styles = StyleSheet.create({
   questionContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: spacing.md,
   },
   questionLabel: {
     fontSize: fonts.sizes.sm,
@@ -462,27 +487,29 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   questionVerb: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: fonts.weights.bold,
     marginBottom: spacing.xs,
   },
   questionTranslation: {
     fontSize: fonts.sizes.sm,
     fontStyle: 'italic',
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
   },
   questionPronoun: {
-    fontSize: fonts.sizes.lg,
+    fontSize: fonts.sizes.xl,
     fontWeight: fonts.weights.medium,
   },
   optionsContainer: {
-    gap: spacing.xs,
+    gap: spacing.sm,
   },
   optionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.sm + 2,
+    minHeight: 56,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1.5,
   },

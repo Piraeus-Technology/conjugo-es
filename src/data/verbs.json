@@ -7691,8 +7691,16 @@
   },
   "contener": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to contain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "contuv",
+      "irregularFutureStem": "contendr"
+    },
     "examples": [
       "La caja contiene documentos importantes.",
       "Contuvo las lágrimas durante la despedida."
@@ -7701,8 +7709,16 @@
   },
   "sostener": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to sustain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "sostuv",
+      "irregularFutureStem": "sostendr"
+    },
     "examples": [
       "Sostuvo la puerta para que yo pasara.",
       "Sostiene que es inocente."
@@ -7711,8 +7727,16 @@
   },
   "mantener": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to maintain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "mantuv",
+      "irregularFutureStem": "mantendr"
+    },
     "examples": [
       "Mantén la calma en todo momento.",
       "Mantuvieron la casa en buen estado."
@@ -7721,8 +7745,16 @@
   },
   "retener": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to retain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "retuv",
+      "irregularFutureStem": "retendr"
+    },
     "examples": [
       "Retuvieron al sospechoso dos horas.",
       "No puedo retener tanta información."
@@ -7731,8 +7763,16 @@
   },
   "obtener": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to obtain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "obtuv",
+      "irregularFutureStem": "obtendr"
+    },
     "examples": [
       "Obtuve mi licencia de conducir.",
       "Obtendrás buenos resultados si estudias."
@@ -7741,8 +7781,16 @@
   },
   "detener": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to stop/detain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "detuv",
+      "irregularFutureStem": "detendr"
+    },
     "examples": [
       "La policía detuvo al ladrón.",
       "Detén el coche aquí, por favor."
@@ -7751,8 +7799,16 @@
   },
   "entretener": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to entertain",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "entretuv",
+      "irregularFutureStem": "entretendr"
+    },
     "examples": [
       "La película entretiene a toda la familia.",
       "Se entretuvo jugando con el perro."

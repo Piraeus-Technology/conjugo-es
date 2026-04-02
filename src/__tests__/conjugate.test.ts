@@ -251,6 +251,52 @@ describe('Stem change o→u: dormir (-ir)', () => {
   });
 });
 
+describe('Tener compounds keep irregular subjunctive and imperative stems', () => {
+  const entretener: VerbData = {
+    type: 'er',
+    regular: false,
+    translation: 'to entertain',
+    pattern: {
+      stemChange: { present: 'e_ie' },
+      yoGo: true,
+      irregularPreteriteStem: 'entretuv',
+      irregularFutureStem: 'entretendr',
+    },
+  };
+
+  const mantener: VerbData = {
+    type: 'er',
+    regular: false,
+    translation: 'to maintain',
+    pattern: {
+      stemChange: { present: 'e_ie' },
+      yoGo: true,
+      irregularPreteriteStem: 'mantuv',
+      irregularFutureStem: 'mantendr',
+    },
+  };
+
+  test('entretener imperative affirmative ellos is entretengan', () => {
+    const result = conjugate('entretener', entretener, 'imperative_affirmative');
+    expect(result[5].form).toBe('entretengan');
+  });
+
+  test('entretener imperative negative ellos is no entretengan', () => {
+    const result = conjugate('entretener', entretener, 'imperative_negative');
+    expect(result[5].form).toBe('no entretengan');
+  });
+
+  test('mantener present yo is mantengo', () => {
+    const result = conjugate('mantener', mantener, 'present');
+    expect(result[0].form).toBe('mantengo');
+  });
+
+  test('mantener future yo is mantendré', () => {
+    const result = conjugate('mantener', mantener, 'future');
+    expect(result[0].form).toBe('mantendré');
+  });
+});
+
 describe('Y preterite and derived imperfect subjunctive', () => {
   test('caer preterite uses y in 3rd person', () => {
     const verb: VerbData = {

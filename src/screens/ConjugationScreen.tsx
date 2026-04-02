@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import * as Haptics from 'expo-haptics';
 import {
   View,
@@ -43,6 +43,108 @@ const tenseGroups = [
   },
 ];
 
+const familyBases = ['decir', 'hacer', 'poner', 'tener', 'venir', 'traer', 'ver', 'oír', 'reír'] as const;
+
+function getRuleNotes(infinitive: string, verb: VerbData): string[] {
+  const notes = new Set<string>();
+  const pattern = verb.pattern;
+
+  switch (pattern?.stemChange?.present) {
+    case 'e_ie':
+      notes.add('Present tense stem change: e -> ie in boot forms.');
+      break;
+    case 'o_ue':
+      notes.add('Present tense stem change: o -> ue in boot forms.');
+      break;
+    case 'e_i':
+      notes.add('Present tense stem change: e -> i in boot forms.');
+      break;
+    case 'u_ue':
+      notes.add('Present tense stem change: u -> ue in boot forms.');
+      break;
+  }
+
+  switch (pattern?.stemChange?.preterite) {
+    case 'e_i':
+      notes.add('Preterite and related subjunctive forms use e -> i in the third person / nosotros-vosotros patterns.');
+      break;
+    case 'o_u':
+      notes.add('Preterite and related subjunctive forms use o -> u in the third person / nosotros-vosotros patterns.');
+      break;
+  }
+
+  if (pattern?.yoGo) notes.add('Irregular yo form: the present tense yo form ends in -go.');
+  if (pattern?.yoZco) notes.add('Irregular yo form: the present tense yo form ends in -zco.');
+  if (pattern?.irregularFutureStem) notes.add('Future and conditional use an irregular stem.');
+  if (pattern?.irregularPreteriteStem) notes.add('Preterite and imperfect subjunctive use an irregular preterite stem.');
+
+  switch (pattern?.spellingChange) {
+    case 'car_qué':
+      notes.add('Spelling change: c -> qu before e in affected forms.');
+      break;
+    case 'gar_gué':
+      notes.add('Spelling change: g -> gu before e in affected forms.');
+      break;
+    case 'zar_cé':
+      notes.add('Spelling change: z -> c before e in affected forms.');
+      break;
+    case 'cer_z':
+      notes.add('Spelling change: c -> z before a / o in subjunctive and imperative-related forms.');
+      break;
+    case 'ger_j':
+    case 'gir_j':
+      notes.add('Spelling change: g -> j before a / o in subjunctive and imperative-related forms.');
+      break;
+    case 'guir_g':
+      notes.add('Spelling change: gu -> g in affected present/subjunctive forms.');
+      break;
+    case 'uir_uy':
+      notes.add('Y-insertion pattern: forms like present, preterite third person, and subjunctive keep y.');
+      break;
+  }
+
+  const [gerund, participle] = conjugate(infinitive, verb, 'gerund_participle').map(r => r.form);
+  const regularGerund = verb.type === 'ar' ? `${infinitive.slice(0, -2)}ando` : `${infinitive.slice(0, -2)}iendo`;
+  const regularParticiple = verb.type === 'ar' ? `${infinitive.slice(0, -2)}ado` : `${infinitive.slice(0, -2)}ido`;
+
+  if (gerund !== regularGerund) notes.add(`Irregular gerund: ${gerund}.`);
+  if (participle !== regularParticiple) notes.add(`Irregular past participle: ${participle}.`);
+
+  if (verb.overrides?.present || verb.overrides?.preterite || verb.overrides?.subjunctive_present) {
+    notes.add('Some core forms are fully overridden rather than generated from a regular pattern.');
+  }
+
+  return [...notes];
+}
+
+function getFamilyKey(infinitive: string, verb: VerbData): string | null {
+  for (const base of familyBases) {
+    if (infinitive === base || infinitive.endsWith(base)) return `base:${base}`;
+  }
+
+  if (verb.pattern?.spellingChange) return `spelling:${verb.pattern.spellingChange}`;
+  if (verb.pattern?.yoZco) return 'family:yoZco';
+  if (verb.pattern?.yoGo) return 'family:yoGo';
+  if (verb.pattern?.stemChange?.present || verb.pattern?.stemChange?.preterite) {
+    return `stem:${verb.pattern.stemChange?.present ?? 'none'}:${verb.pattern.stemChange?.preterite ?? 'none'}`;
+  }
+
+  return null;
+}
+
+function getSnapshotRows(infinitive: string, verb: VerbData, tense: Tense | null) {
+  const targetTense = tense ?? 'present';
+  const rows = conjugate(infinitive, verb, targetTense)
+    .map((row, index) => ({ ...row, index }))
+    .filter(row => !row.disabled && row.form !== '—');
+
+  const preferred = [0, 2, 3]
+    .map(index => rows.find(row => row.index === index))
+    .filter(Boolean) as (typeof rows[number])[];
+
+  return preferred.length > 0 ? preferred : rows.slice(0, 3);
+}
+
 export default function ConjugationScreen({ route, navigation }: ConjugationScreenProps) {
   const { infinitive } = route.params;
   const verb = (verbs as Record<string, VerbData>)[infinitive];
@@ -56,6 +158,18 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const scrollRef = useRef<ScrollView>(null);
   const highlightRef = useRef<View>(null);
   const scrollContentRef = useRef<View>(null);
+  const ruleNotes = useMemo(() => getRuleNotes(infinitive, verb), [infinitive, verb]);
+  const snapshotRows = useMemo(() => getSnapshotRows(infinitive, verb, openTense), [infinitive, verb, openTense]);
+  const relatedVerbs = useMemo(() => {
+    const familyKey = getFamilyKey(infinitive, verb);
+    if (!familyKey) return [];
+
+    return Object.entries(verbs as Record<string, VerbData>)
+      .filter(([candidateInfinitive, candidateVerb]) =>
+        candidateInfinitive !== infinitive && getFamilyKey(candidateInfinitive, candidateVerb) === familyKey
+      )
+      .slice(0, 6);
+  }, [infinitive, verb]);
 
   const toggleTense = (tense: Tense) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -230,6 +344,56 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
         ))}
       </View>
 
+      {snapshotRows.length > 0 && (
+        <View style={[styles.detailBox, { backgroundColor: colors.card }]}>
+          <Text style={[styles.detailLabel, { color: colors.textMuted }]}>
+            {`${tenseNames[openTense ?? 'present']} Snapshot`.toUpperCase()}
+          </Text>
+          {snapshotRows.map((row) => (
+            <View key={`${openTense ?? 'present'}-${row.index}`} style={styles.snapshotRow}>
+              <Text style={[styles.snapshotPronoun, { color: colors.textSecondary }]}>{row.pronoun}</Text>
+              <Text style={[styles.snapshotForm, { color: colors.primary }]}>{row.form}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {ruleNotes.length > 0 && (
+        <View style={[styles.detailBox, { backgroundColor: colors.card }]}>
+          <Text style={[styles.detailLabel, { color: colors.textMuted }]}>RULE NOTES</Text>
+          {ruleNotes.map((note) => (
+            <View key={note} style={styles.noteRow}>
+              <Ionicons name="sparkles-outline" size={14} color={colors.primary} style={styles.noteIcon} />
+              <Text style={[styles.noteText, { color: colors.textSecondary }]}>{note}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {relatedVerbs.length > 0 && (
+        <View style={[styles.detailBox, { backgroundColor: colors.card }]}>
+          <Text style={[styles.detailLabel, { color: colors.textMuted }]}>RELATED VERBS</Text>
+          <View style={styles.relatedGrid}>
+            {relatedVerbs.map(([relatedInfinitive, relatedVerb]) => (
+              <TouchableOpacity
+                key={relatedInfinitive}
+                style={[styles.relatedChip, { backgroundColor: colors.pillBg }]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  navigation.push('Conjugation', { infinitive: relatedInfinitive });
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.relatedInfinitive, { color: colors.primary }]}>{relatedInfinitive}</Text>
+                <Text style={[styles.relatedTranslation, { color: colors.textMuted }]} numberOfLines={1}>
+                  {relatedVerb.translation}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
       {/* Example sentences */}
       {(() => {
         if (verb.examples && verb.examples.length > 0) {
@@ -290,6 +454,73 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   tagText: { fontSize: fonts.sizes.xs, fontWeight: fonts.weights.medium },
+  detailBox: {
+    marginTop: spacing.md,
+    marginHorizontal: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.06)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  detailLabel: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+  },
+  snapshotRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  snapshotPronoun: {
+    fontSize: fonts.sizes.sm,
+    flex: 1,
+  },
+  snapshotForm: {
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.semibold,
+    textAlign: 'right',
+    flex: 1,
+  },
+  noteRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: spacing.sm,
+  },
+  noteIcon: {
+    marginTop: 3,
+    marginRight: spacing.sm,
+  },
+  noteText: {
+    flex: 1,
+    fontSize: fonts.sizes.sm,
+    lineHeight: 20,
+  },
+  relatedGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  relatedChip: {
+    width: '48%',
+    padding: spacing.sm,
+    borderRadius: radius.md,
+  },
+  relatedInfinitive: {
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.semibold,
+    marginBottom: 2,
+  },
+  relatedTranslation: {
+    fontSize: fonts.sizes.xs,
+  },
   exampleBox: {
     marginTop: spacing.md,
     marginHorizontal: spacing.md,

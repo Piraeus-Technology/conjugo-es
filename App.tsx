@@ -26,7 +26,7 @@ const FlashcardStack = createNativeStackNavigator();
 function QuizStackScreen() {
   const colors = useColors();
   return (
-    <QuizStack.Navigator screenOptions={{
+    <QuizStack.Navigator id="QuizStack" screenOptions={{
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.textPrimary,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
@@ -42,7 +42,7 @@ function QuizStackScreen() {
 function FlashcardStackScreen() {
   const colors = useColors();
   return (
-    <FlashcardStack.Navigator screenOptions={{
+    <FlashcardStack.Navigator id="FlashcardStack" screenOptions={{
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.textPrimary,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
@@ -60,7 +60,7 @@ const MoreStack = createNativeStackNavigator();
 function MoreStackScreen() {
   const colors = useColors();
   return (
-    <MoreStack.Navigator screenOptions={{
+    <MoreStack.Navigator id="MoreStack" screenOptions={{
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.textPrimary,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
@@ -83,6 +83,7 @@ function SearchStackScreen() {
 
   return (
     <SearchStack.Navigator
+      id="SearchStack"
       screenOptions={{
         headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.primary,
@@ -148,6 +149,7 @@ export default function App() {
       />
       <NavigationContainer theme={navTheme}>
         <Tab.Navigator
+          id="MainTabs"
           screenOptions={{
             tabBarActiveTintColor: colors.primary,
             tabBarInactiveTintColor: colors.textMuted,
@@ -196,7 +198,7 @@ export default function App() {
             component={FlashcardStackScreen}
             options={{
               headerShown: false,
-              tabBarLabel: 'Cards',
+              tabBarLabel: 'Flashcards',
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="layers" size={size} color={color} />
               ),

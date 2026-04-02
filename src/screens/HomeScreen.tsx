@@ -19,9 +19,23 @@ import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { MAX_SEARCH_RESULTS } from '../utils/constants';
+
+function normalizeSearchText(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/^no\s+/, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
   ([infinitive, data]) => ({
     infinitive,
+    normalizedInfinitive: normalizeSearchText(infinitive),
+    normalizedTranslation: normalizeSearchText(data.translation),
     ...data,
   })
 
@@ -40,12 +54,15 @@ interface ConjMatch {
   tense: Tense;
   pronoun: string;
   form: string;
+  normalizedForm: string;
 }
 
 const verbFuse = new Fuse(verbEntries, {
   keys: [
     { name: 'infinitive', weight: 2 },
+    { name: 'normalizedInfinitive', weight: 2 },
     { name: 'translation', weight: 1 },
+    { name: 'normalizedTranslation', weight: 1 },
   ],
   threshold: 0.4,
   ignoreLocation: true,
@@ -70,6 +87,7 @@ function getConjugationIndex(): ConjMatch[] {
             tense,
             pronoun: r.pronoun,
             form: cleanForm,
+            normalizedForm: normalizeSearchText(cleanForm),
           });
         }
       });
@@ -81,8 +99,12 @@ function getConjugationIndex(): ConjMatch[] {
 function getConjFuse(): Fuse<ConjMatch> {
   if (conjFuse) return conjFuse;
   conjFuse = new Fuse(getConjugationIndex(), {
-    keys: ['form'],
-    threshold: 0.2,
+    keys: [
+      { name: 'form', weight: 1 },
+      { name: 'normalizedForm', weight: 2 },
+    ],
+    threshold: 0.24,
+    ignoreLocation: true,
   });
   return conjFuse;
 }
@@ -91,9 +113,51 @@ interface SearchResult {
   infinitive: string;
   translation: string;
   matchType: 'infinitive' | 'conjugation' | 'favorite' | 'history';
+  matchLabel?: string;
   matchDetail?: string;
   matchTense?: string;
   matchForm?: string;
+}
+
+function buildVerbMatchMeta(
+  query: string,
+  entry: typeof verbEntries[number],
+): Pick<SearchResult, 'matchLabel' | 'matchDetail'> {
+  const normalizedInfinitive = entry.normalizedInfinitive;
+  const normalizedTranslation = entry.normalizedTranslation;
+
+  if (query === normalizedInfinitive) {
+    return {
+      matchLabel: 'Infinitive match',
+      matchDetail: `Exact match for "${entry.infinitive}"`,
+    };
+  }
+
+  if (normalizedInfinitive.startsWith(query)) {
+    return {
+      matchLabel: 'Infinitive match',
+      matchDetail: `Starts with "${entry.infinitive.slice(0, Math.min(entry.infinitive.length, query.length))}"`,
+    };
+  }
+
+  if (query === normalizedTranslation) {
+    return {
+      matchLabel: 'English match',
+      matchDetail: `Exact match for "${entry.translation}"`,
+    };
+  }
+
+  if (normalizedTranslation.includes(query)) {
+    return {
+      matchLabel: 'English match',
+      matchDetail: `Matched in "${entry.translation}"`,
+    };
+  }
+
+  return {
+    matchLabel: 'Search match',
+    matchDetail: `Matched "${entry.infinitive}" or its translation`,
+  };
 }
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
@@ -111,29 +175,39 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const results = useMemo((): SearchResult[] => {
     if (!search.trim()) return [];
 
-    const query = search.trim().toLowerCase();
+    const query = normalizeSearchText(search);
 
     const exactConjMatches = getConjugationIndex().filter(
-      (c) => c.form.toLowerCase() === query
+      (c) => c.normalizedForm === query
     );
 
     if (exactConjMatches.length > 0) {
-      const seen = new Set<string>();
-      const exactResults: SearchResult[] = [];
+      const grouped = new Map<string, SearchResult>();
 
       exactConjMatches.forEach((c) => {
-        if (!seen.has(c.infinitive)) {
-          seen.add(c.infinitive);
-          exactResults.push({
-            infinitive: c.infinitive,
-            translation: c.translation,
-            matchType: 'conjugation',
-            matchDetail: `"${c.form}" — ${tenseNames[c.tense]}, ${c.pronoun}`,
-            matchTense: c.tense,
-            matchForm: c.form,
-          });
+        const detail = `"${c.form}" — ${tenseNames[c.tense]}, ${c.pronoun}`;
+        const existing = grouped.get(c.infinitive);
+        if (existing) {
+          if (existing.matchDetail && !existing.matchDetail.includes(detail)) {
+            const details = existing.matchDetail.split(' · ');
+            if (details.length < 2) existing.matchDetail = [...details, detail].join(' · ');
+          }
+          return;
         }
+
+        grouped.set(c.infinitive, {
+          infinitive: c.infinitive,
+          translation: c.translation,
+          matchType: 'conjugation',
+          matchLabel: 'Conjugation match',
+          matchDetail: detail,
+          matchTense: c.tense,
+          matchForm: c.form,
+        });
       });
+
+      const exactResults = [...grouped.values()];
+      const seen = new Set(exactResults.map(result => result.infinitive));
 
       const verbResults = verbFuse.search(search);
       verbResults.forEach((r) => {
@@ -143,6 +217,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             infinitive: r.item.infinitive,
             translation: r.item.translation,
             matchType: 'infinitive',
+            ...buildVerbMatchMeta(query, r.item),
           });
         }
       });
@@ -150,11 +225,26 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       return exactResults.slice(0, MAX_SEARCH_RESULTS);
     }
 
-    const verbResults = verbFuse.search(search).map((r) => ({
-      infinitive: r.item.infinitive,
-      translation: r.item.translation,
-      matchType: 'infinitive' as const,
-    }));
+    const verbResults = verbFuse.search(search)
+      .map((r) => ({
+        infinitive: r.item.infinitive,
+        translation: r.item.translation,
+        matchType: 'infinitive' as const,
+        score: r.score ?? 1,
+        ...buildVerbMatchMeta(query, r.item),
+      }))
+      .sort((a, b) => {
+        const aExactInfinitive = normalizeSearchText(a.infinitive) === query ? 1 : 0;
+        const bExactInfinitive = normalizeSearchText(b.infinitive) === query ? 1 : 0;
+        if (aExactInfinitive !== bExactInfinitive) return bExactInfinitive - aExactInfinitive;
+
+        const aExactTranslation = normalizeSearchText(a.translation) === query ? 1 : 0;
+        const bExactTranslation = normalizeSearchText(b.translation) === query ? 1 : 0;
+        if (aExactTranslation !== bExactTranslation) return bExactTranslation - aExactTranslation;
+
+        return a.score - b.score;
+      })
+      .map(({ score: _score, ...result }) => result);
 
     const conjResults = getConjFuse().search(search);
     const seenConj = new Set<string>(verbResults.map((r) => r.infinitive));
@@ -167,6 +257,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           infinitive: r.item.infinitive,
           translation: r.item.translation,
           matchType: 'conjugation',
+          matchLabel: 'Conjugation match',
           matchDetail: `"${r.item.form}" — ${tenseNames[r.item.tense]}, ${r.item.pronoun}`,
           matchTense: r.item.tense,
           matchForm: r.item.form,
@@ -255,8 +346,25 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         <View style={styles.verbInfo}>
           <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
           <Text style={[styles.verbTranslation, { color: colors.textSecondary }]}>{item.translation}</Text>
-          {item.matchType === 'conjugation' && item.matchDetail && (
-            <Text style={[styles.matchDetail, { color: colors.primary }]}>{item.matchDetail}</Text>
+          {search.trim() && item.matchLabel && (
+            <Text
+              style={[
+                styles.matchLabel,
+                { color: item.matchType === 'conjugation' ? colors.primary : colors.textSecondary },
+              ]}
+            >
+              {item.matchLabel}
+            </Text>
+          )}
+          {search.trim() && item.matchDetail && (
+            <Text
+              style={[
+                styles.matchDetail,
+                { color: item.matchType === 'conjugation' ? colors.primary : colors.textMuted },
+              ]}
+            >
+              {item.matchDetail}
+            </Text>
           )}
         </View>
         {item.matchType === 'favorite' ? (
@@ -406,6 +514,13 @@ const styles = StyleSheet.create({
   verbInfo: { flex: 1 },
   verbName: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold },
   verbTranslation: { fontSize: fonts.sizes.sm, marginTop: 2 },
+  matchLabel: {
+    fontSize: fonts.sizes.xs,
+    marginTop: 6,
+    fontWeight: fonts.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   matchDetail: { fontSize: fonts.sizes.xs, marginTop: 4, fontStyle: 'italic' },
   separator: { height: 1, marginHorizontal: spacing.lg },
   sectionSeparator: { height: spacing.sm },

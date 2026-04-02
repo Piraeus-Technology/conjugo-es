@@ -12,6 +12,7 @@ interface FlashcardSessionStore {
   loaded: boolean;
   loadSessions: () => Promise<void>;
   saveSession: (session: Omit<FlashcardSession, 'date'>) => Promise<void>;
+  clearSessions: () => Promise<void>;
 }
 
 export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get) => ({
@@ -32,5 +33,10 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
     const updated = [{ ...session, date: Date.now() }, ...get().sessions].slice(0, 100);
     set({ sessions: updated });
     await AsyncStorage.setItem('flashcardSessions', JSON.stringify(updated));
+  },
+
+  clearSessions: async () => {
+    set({ sessions: [] });
+    await AsyncStorage.removeItem('flashcardSessions');
   },
 }));

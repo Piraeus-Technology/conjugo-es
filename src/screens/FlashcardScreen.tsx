@@ -8,6 +8,7 @@ import {
   Dimensions,
   Modal,
   Pressable,
+  Alert,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
+import { useSpacedRepStore } from '../store/spacedRepStore';
 import { speak } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 
@@ -34,31 +36,45 @@ interface Card {
   answer: string;
 }
 
-function generateCard(entries: [string, VerbData][], tenses: Tense[]): Card {
+function generateCard(
+  entries: [string, VerbData][],
+  tenses: Tense[],
+  getWeight: (verb: string, tense: Tense, personIndex: number) => number,
+): Card {
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
   const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
   const commonCount = Math.min(200, verbEntries.length);
-  const idx = Math.random() < 0.7
-    ? Math.floor(Math.random() * commonCount)
-    : Math.floor(Math.random() * verbEntries.length);
-  const [verb, data] = verbEntries[idx];
-  const tense = activeTenseList[Math.floor(Math.random() * activeTenseList.length)];
-  const results = conjugate(verb, data, tense);
-  // Filter to valid (non-disabled) persons only
-  const validPersons = results
-    .map((r, i) => ({ index: i, ...r }))
-    .filter(r => !r.disabled && r.form !== '—');
-  if (validPersons.length === 0) {
-    return generateCard(entries, tenses);
+
+  const candidates: Card[] = [];
+  while (candidates.length < 10) {
+    const idx = Math.random() < 0.7
+      ? Math.floor(Math.random() * commonCount)
+      : Math.floor(Math.random() * verbEntries.length);
+    const [verb, data] = verbEntries[idx];
+    const tense = activeTenseList[Math.floor(Math.random() * activeTenseList.length)];
+    const results = conjugate(verb, data, tense);
+    const validPersons = results
+      .map((r, i) => ({ index: i, ...r }))
+      .filter(r => !r.disabled && r.form !== '—');
+
+    if (validPersons.length === 0) continue;
+
+    const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
+    candidates.push({
+      verb,
+      translation: data.translation,
+      tense,
+      personIndex: picked.index,
+      answer: picked.form,
+    });
   }
-  const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
-  return {
-    verb,
-    translation: data.translation,
-    tense,
-    personIndex: picked.index,
-    answer: picked.form,
-  };
+
+  return candidates.reduce((best, candidate) =>
+    getWeight(candidate.verb, candidate.tense, candidate.personIndex) >
+      getWeight(best.verb, best.tense, best.personIndex)
+      ? candidate
+      : best
+  );
 }
 
 export default function FlashcardScreen() {
@@ -66,6 +82,7 @@ export default function FlashcardScreen() {
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
   const { saveSession } = useFlashcardSessionStore();
+  const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const filteredEntries = React.useMemo(() =>
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
@@ -73,22 +90,8 @@ export default function FlashcardScreen() {
 
   React.useEffect(() => {
     loadPracticeSettings();
+    loadWeights();
   }, []);
-
-  React.useLayoutEffect(() => {
-    nav.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => nav.navigate('PracticeSettings', { mode: 'flashcards' })}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 8 }}
-        >
-          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
-          <Ionicons name="options-outline" size={18} color={colors.primary} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [nav, colors]);
 
   const [card, setCard] = useState<Card | null>(null);
   const [flipped, setFlipped] = useState(false);
@@ -97,16 +100,55 @@ export default function FlashcardScreen() {
   const [showResults, setShowResults] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
 
+  const confirmEndSession = React.useCallback(() => {
+    if (reviewed === 0) {
+      setShowResults(true);
+      return;
+    }
+
+    Alert.alert(
+      'End session?',
+      'Your progress will be saved.',
+      [
+        { text: 'Keep Going', style: 'cancel' },
+        { text: 'End Session', style: 'destructive', onPress: handleEndSession },
+      ],
+    );
+  }, [reviewed, correct]);
+
+  React.useLayoutEffect(() => {
+    nav.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginRight: 8 }}>
+          <TouchableOpacity
+            onPress={() => nav.navigate('PracticeSettings', { mode: 'flashcards' })}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+          >
+            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
+            <Ionicons name="options-outline" size={18} color={colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={confirmEndSession}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Text style={{ color: colors.textMuted, fontSize: 14, fontWeight: '600' }}>End</Text>
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, [nav, colors, confirmEndSession]);
+
   React.useEffect(() => {
-    if (!loaded || activeTenses.length === 0 || filteredEntries.length === 0) return;
-    setCard(generateCard(filteredEntries, activeTenses));
+    if (!loaded || !weightsLoaded || activeTenses.length === 0 || filteredEntries.length === 0) return;
+    setCard(generateCard(filteredEntries, activeTenses, getWeight));
     setFlipped(false);
     flipAnim.setValue(0);
-  }, [loaded, activeTenses, filteredEntries, flipAnim]);
+  }, [loaded, weightsLoaded, activeTenses, filteredEntries, flipAnim, getWeight]);
 
   const flipToFront = () => {
     Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
-      setCard(generateCard(filteredEntries, activeTenses));
+      setCard(generateCard(filteredEntries, activeTenses, getWeight));
       setFlipped(false);
     });
   };
@@ -118,15 +160,19 @@ export default function FlashcardScreen() {
   };
 
   const handleGotIt = () => {
+    if (!card) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setReviewed(r => r + 1);
     setCorrect(c => c + 1);
+    recordResult(card.verb, card.tense, card.personIndex, true);
     flipToFront();
   };
 
   const handleMissed = () => {
+    if (!card) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setReviewed(r => r + 1);
+    recordResult(card.verb, card.tense, card.personIndex, false);
     flipToFront();
   };
 
@@ -141,7 +187,7 @@ export default function FlashcardScreen() {
     setShowResults(false);
     setReviewed(0);
     setCorrect(0);
-    setCard(generateCard(filteredEntries, activeTenses));
+    setCard(generateCard(filteredEntries, activeTenses, getWeight));
     setFlipped(false);
     flipAnim.setValue(0);
   };
@@ -149,7 +195,7 @@ export default function FlashcardScreen() {
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
 
-  if (!loaded) {
+  if (!loaded || !weightsLoaded) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center' }]}>
         <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading flashcards...</Text>
@@ -169,23 +215,25 @@ export default function FlashcardScreen() {
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
       {/* Score bar */}
       <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
-        <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: colors.primary }]}>{reviewed}</Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Reviewed</Text>
-        </View>
-        <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: '#2E7D32' }]}>{correct}</Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Got It</Text>
-        </View>
-        <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: '#C62828' }]}>{reviewed - correct}</Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Missed</Text>
-        </View>
-        <View style={styles.scoreItem}>
-          <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
-            {reviewed > 0 ? Math.round((correct / reviewed) * 100) : 0}%
-          </Text>
-          <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
+        <View style={styles.scoreRow}>
+          <View style={styles.scoreItem}>
+            <Text style={[styles.scoreValue, { color: colors.primary }]}>{reviewed}</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Reviewed</Text>
+          </View>
+          <View style={styles.scoreItem}>
+            <Text style={[styles.scoreValue, { color: '#2E7D32' }]}>{correct}</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Got It</Text>
+          </View>
+          <View style={styles.scoreItem}>
+            <Text style={[styles.scoreValue, { color: '#C62828' }]}>{reviewed - correct}</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Missed</Text>
+          </View>
+          <View style={styles.scoreItem}>
+            <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
+              {reviewed > 0 ? Math.round((correct / reviewed) * 100) : 0}%
+            </Text>
+            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
+          </View>
         </View>
       </View>
 
@@ -262,17 +310,6 @@ export default function FlashcardScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* End session */}
-      {reviewed > 0 && !flipped && (
-        <TouchableOpacity
-          style={[styles.endButton, { borderColor: colors.border }]}
-          onPress={handleEndSession}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.endButtonText, { color: colors.textMuted }]}>End Session</Text>
-        </TouchableOpacity>
-      )}
-
       {/* Results modal */}
       <Modal visible={showResults} transparent animationType="fade">
         <Pressable style={styles.modalOverlay} onPress={() => setShowResults(false)}>
@@ -316,11 +353,10 @@ const styles = StyleSheet.create({
     top: spacing.sm,
     left: spacing.lg,
     right: spacing.lg,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
     padding: spacing.sm,
     borderRadius: radius.md,
   },
+  scoreRow: { flexDirection: 'row', justifyContent: 'space-around' },
   scoreItem: { alignItems: 'center' },
   scoreValue: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.bold },
   scoreLabel: { fontSize: 10, marginTop: 1, textTransform: 'uppercase', letterSpacing: 0.5 },
@@ -350,12 +386,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md, borderWidth: 1.5,
   },
   actionButtonText: { fontSize: fonts.sizes.md, fontWeight: fonts.weights.bold },
-  endButton: {
-    position: 'absolute', bottom: spacing.lg,
-    paddingHorizontal: spacing.lg, paddingVertical: spacing.sm,
-    borderRadius: radius.md, borderWidth: 1,
-  },
-  endButtonText: { fontSize: fonts.sizes.sm, fontWeight: fonts.weights.medium },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
   modalContent: { width: '80%', borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 8 },
   modalTitle: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.bold, marginBottom: spacing.lg },
