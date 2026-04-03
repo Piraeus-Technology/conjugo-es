@@ -7,6 +7,7 @@ import {
   Modal,
   Pressable,
   Alert,
+  AppState,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -240,25 +241,37 @@ export default function QuizScreen() {
     setSelectedAnswer(null);
   };
 
-  // Auto-save session when leaving the screen
+  // Auto-save session when leaving the screen or app goes to background
   const sessionTotalRef = React.useRef(sessionTotal);
   const sessionScoreRef = React.useRef(sessionScore);
   const bestSessionStreakRef = React.useRef(bestSessionStreak);
+  const savedRef = React.useRef(false);
   sessionTotalRef.current = sessionTotal;
   sessionScoreRef.current = sessionScore;
   bestSessionStreakRef.current = bestSessionStreak;
 
+  const saveCurrentSession = React.useCallback(() => {
+    if (sessionTotalRef.current > 0 && !savedRef.current) {
+      savedRef.current = true;
+      saveSession({
+        total: sessionTotalRef.current,
+        correct: sessionScoreRef.current,
+        streak: bestSessionStreakRef.current,
+      });
+    }
+  }, [saveSession]);
+
   React.useEffect(() => {
-    return () => {
-      if (sessionTotalRef.current > 0) {
-        saveSession({
-          total: sessionTotalRef.current,
-          correct: sessionScoreRef.current,
-          streak: bestSessionStreakRef.current,
-        });
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'background' || state === 'inactive') {
+        saveCurrentSession();
       }
+    });
+    return () => {
+      sub.remove();
+      saveCurrentSession();
     };
-  }, []);
+  }, [saveCurrentSession]);
 
 
   const getOptionStyle = (option: string) => {

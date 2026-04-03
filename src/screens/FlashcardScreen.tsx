@@ -9,6 +9,7 @@ import {
   Modal,
   Pressable,
   Alert,
+  AppState,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -151,19 +152,31 @@ export default function FlashcardScreen() {
     flipToFront();
   };
 
-  // Auto-save session when leaving the screen
+  // Auto-save session when leaving the screen or app goes to background
   const reviewedRef = React.useRef(reviewed);
   const correctRef = React.useRef(correct);
+  const savedRef = React.useRef(false);
   reviewedRef.current = reviewed;
   correctRef.current = correct;
 
+  const saveCurrentSession = React.useCallback(() => {
+    if (reviewedRef.current > 0 && !savedRef.current) {
+      savedRef.current = true;
+      saveSession({ reviewed: reviewedRef.current, correct: correctRef.current });
+    }
+  }, [saveSession]);
+
   React.useEffect(() => {
-    return () => {
-      if (reviewedRef.current > 0) {
-        saveSession({ reviewed: reviewedRef.current, correct: correctRef.current });
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'background' || state === 'inactive') {
+        saveCurrentSession();
       }
+    });
+    return () => {
+      sub.remove();
+      saveCurrentSession();
     };
-  }, []);
+  }, [saveCurrentSession]);
 
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
