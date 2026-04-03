@@ -174,46 +174,21 @@ export default function QuizScreen() {
   const [sessionTotal, setSessionTotal] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestSessionStreak, setBestSessionStreak] = useState(0);
-  const [showResults, setShowResults] = useState(false);
-
-  const confirmEndSession = React.useCallback(() => {
-    if (sessionTotal === 0) {
-      setShowResults(true);
-      return;
-    }
-
-    Alert.alert(
-      'End session?',
-      'Your progress will be saved.',
-      [
-        { text: 'Keep Going', style: 'cancel' },
-        { text: 'End Session', style: 'destructive', onPress: handleEndSession },
-      ],
-    );
-  }, [sessionTotal, sessionScore, bestSessionStreak]);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginRight: 8 }}>
-          <TouchableOpacity
-            onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-          >
-            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
-            <Ionicons name="options-outline" size={18} color={colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={confirmEndSession}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Text style={{ color: colors.textMuted, fontSize: 14, fontWeight: '600' }}>End</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 8 }}
+        >
+          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
+          <Ionicons name="options-outline" size={18} color={colors.primary} />
+        </TouchableOpacity>
       ),
     });
-  }, [nav, colors, confirmEndSession]);
+  }, [nav, colors]);
 
   useEffect(() => {
     loadStats();
@@ -265,27 +240,27 @@ export default function QuizScreen() {
     setSelectedAnswer(null);
   };
 
-  const handleEndSession = () => {
-    if (sessionTotal > 0) {
-      saveSession({
-        total: sessionTotal,
-        correct: sessionScore,
-        streak: bestSessionStreak,
-        durationMs: 0,
-      });
-    }
-    setShowResults(true);
-  };
+  // Auto-save session when leaving the screen
+  const sessionTotalRef = React.useRef(sessionTotal);
+  const sessionScoreRef = React.useRef(sessionScore);
+  const bestSessionStreakRef = React.useRef(bestSessionStreak);
+  sessionTotalRef.current = sessionTotal;
+  sessionScoreRef.current = sessionScore;
+  bestSessionStreakRef.current = bestSessionStreak;
 
-  const handleNewSession = () => {
-    setShowResults(false);
-    setSessionScore(0);
-    setSessionTotal(0);
-    setStreak(0);
-    setBestSessionStreak(0);
-    setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries));
-    setSelectedAnswer(null);
-  };
+  React.useEffect(() => {
+    return () => {
+      if (sessionTotalRef.current > 0) {
+        saveSession({
+          total: sessionTotalRef.current,
+          correct: sessionScoreRef.current,
+          streak: bestSessionStreakRef.current,
+          durationMs: 0,
+        });
+      }
+    };
+  }, []);
+
 
   const getOptionStyle = (option: string) => {
     if (!answered || !question) {
@@ -405,40 +380,6 @@ export default function QuizScreen() {
         </View>
       </View>
 
-      {/* Results modal */}
-      <Modal visible={showResults} transparent animationType="fade">
-        <Pressable style={styles.modalOverlay} onPress={() => setShowResults(false)}>
-          <Pressable style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.primary }]}>Session Complete!</Text>
-            <View style={styles.modalStats}>
-              <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: colors.primary }]}>
-                  {sessionScore}/{sessionTotal}
-                </Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Score</Text>
-              </View>
-              <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: colors.accent || colors.primary }]}>
-                  {sessionTotal > 0 ? Math.round((sessionScore / sessionTotal) * 100) : 0}%
-                </Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Accuracy</Text>
-              </View>
-              <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: colors.textSecondary }]}>
-                  {bestSessionStreak}
-                </Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Best Streak</Text>
-              </View>
-            </View>
-            <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: colors.primary }]}
-              onPress={handleNewSession}
-            >
-              <Text style={styles.modalButtonText}>New Session</Text>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </View>
   );
 }

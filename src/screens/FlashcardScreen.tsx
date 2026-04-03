@@ -97,47 +97,22 @@ export default function FlashcardScreen() {
   const [flipped, setFlipped] = useState(false);
   const [reviewed, setReviewed] = useState(0);
   const [correct, setCorrect] = useState(0);
-  const [showResults, setShowResults] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
-
-  const confirmEndSession = React.useCallback(() => {
-    if (reviewed === 0) {
-      setShowResults(true);
-      return;
-    }
-
-    Alert.alert(
-      'End session?',
-      'Your progress will be saved.',
-      [
-        { text: 'Keep Going', style: 'cancel' },
-        { text: 'End Session', style: 'destructive', onPress: handleEndSession },
-      ],
-    );
-  }, [reviewed, correct]);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginRight: 8 }}>
-          <TouchableOpacity
-            onPress={() => nav.navigate('PracticeSettings', { mode: 'flashcards' })}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-          >
-            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
-            <Ionicons name="options-outline" size={18} color={colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={confirmEndSession}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Text style={{ color: colors.textMuted, fontSize: 14, fontWeight: '600' }}>End</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={() => nav.navigate('PracticeSettings', { mode: 'flashcards' })}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 8 }}
+        >
+          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
+          <Ionicons name="options-outline" size={18} color={colors.primary} />
+        </TouchableOpacity>
       ),
     });
-  }, [nav, colors, confirmEndSession]);
+  }, [nav, colors]);
 
   React.useEffect(() => {
     if (!loaded || !weightsLoaded || activeTenses.length === 0 || filteredEntries.length === 0) return;
@@ -176,21 +151,19 @@ export default function FlashcardScreen() {
     flipToFront();
   };
 
-  const handleEndSession = () => {
-    if (reviewed > 0) {
-      saveSession({ reviewed, correct });
-    }
-    setShowResults(true);
-  };
+  // Auto-save session when leaving the screen
+  const reviewedRef = React.useRef(reviewed);
+  const correctRef = React.useRef(correct);
+  reviewedRef.current = reviewed;
+  correctRef.current = correct;
 
-  const handleNewSession = () => {
-    setShowResults(false);
-    setReviewed(0);
-    setCorrect(0);
-    setCard(generateCard(filteredEntries, activeTenses, getWeight));
-    setFlipped(false);
-    flipAnim.setValue(0);
-  };
+  React.useEffect(() => {
+    return () => {
+      if (reviewedRef.current > 0) {
+        saveSession({ reviewed: reviewedRef.current, correct: correctRef.current });
+      }
+    };
+  }, []);
 
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
@@ -310,36 +283,6 @@ export default function FlashcardScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Results modal */}
-      <Modal visible={showResults} transparent animationType="fade">
-        <Pressable style={styles.modalOverlay} onPress={() => setShowResults(false)}>
-          <Pressable style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.primary }]}>Session Complete!</Text>
-            <View style={styles.modalStats}>
-              <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: colors.primary }]}>{reviewed}</Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Reviewed</Text>
-              </View>
-              <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: '#2E7D32' }]}>{correct}</Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Got It</Text>
-              </View>
-              <View style={styles.modalStatItem}>
-                <Text style={[styles.modalStatValue, { color: colors.textSecondary }]}>
-                  {reviewed > 0 ? Math.round((correct / reviewed) * 100) : 0}%
-                </Text>
-                <Text style={[styles.modalStatLabel, { color: colors.textMuted }]}>Accuracy</Text>
-              </View>
-            </View>
-            <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: colors.primary }]}
-              onPress={handleNewSession}
-            >
-              <Text style={styles.modalButtonText}>New Session</Text>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </View>
   );
 }
