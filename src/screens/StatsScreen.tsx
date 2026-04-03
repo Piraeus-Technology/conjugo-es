@@ -31,11 +31,11 @@ export default function StatsScreen() {
 
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
-  // Aggregate sessions by day
+  // Map sessions by day (each session is already one day)
   const dailyMap = React.useMemo(() => {
     const map: Record<string, { total: number; correct: number }> = {};
     sessions.forEach(s => {
-      const key = new Date(s.date).toLocaleDateString('en-CA');
+      const key = s.day;
       if (!map[key]) map[key] = { total: 0, correct: 0 };
       map[key].total += s.total;
       map[key].correct += s.correct;
