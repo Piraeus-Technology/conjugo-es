@@ -28,7 +28,23 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     try {
       const stored = await AsyncStorage.getItem('sessions');
       if (stored) {
-        set({ sessions: JSON.parse(stored), loaded: true });
+        const parsed = JSON.parse(stored);
+        // Migrate old format (date: timestamp) to new format (day: 'YYYY-MM-DD')
+        const migrated: Session[] = [];
+        const dayMap: Record<string, Session> = {};
+        for (const s of parsed) {
+          const day = s.day || new Date(s.date).toLocaleDateString('en-CA');
+          if (dayMap[day]) {
+            dayMap[day].total += s.total;
+            dayMap[day].correct += s.correct;
+            dayMap[day].streak = Math.max(dayMap[day].streak, s.streak || 0);
+          } else {
+            dayMap[day] = { day, total: s.total, correct: s.correct, streak: s.streak || 0 };
+          }
+        }
+        const sessions = Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day));
+        set({ sessions, loaded: true });
+        await AsyncStorage.setItem('sessions', JSON.stringify(sessions));
       } else {
         set({ loaded: true });
       }

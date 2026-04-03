@@ -26,8 +26,25 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
   loadSessions: async () => {
     try {
       const stored = await AsyncStorage.getItem('flashcardSessions');
-      if (stored) set({ sessions: JSON.parse(stored), loaded: true });
-      else set({ loaded: true });
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Migrate old format (date: timestamp) to new format (day: 'YYYY-MM-DD')
+        const dayMap: Record<string, FlashcardSession> = {};
+        for (const s of parsed) {
+          const day = s.day || new Date(s.date).toLocaleDateString('en-CA');
+          if (dayMap[day]) {
+            dayMap[day].reviewed += s.reviewed;
+            dayMap[day].correct += s.correct;
+          } else {
+            dayMap[day] = { day, reviewed: s.reviewed, correct: s.correct };
+          }
+        }
+        const sessions = Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day));
+        set({ sessions, loaded: true });
+        await AsyncStorage.setItem('flashcardSessions', JSON.stringify(sessions));
+      } else {
+        set({ loaded: true });
+      }
     } catch {
       set({ loaded: true });
     }
