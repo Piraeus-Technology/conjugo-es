@@ -30,7 +30,7 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
   },
 
   saveSession: async (session) => {
-    const updated = [{ ...session, date: Date.now() }, ...get().sessions].slice(0, 100);
+    const updated = [{ ...session, date: Date.now() }, ...get().sessions].slice(0, 200);
     set({ sessions: updated });
     await AsyncStorage.setItem('flashcardSessions', JSON.stringify(updated));
   },

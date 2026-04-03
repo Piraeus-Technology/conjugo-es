@@ -29,38 +29,44 @@ export default function FlashcardStatsScreen() {
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
   // Aggregate sessions by day
-  const dailyMap: Record<string, { reviewed: number; correct: number }> = {};
-  sessions.forEach(s => {
-    const key = new Date(s.date).toLocaleDateString('en-CA');
-    if (!dailyMap[key]) dailyMap[key] = { reviewed: 0, correct: 0 };
-    dailyMap[key].reviewed += s.reviewed;
-    dailyMap[key].correct += s.correct;
-  });
+  const dailyMap = React.useMemo(() => {
+    const map: Record<string, { reviewed: number; correct: number }> = {};
+    sessions.forEach(s => {
+      const key = new Date(s.date).toLocaleDateString('en-CA');
+      if (!map[key]) map[key] = { reviewed: 0, correct: 0 };
+      map[key].reviewed += s.reviewed;
+      map[key].correct += s.correct;
+    });
+    return map;
+  }, [sessions]);
 
   // All-time totals
-  const totalReviewed = sessions.reduce((sum, s) => sum + s.reviewed, 0);
-  const totalCorrect = sessions.reduce((sum, s) => sum + s.correct, 0);
+  const totalReviewed = React.useMemo(() => sessions.reduce((sum, s) => sum + s.reviewed, 0), [sessions]);
+  const totalCorrect = React.useMemo(() => sessions.reduce((sum, s) => sum + s.correct, 0), [sessions]);
 
   // Today
   const todayStr = new Date().toLocaleDateString('en-CA');
   const todayData = dailyMap[todayStr];
 
   // Streak
-  let streak = 0;
-  const yesterdayDate = new Date();
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA');
-  if (dailyMap[todayStr] || dailyMap[yesterdayStr]) {
-    let checkDate = new Date();
-    if (!dailyMap[todayStr]) checkDate.setDate(checkDate.getDate() - 1);
-    while (true) {
-      const key = checkDate.toLocaleDateString('en-CA');
-      if (dailyMap[key]) {
-        streak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else break;
+  const streak = React.useMemo(() => {
+    let count = 0;
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA');
+    if (dailyMap[todayStr] || dailyMap[yesterdayStr]) {
+      let checkDate = new Date();
+      if (!dailyMap[todayStr]) checkDate.setDate(checkDate.getDate() - 1);
+      while (true) {
+        const key = checkDate.toLocaleDateString('en-CA');
+        if (dailyMap[key]) {
+          count++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else break;
+      }
     }
-  }
+    return count;
+  }, [dailyMap, todayStr]);
 
   // Calendar
   const calYear = calendarDate.getFullYear();

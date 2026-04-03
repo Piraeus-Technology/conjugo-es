@@ -32,36 +32,42 @@ export default function StatsScreen() {
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
   // Aggregate sessions by day
-  const dailyMap: Record<string, { total: number; correct: number }> = {};
-  sessions.forEach(s => {
-    const key = new Date(s.date).toLocaleDateString('en-CA');
-    if (!dailyMap[key]) dailyMap[key] = { total: 0, correct: 0 };
-    dailyMap[key].total += s.total;
-    dailyMap[key].correct += s.correct;
-  });
+  const dailyMap = React.useMemo(() => {
+    const map: Record<string, { total: number; correct: number }> = {};
+    sessions.forEach(s => {
+      const key = new Date(s.date).toLocaleDateString('en-CA');
+      if (!map[key]) map[key] = { total: 0, correct: 0 };
+      map[key].total += s.total;
+      map[key].correct += s.correct;
+    });
+    return map;
+  }, [sessions]);
 
   // Today stats
   const todayStr = new Date().toLocaleDateString('en-CA');
   const todayData = dailyMap[todayStr];
 
   // Streak calculation
-  let streak = 0;
-  const yesterdayDate = new Date();
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA');
-  if (dailyMap[todayStr] || dailyMap[yesterdayStr]) {
-    let checkDate = new Date();
-    if (!dailyMap[todayStr]) checkDate.setDate(checkDate.getDate() - 1);
-    while (true) {
-      const key = checkDate.toLocaleDateString('en-CA');
-      if (dailyMap[key]) {
-        streak++;
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break;
+  const streak = React.useMemo(() => {
+    let count = 0;
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA');
+    if (dailyMap[todayStr] || dailyMap[yesterdayStr]) {
+      let checkDate = new Date();
+      if (!dailyMap[todayStr]) checkDate.setDate(checkDate.getDate() - 1);
+      while (true) {
+        const key = checkDate.toLocaleDateString('en-CA');
+        if (dailyMap[key]) {
+          count++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
       }
     }
-  }
+    return count;
+  }, [dailyMap, todayStr]);
 
   // Calendar helpers
   const calYear = calendarDate.getFullYear();

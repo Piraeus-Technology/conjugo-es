@@ -6,7 +6,6 @@ export interface Session {
   total: number;
   correct: number;
   streak: number;
-  durationMs: number;
 }
 
 interface SessionStore {
@@ -35,7 +34,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   saveSession: async (session) => {
-    const updated = [{ ...session, date: Date.now() }, ...get().sessions].slice(0, 50);
+    const updated = [{ ...session, date: Date.now() }, ...get().sessions].slice(0, 200);
     set({ sessions: updated });
     await AsyncStorage.setItem('sessions', JSON.stringify(updated));
   },

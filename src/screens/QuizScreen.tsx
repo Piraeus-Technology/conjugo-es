@@ -255,7 +255,6 @@ export default function QuizScreen() {
           total: sessionTotalRef.current,
           correct: sessionScoreRef.current,
           streak: bestSessionStreakRef.current,
-          durationMs: 0,
         });
       }
     };
