@@ -2,7 +2,7 @@
   "expo": {
     "name": "ConjuGo",
     "slug": "conjuGo",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lkh9596.conjugo",
-      "buildNumber": "13",
+      "buildNumber": "14",
       "infoPlist": {
         "CFBundleDisplayName": "ConjuGo",
         "ITSAppUsesNonExemptEncryption": false
@@ -26,7 +26,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.lkh9596.conjugo",
-      "versionCode": 12
+      "versionCode": 13
     },
     "web": {
       "favicon": "./assets/favicon.png"
