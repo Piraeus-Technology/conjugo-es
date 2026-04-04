@@ -212,6 +212,63 @@ describe('Stem change o→ue imperative: sonar', () => {
   });
 });
 
+describe('Stem change o→ue imperative: comprobar', () => {
+  const verb: VerbData = {
+    type: 'ar',
+    regular: false,
+    translation: 'to check/verify',
+    pattern: { stemChange: { present: 'o_ue' } },
+  };
+
+  test('imperative affirmative tú: comprueba', () => {
+    const result = conjugate('comprobar', verb, 'imperative_affirmative');
+    expect(result[1].form).toBe('comprueba');
+  });
+
+  test('imperative negative tú: no compruebes', () => {
+    const result = conjugate('comprobar', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no compruebes');
+  });
+});
+
+describe('Stem change o→ue imperative family regressions', () => {
+  test('aprobar imperative negative tú: no apruebes', () => {
+    const verb: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to approve/pass',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+
+    const result = conjugate('aprobar', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no apruebes');
+  });
+
+  test('mostrar imperative affirmative tú: muestra', () => {
+    const verb: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to show',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+
+    const result = conjugate('mostrar', verb, 'imperative_affirmative');
+    expect(result[1].form).toBe('muestra');
+  });
+
+  test('soltar imperative negative tú: no sueltes', () => {
+    const verb: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to release',
+      pattern: { stemChange: { present: 'o_ue' } },
+    };
+
+    const result = conjugate('soltar', verb, 'imperative_negative');
+    expect(result[1].form).toBe('no sueltes');
+  });
+});
+
 describe('Stem change e→i: pedir (-ir)', () => {
   const verb: VerbData = {
     type: 'ir', regular: false, translation: 'to ask for',

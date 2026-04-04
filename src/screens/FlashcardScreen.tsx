@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   scoreRow: { flexDirection: 'row', justifyContent: 'space-around' },
   scoreItem: { alignItems: 'center' },
   scoreValue: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.bold },
-  scoreLabel: { fontSize: 10, marginTop: 1, textTransform: 'uppercase', letterSpacing: 0.5 },
+  scoreLabel: { fontSize: fonts.sizes.xs, marginTop: 2, textTransform: 'uppercase', letterSpacing: 0.5 },
   cardContainer: { width: width - spacing.lg * 2, height: 320 },
   card: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,

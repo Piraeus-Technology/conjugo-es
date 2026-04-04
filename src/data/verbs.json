@@ -9105,8 +9105,13 @@
   },
   "comprobar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to check/verify",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    },
     "examples": [
       "Comprobé que la puerta estuviera cerrada.",
       "Comprueba los resultados antes de enviarlos."
