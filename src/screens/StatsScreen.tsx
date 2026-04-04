@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
-import { useQuizStore } from '../store/quizStore';
 import { useSessionStore } from '../store/sessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
 import { buildPracticeInsights } from '../utils/practiceInsights';
@@ -17,19 +16,21 @@ const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function StatsScreen() {
   const colors = useColors();
-  const { totalQuestions, totalCorrect, bestStreak, loadStats } = useQuizStore();
   const { sessions, loadSessions } = useSessionStore();
   const { weights, loaded: weightsLoaded, loadWeights } = useSpacedRepStore();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   React.useEffect(() => {
-    loadStats();
     loadSessions();
     loadWeights();
   }, []);
 
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
+
+  // All-time totals from sessions
+  const totalQuestions = React.useMemo(() => sessions.reduce((sum, s) => sum + s.total, 0), [sessions]);
+  const totalCorrect = React.useMemo(() => sessions.reduce((sum, s) => sum + s.correct, 0), [sessions]);
 
   // Map sessions by day (each session is already one day)
   const dailyMap = React.useMemo(() => {
@@ -152,8 +153,8 @@ export default function StatsScreen() {
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.accent || colors.primary }]}>{bestStreak}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>Best Streak</Text>
+            <Text style={[styles.statValue, { color: colors.accent || colors.primary }]}>{sessions.length}</Text>
+            <Text style={[styles.statLabel, { color: colors.textMuted }]}>Days</Text>
           </View>
         </View>
       </View>
