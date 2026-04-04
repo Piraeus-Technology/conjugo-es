@@ -297,6 +297,206 @@ describe('Tener compounds keep irregular subjunctive and imperative stems', () =
   });
 });
 
+describe('Additional spot-checked irregular families', () => {
+  test('prevenir keeps venir-family irregularity', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to prevent',
+      pattern: {
+        stemChange: { present: 'e_ie' },
+        yoGo: true,
+        irregularPreteriteStem: 'previn',
+        irregularFutureStem: 'prevendr',
+      },
+    };
+
+    expect(forms('prevenir', verb, 'present')[0]).toBe('prevengo');
+    expect(forms('prevenir', verb, 'present')[2]).toBe('previene');
+    expect(forms('prevenir', verb, 'preterite')[5]).toBe('previnieron');
+    expect(forms('prevenir', verb, 'future')[0]).toBe('prevendré');
+  });
+
+  test('consentir follows sentir-type stem changes', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to consent',
+      pattern: { stemChange: { present: 'e_ie', preterite: 'e_i' } },
+    };
+
+    expect(forms('consentir', verb, 'present')[1]).toBe('consientes');
+    expect(forms('consentir', verb, 'preterite')[5]).toBe('consintieron');
+  });
+
+  test('concebir keeps e->i forms', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to conceive',
+      pattern: { stemChange: { present: 'e_i', preterite: 'e_i' } },
+    };
+
+    expect(forms('concebir', verb, 'present')[0]).toBe('concibo');
+    expect(forms('concebir', verb, 'preterite')[2]).toBe('concibió');
+  });
+
+  test('discernir keeps e->ie/e->i forms', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to discern',
+      pattern: { stemChange: { present: 'e_ie', preterite: 'e_i' } },
+    };
+
+    expect(forms('discernir', verb, 'present')[0]).toBe('discierno');
+    expect(forms('discernir', verb, 'preterite')[2]).toBe('discirnió');
+  });
+
+  test('teñir and embestir keep i-stem forms', () => {
+    const teñir: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to dye',
+      pattern: { stemChange: { present: 'e_i' } },
+      overrides: {
+        preterite: ['teñí', 'teñiste', 'tiñó', 'teñimos', 'teñisteis', 'tiñeron'],
+      },
+    };
+    const embestir: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to charge',
+      pattern: { stemChange: { present: 'e_i', preterite: 'e_i' } },
+    };
+
+    expect(forms('teñir', teñir, 'present')[2]).toBe('tiñe');
+    expect(forms('teñir', teñir, 'preterite')[5]).toBe('tiñeron');
+    expect(forms('embestir', embestir, 'present')[2]).toBe('embiste');
+    expect(forms('embestir', embestir, 'preterite')[2]).toBe('embistió');
+  });
+
+  test('accent-shift -iar/-uar verbs keep written accents', () => {
+    const enviar: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to send',
+      overrides: {
+        present: ['envío', 'envías', 'envía', 'enviamos', 'enviáis', 'envían'],
+        subjunctive_present: ['envíe', 'envíes', 'envíe', 'enviemos', 'enviéis', 'envíen'],
+      },
+    };
+    const evaluar: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to evaluate',
+      overrides: {
+        present: ['evalúo', 'evalúas', 'evalúa', 'evaluamos', 'evaluáis', 'evalúan'],
+        subjunctive_present: ['evalúe', 'evalúes', 'evalúe', 'evaluemos', 'evaluéis', 'evalúen'],
+      },
+    };
+
+    expect(forms('enviar', enviar, 'present')[0]).toBe('envío');
+    expect(forms('enviar', enviar, 'subjunctive_present')[5]).toBe('envíen');
+    expect(conjugate('enviar', enviar, 'imperative_affirmative')[2].form).toBe('envíe');
+    expect(forms('evaluar', evaluar, 'present')[2]).toBe('evalúa');
+    expect(conjugate('evaluar', evaluar, 'imperative_negative')[5].form).toBe('no evalúen');
+  });
+
+  test('averiguar and apaciguar keep diaeresis before e', () => {
+    const averiguar: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to find out',
+      overrides: {
+        preterite: ['averigüé', 'averiguaste', 'averiguó', 'averiguamos', 'averiguasteis', 'averiguaron'],
+        subjunctive_present: ['averigüe', 'averigües', 'averigüe', 'averigüemos', 'averigüéis', 'averigüen'],
+      },
+    };
+    const apaciguar: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to appease',
+      overrides: {
+        preterite: ['apacigüé', 'apaciguaste', 'apaciguó', 'apaciguamos', 'apaciguasteis', 'apaciguaron'],
+        subjunctive_present: ['apacigüe', 'apacigües', 'apacigüe', 'apacigüemos', 'apacigüéis', 'apacigüen'],
+      },
+    };
+
+    expect(forms('averiguar', averiguar, 'preterite')[0]).toBe('averigüé');
+    expect(forms('averiguar', averiguar, 'subjunctive_present')[0]).toBe('averigüe');
+    expect(forms('apaciguar', apaciguar, 'subjunctive_present')[5]).toBe('apacigüen');
+  });
+
+  test('prever and entrever keep contracted nosotros present forms', () => {
+    const prever: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to foresee',
+      overrides: {
+        present: ['preveo', 'prevés', 'prevé', 'prevemos', 'prevéis', 'prevén'],
+        subjunctive_present: ['prevea', 'preveas', 'prevea', 'preveamos', 'preveáis', 'prevean'],
+      },
+    };
+    const entrever: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to glimpse',
+      overrides: {
+        present: ['entreveo', 'entrevés', 'entrevé', 'entrevemos', 'entrevéis', 'entrevén'],
+        subjunctive_present: ['entrevea', 'entreveas', 'entrevea', 'entreveamos', 'entreveáis', 'entrevean'],
+      },
+    };
+
+    expect(forms('prever', prever, 'present')[3]).toBe('prevemos');
+    expect(forms('entrever', entrever, 'present')[3]).toBe('entrevemos');
+  });
+
+  test('desmentir follows mentir-type stem changes', () => {
+    const verb: VerbData = {
+      type: 'ir',
+      regular: false,
+      translation: 'to deny',
+      pattern: { stemChange: { present: 'e_ie', preterite: 'e_i' } },
+    };
+
+    expect(forms('desmentir', verb, 'present')[2]).toBe('desmiente');
+    expect(forms('desmentir', verb, 'preterite')[2]).toBe('desmintió');
+  });
+
+  test('oler is available with huele-family present forms', () => {
+    const verb: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to smell',
+      pattern: { stemChange: { present: 'o_ue' } },
+      overrides: {
+        present: ['huelo', 'hueles', 'huele', 'olemos', 'oléis', 'huelen'],
+        subjunctive_present: ['huela', 'huelas', 'huela', 'olamos', 'oláis', 'huelan'],
+      },
+    };
+
+    expect(forms('oler', verb, 'present')[0]).toBe('huelo');
+    expect(forms('oler', verb, 'subjunctive_present')[3]).toBe('olamos');
+    expect(conjugate('oler', verb, 'imperative_affirmative')[2].form).toBe('huela');
+  });
+
+  test('desconfiar keeps the confiar accent pattern', () => {
+    const verb: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to distrust',
+      overrides: {
+        present: ['desconfío', 'desconfías', 'desconfía', 'desconfiamos', 'desconfiáis', 'desconfían'],
+        subjunctive_present: ['desconfíe', 'desconfíes', 'desconfíe', 'desconfiemos', 'desconfiéis', 'desconfíen'],
+      },
+    };
+
+    expect(forms('desconfiar', verb, 'present')[0]).toBe('desconfío');
+    expect(forms('desconfiar', verb, 'subjunctive_present')[5]).toBe('desconfíen');
+  });
+});
+
 describe('Y preterite and derived imperfect subjunctive', () => {
   test('caer preterite uses y in 3rd person', () => {
     const verb: VerbData = {

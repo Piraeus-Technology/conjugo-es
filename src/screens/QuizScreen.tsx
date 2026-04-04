@@ -315,12 +315,16 @@ export default function QuizScreen() {
         <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
           <View style={styles.scoreRow}>
             <View style={styles.scoreItem}>
-              <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionScore}/{sessionTotal}</Text>
-              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Session</Text>
+              <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionTotal}</Text>
+              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Reviewed</Text>
             </View>
             <View style={styles.scoreItem}>
-              <Text style={[styles.scoreValue, { color: colors.accent || colors.primary }]}>{streak}</Text>
-              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Streak</Text>
+              <Text style={[styles.scoreValue, { color: '#2E7D32' }]}>{sessionScore}</Text>
+              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Got It</Text>
+            </View>
+            <View style={styles.scoreItem}>
+              <Text style={[styles.scoreValue, { color: '#C62828' }]}>{sessionTotal - sessionScore}</Text>
+              <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Missed</Text>
             </View>
             <View style={styles.scoreItem}>
               <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>

@@ -607,7 +607,7 @@
         "preveo",
         "prevés",
         "prevé",
-        "preveemos",
+        "prevemos",
         "prevéis",
         "prevén"
       ],
@@ -635,7 +635,7 @@
         "entreveo",
         "entrevés",
         "entrevé",
-        "entreveemos",
+        "entrevemos",
         "entrevéis",
         "entrevén"
       ],
@@ -2277,6 +2277,39 @@
     "examples": [
       "Me duele la cabeza.",
       "Ayer me dolía mucho la espalda."
+    ],
+    "level": "A2"
+  },
+  "oler": {
+    "type": "er",
+    "regular": false,
+    "translation": "to smell",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    },
+    "overrides": {
+      "present": [
+        "huelo",
+        "hueles",
+        "huele",
+        "olemos",
+        "oléis",
+        "huelen"
+      ],
+      "subjunctive_present": [
+        "huela",
+        "huelas",
+        "huela",
+        "olamos",
+        "oláis",
+        "huelan"
+      ]
+    },
+    "examples": [
+      "Esta flor huele muy bien.",
+      "La cocina olía a pan recién hecho."
     ],
     "level": "A2"
   },
@@ -5973,8 +6006,26 @@
   },
   "confiar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to trust/confide",
+    "overrides": {
+      "present": [
+        "confío",
+        "confías",
+        "confía",
+        "confiamos",
+        "confiáis",
+        "confían"
+      ],
+      "subjunctive_present": [
+        "confíe",
+        "confíes",
+        "confíe",
+        "confiemos",
+        "confiéis",
+        "confíen"
+      ]
+    },
     "examples": [
       "Confío en ti completamente.",
       "Confiaron en el plan del arquitecto."
@@ -6369,8 +6420,26 @@
   },
   "enviar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to send",
+    "overrides": {
+      "present": [
+        "envío",
+        "envías",
+        "envía",
+        "enviamos",
+        "enviáis",
+        "envían"
+      ],
+      "subjunctive_present": [
+        "envíe",
+        "envíes",
+        "envíe",
+        "enviemos",
+        "enviéis",
+        "envíen"
+      ]
+    },
     "examples": [
       "Envié el correo esta mañana.",
       "¿Me envías la foto por mensaje?"
@@ -6409,8 +6478,26 @@
   },
   "evaluar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to evaluate",
+    "overrides": {
+      "present": [
+        "evalúo",
+        "evalúas",
+        "evalúa",
+        "evaluamos",
+        "evaluáis",
+        "evalúan"
+      ],
+      "subjunctive_present": [
+        "evalúe",
+        "evalúes",
+        "evalúe",
+        "evaluemos",
+        "evaluéis",
+        "evalúen"
+      ]
+    },
     "examples": [
       "Evaluaron el desempeño de los empleados.",
       "Evalúa los riesgos antes de invertir."
@@ -9184,8 +9271,26 @@
   },
   "desafiar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to challenge",
+    "overrides": {
+      "present": [
+        "desafío",
+        "desafías",
+        "desafía",
+        "desafiamos",
+        "desafiáis",
+        "desafían"
+      ],
+      "subjunctive_present": [
+        "desafíe",
+        "desafíes",
+        "desafíe",
+        "desafiemos",
+        "desafiéis",
+        "desafíen"
+      ]
+    },
     "examples": [
       "Lo desafió a una carrera.",
       "Desafía tus propios límites."
@@ -9194,8 +9299,26 @@
   },
   "desconfiar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to distrust",
+    "overrides": {
+      "present": [
+        "desconfío",
+        "desconfías",
+        "desconfía",
+        "desconfiamos",
+        "desconfiáis",
+        "desconfían"
+      ],
+      "subjunctive_present": [
+        "desconfíe",
+        "desconfíes",
+        "desconfíe",
+        "desconfiemos",
+        "desconfiéis",
+        "desconfíen"
+      ]
+    },
     "examples": [
       "Desconfío de las ofertas demasiado buenas.",
       "Desconfiaba de los extraños."
@@ -9520,8 +9643,26 @@
   },
   "evacuar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to evacuate",
+    "overrides": {
+      "present": [
+        "evacúo",
+        "evacúas",
+        "evacúa",
+        "evacuamos",
+        "evacuáis",
+        "evacúan"
+      ],
+      "subjunctive_present": [
+        "evacúe",
+        "evacúes",
+        "evacúe",
+        "evacuemos",
+        "evacuéis",
+        "evacúen"
+      ]
+    },
     "examples": [
       "Evacuaron el edificio por una alarma de incendio.",
       "Evacúen la zona de inmediato."
@@ -10764,8 +10905,14 @@
   },
   "concebir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to conceive",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    },
     "examples": [
       "Concibieron un plan brillante.",
       "No concibo la vida sin música."
@@ -10784,8 +10931,14 @@
   },
   "consentir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to consent",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    },
     "examples": [
       "No consientas su mal comportamiento.",
       "Consintieron en firmar el acuerdo."
@@ -10854,8 +11007,14 @@
   },
   "discernir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to discern",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    },
     "examples": [
       "Es difícil discernir la verdad.",
       "Discernió entre lo bueno y lo malo."
@@ -10994,8 +11153,16 @@
   },
   "prevenir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to prevent",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      },
+      "yoGo": true,
+      "irregularPreteriteStem": "previn",
+      "irregularFutureStem": "prevendr"
+    },
     "examples": [
       "Previene enfermedades con una buena dieta.",
       "Nos previnieron del peligro."
@@ -11037,8 +11204,23 @@
   },
   "teñir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to dye",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i"
+      }
+    },
+    "overrides": {
+      "preterite": [
+        "teñí",
+        "teñiste",
+        "tiñó",
+        "teñimos",
+        "teñisteis",
+        "tiñeron"
+      ]
+    },
     "examples": [
       "Se tiñó el pelo de rubio.",
       "Tiñeron la tela con colores naturales."
@@ -11433,8 +11615,26 @@
   },
   "ampliar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to expand",
+    "overrides": {
+      "present": [
+        "amplío",
+        "amplías",
+        "amplía",
+        "ampliamos",
+        "ampliáis",
+        "amplían"
+      ],
+      "subjunctive_present": [
+        "amplíe",
+        "amplíes",
+        "amplíe",
+        "ampliemos",
+        "ampliéis",
+        "amplíen"
+      ]
+    },
     "examples": [
       "Ampliaron la carretera a cuatro carriles.",
       "Quiero ampliar mis conocimientos."
@@ -11453,8 +11653,26 @@
   },
   "apaciguar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to appease",
+    "overrides": {
+      "preterite": [
+        "apacigüé",
+        "apaciguaste",
+        "apaciguó",
+        "apaciguamos",
+        "apaciguasteis",
+        "apaciguaron"
+      ],
+      "subjunctive_present": [
+        "apacigüe",
+        "apacigües",
+        "apacigüe",
+        "apacigüemos",
+        "apacigüéis",
+        "apacigüen"
+      ]
+    },
     "examples": [
       "Apaciguó la situación con sus palabras.",
       "Intenta apaciguar a los vecinos."
@@ -11599,8 +11817,26 @@
   },
   "averiguar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to find out",
+    "overrides": {
+      "preterite": [
+        "averigüé",
+        "averiguaste",
+        "averiguó",
+        "averiguamos",
+        "averiguasteis",
+        "averiguaron"
+      ],
+      "subjunctive_present": [
+        "averigüe",
+        "averigües",
+        "averigüe",
+        "averigüemos",
+        "averigüéis",
+        "averigüen"
+      ]
+    },
     "examples": [
       "Averigüé su número de teléfono.",
       "Averigua qué pasó en la reunión."
@@ -12162,8 +12398,14 @@
   },
   "desmentir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to deny",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    },
     "examples": [
       "Desmintió los rumores en una conferencia.",
       "Desmiente las acusaciones falsas."
@@ -12192,8 +12434,14 @@
   },
   "embestir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to charge/attack",
+    "pattern": {
+      "stemChange": {
+        "present": "e_i",
+        "preterite": "e_i"
+      }
+    },
     "examples": [
       "El toro embistió al torero.",
       "Embistió contra la puerta con fuerza."
