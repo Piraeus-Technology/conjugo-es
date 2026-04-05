@@ -168,13 +168,19 @@ export default function QuizScreen() {
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
   );
-  const { sessions, loadSessions, saveSession } = useSessionStore();
+  const { sessions, loaded: sessionsLoaded, loadSessions, saveSession } = useSessionStore();
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [sessionScore, setSessionScore] = useState(0);
-  const [sessionTotal, setSessionTotal] = useState(0);
+  const [newCorrect, setNewCorrect] = useState(0);
+  const [newTotal, setNewTotal] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestSessionStreak, setBestSessionStreak] = useState(0);
+
+  // Load today's cumulative totals
+  const todayKey = new Date().toLocaleDateString('en-CA');
+  const todaySession = sessions.find(s => s.day === todayKey);
+  const sessionTotal = (todaySession?.total || 0) + newTotal;
+  const sessionScore = (todaySession?.correct || 0) + newCorrect;
 
   React.useLayoutEffect(() => {
     nav.setOptions({
@@ -211,12 +217,12 @@ export default function QuizScreen() {
   const handleAnswer = (answer: string) => {
     if (answered || !question) return;
     setSelectedAnswer(answer);
-    setSessionTotal(t => t + 1);
+    setNewTotal(t => t + 1);
 
     const correct = answer === question.correctAnswer;
     if (correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setSessionScore(s => s + 1);
+      setNewCorrect(s => s + 1);
       const newStreak = streak + 1;
       setStreak(newStreak);
       if (newStreak > bestSessionStreak) setBestSessionStreak(newStreak);
@@ -241,21 +247,21 @@ export default function QuizScreen() {
     setSelectedAnswer(null);
   };
 
-  // Auto-save session when leaving the screen or app goes to background
-  const sessionTotalRef = React.useRef(sessionTotal);
-  const sessionScoreRef = React.useRef(sessionScore);
+  // Auto-save NEW answers when leaving the screen or app goes to background
+  const newTotalRef = React.useRef(newTotal);
+  const newCorrectRef = React.useRef(newCorrect);
   const bestSessionStreakRef = React.useRef(bestSessionStreak);
   const savedRef = React.useRef(false);
-  sessionTotalRef.current = sessionTotal;
-  sessionScoreRef.current = sessionScore;
+  newTotalRef.current = newTotal;
+  newCorrectRef.current = newCorrect;
   bestSessionStreakRef.current = bestSessionStreak;
 
   const saveCurrentSession = React.useCallback(() => {
-    if (sessionTotalRef.current > 0 && !savedRef.current) {
+    if (newTotalRef.current > 0 && !savedRef.current) {
       savedRef.current = true;
       saveSession({
-        total: sessionTotalRef.current,
-        correct: sessionScoreRef.current,
+        total: newTotalRef.current,
+        correct: newCorrectRef.current,
         streak: bestSessionStreakRef.current,
       });
     }

@@ -82,7 +82,7 @@ export default function FlashcardScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
-  const { saveSession } = useFlashcardSessionStore();
+  const { sessions, loaded: sessionsLoaded, loadSessions, saveSession } = useFlashcardSessionStore();
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const filteredEntries = React.useMemo(() =>
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
@@ -92,12 +92,19 @@ export default function FlashcardScreen() {
   React.useEffect(() => {
     loadPracticeSettings();
     loadWeights();
+    loadSessions();
   }, []);
 
   const [card, setCard] = useState<Card | null>(null);
   const [flipped, setFlipped] = useState(false);
-  const [reviewed, setReviewed] = useState(0);
-  const [correct, setCorrect] = useState(0);
+  const [newReviewed, setNewReviewed] = useState(0);
+  const [newCorrect, setNewCorrect] = useState(0);
+
+  // Load today's cumulative totals
+  const todayKey = new Date().toLocaleDateString('en-CA');
+  const todaySession = sessions.find(s => s.day === todayKey);
+  const reviewed = (todaySession?.reviewed || 0) + newReviewed;
+  const correct = (todaySession?.correct || 0) + newCorrect;
   const flipAnim = useRef(new Animated.Value(0)).current;
 
   React.useLayoutEffect(() => {
@@ -138,8 +145,8 @@ export default function FlashcardScreen() {
   const handleGotIt = () => {
     if (!card) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setReviewed(r => r + 1);
-    setCorrect(c => c + 1);
+    setNewReviewed(r => r + 1);
+    setNewCorrect(c => c + 1);
     recordResult(card.verb, card.tense, card.personIndex, true);
     flipToFront();
   };
@@ -147,22 +154,22 @@ export default function FlashcardScreen() {
   const handleMissed = () => {
     if (!card) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    setReviewed(r => r + 1);
+    setNewReviewed(r => r + 1);
     recordResult(card.verb, card.tense, card.personIndex, false);
     flipToFront();
   };
 
-  // Auto-save session when leaving the screen or app goes to background
-  const reviewedRef = React.useRef(reviewed);
-  const correctRef = React.useRef(correct);
+  // Auto-save NEW answers when leaving the screen or app goes to background
+  const newReviewedRef = React.useRef(newReviewed);
+  const newCorrectRef = React.useRef(newCorrect);
   const savedRef = React.useRef(false);
-  reviewedRef.current = reviewed;
-  correctRef.current = correct;
+  newReviewedRef.current = newReviewed;
+  newCorrectRef.current = newCorrect;
 
   const saveCurrentSession = React.useCallback(() => {
-    if (reviewedRef.current > 0 && !savedRef.current) {
+    if (newReviewedRef.current > 0 && !savedRef.current) {
       savedRef.current = true;
-      saveSession({ reviewed: reviewedRef.current, correct: correctRef.current });
+      saveSession({ reviewed: newReviewedRef.current, correct: newCorrectRef.current });
     }
   }, [saveSession]);
 
