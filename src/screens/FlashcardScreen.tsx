@@ -21,6 +21,7 @@ import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
 import { speak } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
+import { useThemeStore } from '../store/themeStore';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
@@ -80,6 +81,7 @@ function generateCard(
 
 export default function FlashcardScreen() {
   const colors = useColors();
+  const { autoTTS } = useThemeStore();
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
   const { sessions, loaded: sessionsLoaded, loadSessions, saveSession } = useFlashcardSessionStore();
@@ -139,7 +141,9 @@ export default function FlashcardScreen() {
   const flipToBack = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setFlipped(true);
-    Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+    Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start(() => {
+      if (autoTTS && card) speak(card.answer);
+    });
   };
 
   const handleGotIt = () => {

@@ -22,7 +22,7 @@ const APP_VERSION = '1.0.4';
 export default function FeedbackScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
-  const { isDark, toggleTheme } = useThemeStore();
+  const { isDark, autoTTS, toggleTheme, toggleAutoTTS } = useThemeStore();
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent('ConjuGo ES Feedback');
@@ -90,6 +90,16 @@ export default function FeedbackScreen() {
             <Switch
               value={isDark}
               onValueChange={toggleTheme}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#fff"
+            />
+          </View>
+          <View style={[styles.settingRow, { borderBottomColor: colors.divider }]}>
+            <Ionicons name="volume-medium" size={20} color={colors.textSecondary} />
+            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Auto-Play Audio</Text>
+            <Switch
+              value={autoTTS}
+              onValueChange={toggleAutoTTS}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#fff"
             />
