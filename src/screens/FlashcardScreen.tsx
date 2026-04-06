@@ -81,6 +81,7 @@ function generateCard(
 
 export default function FlashcardScreen() {
   const colors = useColors();
+  const isDark = useThemeStore((s) => s.isDark);
   const { autoTTS } = useThemeStore();
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
@@ -290,20 +291,20 @@ export default function FlashcardScreen() {
       {/* Got it / Missed buttons */}
       <View style={[styles.buttonRow, { opacity: flipped ? 1 : 0 }]} pointerEvents={flipped ? 'auto' : 'none'}>
         <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: '#FFEBEE', borderColor: '#C62828' }]}
+          style={[styles.actionButton, { backgroundColor: isDark ? '#3E1A1A' : '#FFEBEE', borderColor: isDark ? '#EF5350' : '#C62828' }]}
           onPress={handleMissed}
           activeOpacity={0.8}
         >
-          <Ionicons name="close" size={20} color="#C62828" />
-          <Text style={[styles.actionButtonText, { color: '#C62828' }]}>Missed</Text>
+          <Ionicons name="close" size={20} color={isDark ? '#EF5350' : '#C62828'} />
+          <Text style={[styles.actionButtonText, { color: isDark ? '#EF5350' : '#C62828' }]}>Missed</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: '#E8F5E9', borderColor: '#2E7D32' }]}
+          style={[styles.actionButton, { backgroundColor: isDark ? '#1A3E1A' : '#E8F5E9', borderColor: isDark ? '#66BB6A' : '#2E7D32' }]}
           onPress={handleGotIt}
           activeOpacity={0.8}
         >
-          <Ionicons name="checkmark" size={20} color="#2E7D32" />
-          <Text style={[styles.actionButtonText, { color: '#2E7D32' }]}>Got it</Text>
+          <Ionicons name="checkmark" size={20} color={isDark ? '#66BB6A' : '#2E7D32'} />
+          <Text style={[styles.actionButtonText, { color: isDark ? '#66BB6A' : '#2E7D32' }]}>Got it</Text>
         </TouchableOpacity>
       </View>
 
