@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 
-const APP_VERSION = '1.0.4';
+const APP_VERSION = '1.0.15';
 
 export default function FeedbackScreen() {
   const colors = useColors();
