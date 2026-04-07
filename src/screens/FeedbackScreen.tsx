@@ -17,12 +17,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 
-const APP_VERSION = '1.0.15';
+const APP_VERSION = '1.0.16';
 
 export default function FeedbackScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
-  const { isDark, autoTTS, toggleTheme, toggleAutoTTS } = useThemeStore();
+  const { isDark, autoTTS, includeVosotros, toggleTheme, toggleAutoTTS, toggleVosotros } = useThemeStore();
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent('ConjuGo ES Feedback');
@@ -100,6 +100,16 @@ export default function FeedbackScreen() {
             <Switch
               value={autoTTS}
               onValueChange={toggleAutoTTS}
+              trackColor={{ false: isDark ? colors.border : '#C5C0BA', true: colors.primary }}
+              thumbColor="#fff"
+            />
+          </View>
+          <View style={styles.settingRow}>
+            <Ionicons name="people" size={20} color={colors.textSecondary} />
+            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Include Vosotros</Text>
+            <Switch
+              value={includeVosotros}
+              onValueChange={toggleVosotros}
               trackColor={{ false: isDark ? colors.border : '#C5C0BA', true: colors.primary }}
               thumbColor="#fff"
             />

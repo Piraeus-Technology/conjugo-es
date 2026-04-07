@@ -42,6 +42,7 @@ function generateCard(
   entries: [string, VerbData][],
   tenses: Tense[],
   getWeight: (verb: string, tense: Tense, personIndex: number) => number,
+  includeVosotros: boolean = true,
 ): Card {
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
   const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
@@ -57,7 +58,7 @@ function generateCard(
     const results = conjugate(verb, data, tense);
     const validPersons = results
       .map((r, i) => ({ index: i, ...r }))
-      .filter(r => !r.disabled && r.form !== '—');
+      .filter(r => !r.disabled && r.form !== '—' && (includeVosotros || r.index !== 4));
 
     if (validPersons.length === 0) continue;
 
@@ -82,6 +83,7 @@ function generateCard(
 export default function FlashcardScreen() {
   const colors = useColors();
   const isDark = useThemeStore((s) => s.isDark);
+  const includeVosotros = useThemeStore((s) => s.includeVosotros);
   const { autoTTS } = useThemeStore();
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
@@ -127,14 +129,14 @@ export default function FlashcardScreen() {
 
   React.useEffect(() => {
     if (!loaded || !weightsLoaded || activeTenses.length === 0 || filteredEntries.length === 0) return;
-    setCard(generateCard(filteredEntries, activeTenses, getWeight));
+    setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
     setFlipped(false);
     flipAnim.setValue(0);
   }, [loaded, weightsLoaded, activeTenses, filteredEntries, flipAnim, getWeight]);
 
   const flipToFront = () => {
     Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
-      setCard(generateCard(filteredEntries, activeTenses, getWeight));
+      setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
       setFlipped(false);
     });
   };

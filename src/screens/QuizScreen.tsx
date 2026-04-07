@@ -21,6 +21,7 @@ import { useQuizStore } from '../store/quizStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
 import { useSessionStore } from '../store/sessionStore';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
+import { useThemeStore } from '../store/themeStore';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
@@ -46,6 +47,7 @@ function pickWeightedPrompt(
   activeTenses: Tense[],
   getWeight: (verb: string, tense: Tense, personIndex: number) => number,
   filteredEntries: [string, VerbData][],
+  includeVosotros: boolean = true,
 ): PromptCandidate {
   const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
   const commonCount = Math.min(200, verbEntries.length);
@@ -60,7 +62,7 @@ function pickWeightedPrompt(
     const results = conjugate(verb, data, tense);
     const validPersons = results
       .map((r, i) => ({ index: i, ...r }))
-      .filter(r => !r.disabled && r.form !== '—');
+      .filter(r => !r.disabled && r.form !== '—' && (includeVosotros || r.index !== 4));
 
     if (validPersons.length === 0) continue;
 
@@ -86,9 +88,10 @@ function generateQuestion(
   activeTenses: Tense[],
   getWeight: (verb: string, tense: Tense, personIndex: number) => number,
   filteredEntries: [string, VerbData][],
+  includeVosotros: boolean = true,
 ): Question {
   const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
-  const prompt = pickWeightedPrompt(activeTenses, getWeight, filteredEntries);
+  const prompt = pickWeightedPrompt(activeTenses, getWeight, filteredEntries, includeVosotros);
   const { verb, data, tense, personIndex } = prompt;
   const correctAnswer = prompt.answer;
   const results = conjugate(verb, data, tense);
@@ -162,6 +165,7 @@ export default function QuizScreen() {
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const { activeTenses, activeLevels, loaded: settingsLoaded, loadPracticeSettings } = usePracticeSettingsStore();
+  const includeVosotros = useThemeStore((s) => s.includeVosotros);
   const nav = useNavigation<any>();
 
   const filteredEntries = React.useMemo(() =>
@@ -206,7 +210,7 @@ export default function QuizScreen() {
 
   useEffect(() => {
     if (weightsLoaded && settingsLoaded && activeTenses.length > 0 && filteredEntries.length > 0) {
-      setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries));
+      setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros));
       setSelectedAnswer(null);
     }
   }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries]);
@@ -243,7 +247,7 @@ export default function QuizScreen() {
 
   const handleNext = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries));
+    setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros));
     setSelectedAnswer(null);
   };
 
