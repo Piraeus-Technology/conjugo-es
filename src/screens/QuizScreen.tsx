@@ -213,7 +213,7 @@ export default function QuizScreen() {
       setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros));
       setSelectedAnswer(null);
     }
-  }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries]);
+  }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries, includeVosotros, getWeight]);
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
@@ -255,18 +255,26 @@ export default function QuizScreen() {
   const newTotalRef = React.useRef(newTotal);
   const newCorrectRef = React.useRef(newCorrect);
   const bestSessionStreakRef = React.useRef(bestSessionStreak);
-  const savedRef = React.useRef(false);
+  const lastSavedTotalRef = React.useRef(0);
+  const lastSavedCorrectRef = React.useRef(0);
+  const lastSavedBestStreakRef = React.useRef(0);
   newTotalRef.current = newTotal;
   newCorrectRef.current = newCorrect;
   bestSessionStreakRef.current = bestSessionStreak;
 
   const saveCurrentSession = React.useCallback(() => {
-    if (newTotalRef.current > 0 && !savedRef.current) {
-      savedRef.current = true;
+    const unsavedTotal = newTotalRef.current - lastSavedTotalRef.current;
+    const unsavedCorrect = newCorrectRef.current - lastSavedCorrectRef.current;
+    const unsavedBestStreak = Math.max(bestSessionStreakRef.current, lastSavedBestStreakRef.current);
+
+    if (unsavedTotal > 0) {
+      lastSavedTotalRef.current = newTotalRef.current;
+      lastSavedCorrectRef.current = newCorrectRef.current;
+      lastSavedBestStreakRef.current = unsavedBestStreak;
       saveSession({
-        total: newTotalRef.current,
-        correct: newCorrectRef.current,
-        streak: bestSessionStreakRef.current,
+        total: unsavedTotal,
+        correct: unsavedCorrect,
+        streak: unsavedBestStreak,
       });
     }
   }, [saveSession]);

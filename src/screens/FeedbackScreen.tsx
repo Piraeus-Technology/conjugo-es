@@ -16,8 +16,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
-
-const APP_VERSION = '1.0.16';
+import {
+  APP_NAME,
+  APP_REVIEW_URL,
+  APP_STORE_URL,
+  APP_VERSION,
+  FEEDBACK_EMAIL,
+  PRIVACY_POLICY_URL,
+  SHARE_MESSAGE,
+} from '../utils/appMeta';
 
 export default function FeedbackScreen() {
   const colors = useColors();
@@ -25,22 +32,22 @@ export default function FeedbackScreen() {
   const { isDark, autoTTS, includeVosotros, toggleTheme, toggleAutoTTS, toggleVosotros } = useThemeStore();
 
   const handleSendEmail = () => {
-    const subject = encodeURIComponent('ConjuGo ES Feedback');
-    const url = `mailto:contact@piraeus.app?subject=${subject}`;
+    const subject = encodeURIComponent(`${APP_NAME} Feedback`);
+    const url = `mailto:${FEEDBACK_EMAIL}?subject=${subject}`;
 
     Linking.openURL(url).catch(() => {
       Alert.alert(
         'No Email App',
-        'You can send feedback directly to contact@piraeus.app'
+        `You can send feedback directly to ${FEEDBACK_EMAIL}`
       );
     });
   };
 
   const handleRateApp = () => {
     const url = Platform.select({
-      ios: 'https://apps.apple.com/app/id6759270074?action=write-review',
+      ios: APP_REVIEW_URL,
       android: 'market://details?id=com.lkh9596.conjugo',
-      default: 'https://apps.apple.com/app/id6759270074',
+      default: APP_STORE_URL,
     });
     Linking.openURL(url).catch(() => {
       Alert.alert('Not Available Yet', 'Rating will be available once the app is on the App Store.');
@@ -138,7 +145,7 @@ export default function FeedbackScreen() {
         >
           <Text style={styles.rateEmoji}>⭐</Text>
           <View style={styles.rateInfo}>
-            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Enjoying ConjuGo ES?</Text>
+            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Enjoying {APP_NAME}?</Text>
             <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Rate us on the App Store</Text>
           </View>
         </TouchableOpacity>
@@ -148,14 +155,14 @@ export default function FeedbackScreen() {
           style={[styles.rateCard, { backgroundColor: colors.card }]}
           onPress={() => {
             Share.share({
-              message: 'Check out ConjuGo ES — a Spanish verb conjugation app! https://apps.apple.com/app/id6759270074',
+              message: SHARE_MESSAGE,
             });
           }}
           activeOpacity={0.7}
         >
           <Text style={styles.rateEmoji}>🔗</Text>
           <View style={styles.rateInfo}>
-            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Share ConjuGo ES</Text>
+            <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Share {APP_NAME}</Text>
             <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Tell a friend about the app</Text>
           </View>
         </TouchableOpacity>
@@ -163,7 +170,7 @@ export default function FeedbackScreen() {
         {/* Privacy Policy */}
         <TouchableOpacity
           style={[styles.linkRow, { backgroundColor: colors.card }]}
-          onPress={() => Linking.openURL('https://piraeus-technology.github.io/conjugo-es/')}
+          onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
           activeOpacity={0.7}
         >
           <Ionicons name="shield-checkmark-outline" size={20} color={colors.textSecondary} />
@@ -172,7 +179,7 @@ export default function FeedbackScreen() {
 
         {/* Version */}
         <Text style={[styles.version, { color: colors.textMuted }]}>
-          ConjuGo ES v{APP_VERSION}
+          {APP_NAME} v{APP_VERSION}
         </Text>
       </ScrollView>
     </KeyboardAvoidingView>

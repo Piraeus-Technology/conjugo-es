@@ -16,7 +16,7 @@ const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function FlashcardStatsScreen() {
   const colors = useColors();
-  const { sessions, loadSessions } = useFlashcardSessionStore();
+  const { sessions, loaded: sessionsLoaded, loadSessions } = useFlashcardSessionStore();
   const { weights, loaded: weightsLoaded, loadWeights } = useSpacedRepStore();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -25,6 +25,14 @@ export default function FlashcardStatsScreen() {
     loadSessions();
     loadWeights();
   }, []);
+
+  if (!sessionsLoaded || !weightsLoaded) {
+    return (
+      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.bg }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading flashcard stats...</Text>
+      </View>
+    );
+  }
 
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
@@ -307,6 +315,7 @@ export default function FlashcardStatsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  loadingContainer: { alignItems: 'center', justifyContent: 'center' },
   content: { padding: spacing.lg, paddingBottom: 40 },
   streakCard: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: spacing.md, borderRadius: radius.md, marginBottom: spacing.lg, gap: spacing.sm, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
   streakEmoji: { fontSize: 24 },

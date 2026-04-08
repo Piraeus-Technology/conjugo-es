@@ -132,7 +132,7 @@ export default function FlashcardScreen() {
     setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
     setFlipped(false);
     flipAnim.setValue(0);
-  }, [loaded, weightsLoaded, activeTenses, filteredEntries, flipAnim, getWeight]);
+  }, [loaded, weightsLoaded, activeTenses, filteredEntries, flipAnim, getWeight, includeVosotros]);
 
   const flipToFront = () => {
     Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
@@ -169,14 +169,19 @@ export default function FlashcardScreen() {
   // Auto-save NEW answers when leaving the screen or app goes to background
   const newReviewedRef = React.useRef(newReviewed);
   const newCorrectRef = React.useRef(newCorrect);
-  const savedRef = React.useRef(false);
+  const lastSavedReviewedRef = React.useRef(0);
+  const lastSavedCorrectRef = React.useRef(0);
   newReviewedRef.current = newReviewed;
   newCorrectRef.current = newCorrect;
 
   const saveCurrentSession = React.useCallback(() => {
-    if (newReviewedRef.current > 0 && !savedRef.current) {
-      savedRef.current = true;
-      saveSession({ reviewed: newReviewedRef.current, correct: newCorrectRef.current });
+    const unsavedReviewed = newReviewedRef.current - lastSavedReviewedRef.current;
+    const unsavedCorrect = newCorrectRef.current - lastSavedCorrectRef.current;
+
+    if (unsavedReviewed > 0) {
+      lastSavedReviewedRef.current = newReviewedRef.current;
+      lastSavedCorrectRef.current = newCorrectRef.current;
+      saveSession({ reviewed: unsavedReviewed, correct: unsavedCorrect });
     }
   }, [saveSession]);
 

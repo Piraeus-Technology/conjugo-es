@@ -16,7 +16,7 @@ const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function StatsScreen() {
   const colors = useColors();
-  const { sessions, loadSessions } = useSessionStore();
+  const { sessions, loaded: sessionsLoaded, loadSessions } = useSessionStore();
   const { weights, loaded: weightsLoaded, loadWeights } = useSpacedRepStore();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -25,6 +25,14 @@ export default function StatsScreen() {
     loadSessions();
     loadWeights();
   }, []);
+
+  if (!sessionsLoaded || !weightsLoaded) {
+    return (
+      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.bg }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading stats...</Text>
+      </View>
+    );
+  }
 
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
@@ -331,6 +339,7 @@ export default function StatsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  loadingContainer: { alignItems: 'center', justifyContent: 'center' },
   content: { padding: spacing.lg, paddingBottom: 40 },
   streakCard: {
     flexDirection: 'row',

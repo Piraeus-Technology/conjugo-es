@@ -63,7 +63,7 @@ export default function PracticeSettingsScreen() {
   const mode = route.params?.mode || 'quiz'; // 'quiz' or 'flashcards'
 
   const {
-    activeTenses, activeLevels,
+    activeTenses, activeLevels, loaded,
     loadPracticeSettings, toggleTense, toggleLevel,
     setActiveTenses, setActiveLevels,
   } = usePracticeSettingsStore();
@@ -79,6 +79,14 @@ export default function PracticeSettingsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.goBack();
   };
+
+  if (!loaded) {
+    return (
+      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.bg }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading settings...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -189,6 +197,10 @@ export default function PracticeSettingsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: { padding: spacing.lg, paddingBottom: 40 },
   sectionHeader: {
     flexDirection: 'row',
