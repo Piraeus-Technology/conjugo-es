@@ -104,12 +104,6 @@ export default function FlashcardScreen() {
   const [flipped, setFlipped] = useState(false);
   const [newReviewed, setNewReviewed] = useState(0);
   const [newCorrect, setNewCorrect] = useState(0);
-
-  // Load today's cumulative totals
-  const todayKey = new Date().toLocaleDateString('en-CA');
-  const todaySession = sessions.find(s => s.day === todayKey);
-  const reviewed = (todaySession?.reviewed || 0) + newReviewed;
-  const correct = (todaySession?.correct || 0) + newCorrect;
   const flipAnim = useRef(new Animated.Value(0)).current;
 
   React.useLayoutEffect(() => {
@@ -174,6 +168,12 @@ export default function FlashcardScreen() {
   newReviewedRef.current = newReviewed;
   newCorrectRef.current = newCorrect;
 
+  // Load today's cumulative totals plus any unsaved in-memory progress.
+  const todayKey = new Date().toLocaleDateString('en-CA');
+  const todaySession = sessions.find(s => s.day === todayKey);
+  const reviewed = (todaySession?.reviewed || 0) + (newReviewed - lastSavedReviewedRef.current);
+  const correct = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);
+
   const saveCurrentSession = React.useCallback(() => {
     const unsavedReviewed = newReviewedRef.current - lastSavedReviewedRef.current;
     const unsavedCorrect = newCorrectRef.current - lastSavedCorrectRef.current;
@@ -196,6 +196,11 @@ export default function FlashcardScreen() {
       saveCurrentSession();
     };
   }, [saveCurrentSession]);
+
+  React.useEffect(() => {
+    const unsubscribe = nav.addListener('blur', saveCurrentSession);
+    return unsubscribe;
+  }, [nav, saveCurrentSession]);
 
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });

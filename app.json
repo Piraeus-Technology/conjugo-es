@@ -2,7 +2,7 @@
   "expo": {
     "name": "ConjuGo ES",
     "slug": "conjuGo",
-    "version": "1.0.16",
+    "version": "1.0.17",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.lkh9596.conjugo",
+      "package": "com.piraeus.conjugoes",
       "versionCode": 14
     },
     "web": {

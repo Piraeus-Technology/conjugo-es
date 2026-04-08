@@ -180,12 +180,6 @@ export default function QuizScreen() {
   const [streak, setStreak] = useState(0);
   const [bestSessionStreak, setBestSessionStreak] = useState(0);
 
-  // Load today's cumulative totals
-  const todayKey = new Date().toLocaleDateString('en-CA');
-  const todaySession = sessions.find(s => s.day === todayKey);
-  const sessionTotal = (todaySession?.total || 0) + newTotal;
-  const sessionScore = (todaySession?.correct || 0) + newCorrect;
-
   React.useLayoutEffect(() => {
     nav.setOptions({
       headerRight: () => (
@@ -262,6 +256,12 @@ export default function QuizScreen() {
   newCorrectRef.current = newCorrect;
   bestSessionStreakRef.current = bestSessionStreak;
 
+  // Load today's cumulative totals plus any unsaved in-memory progress.
+  const todayKey = new Date().toLocaleDateString('en-CA');
+  const todaySession = sessions.find(s => s.day === todayKey);
+  const sessionTotal = (todaySession?.total || 0) + (newTotal - lastSavedTotalRef.current);
+  const sessionScore = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);
+
   const saveCurrentSession = React.useCallback(() => {
     const unsavedTotal = newTotalRef.current - lastSavedTotalRef.current;
     const unsavedCorrect = newCorrectRef.current - lastSavedCorrectRef.current;
@@ -290,6 +290,11 @@ export default function QuizScreen() {
       saveCurrentSession();
     };
   }, [saveCurrentSession]);
+
+  React.useEffect(() => {
+    const unsubscribe = nav.addListener('blur', saveCurrentSession);
+    return unsubscribe;
+  }, [nav, saveCurrentSession]);
 
 
   const getOptionStyle = (option: string) => {

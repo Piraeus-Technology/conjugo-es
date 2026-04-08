@@ -453,6 +453,7 @@ function tryYoZco(ctx: ConjugationContext, i: number): string | null {
 function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string | null {
   if (!ctx.pattern?.spellingChange) return null;
   const sc = ctx.pattern.spellingChange;
+  const isCarGarZar = sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé';
 
   // Get the modified stem for subjunctive/imperative contexts (before a/o)
   const getModStem = (): string | null => {
@@ -470,6 +471,26 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
 
   const modStem = getModStem();
   if (!modStem) return null;
+
+  const getSubjunctiveCompatibleStem = (usePresentChange: boolean): string => {
+    let baseStem = ctx.stem;
+    if (usePresentChange && ctx.pattern?.stemChange?.present) {
+      baseStem = applyStemChange(baseStem, ctx.pattern.stemChange.present);
+    } else if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite) {
+      baseStem = applyStemChange(baseStem, ctx.pattern.stemChange.preterite);
+    }
+
+    switch (sc) {
+      case 'car_qué':
+        return baseStem.slice(0, -1) + 'qu';
+      case 'gar_gué':
+        return baseStem + 'u';
+      case 'zar_cé':
+        return baseStem.slice(0, -1) + 'c';
+      default:
+        return modStem;
+    }
+  };
 
   // Preterite yo (-car/-gar/-zar only)
   if (ctx.tense === 'preterite' && i === 0) {
@@ -493,8 +514,12 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
 
   // Subjunctive present: all persons use modified stem
   if (ctx.tense === 'subjunctive_present') {
-    if (sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé') {
-      return modStem + ctx.endings[i];
+    if (isCarGarZar) {
+      let finalStem = getSubjunctiveCompatibleStem(bootPositions.includes(i));
+      if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite && (i === 3 || i === 4)) {
+        finalStem = getSubjunctiveCompatibleStem(false);
+      }
+      return finalStem + ctx.endings[i];
     }
     // -cer/-ger/-gir/-guir: subjunctive uses modified stem + subjunctive endings
     const subjEndings = ['a', 'as', 'a', 'amos', 'áis', 'an'];
@@ -512,9 +537,13 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
 
   // Imperative affirmative: usted/nosotros/ustedes use subjunctive forms
   if (ctx.tense === 'imperative_affirmative' && [2, 3, 5].includes(i)) {
-    if (sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé') {
+    if (isCarGarZar) {
       const impEndings: Record<number, string> = { 2: 'e', 3: 'emos', 5: 'en' };
-      return modStem + impEndings[i];
+      let finalStem = getSubjunctiveCompatibleStem([2, 5].includes(i));
+      if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite && i === 3) {
+        finalStem = getSubjunctiveCompatibleStem(false);
+      }
+      return finalStem + impEndings[i];
     }
     const impEndings: Record<number, string> = { 2: 'a', 3: 'amos', 5: 'an' };
     let finalStem = modStem;
@@ -530,9 +559,13 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
 
   // Imperative negative: all persons use subjunctive forms
   if (ctx.tense === 'imperative_negative' && i !== 0) {
-    if (sc === 'car_qué' || sc === 'gar_gué' || sc === 'zar_cé') {
+    if (isCarGarZar) {
       const negEndings: Record<number, string> = { 1: 'es', 2: 'e', 3: 'emos', 4: 'éis', 5: 'en' };
-      return 'no ' + modStem + negEndings[i];
+      let finalStem = getSubjunctiveCompatibleStem(bootPositions.includes(i));
+      if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite && (i === 3 || i === 4)) {
+        finalStem = getSubjunctiveCompatibleStem(false);
+      }
+      return 'no ' + finalStem + negEndings[i];
     }
     const negEndings: Record<number, string> = { 1: 'as', 2: 'a', 3: 'amos', 4: 'áis', 5: 'an' };
     let finalStem = modStem;

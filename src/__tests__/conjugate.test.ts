@@ -267,6 +267,22 @@ describe('Stem change o→ue imperative family regressions', () => {
     const result = conjugate('soltar', verb, 'imperative_negative');
     expect(result[1].form).toBe('no sueltes');
   });
+
+  test('jugar imperative and subjunctive keep both the stem and spelling changes', () => {
+    const verb: VerbData = {
+      type: 'ar',
+      regular: false,
+      translation: 'to play',
+      pattern: {
+        stemChange: { present: 'u_ue' },
+        spellingChange: 'gar_gué',
+      },
+    };
+
+    expect(conjugate('jugar', verb, 'subjunctive_present')[5].form).toBe('jueguen');
+    expect(conjugate('jugar', verb, 'imperative_affirmative')[5].form).toBe('jueguen');
+    expect(conjugate('jugar', verb, 'imperative_negative')[1].form).toBe('no juegues');
+  });
 });
 
 describe('Stem change e→i: pedir (-ir)', () => {
