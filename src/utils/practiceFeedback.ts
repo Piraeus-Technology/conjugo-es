@@ -64,11 +64,11 @@ export function summarizeWeakSpot(missedPrompts: MissedPrompt[]): string | null 
   const topTense = Array.from(tenseCounts.entries()).sort((a, b) => b[1] - a[1])[0]?.[0];
   const topPerson = Array.from(personCounts.entries()).sort((a, b) => b[1] - a[1])[0]?.[0];
 
-  if (topTense && topPerson !== undefined) {
+  if (topTense && topPerson !== undefined && topPerson >= 0 && topPerson < practicePronouns.length) {
     return `${tenseNames[topTense]} · ${practicePronouns[topPerson]}`;
   }
 
   if (topTense) return tenseNames[topTense];
-  if (topPerson !== undefined) return practicePronouns[topPerson];
+  if (topPerson !== undefined && topPerson >= 0 && topPerson < practicePronouns.length) return practicePronouns[topPerson];
   return null;
 }

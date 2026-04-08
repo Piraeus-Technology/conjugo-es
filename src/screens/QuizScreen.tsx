@@ -172,7 +172,7 @@ export default function QuizScreen() {
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
   );
-  const { sessions, loaded: sessionsLoaded, loadSessions, saveSession } = useSessionStore();
+  const { sessions, loadSessions, saveSession } = useSessionStore();
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [newCorrect, setNewCorrect] = useState(0);
@@ -242,7 +242,7 @@ export default function QuizScreen() {
       setStreak(0);
       recordAnswer(false, 0);
     }
-    recordResult(question.verb, question.tense, question.personIndex, correct);
+    recordResult(question.verb, question.tense, question.personIndex, correct).catch(() => {});
   };
 
   const handleNext = () => {

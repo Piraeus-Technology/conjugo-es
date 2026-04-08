@@ -154,7 +154,7 @@ export default function FlashcardScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setNewReviewed(r => r + 1);
     setNewCorrect(c => c + 1);
-    recordResult(card.verb, card.tense, card.personIndex, true);
+    recordResult(card.verb, card.tense, card.personIndex, true).catch(() => {});
     flipToFront();
   };
 
@@ -162,7 +162,7 @@ export default function FlashcardScreen() {
     if (!card) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setNewReviewed(r => r + 1);
-    recordResult(card.verb, card.tense, card.personIndex, false);
+    recordResult(card.verb, card.tense, card.personIndex, false).catch(() => {});
     flipToFront();
   };
 

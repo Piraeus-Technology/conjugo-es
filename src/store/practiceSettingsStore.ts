@@ -47,19 +47,25 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
   },
 
   setActiveTenses: async (tenses) => {
-    set({ activeTenses: tenses });
-    const stored = await AsyncStorage.getItem('practiceSettings');
-    const settings = stored ? JSON.parse(stored) : {};
-    settings.activeTenses = tenses;
-    await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    const safe = tenses.length > 0 ? tenses : ['present' as Tense];
+    set({ activeTenses: safe });
+    try {
+      const stored = await AsyncStorage.getItem('practiceSettings');
+      const settings = stored ? JSON.parse(stored) : {};
+      settings.activeTenses = safe;
+      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    } catch {}
   },
 
   setActiveLevels: async (levels) => {
-    set({ activeLevels: levels });
-    const stored = await AsyncStorage.getItem('practiceSettings');
-    const settings = stored ? JSON.parse(stored) : {};
-    settings.activeLevels = levels;
-    await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    const safe = levels.length > 0 ? levels : ['A1' as VerbLevel];
+    set({ activeLevels: safe });
+    try {
+      const stored = await AsyncStorage.getItem('practiceSettings');
+      const settings = stored ? JSON.parse(stored) : {};
+      settings.activeLevels = safe;
+      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    } catch {}
   },
 
   toggleTense: async (tense) => {
@@ -72,10 +78,12 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       updated = [...current, tense];
     }
     set({ activeTenses: updated });
-    const stored = await AsyncStorage.getItem('practiceSettings');
-    const settings = stored ? JSON.parse(stored) : {};
-    settings.activeTenses = updated;
-    await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    try {
+      const stored = await AsyncStorage.getItem('practiceSettings');
+      const settings = stored ? JSON.parse(stored) : {};
+      settings.activeTenses = updated;
+      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    } catch {}
   },
 
   toggleLevel: async (level) => {
@@ -88,10 +96,12 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       updated = [...current, level];
     }
     set({ activeLevels: updated });
-    const stored = await AsyncStorage.getItem('practiceSettings');
-    const settings = stored ? JSON.parse(stored) : {};
-    settings.activeLevels = updated;
-    await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    try {
+      const stored = await AsyncStorage.getItem('practiceSettings');
+      const settings = stored ? JSON.parse(stored) : {};
+      settings.activeLevels = updated;
+      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
+    } catch {}
   },
 }));
 
