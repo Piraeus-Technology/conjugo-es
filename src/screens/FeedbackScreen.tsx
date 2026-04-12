@@ -31,7 +31,7 @@ export default function FeedbackScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
   const { isDark, autoTTS, includeVosotros, toggleTheme, toggleAutoTTS, toggleVosotros } = useThemeStore();
-  const { products, loading: tipLoading, tip } = useTipJar();
+  const { products, loading: tipLoading, unavailable: tipUnavailable, tip } = useTipJar();
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent(`${APP_NAME} Feedback`);
@@ -126,25 +126,33 @@ export default function FeedbackScreen() {
         </View>
 
         {/* Tip Jar */}
-        {products.length > 0 && (
+        {(products.length > 0 || tipUnavailable) && (
           <>
             <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Tip Jar</Text>
-            <Text style={[styles.tipDescription, { color: colors.textSecondary }]}>
-              {APP_NAME} is free with no ads. If you find it helpful, consider leaving a tip!
-            </Text>
-            <View style={styles.tipRow}>
-              {products.map((product) => (
-                <TouchableOpacity
-                  key={product.id}
-                  style={[styles.tipButton, { backgroundColor: colors.card, borderColor: colors.primary }]}
-                  onPress={() => tip(product.id)}
-                  disabled={tipLoading}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.tipPrice, { color: colors.primary }]}>{product.displayPrice}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            {products.length > 0 ? (
+              <>
+                <Text style={[styles.tipDescription, { color: colors.textSecondary }]}>
+                  {APP_NAME} is free with no ads. If you find it helpful, consider leaving a tip!
+                </Text>
+                <View style={styles.tipRow}>
+                  {products.map((product) => (
+                    <TouchableOpacity
+                      key={product.id}
+                      style={[styles.tipButton, { backgroundColor: colors.card, borderColor: colors.primary }]}
+                      onPress={() => tip(product.id)}
+                      disabled={tipLoading}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.tipPrice, { color: colors.primary }]}>{product.displayPrice}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            ) : (
+              <Text style={[styles.tipDescription, { color: colors.textMuted }]}>
+                Tip Jar is temporarily unavailable on this device right now.
+              </Text>
+            )}
           </>
         )}
 
