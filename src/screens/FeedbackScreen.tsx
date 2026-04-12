@@ -25,11 +25,13 @@ import {
   PRIVACY_POLICY_URL,
   SHARE_MESSAGE,
 } from '../utils/appMeta';
+import { useTipJar } from '../utils/tipJar';
 
 export default function FeedbackScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
   const { isDark, autoTTS, includeVosotros, toggleTheme, toggleAutoTTS, toggleVosotros } = useThemeStore();
+  const { products, loading: tipLoading, tip } = useTipJar();
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent(`${APP_NAME} Feedback`);
@@ -122,6 +124,29 @@ export default function FeedbackScreen() {
             />
           </View>
         </View>
+
+        {/* Tip Jar */}
+        {products.length > 0 && (
+          <>
+            <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Tip Jar</Text>
+            <Text style={[styles.tipDescription, { color: colors.textSecondary }]}>
+              {APP_NAME} is free with no ads. If you find it helpful, consider leaving a tip!
+            </Text>
+            <View style={styles.tipRow}>
+              {products.map((product) => (
+                <TouchableOpacity
+                  key={product.id}
+                  style={[styles.tipButton, { backgroundColor: colors.card, borderColor: colors.primary }]}
+                  onPress={() => tip(product.id)}
+                  disabled={tipLoading}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.tipPrice, { color: colors.primary }]}>{product.displayPrice}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </>
+        )}
 
         {/* Feedback & Rate */}
         <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Support</Text>
@@ -216,6 +241,32 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: fonts.sizes.md,
     fontWeight: fonts.weights.medium,
+  },
+  tipDescription: {
+    fontSize: fonts.sizes.sm,
+    marginBottom: spacing.md,
+    lineHeight: 20,
+  },
+  tipRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  tipButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+    borderWidth: 1.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tipPrice: {
+    fontSize: fonts.sizes.lg,
+    fontWeight: fonts.weights.bold,
   },
   rateCard: {
     flexDirection: 'row',
