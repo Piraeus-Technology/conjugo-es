@@ -1,23 +1,34 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Alert, Platform } from 'react-native';
-import {
-  initConnection,
-  endConnection,
-  fetchProducts,
-  getAvailablePurchases,
-  requestPurchase,
-  finishTransaction,
-  purchaseUpdatedListener,
-  purchaseErrorListener,
-  ErrorCode,
-  type Product,
-  type Purchase,
-  type PurchaseError,
-} from 'react-native-iap';
 
 const TIP_SKUS = ['tip_small', 'tip_medium', 'tip_large'];
 
+// react-native-iap doesn't support web — return a no-op hook
+const isNative = Platform.OS === 'ios' || Platform.OS === 'android';
+
 export function useTipJar() {
+  if (!isNative) {
+    return { products: [] as any[], loading: false, unavailable: true, tip: async () => {} };
+  }
+  return useTipJarNative();
+}
+
+function useTipJarNative() {
+  // Lazy import to avoid loading native modules on web
+  const {
+    initConnection,
+    endConnection,
+    fetchProducts,
+    getAvailablePurchases,
+    requestPurchase,
+    finishTransaction,
+    purchaseUpdatedListener,
+    purchaseErrorListener,
+    ErrorCode,
+  } = require('react-native-iap');
+  type Product = import('react-native-iap').Product;
+  type Purchase = import('react-native-iap').Purchase;
+  type PurchaseError = import('react-native-iap').PurchaseError;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
