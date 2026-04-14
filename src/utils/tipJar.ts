@@ -3,18 +3,25 @@ import { Alert, Platform } from 'react-native';
 
 const TIP_SKUS = ['tip_small', 'tip_medium', 'tip_large'];
 
-// react-native-iap doesn't support web — return a no-op hook
-const isNative = Platform.OS === 'ios' || Platform.OS === 'android';
+const NO_OP_RESULT = { products: [] as any[], loading: false, unavailable: true, tip: async () => {} };
+
+let iapModule: any = null;
+try {
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
+    iapModule = require('react-native-iap');
+  }
+} catch {
+  // react-native-iap not available (Expo Go, web, etc.)
+}
 
 export function useTipJar() {
-  if (!isNative) {
-    return { products: [] as any[], loading: false, unavailable: true, tip: async () => {} };
+  if (!iapModule) {
+    return NO_OP_RESULT;
   }
   return useTipJarNative();
 }
 
 function useTipJarNative() {
-  // Lazy import to avoid loading native modules on web
   const {
     initConnection,
     endConnection,
@@ -25,7 +32,7 @@ function useTipJarNative() {
     purchaseUpdatedListener,
     purchaseErrorListener,
     ErrorCode,
-  } = require('react-native-iap');
+  } = iapModule;
   type Product = import('react-native-iap').Product;
   type Purchase = import('react-native-iap').Purchase;
   type PurchaseError = import('react-native-iap').PurchaseError;
