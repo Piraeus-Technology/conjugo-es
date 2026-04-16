@@ -62,12 +62,13 @@ export default function FlashcardStatsScreen() {
     const yesterdayDate = new Date();
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
     const yesterdayStr = yesterdayDate.toLocaleDateString('en-CA');
-    if (dailyMap[todayStr] || dailyMap[yesterdayStr]) {
+    const hasActivity = (key: string) => dailyMap[key] && dailyMap[key].reviewed > 0;
+    if (hasActivity(todayStr) || hasActivity(yesterdayStr)) {
       let checkDate = new Date();
-      if (!dailyMap[todayStr]) checkDate.setDate(checkDate.getDate() - 1);
+      if (!hasActivity(todayStr)) checkDate.setDate(checkDate.getDate() - 1);
       while (true) {
         const key = checkDate.toLocaleDateString('en-CA');
-        if (dailyMap[key]) {
+        if (hasActivity(key)) {
           count++;
           checkDate.setDate(checkDate.getDate() - 1);
         } else break;

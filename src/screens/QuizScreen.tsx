@@ -22,6 +22,12 @@ import { useSpacedRepStore } from '../store/spacedRepStore';
 import { useSessionStore } from '../store/sessionStore';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useThemeStore } from '../store/themeStore';
+import {
+  COMMON_VERB_POOL_SIZE,
+  REVIEW_PROMPT_STREAK,
+  WEIGHTED_CANDIDATE_COUNT,
+  WEIGHTED_PICK_COMMON_BIAS,
+} from '../utils/constants';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
@@ -50,11 +56,13 @@ function pickWeightedPrompt(
   includeVosotros: boolean = true,
 ): PromptCandidate {
   const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
-  const commonCount = Math.min(200, verbEntries.length);
+  const commonCount = Math.min(COMMON_VERB_POOL_SIZE, verbEntries.length);
   const candidates: PromptCandidate[] = [];
 
-  while (candidates.length < 10) {
-    const idx = Math.random() < 0.7
+  let attempts = 0;
+  while (candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
+    attempts++;
+    const idx = Math.random() < WEIGHTED_PICK_COMMON_BIAS
       ? Math.floor(Math.random() * commonCount)
       : Math.floor(Math.random() * verbEntries.length);
     const [verb, data] = verbEntries[idx];
@@ -166,6 +174,7 @@ export default function QuizScreen() {
   const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
   const { activeTenses, activeLevels, loaded: settingsLoaded, loadPracticeSettings } = usePracticeSettingsStore();
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
+  const isDark = useThemeStore((s) => s.isDark);
   const nav = useNavigation<any>();
 
   const filteredEntries = React.useMemo(() =>
@@ -187,6 +196,8 @@ export default function QuizScreen() {
           onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel="Open tense and level settings"
         >
           <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
           <Ionicons name="options-outline" size={18} color={colors.primary} />
@@ -200,7 +211,7 @@ export default function QuizScreen() {
     loadWeights();
     loadSessions();
     loadPracticeSettings();
-  }, []);
+  }, [loadStats, loadWeights, loadSessions, loadPracticeSettings]);
 
   useEffect(() => {
     if (weightsLoaded && settingsLoaded && activeTenses.length > 0 && filteredEntries.length > 0) {
@@ -226,17 +237,21 @@ export default function QuizScreen() {
       if (newStreak > bestSessionStreak) setBestSessionStreak(newStreak);
       recordAnswer(true, newStreak);
       // Prompt for rating after a streak of 10
-      if (newStreak === 10) {
-        StoreReview.isAvailableAsync().then((available) => {
-          if (available) StoreReview.requestReview();
-        });
+      if (newStreak === REVIEW_PROMPT_STREAK) {
+        StoreReview.isAvailableAsync()
+          .then((available) => {
+            if (available) return StoreReview.requestReview();
+          })
+          .catch((e) => console.warn('StoreReview failed:', e));
       }
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setStreak(0);
       recordAnswer(false, 0);
     }
-    recordResult(question.verb, question.tense, question.personIndex, correct).catch(() => {});
+    recordResult(question.verb, question.tense, question.personIndex, correct).catch((e) =>
+      console.warn('Failed to record quiz result:', e),
+    );
   };
 
   const handleNext = () => {
@@ -262,37 +277,45 @@ export default function QuizScreen() {
   const sessionTotal = (todaySession?.total || 0) + (newTotal - lastSavedTotalRef.current);
   const sessionScore = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);
 
-  const saveCurrentSession = React.useCallback(() => {
-    const unsavedTotal = newTotalRef.current - lastSavedTotalRef.current;
-    const unsavedCorrect = newCorrectRef.current - lastSavedCorrectRef.current;
+  const saveCurrentSession = React.useCallback(async () => {
+    const snapshotTotal = newTotalRef.current;
+    const snapshotCorrect = newCorrectRef.current;
+    const unsavedTotal = snapshotTotal - lastSavedTotalRef.current;
+    const unsavedCorrect = snapshotCorrect - lastSavedCorrectRef.current;
     const unsavedBestStreak = Math.max(bestSessionStreakRef.current, lastSavedBestStreakRef.current);
 
-    if (unsavedTotal > 0) {
-      lastSavedTotalRef.current = newTotalRef.current;
-      lastSavedCorrectRef.current = newCorrectRef.current;
-      lastSavedBestStreakRef.current = unsavedBestStreak;
-      saveSession({
+    if (unsavedTotal <= 0) return;
+
+    try {
+      await saveSession({
         total: unsavedTotal,
         correct: unsavedCorrect,
         streak: unsavedBestStreak,
       });
+      lastSavedTotalRef.current = snapshotTotal;
+      lastSavedCorrectRef.current = snapshotCorrect;
+      lastSavedBestStreakRef.current = unsavedBestStreak;
+    } catch (e) {
+      console.warn('Failed to save quiz session:', e);
     }
   }, [saveSession]);
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'background' || state === 'inactive') {
-        saveCurrentSession();
+        saveCurrentSession().catch((e) => console.warn('AppState save failed:', e));
       }
     });
     return () => {
       sub.remove();
-      saveCurrentSession();
+      saveCurrentSession().catch((e) => console.warn('Unmount save failed:', e));
     };
   }, [saveCurrentSession]);
 
   React.useEffect(() => {
-    const unsubscribe = nav.addListener('blur', saveCurrentSession);
+    const unsubscribe = nav.addListener('blur', () => {
+      saveCurrentSession().catch((e) => console.warn('Blur save failed:', e));
+    });
     return unsubscribe;
   }, [nav, saveCurrentSession]);
 
@@ -302,18 +325,18 @@ export default function QuizScreen() {
       return { backgroundColor: colors.card, borderColor: colors.border };
     }
     if (option === question.correctAnswer) {
-      return { backgroundColor: '#E8F5E9', borderColor: '#4CAF50' };
+      return { backgroundColor: isDark ? '#1A3E1A' : '#E8F5E9', borderColor: isDark ? '#66BB6A' : '#4CAF50' };
     }
     if (option === selectedAnswer && !isCorrect) {
-      return { backgroundColor: '#FFEBEE', borderColor: '#E53935' };
+      return { backgroundColor: isDark ? '#3E1A1A' : '#FFEBEE', borderColor: isDark ? '#EF5350' : '#E53935' };
     }
     return { backgroundColor: colors.card, borderColor: colors.border, opacity: 0.4 };
   };
 
   const getOptionTextColor = (option: string) => {
     if (!answered || !question) return colors.textPrimary;
-    if (option === question.correctAnswer) return '#2E7D32';
-    if (option === selectedAnswer && !isCorrect) return '#C62828';
+    if (option === question.correctAnswer) return isDark ? '#66BB6A' : '#2E7D32';
+    if (option === selectedAnswer && !isCorrect) return isDark ? '#EF5350' : '#C62828';
     return colors.textMuted;
   };
 
@@ -382,11 +405,14 @@ export default function QuizScreen() {
         <View style={styles.optionsContainer}>
           {question.options.map((option, index) => (
             <TouchableOpacity
-              key={index}
+              key={`${option}-${index}`}
               style={[styles.optionButton, getOptionStyle(option)]}
               onPress={() => handleAnswer(option)}
               activeOpacity={answered ? 1 : 0.7}
               disabled={answered}
+              accessibilityRole="button"
+              accessibilityLabel={`Answer: ${option}`}
+              accessibilityState={{ disabled: answered, selected: selectedAnswer === option }}
             >
               <Text
                 style={[styles.optionText, { color: getOptionTextColor(option) }]}
@@ -412,6 +438,8 @@ export default function QuizScreen() {
             style={[styles.bottomButton, { backgroundColor: colors.primary }]}
             onPress={handleNext}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Next question"
           >
             <Text style={styles.bottomButtonText}>Next</Text>
             <Ionicons name="arrow-forward" size={16} color="#fff" />

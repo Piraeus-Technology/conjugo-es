@@ -197,11 +197,19 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
             <TouchableOpacity
               onPress={() => speak(infinitive)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityRole="button"
+              accessibilityLabel={`Play pronunciation of ${infinitive}`}
             >
               <Ionicons name="volume-medium-outline" size={22} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => toggleFavorite(infinitive)}>
+          <TouchableOpacity
+            onPress={() => toggleFavorite(infinitive)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel={favorited ? `Remove ${infinitive} from favorites` : `Add ${infinitive} to favorites`}
+            accessibilityState={{ selected: favorited }}
+          >
             <Ionicons
               name={favorited ? 'heart' : 'heart-outline'}
               size={28}
@@ -220,8 +228,8 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
             <Text style={[styles.tagText, { color: colors.textSecondary }]}>-{verb.type}</Text>
           </View>
           {verb.level && (
-            <View style={[styles.tag, { backgroundColor: (colors as any)[`level${verb.level}Bg`] || colors.pillBg }]}>
-              <Text style={[styles.tagText, { color: (colors as any)[`level${verb.level}Text`] || colors.textSecondary }]}>{verb.level}</Text>
+            <View style={[styles.tag, { backgroundColor: colors[`level${verb.level}Bg` as keyof typeof colors] ?? colors.pillBg }]}>
+              <Text style={[styles.tagText, { color: colors[`level${verb.level}Text` as keyof typeof colors] ?? colors.textSecondary }]}>{verb.level}</Text>
             </View>
           )}
         </View>
@@ -279,17 +287,19 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                         key={i}
                         ref={isHighlighted ? highlightRef as any : undefined}
                         onLayout={isHighlighted ? () => {
-                          setTimeout(() => {
+                          // Delay to allow layout to settle before measuring
+                          const timer = setTimeout(() => {
                             if (highlightRef.current && scrollContentRef.current) {
                               highlightRef.current.measureLayout(
                                 scrollContentRef.current as any,
                                 (_x, y) => {
                                   scrollRef.current?.scrollTo({ y: Math.max(0, y - 150), animated: true });
                                 },
-                                () => {},
+                                () => { /* measureLayout can fail if views are unmounted */ },
                               );
                             }
                           }, 400);
+                          return () => clearTimeout(timer);
                         } : undefined}
                         style={[
                           styles.row,

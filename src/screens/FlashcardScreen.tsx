@@ -22,6 +22,11 @@ import { useSpacedRepStore } from '../store/spacedRepStore';
 import { speak } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
+import {
+  COMMON_VERB_POOL_SIZE,
+  WEIGHTED_CANDIDATE_COUNT,
+  WEIGHTED_PICK_COMMON_BIAS,
+} from '../utils/constants';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
@@ -46,11 +51,13 @@ function generateCard(
 ): Card {
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
   const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
-  const commonCount = Math.min(200, verbEntries.length);
+  const commonCount = Math.min(COMMON_VERB_POOL_SIZE, verbEntries.length);
 
   const candidates: Card[] = [];
-  while (candidates.length < 10) {
-    const idx = Math.random() < 0.7
+  let attempts = 0;
+  while (candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
+    attempts++;
+    const idx = Math.random() < WEIGHTED_PICK_COMMON_BIAS
       ? Math.floor(Math.random() * commonCount)
       : Math.floor(Math.random() * verbEntries.length);
     const [verb, data] = verbEntries[idx];
@@ -98,7 +105,7 @@ export default function FlashcardScreen() {
     loadPracticeSettings();
     loadWeights();
     loadSessions();
-  }, []);
+  }, [loadPracticeSettings, loadWeights, loadSessions]);
 
   const [card, setCard] = useState<Card | null>(null);
   const [flipped, setFlipped] = useState(false);
@@ -113,6 +120,8 @@ export default function FlashcardScreen() {
           onPress={() => nav.navigate('PracticeSettings', { mode: 'flashcards' })}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel="Open tense and level settings"
         >
           <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
           <Ionicons name="options-outline" size={18} color={colors.primary} />
@@ -148,7 +157,9 @@ export default function FlashcardScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setNewReviewed(r => r + 1);
     setNewCorrect(c => c + 1);
-    recordResult(card.verb, card.tense, card.personIndex, true).catch(() => {});
+    recordResult(card.verb, card.tense, card.personIndex, true).catch((e) =>
+      console.warn('Failed to record flashcard result:', e),
+    );
     flipToFront();
   };
 
@@ -156,7 +167,9 @@ export default function FlashcardScreen() {
     if (!card) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setNewReviewed(r => r + 1);
-    recordResult(card.verb, card.tense, card.personIndex, false).catch(() => {});
+    recordResult(card.verb, card.tense, card.personIndex, false).catch((e) =>
+      console.warn('Failed to record flashcard result:', e),
+    );
     flipToFront();
   };
 
@@ -174,31 +187,39 @@ export default function FlashcardScreen() {
   const reviewed = (todaySession?.reviewed || 0) + (newReviewed - lastSavedReviewedRef.current);
   const correct = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);
 
-  const saveCurrentSession = React.useCallback(() => {
-    const unsavedReviewed = newReviewedRef.current - lastSavedReviewedRef.current;
-    const unsavedCorrect = newCorrectRef.current - lastSavedCorrectRef.current;
+  const saveCurrentSession = React.useCallback(async () => {
+    const snapshotReviewed = newReviewedRef.current;
+    const snapshotCorrect = newCorrectRef.current;
+    const unsavedReviewed = snapshotReviewed - lastSavedReviewedRef.current;
+    const unsavedCorrect = snapshotCorrect - lastSavedCorrectRef.current;
 
-    if (unsavedReviewed > 0) {
-      lastSavedReviewedRef.current = newReviewedRef.current;
-      lastSavedCorrectRef.current = newCorrectRef.current;
-      saveSession({ reviewed: unsavedReviewed, correct: unsavedCorrect });
+    if (unsavedReviewed <= 0) return;
+
+    try {
+      await saveSession({ reviewed: unsavedReviewed, correct: unsavedCorrect });
+      lastSavedReviewedRef.current = snapshotReviewed;
+      lastSavedCorrectRef.current = snapshotCorrect;
+    } catch (e) {
+      console.warn('Failed to save flashcard session:', e);
     }
   }, [saveSession]);
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'background' || state === 'inactive') {
-        saveCurrentSession();
+        saveCurrentSession().catch((e) => console.warn('AppState save failed:', e));
       }
     });
     return () => {
       sub.remove();
-      saveCurrentSession();
+      saveCurrentSession().catch((e) => console.warn('Unmount save failed:', e));
     };
   }, [saveCurrentSession]);
 
   React.useEffect(() => {
-    const unsubscribe = nav.addListener('blur', saveCurrentSession);
+    const unsubscribe = nav.addListener('blur', () => {
+      saveCurrentSession().catch((e) => console.warn('Blur save failed:', e));
+    });
     return unsubscribe;
   }, [nav, saveCurrentSession]);
 
@@ -252,6 +273,8 @@ export default function FlashcardScreen() {
         style={styles.cardContainer}
         onPress={!flipped ? flipToBack : undefined}
         activeOpacity={flipped ? 1 : 0.95}
+        accessibilityRole="button"
+        accessibilityLabel={flipped ? `${card.verb}, ${pronounLabels[card.personIndex]}, answer: ${card.answer}` : `Tap to reveal conjugation of ${card.verb} for ${pronounLabels[card.personIndex]}`}
       >
         {/* Front */}
         <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: frontOpacity }]}>
@@ -294,6 +317,8 @@ export default function FlashcardScreen() {
           <TouchableOpacity
             style={[styles.speakButton, { backgroundColor: colors.primary }]}
             onPress={() => speak(card.answer)}
+            accessibilityRole="button"
+            accessibilityLabel={`Play pronunciation of ${card.answer}`}
           >
             <Ionicons name="volume-medium" size={20} color="#fff" />
           </TouchableOpacity>
@@ -306,6 +331,8 @@ export default function FlashcardScreen() {
           style={[styles.actionButton, { backgroundColor: isDark ? '#3E1A1A' : '#FFEBEE', borderColor: isDark ? '#EF5350' : '#C62828' }]}
           onPress={handleMissed}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Mark card as missed"
         >
           <Ionicons name="close" size={20} color={isDark ? '#EF5350' : '#C62828'} />
           <Text style={[styles.actionButtonText, { color: isDark ? '#EF5350' : '#C62828' }]}>Missed</Text>
@@ -314,6 +341,8 @@ export default function FlashcardScreen() {
           style={[styles.actionButton, { backgroundColor: isDark ? '#1A3E1A' : '#E8F5E9', borderColor: isDark ? '#66BB6A' : '#2E7D32' }]}
           onPress={handleGotIt}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Mark card as got it"
         >
           <Ionicons name="checkmark" size={20} color={isDark ? '#66BB6A' : '#2E7D32'} />
           <Text style={[styles.actionButtonText, { color: isDark ? '#66BB6A' : '#2E7D32' }]}>Got it</Text>
