@@ -3,7 +3,13 @@ import { Alert, Platform } from 'react-native';
 
 const TIP_SKUS = ['tip_small', 'tip_medium', 'tip_large'];
 
-const NO_OP_RESULT = { products: [] as any[], loading: false, unavailable: true, tip: async () => {} };
+const NO_OP_RESULT = {
+  products: [] as any[],
+  loading: false,
+  unavailable: true,
+  unsupported: true,
+  tip: async () => {},
+};
 
 let iapModule: any = null;
 try {
@@ -39,6 +45,7 @@ function useTipJarNative() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
+  const [unsupported] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -84,10 +91,15 @@ function useTipJarNative() {
             setLoading(false);
           }
           Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
-        } catch {
+        } catch (error) {
+          console.warn('Failed to finish tip transaction:', error);
           if (mounted) {
             setLoading(false);
           }
+          Alert.alert(
+            'Purchase Needs Attention',
+            'Your tip was received, but we could not finish the transaction. Please reopen the app or try again later.'
+          );
         }
       });
 
@@ -124,5 +136,5 @@ function useTipJarNative() {
     }
   }, []);
 
-  return { products, loading, unavailable, tip };
+  return { products, loading, unavailable, unsupported, tip };
 }

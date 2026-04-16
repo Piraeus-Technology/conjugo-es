@@ -31,7 +31,13 @@ export default function FeedbackScreen() {
   const colors = useColors();
   const nav = useNavigation<any>();
   const { isDark, autoTTS, includeVosotros, toggleTheme, toggleAutoTTS, toggleVosotros } = useThemeStore();
-  const { products, loading: tipLoading, unavailable: tipUnavailable, tip } = useTipJar();
+  const {
+    products,
+    loading: tipLoading,
+    unavailable: tipUnavailable,
+    unsupported: tipUnsupported,
+    tip,
+  } = useTipJar();
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent(`${APP_NAME} Feedback`);
@@ -150,7 +156,9 @@ export default function FeedbackScreen() {
               </>
             ) : (
               <Text style={[styles.tipDescription, { color: colors.textMuted }]}>
-                Tip Jar is temporarily unavailable on this device right now.
+                {tipUnsupported
+                  ? 'Tip Jar is not available in this environment. Please use the installed app.'
+                  : 'Tip Jar is temporarily unavailable on this device right now.'}
               </Text>
             )}
           </>
