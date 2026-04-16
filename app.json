@@ -26,7 +26,8 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.piraeus.conjugoes",
-      "versionCode": 14
+      "versionCode": 18,
+      "permissions": ["com.android.vending.BILLING"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
