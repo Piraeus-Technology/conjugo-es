@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeSetItem } from '../utils/safeStorage';
 
 interface ThemeStore {
   isDark: boolean;
@@ -38,18 +39,18 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   toggleTheme: async () => {
     const newIsDark = !get().isDark;
     set({ isDark: newIsDark });
-    await AsyncStorage.setItem('theme_mode', newIsDark ? 'dark' : 'light');
+    await safeSetItem('theme_mode', newIsDark ? 'dark' : 'light');
   },
 
   toggleAutoTTS: async () => {
     const newAutoTTS = !get().autoTTS;
     set({ autoTTS: newAutoTTS });
-    await AsyncStorage.setItem('auto_tts', newAutoTTS ? 'true' : 'false');
+    await safeSetItem('auto_tts', newAutoTTS ? 'true' : 'false');
   },
 
   toggleVosotros: async () => {
     const newVal = !get().includeVosotros;
     set({ includeVosotros: newVal });
-    await AsyncStorage.setItem('include_vosotros', newVal ? 'true' : 'false');
+    await safeSetItem('include_vosotros', newVal ? 'true' : 'false');
   },
 }));

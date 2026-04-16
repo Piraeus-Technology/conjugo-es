@@ -73,6 +73,8 @@ export default function FeedbackScreen() {
           style={[styles.rateCard, { backgroundColor: colors.card }]}
           onPress={() => nav.navigate('Stats')}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Open quiz stats"
         >
           <Ionicons name="bar-chart-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
           <View style={{ flex: 1 }}>
@@ -87,6 +89,8 @@ export default function FeedbackScreen() {
           style={[styles.rateCard, { backgroundColor: colors.card, marginTop: spacing.sm }]}
           onPress={() => nav.navigate('FlashcardStats')}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Open flashcard stats"
         >
           <Ionicons name="layers-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
           <View style={{ flex: 1 }}>
@@ -119,7 +123,7 @@ export default function FeedbackScreen() {
               thumbColor="#fff"
             />
           </View>
-          <View style={styles.settingRow}>
+          <View style={[styles.settingRow, { borderBottomColor: colors.divider }]}>
             <Ionicons name="people" size={20} color={colors.textSecondary} />
             <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Include Vosotros</Text>
             <Switch
@@ -148,6 +152,9 @@ export default function FeedbackScreen() {
                       onPress={() => tip(product.id)}
                       disabled={tipLoading}
                       activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Leave a ${product.displayPrice} tip`}
+                      accessibilityState={{ disabled: tipLoading }}
                     >
                       <Text style={[styles.tipPrice, { color: colors.primary }]}>{product.displayPrice}</Text>
                     </TouchableOpacity>
@@ -170,6 +177,8 @@ export default function FeedbackScreen() {
           style={[styles.rateCard, { backgroundColor: colors.card }]}
           onPress={handleSendEmail}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Send feedback email"
         >
           <Text style={styles.rateEmoji}>💬</Text>
           <View style={styles.rateInfo}>
@@ -183,6 +192,8 @@ export default function FeedbackScreen() {
           style={[styles.rateCard, { backgroundColor: colors.card }]}
           onPress={handleRateApp}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={`Rate ${APP_NAME} on the App Store`}
         >
           <Text style={styles.rateEmoji}>⭐</Text>
           <View style={styles.rateInfo}>
@@ -197,9 +208,11 @@ export default function FeedbackScreen() {
           onPress={() => {
             Share.share({
               message: SHARE_MESSAGE,
-            });
+            }).catch((e) => console.warn('Share failed:', e));
           }}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={`Share ${APP_NAME}`}
         >
           <Text style={styles.rateEmoji}>🔗</Text>
           <View style={styles.rateInfo}>
@@ -211,8 +224,10 @@ export default function FeedbackScreen() {
         {/* Privacy Policy */}
         <TouchableOpacity
           style={[styles.linkRow, { backgroundColor: colors.card }]}
-          onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+          onPress={() => Linking.openURL(PRIVACY_POLICY_URL).catch((e) => console.warn('Failed to open privacy policy:', e))}
           activeOpacity={0.7}
+          accessibilityRole="link"
+          accessibilityLabel="Open privacy policy"
         >
           <Ionicons name="shield-checkmark-outline" size={20} color={colors.textSecondary} />
           <Text style={[styles.linkText, { color: colors.textPrimary }]}>Privacy Policy</Text>
