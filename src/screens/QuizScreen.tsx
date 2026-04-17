@@ -528,6 +528,7 @@ const styles = StyleSheet.create({
   bottomRow: {
     flexDirection: 'row',
     gap: spacing.sm,
+    marginBottom: spacing.lg,
   },
   bottomButton: {
     flex: 1,
