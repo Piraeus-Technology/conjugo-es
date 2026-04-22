@@ -1369,6 +1369,54 @@ describe('Dataset integrity regressions', () => {
   });
 });
 
+// ============ ADDITIONAL SPELLING-CHANGE COVERAGE ============
+
+describe('Spelling change gar→gué: llegar', () => {
+  const verb: VerbData = {
+    type: 'ar', regular: false, translation: 'to arrive',
+    pattern: { spellingChange: 'gar_gué' },
+  };
+
+  test('preterite yo: llegué', () => {
+    expect(forms('llegar', verb, 'preterite')[0]).toBe('llegué');
+  });
+
+  test('subjunctive present keeps gu', () => {
+    expect(forms('llegar', verb, 'subjunctive_present')[0]).toBe('llegue');
+    expect(forms('llegar', verb, 'subjunctive_present')[5]).toBe('lleguen');
+  });
+});
+
+describe('Spelling change zar→cé: empezar', () => {
+  const verb: VerbData = {
+    type: 'ar', regular: false, translation: 'to begin',
+    pattern: { stemChange: { present: 'e_ie' }, spellingChange: 'zar_cé' },
+  };
+
+  test('preterite yo: empecé', () => {
+    expect(forms('empezar', verb, 'preterite')[0]).toBe('empecé');
+  });
+
+  test('subjunctive present keeps c', () => {
+    expect(forms('empezar', verb, 'subjunctive_present')[0]).toBe('empiece');
+  });
+});
+
+describe('Spelling change gir→j: dirigir', () => {
+  const verb: VerbData = {
+    type: 'ir', regular: false, translation: 'to direct',
+    pattern: { spellingChange: 'gir_j' },
+  };
+
+  test('present yo: dirijo', () => {
+    expect(forms('dirigir', verb, 'present')[0]).toBe('dirijo');
+  });
+
+  test('subjunctive present uses j', () => {
+    expect(forms('dirigir', verb, 'subjunctive_present')[0]).toBe('dirija');
+  });
+});
+
 // ============ CONJUGATION RESULT STRUCTURE ============
 
 describe('ConjugationResult structure', () => {

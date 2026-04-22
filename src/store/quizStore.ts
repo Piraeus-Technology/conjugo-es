@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 
 interface QuizStats {
   totalQuestions: number;
@@ -40,11 +41,11 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
       bestStreak: Math.max(state.bestStreak, currentStreak),
     };
     set(updated);
-    await AsyncStorage.setItem('quiz_stats', JSON.stringify(updated));
+    await safeSetItem('quiz_stats', JSON.stringify(updated));
   },
 
   resetStats: async () => {
     set({ totalQuestions: 0, totalCorrect: 0, bestStreak: 0 });
-    await AsyncStorage.removeItem('quiz_stats');
+    await safeRemoveItem('quiz_stats');
   },
 }));

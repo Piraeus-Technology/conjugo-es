@@ -17,6 +17,7 @@ import StatsScreen from './src/screens/StatsScreen';
 import FlashcardStatsScreen from './src/screens/FlashcardStatsScreen';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
+import type { SearchStackParamList } from './src/types/navigation';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -75,7 +76,7 @@ function MoreStackScreen() {
 }
 
 // Search tab has its own stack (Search → Conjugation)
-const SearchStack = createNativeStackNavigator();
+const SearchStack = createNativeStackNavigator<SearchStackParamList>();
 const Tab = createBottomTabNavigator();
 
 function SearchStackScreen() {
@@ -106,7 +107,7 @@ function SearchStackScreen() {
       <SearchStack.Screen
         name="Conjugation"
         component={ConjugationScreen}
-        options={({ route }: any) => ({
+        options={({ route }) => ({
           title: route.params.infinitive,
         })}
       />
@@ -120,7 +121,7 @@ export default function App() {
 
   useEffect(() => {
     loadTheme();
-  }, []);
+  }, [loadTheme]);
 
   const onLayoutRootView = useCallback(async () => {
     if (loaded) {

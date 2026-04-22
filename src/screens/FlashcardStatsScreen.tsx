@@ -24,15 +24,7 @@ export default function FlashcardStatsScreen() {
   React.useEffect(() => {
     loadSessions();
     loadWeights();
-  }, []);
-
-  if (!sessionsLoaded || !weightsLoaded) {
-    return (
-      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.bg }]}>
-        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading flashcard stats...</Text>
-      </View>
-    );
-  }
+  }, [loadSessions, loadWeights]);
 
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
@@ -120,6 +112,14 @@ export default function FlashcardStatsScreen() {
   };
 
   const selectedData = selectedDay ? dailyMap[selectedDay] : null;
+
+  if (!sessionsLoaded || !weightsLoaded) {
+    return (
+      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.bg }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading flashcard stats...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>

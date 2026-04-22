@@ -54,7 +54,7 @@ export default function FeedbackScreen() {
   const handleRateApp = () => {
     const url = Platform.select({
       ios: APP_REVIEW_URL,
-      android: 'market://details?id=com.lkh9596.conjugo',
+      android: 'market://details?id=com.piraeus.conjugoes',
       default: APP_STORE_URL,
     });
     Linking.openURL(url).catch(() => {

@@ -2,7 +2,7 @@
   "expo": {
     "name": "ConjuGo ES",
     "slug": "conjuGo",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lkh9596.conjugo",
-      "buildNumber": "15",
+      "buildNumber": "16",
       "infoPlist": {
         "CFBundleDisplayName": "ConjuGo ES",
         "ITSAppUsesNonExemptEncryption": false
@@ -26,7 +26,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.piraeus.conjugoes",
-      "versionCode": 18,
+      "versionCode": 19,
       "permissions": ["com.android.vending.BILLING"]
     },
     "web": {

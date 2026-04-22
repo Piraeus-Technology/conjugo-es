@@ -158,9 +158,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const scrollRef = useRef<ScrollView>(null);
   const highlightRef = useRef<View>(null);
   const scrollContentRef = useRef<View>(null);
-  const ruleNotes = useMemo(() => getRuleNotes(infinitive, verb), [infinitive, verb]);
-  const snapshotRows = useMemo(() => getSnapshotRows(infinitive, verb, openTense), [infinitive, verb, openTense]);
+  const ruleNotes = useMemo(() => verb ? getRuleNotes(infinitive, verb) : [], [infinitive, verb]);
+  const snapshotRows = useMemo(() => verb ? getSnapshotRows(infinitive, verb, openTense) : [], [infinitive, verb, openTense]);
   const relatedVerbs = useMemo(() => {
+    if (!verb) return [];
     const familyKey = getFamilyKey(infinitive, verb);
     if (!familyKey) return [];
 

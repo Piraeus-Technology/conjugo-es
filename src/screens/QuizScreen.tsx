@@ -286,16 +286,27 @@ export default function QuizScreen() {
 
     if (unsavedTotal <= 0) return;
 
+    // Claim the delta synchronously so a re-entrant call (e.g. AppState
+    // background + nav blur firing back-to-back) sees zero unsaved and bails
+    // instead of double-counting.
+    const prevSavedTotal = lastSavedTotalRef.current;
+    const prevSavedCorrect = lastSavedCorrectRef.current;
+    const prevSavedBestStreak = lastSavedBestStreakRef.current;
+    lastSavedTotalRef.current = snapshotTotal;
+    lastSavedCorrectRef.current = snapshotCorrect;
+    lastSavedBestStreakRef.current = unsavedBestStreak;
+
     try {
       await saveSession({
         total: unsavedTotal,
         correct: unsavedCorrect,
         streak: unsavedBestStreak,
       });
-      lastSavedTotalRef.current = snapshotTotal;
-      lastSavedCorrectRef.current = snapshotCorrect;
-      lastSavedBestStreakRef.current = unsavedBestStreak;
     } catch (e) {
+      // Roll back so the lost delta gets retried on the next save.
+      lastSavedTotalRef.current = prevSavedTotal;
+      lastSavedCorrectRef.current = prevSavedCorrect;
+      lastSavedBestStreakRef.current = prevSavedBestStreak;
       console.warn('Failed to save quiz session:', e);
     }
   }, [saveSession]);
@@ -357,7 +368,7 @@ export default function QuizScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
       <View style={styles.content}>
-        {/* Session score bar */}
+        {/* Session score bar — pinned to the top */}
         <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
           <View style={styles.scoreRow}>
             <View style={styles.scoreItem}>
@@ -381,6 +392,7 @@ export default function QuizScreen() {
           </View>
         </View>
 
+        <View style={styles.quizBody}>
         {/* Question — fills remaining space */}
         <View style={styles.questionContainer}>
           <Text style={[styles.questionLabel, { color: colors.textMuted }]}>
@@ -445,6 +457,7 @@ export default function QuizScreen() {
             <Ionicons name="arrow-forward" size={16} color="#fff" />
           </TouchableOpacity>
         </View>
+        </View>
       </View>
 
     </View>
@@ -458,7 +471,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
-    justifyContent: 'space-between',
+  },
+  quizBody: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: spacing.lg,
   },
   scoreCard: {
     paddingHorizontal: spacing.md,
@@ -528,7 +545,6 @@ const styles = StyleSheet.create({
   bottomRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginBottom: spacing.lg,
   },
   bottomButton: {
     flex: 1,
@@ -536,7 +552,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: spacing.sm + 2,
+    minHeight: 56,
+    paddingVertical: spacing.sm,
     borderRadius: radius.md,
   },
   bottomButtonText: {

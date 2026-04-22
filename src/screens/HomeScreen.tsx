@@ -12,101 +12,26 @@ import {
 } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import Fuse from 'fuse.js';
 import verbs from '../data/verbs.json';
-import { VerbData, conjugate, allTenses, tenseNames, Tense } from '../utils/conjugate';
+import { VerbData, tenseNames } from '../utils/conjugate';
 import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { MAX_SEARCH_RESULTS } from '../utils/constants';
-
-function normalizeSearchText(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/^no\s+/, '')
-    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-const verbEntries = Object.entries(verbs as Record<string, VerbData>).map(
-  ([infinitive, data]) => ({
-    infinitive,
-    normalizedInfinitive: normalizeSearchText(infinitive),
-    normalizedTranslation: normalizeSearchText(data.translation),
-    ...data,
-  })
-
-);
+import {
+  getExactConjugationMatches,
+  normalizeSearchText,
+  searchConjugations,
+  searchVerbs,
+  verbEntries,
+  type VerbEntry,
+} from '../utils/verbSearch';
 
 function getVerbOfTheDay() {
   const today = new Date();
   const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
   const index = daysSinceEpoch % verbEntries.length;
   return verbEntries[index];
-}
-
-interface ConjMatch {
-  infinitive: string;
-  translation: string;
-  tense: Tense;
-  pronoun: string;
-  form: string;
-  normalizedForm: string;
-}
-
-const verbFuse = new Fuse(verbEntries, {
-  keys: [
-    { name: 'infinitive', weight: 2 },
-    { name: 'normalizedInfinitive', weight: 2 },
-    { name: 'translation', weight: 1 },
-    { name: 'normalizedTranslation', weight: 1 },
-  ],
-  threshold: 0.4,
-  ignoreLocation: true,
-});
-
-// Lazy-built conjugation index — only created on first search
-let conjugationIndex: ConjMatch[] | null = null;
-let conjFuse: Fuse<ConjMatch> | null = null;
-
-function getConjugationIndex(): ConjMatch[] {
-  if (conjugationIndex) return conjugationIndex;
-  conjugationIndex = [];
-  verbEntries.forEach((entry) => {
-    allTenses.forEach((tense) => {
-      const results = conjugate(entry.infinitive, entry, tense);
-      results.forEach((r) => {
-        if (!r.disabled && r.form !== '—') {
-          const cleanForm = r.form.replace(/^no\s+/, '');
-          conjugationIndex!.push({
-            infinitive: entry.infinitive,
-            translation: entry.translation,
-            tense,
-            pronoun: r.pronoun,
-            form: cleanForm,
-            normalizedForm: normalizeSearchText(cleanForm),
-          });
-        }
-      });
-    });
-  });
-  return conjugationIndex;
-}
-
-function getConjFuse(): Fuse<ConjMatch> {
-  if (conjFuse) return conjFuse;
-  conjFuse = new Fuse(getConjugationIndex(), {
-    keys: [
-      { name: 'form', weight: 1 },
-      { name: 'normalizedForm', weight: 2 },
-    ],
-    threshold: 0.24,
-    ignoreLocation: true,
-  });
-  return conjFuse;
 }
 
 interface SearchResult {
@@ -121,7 +46,7 @@ interface SearchResult {
 
 function buildVerbMatchMeta(
   query: string,
-  entry: typeof verbEntries[number],
+  entry: VerbEntry,
 ): Pick<SearchResult, 'matchLabel' | 'matchDetail'> {
   const normalizedInfinitive = entry.normalizedInfinitive;
   const normalizedTranslation = entry.normalizedTranslation;
@@ -170,16 +95,14 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   useEffect(() => {
     loadHistory();
     loadFavorites();
-  }, []);
+  }, [loadHistory, loadFavorites]);
 
   const results = useMemo((): SearchResult[] => {
     if (!search.trim()) return [];
 
     const query = normalizeSearchText(search);
 
-    const exactConjMatches = getConjugationIndex().filter(
-      (c) => c.normalizedForm === query
-    );
+    const exactConjMatches = getExactConjugationMatches(query);
 
     if (exactConjMatches.length > 0) {
       const grouped = new Map<string, SearchResult>();
@@ -209,7 +132,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       const exactResults = [...grouped.values()];
       const seen = new Set(exactResults.map(result => result.infinitive));
 
-      const verbResults = verbFuse.search(search);
+      const verbResults = searchVerbs(search);
       verbResults.forEach((r) => {
         if (!seen.has(r.item.infinitive)) {
           seen.add(r.item.infinitive);
@@ -225,7 +148,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       return exactResults.slice(0, MAX_SEARCH_RESULTS);
     }
 
-    const verbResults = verbFuse.search(search)
+    const verbResults = searchVerbs(search)
       .map((r) => ({
         infinitive: r.item.infinitive,
         translation: r.item.translation,
@@ -246,7 +169,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       })
       .map(({ score: _score, ...result }) => result);
 
-    const conjResults = getConjFuse().search(search);
+    const conjResults = searchConjugations(search);
     const seenConj = new Set<string>(verbResults.map((r) => r.infinitive));
     const conjGrouped: SearchResult[] = [];
 
@@ -280,28 +203,38 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     }
 
     const s: { title: string; data: SearchResult[]; clearable?: boolean }[] = [];
+    const verbMap = verbs as Record<string, VerbData>;
 
-    if (favorites.length > 0) {
-      s.push({
-        title: 'Favorites',
-        data: favorites.map((infinitive) => ({
+    const favoriteData = favorites
+      .map((infinitive): SearchResult | null => {
+        const entry = verbMap[infinitive];
+        if (!entry) return null;
+        return {
           infinitive,
-          translation: (verbs as Record<string, VerbData>)[infinitive]?.translation || '',
-          matchType: 'favorite' as const,
-        })),
-      });
+          translation: entry.translation,
+          matchType: 'favorite',
+        };
+      })
+      .filter((item): item is SearchResult => item !== null);
+
+    if (favoriteData.length > 0) {
+      s.push({ title: 'Favorites', data: favoriteData });
     }
 
-    if (history.length > 0) {
-      s.push({
-        title: 'Recent',
-        data: history.map((infinitive) => ({
+    const historyData = history
+      .map((infinitive): SearchResult | null => {
+        const entry = verbMap[infinitive];
+        if (!entry) return null;
+        return {
           infinitive,
-          translation: (verbs as Record<string, VerbData>)[infinitive]?.translation || '',
-          matchType: 'history' as const,
-        })),
-        clearable: true,
-      });
+          translation: entry.translation,
+          matchType: 'history',
+        };
+      })
+      .filter((item): item is SearchResult => item !== null);
+
+    if (historyData.length > 0) {
+      s.push({ title: 'Recent', data: historyData, clearable: true });
     }
 
     return s;
@@ -342,6 +275,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         style={[styles.verbItem, { backgroundColor: colors.bg }]}
         onPress={() => handleVerbPress(item.infinitive, item.matchTense, item.matchForm)}
         activeOpacity={0.6}
+        accessibilityRole="button"
+        accessibilityLabel={`${item.infinitive}, ${item.translation}`}
+        accessibilityHint={item.matchDetail || 'Opens conjugation table'}
       >
         <View style={styles.verbInfo}>
           <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
@@ -402,7 +338,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           autoCapitalize="none"
         />
         {search.length > 0 && (
-          <TouchableOpacity onPress={() => setSearch('')}>
+          <TouchableOpacity
+            onPress={() => setSearch('')}
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
             <Ionicons name="close-circle" size={20} color={colors.textMuted} />
           </TouchableOpacity>
         )}
@@ -410,7 +351,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
       <SectionList
         sections={sections}
-        keyExtractor={(item, index) => item.infinitive + item.matchType + index}
+        keyExtractor={(item) =>
+          `${item.matchType}:${item.infinitive}:${item.matchTense ?? ''}:${item.matchForm ?? ''}`
+        }
         renderItem={renderItem}
         ListHeaderComponent={
           !search.trim() ? (
@@ -447,7 +390,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <View style={[styles.sectionHeader, { backgroundColor: colors.bg }]}>
               <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{section.title}</Text>
               {(section as { clearable?: boolean }).clearable && (
-                <TouchableOpacity onPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); clearHistory(); }}>
+                <TouchableOpacity
+                  onPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); clearHistory(); }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Clear recent verbs"
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
                   <Text style={[styles.clearButton, { color: colors.primary }]}>Clear</Text>
                 </TouchableOpacity>
               )}

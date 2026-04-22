@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeSetItem } from '../utils/safeStorage';
 
 interface FavoritesStore {
   favorites: string[];
@@ -33,7 +34,7 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
       ? current.filter((v) => v !== infinitive)
       : [infinitive, ...current];
     set({ favorites: updated });
-    await AsyncStorage.setItem('favorites', JSON.stringify(updated));
+    await safeSetItem('favorites', JSON.stringify(updated));
   },
 
   isFavorite: (infinitive: string) => {

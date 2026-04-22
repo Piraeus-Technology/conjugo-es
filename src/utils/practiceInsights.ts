@@ -1,5 +1,6 @@
 import { Tense, tenseNames } from './conjugate';
 import { practicePronouns } from './practiceFeedback';
+import { INSIGHT_RANK_LIMIT, INSIGHT_WEAK_FORM_LIMIT } from './constants';
 
 type WeightMap = Record<string, number>;
 
@@ -32,7 +33,14 @@ export function parsePromptWeights(weights: WeightMap): PromptWeightEntry[] {
     .map(([key, weight]) => {
       const [verb, tense, person] = key.split('::');
       const personIndex = Number(person);
-      if (!verb || !tense || !Number.isInteger(personIndex) || !isTense(tense)) {
+      if (
+        !verb ||
+        !tense ||
+        !Number.isInteger(personIndex) ||
+        personIndex < 0 ||
+        personIndex >= practicePronouns.length ||
+        !isTense(tense)
+      ) {
         return null;
       }
       return { verb, tense, personIndex, weight };
@@ -58,7 +66,7 @@ function rankGroupedWeights(entries: PromptWeightEntry[], keyFn: (entry: PromptW
       count: value.count,
     }))
     .sort((a, b) => b.weight - a.weight || (b.count ?? 0) - (a.count ?? 0))
-    .slice(0, 4);
+    .slice(0, INSIGHT_RANK_LIMIT);
 }
 
 export function buildPracticeInsights(weights: WeightMap): PracticeInsights {
@@ -68,7 +76,7 @@ export function buildPracticeInsights(weights: WeightMap): PracticeInsights {
   return {
     weakForms: [...challengingPrompts]
       .sort((a, b) => b.weight - a.weight)
-      .slice(0, 5)
+      .slice(0, INSIGHT_WEAK_FORM_LIMIT)
       .map(entry => ({
         label: `${entry.verb} · ${tenseNames[entry.tense]} · ${practicePronouns[entry.personIndex]}`,
         weight: entry.weight,

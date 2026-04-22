@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeSetItem } from '../utils/safeStorage';
 import type { Tense, VerbLevel } from '../utils/conjugate';
 
 interface PracticeSettingsStore {
@@ -41,7 +42,8 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       } else {
         set({ loaded: true });
       }
-    } catch {
+    } catch (e) {
+      console.warn('Failed to load practice settings:', e);
       set({ loaded: true });
     }
   },
@@ -49,23 +51,13 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
   setActiveTenses: async (tenses) => {
     const safe = tenses.length > 0 ? tenses : ['present' as Tense];
     set({ activeTenses: safe });
-    try {
-      const stored = await AsyncStorage.getItem('practiceSettings');
-      const settings = stored ? JSON.parse(stored) : {};
-      settings.activeTenses = safe;
-      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
-    } catch {}
+    await persistSettings({ activeTenses: safe });
   },
 
   setActiveLevels: async (levels) => {
     const safe = levels.length > 0 ? levels : ['A1' as VerbLevel];
     set({ activeLevels: safe });
-    try {
-      const stored = await AsyncStorage.getItem('practiceSettings');
-      const settings = stored ? JSON.parse(stored) : {};
-      settings.activeLevels = safe;
-      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
-    } catch {}
+    await persistSettings({ activeLevels: safe });
   },
 
   toggleTense: async (tense) => {
@@ -78,12 +70,7 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       updated = [...current, tense];
     }
     set({ activeTenses: updated });
-    try {
-      const stored = await AsyncStorage.getItem('practiceSettings');
-      const settings = stored ? JSON.parse(stored) : {};
-      settings.activeTenses = updated;
-      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
-    } catch {}
+    await persistSettings({ activeTenses: updated });
   },
 
   toggleLevel: async (level) => {
@@ -96,13 +83,19 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       updated = [...current, level];
     }
     set({ activeLevels: updated });
-    try {
-      const stored = await AsyncStorage.getItem('practiceSettings');
-      const settings = stored ? JSON.parse(stored) : {};
-      settings.activeLevels = updated;
-      await AsyncStorage.setItem('practiceSettings', JSON.stringify(settings));
-    } catch {}
+    await persistSettings({ activeLevels: updated });
   },
 }));
+
+async function persistSettings(patch: Partial<{ activeTenses: Tense[]; activeLevels: VerbLevel[] }>) {
+  try {
+    const stored = await AsyncStorage.getItem('practiceSettings');
+    const settings = stored ? JSON.parse(stored) : {};
+    Object.assign(settings, patch);
+    await safeSetItem('practiceSettings', JSON.stringify(settings));
+  } catch (e) {
+    console.warn('Failed to persist practice settings:', e);
+  }
+}
 
 export { allTenses, allLevels };

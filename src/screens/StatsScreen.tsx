@@ -24,15 +24,7 @@ export default function StatsScreen() {
   React.useEffect(() => {
     loadSessions();
     loadWeights();
-  }, []);
-
-  if (!sessionsLoaded || !weightsLoaded) {
-    return (
-      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.bg }]}>
-        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading stats...</Text>
-      </View>
-    );
-  }
+  }, [loadSessions, loadWeights]);
 
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
 
@@ -131,6 +123,14 @@ export default function StatsScreen() {
   };
 
   const selectedData = selectedDay ? dailyMap[selectedDay] : null;
+
+  if (!sessionsLoaded || !weightsLoaded) {
+    return (
+      <View style={[styles.container, styles.loadingContainer, { backgroundColor: colors.bg }]}>
+        <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading stats...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView

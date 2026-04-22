@@ -195,11 +195,19 @@ export default function FlashcardScreen() {
 
     if (unsavedReviewed <= 0) return;
 
+    // Claim the delta synchronously so a re-entrant call (AppState background
+    // + nav blur firing back-to-back) sees zero unsaved and bails instead of
+    // double-counting.
+    const prevSavedReviewed = lastSavedReviewedRef.current;
+    const prevSavedCorrect = lastSavedCorrectRef.current;
+    lastSavedReviewedRef.current = snapshotReviewed;
+    lastSavedCorrectRef.current = snapshotCorrect;
+
     try {
       await saveSession({ reviewed: unsavedReviewed, correct: unsavedCorrect });
-      lastSavedReviewedRef.current = snapshotReviewed;
-      lastSavedCorrectRef.current = snapshotCorrect;
     } catch (e) {
+      lastSavedReviewedRef.current = prevSavedReviewed;
+      lastSavedCorrectRef.current = prevSavedCorrect;
       console.warn('Failed to save flashcard session:', e);
     }
   }, [saveSession]);

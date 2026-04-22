@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { Tense } from '../utils/conjugate';
 
 // Track how well the user knows each verb
@@ -79,7 +80,7 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
   recordResult: async (verb: string, tense: Tense, personIndex: number, correct: boolean) => {
     const weights = applyPromptResult(get().weights, verb, tense, personIndex, correct);
     set({ weights });
-    await AsyncStorage.setItem('spaced_rep_weights', JSON.stringify(weights));
+    await safeSetItem('spaced_rep_weights', JSON.stringify(weights));
   },
 
   getWeight: (verb: string, tense: Tense, personIndex: number) => {
@@ -88,6 +89,6 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
 
   resetWeights: async () => {
     set({ weights: {} });
-    await AsyncStorage.removeItem('spaced_rep_weights');
+    await safeRemoveItem('spaced_rep_weights');
   },
 }));

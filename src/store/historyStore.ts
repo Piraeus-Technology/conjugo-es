@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { MAX_HISTORY_SIZE } from '../utils/constants';
 
 interface HistoryStore {
@@ -33,17 +34,17 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
     const current = get().history.filter((v) => v !== verb);
     const updated = [verb, ...current].slice(0, MAX_HISTORY_SIZE);
     set({ history: updated });
-    await AsyncStorage.setItem('verb_history', JSON.stringify(updated));
+    await safeSetItem('verb_history', JSON.stringify(updated));
   },
 
   removeFromHistory: async (verb: string) => {
     const updated = get().history.filter((v) => v !== verb);
     set({ history: updated });
-    await AsyncStorage.setItem('verb_history', JSON.stringify(updated));
+    await safeSetItem('verb_history', JSON.stringify(updated));
   },
 
   clearHistory: async () => {
     set({ history: [] });
-    await AsyncStorage.removeItem('verb_history');
+    await safeRemoveItem('verb_history');
   },
 }));
