@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lkh9596.conjugo",
-      "buildNumber": "16",
+      "buildNumber": "17",
       "infoPlist": {
         "CFBundleDisplayName": "ConjuGo ES",
         "ITSAppUsesNonExemptEncryption": false
