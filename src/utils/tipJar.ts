@@ -1,5 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Alert, Platform } from 'react-native';
+import {
+  hasPendingIapEnd,
+  releaseIapConnection,
+  retainIapConnection,
+  waitForPendingIapEnd,
+} from './iapLifecycle';
 
 const TIP_SKUS = ['tip_small', 'tip_medium', 'tip_large'];
 
@@ -49,11 +55,11 @@ function useTipJarNative() {
 
   useEffect(() => {
     let mounted = true;
+    let purchaseListener: ReturnType<typeof purchaseUpdatedListener> | null = null;
+    let errorListener: ReturnType<typeof purchaseErrorListener> | null = null;
+    retainIapConnection();
 
-    // Attach listeners synchronously before any awaits so cleanup always
-    // sees them. Any purchase events that fire before init completes are
-    // still delivered, and unmount-during-init can't leak listeners.
-    const purchaseListener = purchaseUpdatedListener(async (purchase: Purchase) => {
+    const handlePurchaseUpdated = async (purchase: Purchase) => {
       try {
         await finishTransaction({ purchase, isConsumable: true });
         if (!mounted) return;
@@ -68,18 +74,37 @@ function useTipJarNative() {
           'Your tip was received, but we could not finish the transaction. Please reopen the app or try again later.'
         );
       }
-    });
+    };
 
-    const errorListener = purchaseErrorListener((error: PurchaseError) => {
+    const handlePurchaseError = (error: PurchaseError) => {
       if (!mounted) return;
       setLoading(false);
       if (error.code !== ErrorCode.UserCancelled) {
         Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
       }
-    });
+    };
+
+    const attachListeners = () => {
+      purchaseListener?.remove();
+      errorListener?.remove();
+      purchaseListener = purchaseUpdatedListener(handlePurchaseUpdated);
+      errorListener = purchaseErrorListener(handlePurchaseError);
+    };
+
+    // Attach immediately so cleanup always has concrete subscriptions to
+    // remove. If a previous screen's endConnection is already in flight, init
+    // will reattach after it resolves because react-native-iap clears JS
+    // listeners during endConnection.
+    attachListeners();
 
     const init = async () => {
       try {
+        const shouldReattachAfterEnd = hasPendingIapEnd();
+        await waitForPendingIapEnd();
+        if (!mounted) return;
+        if (shouldReattachAfterEnd) {
+          attachListeners();
+        }
         await initConnection();
         if (!mounted) return;
         setUnavailable(false);
@@ -115,11 +140,7 @@ function useTipJarNative() {
       mounted = false;
       purchaseListener?.remove();
       errorListener?.remove();
-      // endConnection is async; fire-and-forget so cleanup stays sync.
-      // Swallow errors — a fresh mount's initConnection is idempotent.
-      Promise.resolve()
-        .then(() => endConnection?.())
-        .catch(() => {});
+      releaseIapConnection(endConnection);
     };
   }, []);
 
