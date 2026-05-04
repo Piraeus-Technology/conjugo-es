@@ -12,6 +12,7 @@ interface VerbWeight {
 interface SpacedRepStore {
   weights: VerbWeight;
   loaded: boolean;
+  loadError: boolean;
   loadWeights: () => Promise<void>;
   recordResult: (verb: string, tense: Tense, personIndex: number, correct: boolean) => Promise<void>;
   getWeight: (verb: string, tense: Tense, personIndex: number) => number;
@@ -73,23 +74,26 @@ function enqueueOperation(operation: () => Promise<void>): Promise<void> {
 export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
   weights: {},
   loaded: false,
+  loadError: false,
 
   loadWeights: async () => {
     if (get().loaded) return;
     if (loadPromise) return loadPromise;
+    set({ loadError: false });
     const attempt = enqueueOperation(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('spaced_rep_weights');
         if (stored) {
-          set({ weights: JSON.parse(stored), loaded: true });
+          set({ weights: JSON.parse(stored), loaded: true, loadError: false });
         } else {
-          set({ loaded: true });
+          set({ loaded: true, loadError: false });
         }
       } catch (e) {
         // Leave loaded: false so the next call retries instead of
         // writing zero-defaults over the user's real weights on disk.
         console.warn('Failed to load spaced rep weights:', e);
+        set({ loadError: true });
       }
     });
     const wrapped: Promise<void> = attempt.finally(() => {
@@ -126,7 +130,7 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
 
   resetWeights: async () => {
     return enqueueOperation(async () => {
-      set({ weights: {}, loaded: true });
+      set({ weights: {}, loaded: true, loadError: false });
       loadPromise = null;
       await safeRemoveItem('spaced_rep_weights');
     });
@@ -136,5 +140,5 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
 export function __resetSpacedRepStoreForTests() {
   loadPromise = null;
   operationQueue = Promise.resolve();
-  useSpacedRepStore.setState({ weights: {}, loaded: false });
+  useSpacedRepStore.setState({ weights: {}, loaded: false, loadError: false });
 }

@@ -12,6 +12,7 @@ export interface FlashcardSession {
 interface FlashcardSessionStore {
   sessions: FlashcardSession[];
   loaded: boolean;
+  loadError: boolean;
   loadSessions: () => Promise<void>;
   saveSession: (session: Omit<FlashcardSession, 'day'>) => Promise<void>;
   clearSessions: () => Promise<void>;
@@ -34,10 +35,12 @@ function enqueueOperation(operation: () => Promise<void>): Promise<void> {
 export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get) => ({
   sessions: [],
   loaded: false,
+  loadError: false,
 
   loadSessions: async () => {
     if (get().loaded) return;
     if (loadPromise) return loadPromise;
+    set({ loadError: false });
     const attempt = enqueueOperation(async () => {
       if (get().loaded) return;
       try {
@@ -60,17 +63,18 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
             }
           }
           const sessions = Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day));
-          set({ sessions, loaded: true });
+          set({ sessions, loaded: true, loadError: false });
           if (didMigrate) {
             await safeSetItem('flashcardSessions', JSON.stringify(sessions));
           }
         } else {
-          set({ loaded: true });
+          set({ loaded: true, loadError: false });
         }
       } catch (e) {
         // Leave loaded: false so saveSession refuses to write rather
         // than overwriting historical session data with an empty merge.
         console.warn('Failed to load flashcard sessions:', e);
+        set({ loadError: true });
       }
     });
     const wrapped: Promise<void> = attempt.finally(() => {
@@ -115,7 +119,7 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
 
   clearSessions: async () => {
     return enqueueOperation(async () => {
-      set({ sessions: [], loaded: true });
+      set({ sessions: [], loaded: true, loadError: false });
       loadPromise = null;
       await safeRemoveItem('flashcardSessions');
     });
@@ -125,5 +129,5 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
 export function __resetFlashcardSessionStoreForTests() {
   loadPromise = null;
   operationQueue = Promise.resolve();
-  useFlashcardSessionStore.setState({ sessions: [], loaded: false });
+  useFlashcardSessionStore.setState({ sessions: [], loaded: false, loadError: false });
 }

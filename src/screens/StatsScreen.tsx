@@ -17,8 +17,18 @@ const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export default function StatsScreen() {
   const colors = useColors();
-  const { sessions, loaded: sessionsLoaded, loadSessions } = useSessionStore();
-  const { weights, loaded: weightsLoaded, loadWeights } = useSpacedRepStore();
+  const {
+    sessions,
+    loaded: sessionsLoaded,
+    loadError: sessionsLoadError,
+    loadSessions,
+  } = useSessionStore();
+  const {
+    weights,
+    loaded: weightsLoaded,
+    loadError: weightsLoadError,
+    loadWeights,
+  } = useSpacedRepStore();
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
@@ -125,6 +135,25 @@ export default function StatsScreen() {
 
   const selectedData = selectedDay ? dailyMap[selectedDay] : null;
   const selectedAccuracy = selectedData ? getAccuracyPercent(selectedData.correct, selectedData.total) : null;
+
+  if ((sessionsLoadError && !sessionsLoaded) || (weightsLoadError && !weightsLoaded)) {
+    return (
+      <View style={[styles.container, styles.loadingContainer, styles.statusContainer, { backgroundColor: colors.bg }]}>
+        <Text style={[styles.statusText, { color: colors.textMuted }]}>Could not load stats.</Text>
+        <TouchableOpacity
+          style={[styles.retryButton, { backgroundColor: colors.primary }]}
+          onPress={() => {
+            loadSessions();
+            loadWeights();
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading stats"
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (!sessionsLoaded || !weightsLoaded) {
     return (
@@ -343,6 +372,27 @@ export default function StatsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   loadingContainer: { alignItems: 'center', justifyContent: 'center' },
+  statusContainer: {
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  statusText: {
+    fontSize: fonts.sizes.md,
+    textAlign: 'center',
+  },
+  retryButton: {
+    minHeight: 44,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.bold,
+  },
   content: { padding: spacing.lg, paddingBottom: 40 },
   streakCard: {
     flexDirection: 'row',

@@ -103,6 +103,7 @@ describe('quiz and spaced repetition store persistence', () => {
       bestStreak: 12,
     });
     expect(useQuizStore.getState().loaded).toBe(false);
+    expect(useQuizStore.getState().loadError).toBe(true);
   });
 
   test('quiz store recovers on the next call after a transient load failure', async () => {
@@ -123,6 +124,7 @@ describe('quiz and spaced repetition store persistence', () => {
       totalCorrect: 41,
       bestStreak: 5,
       loaded: true,
+      loadError: false,
     });
     expect(JSON.parse(mockStorage.get('quiz_stats')!)).toEqual({
       totalQuestions: 51,
@@ -170,5 +172,27 @@ describe('quiz and spaced repetition store persistence', () => {
       hablar: 0.5,
     });
     expect(useSpacedRepStore.getState().loaded).toBe(false);
+    expect(useSpacedRepStore.getState().loadError).toBe(true);
+  });
+
+  test('spaced repetition recovers on the next call after a transient load failure', async () => {
+    mockStorage.set('spaced_rep_weights', JSON.stringify({ dormir: 4 }));
+    jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('transient'));
+
+    await useSpacedRepStore.getState().recordResult('dormir', 'preterite', 2, false);
+    expect(useSpacedRepStore.getState()).toMatchObject({
+      loaded: false,
+      loadError: true,
+    });
+
+    await useSpacedRepStore.getState().recordResult('dormir', 'preterite', 2, false);
+
+    const promptKey = buildPromptKey('dormir', 'preterite', 2);
+    expect(useSpacedRepStore.getState()).toMatchObject({
+      loaded: true,
+      loadError: false,
+      weights: { [promptKey]: 5 },
+    });
+    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ [promptKey]: 5 });
   });
 });

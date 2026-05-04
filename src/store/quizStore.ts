@@ -7,6 +7,7 @@ interface QuizStats {
   totalCorrect: number;
   bestStreak: number;
   loaded: boolean;
+  loadError: boolean;
   loadStats: () => Promise<void>;
   recordAnswer: (correct: boolean, currentStreak: number) => Promise<void>;
   resetStats: () => Promise<void>;
@@ -28,25 +29,28 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
   totalCorrect: 0,
   bestStreak: 0,
   loaded: false,
+  loadError: false,
 
   loadStats: async () => {
     if (get().loaded) return;
     if (loadPromise) return loadPromise;
+    set({ loadError: false });
     const attempt = enqueueOperation(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('quiz_stats');
         if (stored) {
           const data = JSON.parse(stored);
-          set({ ...data, loaded: true });
+          set({ ...data, loaded: true, loadError: false });
         } else {
-          set({ loaded: true });
+          set({ loaded: true, loadError: false });
         }
       } catch (e) {
         // Don't set loaded: true — that would let recordAnswer write
         // zero-defaults over the user's real (but currently unreadable)
         // history on disk. Leave loaded: false so the next call retries.
         console.warn('Failed to load quiz stats:', e);
+        set({ loadError: true });
       }
     });
     const wrapped: Promise<void> = attempt.finally(() => {
@@ -87,7 +91,7 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
 
   resetStats: async () => {
     return enqueueOperation(async () => {
-      set({ totalQuestions: 0, totalCorrect: 0, bestStreak: 0, loaded: true });
+      set({ totalQuestions: 0, totalCorrect: 0, bestStreak: 0, loaded: true, loadError: false });
       loadPromise = null;
       await safeRemoveItem('quiz_stats');
     });
@@ -102,5 +106,6 @@ export function __resetQuizStoreForTests() {
     totalCorrect: 0,
     bestStreak: 0,
     loaded: false,
+    loadError: false,
   });
 }

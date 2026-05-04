@@ -171,7 +171,13 @@ function generateQuestion(
 export default function QuizScreen() {
   const colors = useColors();
   const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
-  const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
+  const {
+    loaded: weightsLoaded,
+    loadError: weightsLoadError,
+    loadWeights,
+    recordResult,
+    getWeight,
+  } = useSpacedRepStore();
   const { activeTenses, activeLevels, loaded: settingsLoaded, loadPracticeSettings } = usePracticeSettingsStore();
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
   const isDark = useThemeStore((s) => s.isDark);
@@ -351,9 +357,25 @@ export default function QuizScreen() {
     return colors.textMuted;
   };
 
+  if (weightsLoadError && !weightsLoaded) {
+    return (
+      <View style={[styles.container, styles.statusContainer, { backgroundColor: colors.bg }]}>
+        <Text style={[styles.statusText, { color: colors.textMuted }]}>Could not load quiz progress.</Text>
+        <TouchableOpacity
+          style={[styles.retryButton, { backgroundColor: colors.primary }]}
+          onPress={() => { loadWeights(); }}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading quiz progress"
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   if (!weightsLoaded || !settingsLoaded) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={[styles.container, styles.statusContainer, { backgroundColor: colors.bg }]}>
         <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading quiz...</Text>
       </View>
     );
@@ -466,6 +488,29 @@ export default function QuizScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  statusContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  statusText: {
+    fontSize: fonts.sizes.md,
+    textAlign: 'center',
+  },
+  retryButton: {
+    minHeight: 44,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.bold,
+  },
   content: {
     flex: 1,
     paddingHorizontal: spacing.lg,

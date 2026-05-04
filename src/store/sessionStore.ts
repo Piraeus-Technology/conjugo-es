@@ -13,6 +13,7 @@ export interface Session {
 interface SessionStore {
   sessions: Session[];
   loaded: boolean;
+  loadError: boolean;
   loadSessions: () => Promise<void>;
   saveSession: (session: Omit<Session, 'day'>) => Promise<void>;
   clearSessions: () => Promise<void>;
@@ -35,10 +36,12 @@ function enqueueOperation(operation: () => Promise<void>): Promise<void> {
 export const useSessionStore = create<SessionStore>((set, get) => ({
   sessions: [],
   loaded: false,
+  loadError: false,
 
   loadSessions: async () => {
     if (get().loaded) return;
     if (loadPromise) return loadPromise;
+    set({ loadError: false });
     const attempt = enqueueOperation(async () => {
       if (get().loaded) return;
       try {
@@ -62,18 +65,19 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
             }
           }
           const sessions = Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day));
-          set({ sessions, loaded: true });
+          set({ sessions, loaded: true, loadError: false });
           if (didMigrate) {
             await safeSetItem('sessions', JSON.stringify(sessions));
           }
         } else {
-          set({ loaded: true });
+          set({ loaded: true, loadError: false });
         }
       } catch (e) {
         // Leave loaded: false so saveSession refuses to write rather
         // than overwriting historical session data with just today's
         // delta merged into an empty in-memory list.
         console.warn('Failed to load sessions:', e);
+        set({ loadError: true });
       }
     });
     const wrapped: Promise<void> = attempt.finally(() => {
@@ -121,7 +125,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   clearSessions: async () => {
     return enqueueOperation(async () => {
-      set({ sessions: [], loaded: true });
+      set({ sessions: [], loaded: true, loadError: false });
       loadPromise = null;
       await safeRemoveItem('sessions');
     });
@@ -131,5 +135,5 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 export function __resetSessionStoreForTests() {
   loadPromise = null;
   operationQueue = Promise.resolve();
-  useSessionStore.setState({ sessions: [], loaded: false });
+  useSessionStore.setState({ sessions: [], loaded: false, loadError: false });
 }

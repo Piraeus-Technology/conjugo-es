@@ -97,7 +97,13 @@ export default function FlashcardScreen() {
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
   const { sessions, loaded: sessionsLoaded, loadSessions, saveSession } = useFlashcardSessionStore();
-  const { loaded: weightsLoaded, loadWeights, recordResult, getWeight } = useSpacedRepStore();
+  const {
+    loaded: weightsLoaded,
+    loadError: weightsLoadError,
+    loadWeights,
+    recordResult,
+    getWeight,
+  } = useSpacedRepStore();
   const filteredEntries = React.useMemo(() =>
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
     [activeLevels]
@@ -257,9 +263,25 @@ export default function FlashcardScreen() {
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
 
+  if (weightsLoadError && !weightsLoaded) {
+    return (
+      <View style={[styles.container, styles.statusContainer, { backgroundColor: colors.bg }]}>
+        <Text style={[styles.statusText, { color: colors.textMuted }]}>Could not load flashcard progress.</Text>
+        <TouchableOpacity
+          style={[styles.retryButton, { backgroundColor: colors.primary }]}
+          onPress={() => { loadWeights(); }}
+          accessibilityRole="button"
+          accessibilityLabel="Retry loading flashcard progress"
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   if (!loaded || !weightsLoaded) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center' }]}>
+      <View style={[styles.container, styles.statusContainer, { backgroundColor: colors.bg }]}>
         <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>Loading flashcards...</Text>
       </View>
     );
@@ -388,6 +410,26 @@ const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
+  statusContainer: {
+    gap: spacing.md,
+  },
+  statusText: {
+    fontSize: fonts.sizes.md,
+    textAlign: 'center',
+  },
+  retryButton: {
+    minHeight: 44,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: fonts.sizes.md,
+    fontWeight: fonts.weights.bold,
+  },
   scoreBar: {
     position: 'absolute',
     top: spacing.sm,

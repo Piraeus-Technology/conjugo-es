@@ -165,6 +165,27 @@ describe('session store persistence races', () => {
       { day: today(), total: 100, correct: 80, streak: 5 },
     ]);
     expect(useSessionStore.getState().loaded).toBe(false);
+    expect(useSessionStore.getState().loadError).toBe(true);
+  });
+
+  test('quiz saveSession recovers on the next call after a transient load failure', async () => {
+    mockStorage.set('sessions', JSON.stringify([{ day: today(), total: 100, correct: 80, streak: 5 }]));
+    jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('transient'));
+
+    await expect(
+      useSessionStore.getState().saveSession({ total: 1, correct: 1, streak: 1 }),
+    ).rejects.toThrow('Cannot save quiz session: store never loaded');
+
+    await useSessionStore.getState().saveSession({ total: 2, correct: 1, streak: 3 });
+
+    expect(useSessionStore.getState()).toMatchObject({
+      loaded: true,
+      loadError: false,
+      sessions: [{ day: today(), total: 102, correct: 81, streak: 5 }],
+    });
+    expect(JSON.parse(mockStorage.get('sessions')!)).toEqual([
+      { day: today(), total: 102, correct: 81, streak: 5 },
+    ]);
   });
 
   test('flashcard saveSession refuses to write when load failed, preserving disk', async () => {
@@ -182,5 +203,6 @@ describe('session store persistence races', () => {
       { day: today(), reviewed: 80, correct: 60 },
     ]);
     expect(useFlashcardSessionStore.getState().loaded).toBe(false);
+    expect(useFlashcardSessionStore.getState().loadError).toBe(true);
   });
 });
