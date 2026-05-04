@@ -32,7 +32,7 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
   loadStats: async () => {
     if (get().loaded) return;
     if (loadPromise) return loadPromise;
-    loadPromise = enqueueOperation(async () => {
+    const attempt = enqueueOperation(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('quiz_stats');
@@ -43,16 +43,28 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
           set({ loaded: true });
         }
       } catch (e) {
+        // Don't set loaded: true — that would let recordAnswer write
+        // zero-defaults over the user's real (but currently unreadable)
+        // history on disk. Leave loaded: false so the next call retries.
         console.warn('Failed to load quiz stats:', e);
-        set({ loaded: true });
       }
     });
+    const wrapped: Promise<void> = attempt.finally(() => {
+      if (loadPromise === wrapped) loadPromise = null;
+    });
+    loadPromise = wrapped;
     return loadPromise;
   },
 
   recordAnswer: async (correct: boolean, currentStreak: number) => {
     if (!get().loaded) {
       await get().loadStats();
+    }
+    if (!get().loaded) {
+      // Load failed — refuse to write. Writing now would overwrite the
+      // user's real history with zero-defaults.
+      console.warn('Skipping quiz answer persistence: store never loaded');
+      return;
     }
     return enqueueOperation(async () => {
       const state = get();
@@ -63,7 +75,11 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
       };
       const persisted = await safeSetItem('quiz_stats', JSON.stringify(updated));
       if (!persisted) {
-        throw new Error('Failed to persist quiz stats');
+        // Don't throw or set: leave in-memory aligned with disk so a
+        // transient AsyncStorage flake doesn't desync the global store
+        // from the user's actual history.
+        console.warn('Failed to persist quiz stats');
+        return;
       }
       set(updated);
     });
@@ -77,3 +93,14 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
     });
   },
 }));
+
+export function __resetQuizStoreForTests() {
+  loadPromise = null;
+  operationQueue = Promise.resolve();
+  useQuizStore.setState({
+    totalQuestions: 0,
+    totalCorrect: 0,
+    bestStreak: 0,
+    loaded: false,
+  });
+}

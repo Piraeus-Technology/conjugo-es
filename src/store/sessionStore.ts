@@ -39,7 +39,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   loadSessions: async () => {
     if (get().loaded) return;
     if (loadPromise) return loadPromise;
-    loadPromise = enqueueOperation(async () => {
+    const attempt = enqueueOperation(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('sessions');
@@ -70,16 +70,25 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
           set({ loaded: true });
         }
       } catch (e) {
+        // Leave loaded: false so saveSession refuses to write rather
+        // than overwriting historical session data with just today's
+        // delta merged into an empty in-memory list.
         console.warn('Failed to load sessions:', e);
-        set({ loaded: true });
       }
     });
+    const wrapped: Promise<void> = attempt.finally(() => {
+      if (loadPromise === wrapped) loadPromise = null;
+    });
+    loadPromise = wrapped;
     return loadPromise;
   },
 
   saveSession: async (session) => {
     if (!get().loaded) {
       await get().loadSessions();
+    }
+    if (!get().loaded) {
+      throw new Error('Cannot save quiz session: store never loaded');
     }
 
     return enqueueOperation(async () => {
@@ -118,3 +127,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     });
   },
 }));
+
+export function __resetSessionStoreForTests() {
+  loadPromise = null;
+  operationQueue = Promise.resolve();
+  useSessionStore.setState({ sessions: [], loaded: false });
+}

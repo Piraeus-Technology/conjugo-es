@@ -77,7 +77,7 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
   loadWeights: async () => {
     if (get().loaded) return;
     if (loadPromise) return loadPromise;
-    loadPromise = enqueueOperation(async () => {
+    const attempt = enqueueOperation(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('spaced_rep_weights');
@@ -87,10 +87,15 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
           set({ loaded: true });
         }
       } catch (e) {
+        // Leave loaded: false so the next call retries instead of
+        // writing zero-defaults over the user's real weights on disk.
         console.warn('Failed to load spaced rep weights:', e);
-        set({ loaded: true });
       }
     });
+    const wrapped: Promise<void> = attempt.finally(() => {
+      if (loadPromise === wrapped) loadPromise = null;
+    });
+    loadPromise = wrapped;
     return loadPromise;
   },
 
@@ -98,11 +103,18 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
     if (!get().loaded) {
       await get().loadWeights();
     }
+    if (!get().loaded) {
+      // Load failed — refuse to write to avoid clobbering existing weights.
+      console.warn('Skipping spaced rep result persistence: store never loaded');
+      return;
+    }
     return enqueueOperation(async () => {
       const weights = applyPromptResult(get().weights, verb, tense, personIndex, correct);
       const persisted = await safeSetItem('spaced_rep_weights', JSON.stringify(weights));
       if (!persisted) {
-        throw new Error('Failed to persist spaced rep weights');
+        // Leave in-memory aligned with disk on transient persist failure.
+        console.warn('Failed to persist spaced rep weights');
+        return;
       }
       set({ weights });
     });
@@ -120,3 +132,9 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
     });
   },
 }));
+
+export function __resetSpacedRepStoreForTests() {
+  loadPromise = null;
+  operationQueue = Promise.resolve();
+  useSpacedRepStore.setState({ weights: {}, loaded: false });
+}
