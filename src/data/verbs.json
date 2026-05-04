@@ -10982,8 +10982,13 @@
   },
   "demoler": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to demolish",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    },
     "examples": [
       "Demolieron el edificio viejo.",
       "Van a demoler la casa abandonada."
@@ -11016,8 +11021,7 @@
     "translation": "to discern",
     "pattern": {
       "stemChange": {
-        "present": "e_ie",
-        "preterite": "e_i"
+        "present": "e_ie"
       }
     },
     "examples": [
@@ -11277,16 +11281,6 @@
     "pattern": {
       "spellingChange": "car_qué"
     }
-  },
-  "abolir": {
-    "type": "ir",
-    "regular": true,
-    "translation": "to abolish",
-    "examples": [
-      "Abolieron la esclavitud en el siglo XIX.",
-      "Quieren abolir esa ley injusta."
-    ],
-    "level": "C1"
   },
   "abordar": {
     "type": "ar",

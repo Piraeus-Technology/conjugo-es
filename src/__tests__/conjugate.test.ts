@@ -414,16 +414,22 @@ describe('Additional spot-checked irregular families', () => {
     expect(forms('concebir', verb, 'preterite')[2]).toBe('concibió');
   });
 
-  test('discernir keeps e->ie/e->i forms', () => {
+  test('sentir-style verbs apply e->ie present and e->i preterite', () => {
     const verb: VerbData = {
       type: 'ir',
       regular: false,
-      translation: 'to discern',
+      translation: 'to feel',
       pattern: { stemChange: { present: 'e_ie', preterite: 'e_i' } },
     };
 
+    expect(forms('sentir', verb, 'present')[0]).toBe('siento');
+    expect(forms('sentir', verb, 'preterite')[2]).toBe('sintió');
+  });
+
+  test('discernir uses regular preterite (no e->i)', () => {
+    const verb = (require('../data/verbs.json') as Record<string, VerbData>)['discernir'];
     expect(forms('discernir', verb, 'present')[0]).toBe('discierno');
-    expect(forms('discernir', verb, 'preterite')[2]).toBe('discirnió');
+    expect(forms('discernir', verb, 'preterite')[2]).toBe('discernió');
   });
 
   test('teñir and embestir keep i-stem forms', () => {
@@ -1362,10 +1368,13 @@ describe('Dataset integrity regressions', () => {
   test('fixed regular verb type mismatches conjugate with the correct class', () => {
     expect(forms('debatir', { type: 'ir', regular: true, translation: 'to debate' }, 'present')[3]).toBe('debatimos');
     expect(forms('corromper', { type: 'er', regular: true, translation: 'to corrupt' }, 'present')[3]).toBe('corrompemos');
-    expect(forms('demoler', { type: 'er', regular: true, translation: 'to demolish' }, 'present')[0]).toBe('demolo');
-    expect(forms('abolir', { type: 'ir', regular: true, translation: 'to abolish' }, 'imperfect')[0]).toBe('abolía');
     expect(forms('comprometer', { type: 'er', regular: true, translation: 'to compromise' }, 'present')[3]).toBe('comprometemos');
     expect(forms('alquilar', { type: 'ar', regular: true, translation: 'to rent' }, 'present')[0]).toBe('alquilo');
+  });
+
+  test('demoler applies o->ue boot stem change in present', () => {
+    const verb = (require('../data/verbs.json') as Record<string, VerbData>)['demoler'];
+    expect(forms('demoler', verb, 'present')).toEqual(['demuelo', 'demueles', 'demuele', 'demolemos', 'demoléis', 'demuelen']);
   });
 });
 
