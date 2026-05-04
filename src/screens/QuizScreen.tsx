@@ -235,7 +235,9 @@ export default function QuizScreen() {
       const newStreak = streak + 1;
       setStreak(newStreak);
       if (newStreak > bestSessionStreak) setBestSessionStreak(newStreak);
-      recordAnswer(true, newStreak);
+      recordAnswer(true, newStreak).catch((e) =>
+        console.warn('Failed to record quiz answer:', e),
+      );
       // Prompt for rating after a streak of 10
       if (newStreak === REVIEW_PROMPT_STREAK) {
         StoreReview.isAvailableAsync()
@@ -247,7 +249,9 @@ export default function QuizScreen() {
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setStreak(0);
-      recordAnswer(false, 0);
+      recordAnswer(false, 0).catch((e) =>
+        console.warn('Failed to record quiz answer:', e),
+      );
     }
     recordResult(question.verb, question.tense, question.personIndex, correct).catch((e) =>
       console.warn('Failed to record quiz result:', e),
