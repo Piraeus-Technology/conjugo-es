@@ -17,6 +17,22 @@ const NO_OP_RESULT = {
   tip: async () => {},
 };
 
+type TipTransactionLike = {
+  transactionId?: string | null;
+  purchaseToken?: string | null;
+  id?: string | null;
+};
+
+function nonEmpty(value?: string | null): string | null {
+  return value && value.trim().length > 0 ? value : null;
+}
+
+export function getTipTransactionKey(purchase: TipTransactionLike): string | null {
+  return nonEmpty(purchase.transactionId)
+    ?? nonEmpty(purchase.purchaseToken)
+    ?? nonEmpty(purchase.id);
+}
+
 let iapModule: any = null;
 try {
   if (Platform.OS === 'ios' || Platform.OS === 'android') {
@@ -57,38 +73,30 @@ function useTipJarNative() {
     let mounted = true;
     let purchaseListener: ReturnType<typeof purchaseUpdatedListener> | null = null;
     let errorListener: ReturnType<typeof purchaseErrorListener> | null = null;
-    // Track per-mount finishTransaction failures by transaction id so the OS
-    // replaying a stuck purchase on every reconnect doesn't trap the user
-    // in a loop of "Purchase Needs Attention" alerts.
+    // Track per-mount finishTransaction failures by stable transaction key so
+    // OS replays don't trap the user in repeated attention alerts.
     const failedTransactionIds = new Set<string>();
     retainIapConnection();
 
-    const getTransactionKey = (purchase: Purchase): string => {
-      const anyPurchase = purchase as { transactionId?: string; purchaseToken?: string; productId?: string };
-      return anyPurchase.transactionId
-        ?? anyPurchase.purchaseToken
-        ?? `${anyPurchase.productId ?? 'unknown'}`;
-    };
-
     const handlePurchaseUpdated = async (purchase: Purchase) => {
-      const txKey = getTransactionKey(purchase);
+      const txKey = getTipTransactionKey(purchase);
       try {
         await finishTransaction({ purchase, isConsumable: true });
         if (!mounted) return;
         setLoading(false);
-        if (!failedTransactionIds.has(txKey)) {
+        if (!txKey || !failedTransactionIds.has(txKey)) {
           Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
         }
-        failedTransactionIds.delete(txKey);
+        if (txKey) failedTransactionIds.delete(txKey);
       } catch (error) {
         console.warn('Failed to finish tip transaction:', error);
         if (!mounted) return;
         setLoading(false);
-        if (failedTransactionIds.has(txKey)) {
+        if (txKey && failedTransactionIds.has(txKey)) {
           // Already alerted on this transaction this mount — stay quiet.
           return;
         }
-        failedTransactionIds.add(txKey);
+        if (txKey) failedTransactionIds.add(txKey);
         Alert.alert(
           'Purchase Needs Attention',
           'Your tip was received, but we could not finish the transaction. Please reopen the app or try again later.'
