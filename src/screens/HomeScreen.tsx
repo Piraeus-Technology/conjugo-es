@@ -26,6 +26,7 @@ import {
   verbEntries,
   type VerbEntry,
 } from '../utils/verbSearch';
+import { isSearchDebouncePending } from '../utils/searchDebounce';
 
 function getVerbOfTheDay() {
   const today = new Date();
@@ -92,6 +93,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     useHistoryStore();
   const { favorites, loadFavorites, toggleFavorite } = useFavoritesStore();
   const colors = useColors();
+  const searchPending = isSearchDebouncePending(search, debouncedSearch);
 
   useEffect(() => {
     loadHistory();
@@ -212,6 +214,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   const sections = useMemo(() => {
     if (search.trim()) {
+      if (searchPending) return [];
       return results.length > 0 ? [{ title: '', data: results }] : [];
     }
 
@@ -251,7 +254,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     }
 
     return s;
-  }, [search, results, favorites, history]);
+  }, [search, searchPending, results, favorites, history]);
 
   const renderDeleteAction = (
     _progress: Animated.AnimatedInterpolation<number>,
@@ -295,7 +298,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         <View style={styles.verbInfo}>
           <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
           <Text style={[styles.verbTranslation, { color: colors.textSecondary }]}>{item.translation}</Text>
-          {search.trim() && item.matchLabel && (
+          {search.trim() && !searchPending && item.matchLabel && (
             <Text
               style={[
                 styles.matchLabel,
@@ -305,7 +308,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               {item.matchLabel}
             </Text>
           )}
-          {search.trim() && item.matchDetail && (
+          {search.trim() && !searchPending && item.matchDetail && (
             <Text
               style={[
                 styles.matchDetail,
@@ -421,10 +424,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
         ListEmptyComponent={
           search.trim() ? (
+            searchPending ? null : (
             <View style={styles.emptyContainer}>
               <Ionicons name="search-outline" size={48} color={colors.border} />
               <Text style={[styles.emptyText, { color: colors.textMuted }]}>No verbs found</Text>
             </View>
+            )
           ) : sections.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Image source={require('../../assets/logo.png')} style={styles.heroLogo} />
