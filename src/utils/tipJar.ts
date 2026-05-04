@@ -49,15 +49,40 @@ function useTipJarNative() {
 
   useEffect(() => {
     let mounted = true;
-    let purchaseListener: ReturnType<typeof purchaseUpdatedListener> | null = null;
-    let errorListener: ReturnType<typeof purchaseErrorListener> | null = null;
+
+    // Attach listeners synchronously before any awaits so cleanup always
+    // sees them. Any purchase events that fire before init completes are
+    // still delivered, and unmount-during-init can't leak listeners.
+    const purchaseListener = purchaseUpdatedListener(async (purchase: Purchase) => {
+      try {
+        await finishTransaction({ purchase, isConsumable: true });
+        if (!mounted) return;
+        setLoading(false);
+        Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
+      } catch (error) {
+        console.warn('Failed to finish tip transaction:', error);
+        if (!mounted) return;
+        setLoading(false);
+        Alert.alert(
+          'Purchase Needs Attention',
+          'Your tip was received, but we could not finish the transaction. Please reopen the app or try again later.'
+        );
+      }
+    });
+
+    const errorListener = purchaseErrorListener((error: PurchaseError) => {
+      if (!mounted) return;
+      setLoading(false);
+      if (error.code !== ErrorCode.UserCancelled) {
+        Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
+      }
+    });
 
     const init = async () => {
       try {
         await initConnection();
-        if (mounted) {
-          setUnavailable(false);
-        }
+        if (!mounted) return;
+        setUnavailable(false);
         if (Platform.OS === 'android') {
           try {
             const pendingPurchases = await getAvailablePurchases();
@@ -70,47 +95,18 @@ function useTipJarNative() {
             // Safe to ignore when there are no cached Android tip purchases to finish.
           }
         }
+        if (!mounted) return;
         const items = await fetchProducts({ skus: TIP_SKUS });
+        if (!mounted) return;
         const inAppItems = (items as Product[]).filter(p => p.type === 'in-app');
-        inAppItems.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-        if (mounted) {
-          setProducts(inAppItems);
-          setUnavailable(inAppItems.length === 0);
-        }
+        inAppItems.sort((a, b) => Number(a.price ?? 0) - Number(b.price ?? 0));
+        setProducts(inAppItems);
+        setUnavailable(inAppItems.length === 0);
       } catch {
-        if (mounted) {
-          setProducts([]);
-          setUnavailable(true);
-        }
+        if (!mounted) return;
+        setProducts([]);
+        setUnavailable(true);
       }
-
-      purchaseListener = purchaseUpdatedListener(async (purchase: Purchase) => {
-        try {
-          await finishTransaction({ purchase, isConsumable: true });
-          if (mounted) {
-            setLoading(false);
-          }
-          Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
-        } catch (error) {
-          console.warn('Failed to finish tip transaction:', error);
-          if (mounted) {
-            setLoading(false);
-          }
-          Alert.alert(
-            'Purchase Needs Attention',
-            'Your tip was received, but we could not finish the transaction. Please reopen the app or try again later.'
-          );
-        }
-      });
-
-      errorListener = purchaseErrorListener((error: PurchaseError) => {
-        if (mounted) {
-          setLoading(false);
-        }
-        if (error.code !== ErrorCode.UserCancelled) {
-          Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
-        }
-      });
     };
 
     init();
@@ -119,7 +115,11 @@ function useTipJarNative() {
       mounted = false;
       purchaseListener?.remove();
       errorListener?.remove();
-      endConnection();
+      // endConnection is async; fire-and-forget so cleanup stays sync.
+      // Swallow errors — a fresh mount's initConnection is idempotent.
+      Promise.resolve()
+        .then(() => endConnection?.())
+        .catch(() => {});
     };
   }, []);
 
