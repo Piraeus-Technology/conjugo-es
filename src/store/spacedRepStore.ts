@@ -59,28 +59,53 @@ export function applyPromptResult(
   return nextWeights;
 }
 
+// Module-scoped to dedupe concurrent first-load calls and serialize writes
+// against loads (prevents loadWeights from stomping a just-recorded result).
+let loadPromise: Promise<void> | null = null;
+let operationQueue: Promise<void> = Promise.resolve();
+
+function enqueueOperation(operation: () => Promise<void>): Promise<void> {
+  const next = operationQueue.catch(() => undefined).then(operation);
+  operationQueue = next.catch(() => undefined);
+  return next;
+}
+
 export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
   weights: {},
   loaded: false,
 
   loadWeights: async () => {
-    try {
-      const stored = await AsyncStorage.getItem('spaced_rep_weights');
-      if (stored) {
-        set({ weights: JSON.parse(stored), loaded: true });
-      } else {
+    if (get().loaded) return;
+    if (loadPromise) return loadPromise;
+    loadPromise = enqueueOperation(async () => {
+      if (get().loaded) return;
+      try {
+        const stored = await AsyncStorage.getItem('spaced_rep_weights');
+        if (stored) {
+          set({ weights: JSON.parse(stored), loaded: true });
+        } else {
+          set({ loaded: true });
+        }
+      } catch (e) {
+        console.warn('Failed to load spaced rep weights:', e);
         set({ loaded: true });
       }
-    } catch (e) {
-      console.warn('Failed to load spaced rep weights:', e);
-      set({ loaded: true });
-    }
+    });
+    return loadPromise;
   },
 
   recordResult: async (verb: string, tense: Tense, personIndex: number, correct: boolean) => {
-    const weights = applyPromptResult(get().weights, verb, tense, personIndex, correct);
-    set({ weights });
-    await safeSetItem('spaced_rep_weights', JSON.stringify(weights));
+    if (!get().loaded) {
+      await get().loadWeights();
+    }
+    return enqueueOperation(async () => {
+      const weights = applyPromptResult(get().weights, verb, tense, personIndex, correct);
+      const persisted = await safeSetItem('spaced_rep_weights', JSON.stringify(weights));
+      if (!persisted) {
+        throw new Error('Failed to persist spaced rep weights');
+      }
+      set({ weights });
+    });
   },
 
   getWeight: (verb: string, tense: Tense, personIndex: number) => {
@@ -88,7 +113,10 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
   },
 
   resetWeights: async () => {
-    set({ weights: {} });
-    await safeRemoveItem('spaced_rep_weights');
+    return enqueueOperation(async () => {
+      set({ weights: {}, loaded: true });
+      loadPromise = null;
+      await safeRemoveItem('spaced_rep_weights');
+    });
   },
 }));
