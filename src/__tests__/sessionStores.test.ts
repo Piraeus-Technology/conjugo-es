@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
-import { useSessionStore } from '../store/sessionStore';
+import {
+  __resetFlashcardSessionStoreForTests,
+  useFlashcardSessionStore,
+} from '../store/flashcardSessionStore';
+import { __resetSessionStoreForTests, useSessionStore } from '../store/sessionStore';
 
 const mockStorage = new Map<string, string>();
 
@@ -29,14 +32,18 @@ function deferred<T = void>() {
 const today = () => new Date().toLocaleDateString('en-CA');
 
 describe('session store persistence races', () => {
-  beforeEach(async () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     mockStorage.clear();
     jest.clearAllMocks();
-    await useSessionStore.getState().clearSessions();
-    await useFlashcardSessionStore.getState().clearSessions();
-    useSessionStore.setState({ sessions: [], loaded: false });
-    useFlashcardSessionStore.setState({ sessions: [], loaded: false });
-    jest.clearAllMocks();
+    __resetSessionStoreForTests();
+    __resetFlashcardSessionStoreForTests();
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
   });
 
   test('quiz save waits for an in-flight initial load and preserves both totals', async () => {
@@ -143,5 +150,37 @@ describe('session store persistence races', () => {
     expect(JSON.parse(mockStorage.get('flashcardSessions')!)).toEqual([
       { day: today(), reviewed: 10, correct: 8 },
     ]);
+  });
+
+  test('quiz saveSession refuses to write when load failed, preserving disk', async () => {
+    mockStorage.set('sessions', JSON.stringify([{ day: today(), total: 100, correct: 80, streak: 5 }]));
+    jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('disk locked'));
+
+    await expect(
+      useSessionStore.getState().saveSession({ total: 1, correct: 1, streak: 1 }),
+    ).rejects.toThrow('Cannot save quiz session: store never loaded');
+
+    // Disk must still hold real history, not just today's delta with empty merge.
+    expect(JSON.parse(mockStorage.get('sessions')!)).toEqual([
+      { day: today(), total: 100, correct: 80, streak: 5 },
+    ]);
+    expect(useSessionStore.getState().loaded).toBe(false);
+  });
+
+  test('flashcard saveSession refuses to write when load failed, preserving disk', async () => {
+    mockStorage.set(
+      'flashcardSessions',
+      JSON.stringify([{ day: today(), reviewed: 80, correct: 60 }]),
+    );
+    jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('disk locked'));
+
+    await expect(
+      useFlashcardSessionStore.getState().saveSession({ reviewed: 1, correct: 1 }),
+    ).rejects.toThrow('Cannot save flashcard session: store never loaded');
+
+    expect(JSON.parse(mockStorage.get('flashcardSessions')!)).toEqual([
+      { day: today(), reviewed: 80, correct: 60 },
+    ]);
+    expect(useFlashcardSessionStore.getState().loaded).toBe(false);
   });
 });

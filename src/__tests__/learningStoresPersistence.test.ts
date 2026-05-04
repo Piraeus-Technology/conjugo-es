@@ -1,6 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQuizStore } from '../store/quizStore';
-import { buildPromptKey, useSpacedRepStore } from '../store/spacedRepStore';
+import { __resetQuizStoreForTests, useQuizStore } from '../store/quizStore';
+import {
+  __resetSpacedRepStoreForTests,
+  buildPromptKey,
+  useSpacedRepStore,
+} from '../store/spacedRepStore';
 
 const mockStorage = new Map<string, string>();
 
@@ -29,18 +33,12 @@ function deferred<T = void>() {
 describe('quiz and spaced repetition store persistence', () => {
   let warnSpy: jest.SpyInstance;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     mockStorage.clear();
     jest.clearAllMocks();
-
-    await useQuizStore.getState().resetStats();
-    await useSpacedRepStore.getState().resetWeights();
-    useQuizStore.setState({ totalQuestions: 0, totalCorrect: 0, bestStreak: 0, loaded: false });
-    useSpacedRepStore.setState({ weights: {}, loaded: false });
-
-    mockStorage.clear();
-    jest.clearAllMocks();
+    __resetQuizStoreForTests();
+    __resetSpacedRepStoreForTests();
   });
 
   afterEach(() => {
@@ -70,17 +68,66 @@ describe('quiz and spaced repetition store persistence', () => {
     });
   });
 
-  test('quiz answer rejects and leaves state unchanged when persistence fails', async () => {
+  test('quiz answer leaves disk and state untouched when persistence fails', async () => {
     useQuizStore.setState({ totalQuestions: 5, totalCorrect: 4, bestStreak: 3, loaded: true });
+    mockStorage.set('quiz_stats', JSON.stringify({ totalQuestions: 5, totalCorrect: 4, bestStreak: 3 }));
     jest.mocked(AsyncStorage.setItem).mockRejectedValueOnce(new Error('disk full'));
 
-    await expect(useQuizStore.getState().recordAnswer(false, 0)).rejects.toThrow('Failed to persist quiz stats');
+    // Non-throwing on persist failure: caller's optimistic UI stays as-is,
+    // and the global store stays aligned with what's actually on disk.
+    await expect(useQuizStore.getState().recordAnswer(false, 0)).resolves.toBeUndefined();
 
     expect(useQuizStore.getState()).toMatchObject({
       totalQuestions: 5,
       totalCorrect: 4,
       bestStreak: 3,
       loaded: true,
+    });
+    expect(JSON.parse(mockStorage.get('quiz_stats')!)).toEqual({
+      totalQuestions: 5,
+      totalCorrect: 4,
+      bestStreak: 3,
+    });
+  });
+
+  test('quiz answer refuses to write when initial load failed, preserving disk', async () => {
+    mockStorage.set('quiz_stats', JSON.stringify({ totalQuestions: 100, totalCorrect: 80, bestStreak: 12 }));
+    jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('disk locked'));
+
+    await useQuizStore.getState().recordAnswer(true, 1);
+
+    // Disk must still hold the user's real history, not zero-defaults + 1.
+    expect(JSON.parse(mockStorage.get('quiz_stats')!)).toEqual({
+      totalQuestions: 100,
+      totalCorrect: 80,
+      bestStreak: 12,
+    });
+    expect(useQuizStore.getState().loaded).toBe(false);
+  });
+
+  test('quiz store recovers on the next call after a transient load failure', async () => {
+    mockStorage.set('quiz_stats', JSON.stringify({ totalQuestions: 50, totalCorrect: 40, bestStreak: 5 }));
+    jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('transient'));
+
+    await useQuizStore.getState().recordAnswer(true, 1);
+    expect(JSON.parse(mockStorage.get('quiz_stats')!)).toEqual({
+      totalQuestions: 50,
+      totalCorrect: 40,
+      bestStreak: 5,
+    });
+
+    await useQuizStore.getState().recordAnswer(true, 2);
+
+    expect(useQuizStore.getState()).toMatchObject({
+      totalQuestions: 51,
+      totalCorrect: 41,
+      bestStreak: 5,
+      loaded: true,
+    });
+    expect(JSON.parse(mockStorage.get('quiz_stats')!)).toEqual({
+      totalQuestions: 51,
+      totalCorrect: 41,
+      bestStreak: 5,
     });
   });
 
@@ -99,14 +146,29 @@ describe('quiz and spaced repetition store persistence', () => {
     expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ [promptKey]: 3 });
   });
 
-  test('spaced repetition result rejects and leaves state unchanged when persistence fails', async () => {
+  test('spaced repetition result leaves disk and state untouched when persistence fails', async () => {
     useSpacedRepStore.setState({ weights: { dormir: 2 }, loaded: true });
+    mockStorage.set('spaced_rep_weights', JSON.stringify({ dormir: 2 }));
     jest.mocked(AsyncStorage.setItem).mockRejectedValueOnce(new Error('disk full'));
 
     await expect(
       useSpacedRepStore.getState().recordResult('dormir', 'preterite', 2, false),
-    ).rejects.toThrow('Failed to persist spaced rep weights');
+    ).resolves.toBeUndefined();
 
     expect(useSpacedRepStore.getState().weights).toEqual({ dormir: 2 });
+    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ dormir: 2 });
+  });
+
+  test('spaced repetition refuses to write when initial load failed, preserving disk', async () => {
+    mockStorage.set('spaced_rep_weights', JSON.stringify({ dormir: 4, hablar: 0.5 }));
+    jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('disk locked'));
+
+    await useSpacedRepStore.getState().recordResult('dormir', 'preterite', 2, false);
+
+    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({
+      dormir: 4,
+      hablar: 0.5,
+    });
+    expect(useSpacedRepStore.getState().loaded).toBe(false);
   });
 });
