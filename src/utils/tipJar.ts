@@ -57,18 +57,38 @@ function useTipJarNative() {
     let mounted = true;
     let purchaseListener: ReturnType<typeof purchaseUpdatedListener> | null = null;
     let errorListener: ReturnType<typeof purchaseErrorListener> | null = null;
+    // Track per-mount finishTransaction failures by transaction id so the OS
+    // replaying a stuck purchase on every reconnect doesn't trap the user
+    // in a loop of "Purchase Needs Attention" alerts.
+    const failedTransactionIds = new Set<string>();
     retainIapConnection();
 
+    const getTransactionKey = (purchase: Purchase): string => {
+      const anyPurchase = purchase as { transactionId?: string; purchaseToken?: string; productId?: string };
+      return anyPurchase.transactionId
+        ?? anyPurchase.purchaseToken
+        ?? `${anyPurchase.productId ?? 'unknown'}`;
+    };
+
     const handlePurchaseUpdated = async (purchase: Purchase) => {
+      const txKey = getTransactionKey(purchase);
       try {
         await finishTransaction({ purchase, isConsumable: true });
         if (!mounted) return;
         setLoading(false);
-        Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
+        if (!failedTransactionIds.has(txKey)) {
+          Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
+        }
+        failedTransactionIds.delete(txKey);
       } catch (error) {
         console.warn('Failed to finish tip transaction:', error);
         if (!mounted) return;
         setLoading(false);
+        if (failedTransactionIds.has(txKey)) {
+          // Already alerted on this transaction this mount — stay quiet.
+          return;
+        }
+        failedTransactionIds.add(txKey);
         Alert.alert(
           'Purchase Needs Attention',
           'Your tip was received, but we could not finish the transaction. Please reopen the app or try again later.'
