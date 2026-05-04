@@ -19,7 +19,7 @@ import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conj
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
-import { speak } from '../utils/speech';
+import { speak, stopSpeech } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 import {
@@ -112,6 +112,13 @@ export default function FlashcardScreen() {
   const [newReviewed, setNewReviewed] = useState(0);
   const [newCorrect, setNewCorrect] = useState(0);
   const flipAnim = useRef(new Animated.Value(0)).current;
+  const mountedRef = useRef(true);
+  React.useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      stopSpeech();
+    };
+  }, []);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
@@ -148,7 +155,7 @@ export default function FlashcardScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setFlipped(true);
     Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start(() => {
-      if (autoTTS && card) speak(card.answer);
+      if (mountedRef.current && autoTTS && card) speak(card.answer);
     });
   };
 
@@ -215,6 +222,7 @@ export default function FlashcardScreen() {
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'background' || state === 'inactive') {
+        stopSpeech();
         saveCurrentSession().catch((e) => console.warn('AppState save failed:', e));
       }
     });
@@ -226,6 +234,7 @@ export default function FlashcardScreen() {
 
   React.useEffect(() => {
     const unsubscribe = nav.addListener('blur', () => {
+      stopSpeech();
       saveCurrentSession().catch((e) => console.warn('Blur save failed:', e));
     });
     return unsubscribe;

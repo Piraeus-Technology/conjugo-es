@@ -6,9 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  AppState,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { speak } from '../utils/speech';
+import { useFocusEffect } from '@react-navigation/native';
+import { speak, stopSpeech } from '../utils/speech';
 import verbs from '../data/verbs.json';
 import {
   conjugate,
@@ -176,6 +178,19 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setOpenTense(openTense === tense ? null : tense);
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => stopSpeech();
+    }, [])
+  );
+
+  React.useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') stopSpeech();
+    });
+    return () => sub.remove();
+  }, []);
 
   if (!verb) {
     return (

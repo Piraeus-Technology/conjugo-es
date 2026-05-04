@@ -7,3 +7,7 @@ export function speak(text: string) {
     rate: 0.85,
   });
 }
+
+export function stopSpeech() {
+  Speech.stop();
+}
