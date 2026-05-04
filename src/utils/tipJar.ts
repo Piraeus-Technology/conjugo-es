@@ -84,9 +84,10 @@ function useTipJarNative() {
         await finishTransaction({ purchase, isConsumable: true });
         if (!mounted) return;
         setLoading(false);
-        if (!txKey || !failedTransactionIds.has(txKey)) {
-          Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
-        }
+        // Always thank on success — the user deserves the confirmation
+        // even (especially) when the same transaction had previously
+        // failed and we'd warned them with "Purchase Needs Attention".
+        Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
         if (txKey) failedTransactionIds.delete(txKey);
       } catch (error) {
         console.warn('Failed to finish tip transaction:', error);
