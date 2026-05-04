@@ -11,6 +11,7 @@ import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
 import { buildPracticeInsights } from '../utils/practiceInsights';
+import { getAccuracyPercent, hasPositiveCount } from '../utils/statsMath';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -92,8 +93,8 @@ export default function FlashcardStatsScreen() {
   const getDayColor = (day: number) => {
     const key = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const data = dailyMap[key];
-    if (!data || data.reviewed <= 0) return null;
-    const pct = Math.round((data.correct / data.reviewed) * 100);
+    const pct = data ? getAccuracyPercent(data.correct, data.reviewed) : null;
+    if (pct === null) return null;
     if (pct >= 80) return { bg: colors.scoreHighBg, text: colors.scoreHighText };
     if (pct >= 50) return { bg: colors.scoreMidBg, text: colors.scoreMidText };
     return { bg: colors.scoreLowBg, text: colors.scoreLowText };
@@ -112,6 +113,7 @@ export default function FlashcardStatsScreen() {
   };
 
   const selectedData = selectedDay ? dailyMap[selectedDay] : null;
+  const selectedAccuracy = selectedData ? getAccuracyPercent(selectedData.correct, selectedData.reviewed) : null;
 
   if (!sessionsLoaded || !weightsLoaded) {
     return (
@@ -153,7 +155,7 @@ export default function FlashcardStatsScreen() {
       </View>
 
       {/* Today */}
-      {todayData && (
+      {todayData && hasPositiveCount(todayData.reviewed) && (
         <>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Today</Text>
           <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
@@ -164,7 +166,7 @@ export default function FlashcardStatsScreen() {
               </View>
               <View style={styles.statItem}>
                 <Text style={[styles.statValue, { color: colors.primary }]}>
-                  {Math.round((todayData.correct / todayData.reviewed) * 100)}%
+                  {getAccuracyPercent(todayData.correct, todayData.reviewed) ?? 0}%
                 </Text>
                 <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
               </View>
@@ -211,8 +213,8 @@ export default function FlashcardStatsScreen() {
                     isSelected && { borderWidth: 2, borderColor: colors.primary },
                     isToday && !dayColor && { borderWidth: 1, borderColor: colors.border },
                   ]}
-                  onPress={() => { if (dailyMap[key]) setSelectedDay(isSelected ? null : key); }}
-                  activeOpacity={dailyMap[key] ? 0.7 : 1}
+                  onPress={() => { if (hasPositiveCount(dailyMap[key]?.reviewed)) setSelectedDay(isSelected ? null : key); }}
+                  activeOpacity={hasPositiveCount(dailyMap[key]?.reviewed) ? 0.7 : 1}
                 >
                   <Text style={[styles.calendarDay, { color: dayColor ? dayColor.text : colors.textMuted }]}>{day}</Text>
                 </TouchableOpacity>
@@ -220,13 +222,13 @@ export default function FlashcardStatsScreen() {
             })}
           </View>
         ))}
-        {selectedDay && selectedData && (
+        {selectedDay && selectedData && selectedAccuracy !== null && (
           <View style={[styles.selectedDetail, { borderTopColor: colors.divider }]}>
             <Text style={[styles.selectedDate, { color: colors.textPrimary }]}>
               {new Date(selectedDay + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </Text>
             <Text style={[styles.selectedStat, { color: colors.textSecondary }]}>
-              {selectedData.correct}/{selectedData.reviewed} · {Math.round((selectedData.correct / selectedData.reviewed) * 100)}% accuracy
+              {selectedData.correct}/{selectedData.reviewed} · {selectedAccuracy}% accuracy
             </Text>
           </View>
         )}

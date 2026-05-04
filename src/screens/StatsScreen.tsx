@@ -11,6 +11,7 @@ import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useSessionStore } from '../store/sessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
 import { buildPracticeInsights } from '../utils/practiceInsights';
+import { getAccuracyPercent, hasPositiveCount } from '../utils/statsMath';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -99,8 +100,8 @@ export default function StatsScreen() {
   const getDayColor = (day: number) => {
     const key = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const data = dailyMap[key];
-    if (!data || data.total <= 0) return null;
-    const pct = Math.round((data.correct / data.total) * 100);
+    const pct = data ? getAccuracyPercent(data.correct, data.total) : null;
+    if (pct === null) return null;
     if (pct >= 80) return { bg: colors.scoreHighBg, text: colors.scoreHighText };
     if (pct >= 50) return { bg: colors.scoreMidBg, text: colors.scoreMidText };
     return { bg: colors.scoreLowBg, text: colors.scoreLowText };
@@ -123,6 +124,7 @@ export default function StatsScreen() {
   };
 
   const selectedData = selectedDay ? dailyMap[selectedDay] : null;
+  const selectedAccuracy = selectedData ? getAccuracyPercent(selectedData.correct, selectedData.total) : null;
 
   if (!sessionsLoaded || !weightsLoaded) {
     return (
@@ -169,7 +171,7 @@ export default function StatsScreen() {
       </View>
 
       {/* Today */}
-      {todayData && (
+      {todayData && hasPositiveCount(todayData.total) && (
         <>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Today</Text>
           <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
@@ -180,7 +182,7 @@ export default function StatsScreen() {
               </View>
               <View style={styles.statItem}>
                 <Text style={[styles.statValue, { color: colors.primary }]}>
-                  {Math.round((todayData.correct / todayData.total) * 100)}%
+                  {getAccuracyPercent(todayData.correct, todayData.total) ?? 0}%
                 </Text>
                 <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
               </View>
@@ -238,9 +240,9 @@ export default function StatsScreen() {
                     isToday && !dayColor && { borderWidth: 1, borderColor: colors.border },
                   ]}
                   onPress={() => {
-                    if (dailyMap[key]) setSelectedDay(isSelected ? null : key);
+                    if (hasPositiveCount(dailyMap[key]?.total)) setSelectedDay(isSelected ? null : key);
                   }}
-                  activeOpacity={dailyMap[key] ? 0.7 : 1}
+                  activeOpacity={hasPositiveCount(dailyMap[key]?.total) ? 0.7 : 1}
                 >
                   <Text style={[
                     styles.calendarDay,
@@ -256,13 +258,13 @@ export default function StatsScreen() {
         ))}
 
         {/* Selected day detail */}
-        {selectedDay && selectedData && (
+        {selectedDay && selectedData && selectedAccuracy !== null && (
           <View style={[styles.selectedDetail, { borderTopColor: colors.divider }]}>
             <Text style={[styles.selectedDate, { color: colors.textPrimary }]}>
               {new Date(selectedDay + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </Text>
             <Text style={[styles.selectedStat, { color: colors.textSecondary }]}>
-              {selectedData.correct}/{selectedData.total} · {Math.round((selectedData.correct / selectedData.total) * 100)}% accuracy
+              {selectedData.correct}/{selectedData.total} · {selectedAccuracy}% accuracy
             </Text>
           </View>
         )}
