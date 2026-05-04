@@ -11,6 +11,7 @@ import {
   Alert,
   AppState,
 } from 'react-native';
+import type { AppStateStatus } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
@@ -22,6 +23,7 @@ import { useSpacedRepStore } from '../store/spacedRepStore';
 import { speak, stopSpeech } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
+import { canRunFocusedScreenEffect } from '../utils/screenActivity';
 import {
   COMMON_VERB_POOL_SIZE,
   WEIGHTED_CANDIDATE_COUNT,
@@ -112,10 +114,14 @@ export default function FlashcardScreen() {
   const [newReviewed, setNewReviewed] = useState(0);
   const [newCorrect, setNewCorrect] = useState(0);
   const flipAnim = useRef(new Animated.Value(0)).current;
-  const mountedRef = useRef(true);
+  const speechGateRef = useRef({
+    mounted: true,
+    focused: true,
+    appState: AppState.currentState as AppStateStatus,
+  });
   React.useEffect(() => {
     return () => {
-      mountedRef.current = false;
+      speechGateRef.current.mounted = false;
       stopSpeech();
     };
   }, []);
@@ -155,7 +161,7 @@ export default function FlashcardScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setFlipped(true);
     Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start(() => {
-      if (mountedRef.current && autoTTS && card) speak(card.answer);
+      if (canRunFocusedScreenEffect(speechGateRef.current) && autoTTS && card) speak(card.answer);
     });
   };
 
@@ -221,6 +227,7 @@ export default function FlashcardScreen() {
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
+      speechGateRef.current.appState = state;
       if (state === 'background' || state === 'inactive') {
         stopSpeech();
         saveCurrentSession().catch((e) => console.warn('AppState save failed:', e));
@@ -233,11 +240,18 @@ export default function FlashcardScreen() {
   }, [saveCurrentSession]);
 
   React.useEffect(() => {
-    const unsubscribe = nav.addListener('blur', () => {
+    const unsubscribeFocus = nav.addListener('focus', () => {
+      speechGateRef.current.focused = true;
+    });
+    const unsubscribeBlur = nav.addListener('blur', () => {
+      speechGateRef.current.focused = false;
       stopSpeech();
       saveCurrentSession().catch((e) => console.warn('Blur save failed:', e));
     });
-    return unsubscribe;
+    return () => {
+      unsubscribeFocus();
+      unsubscribeBlur();
+    };
   }, [nav, saveCurrentSession]);
 
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
