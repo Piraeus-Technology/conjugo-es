@@ -87,6 +87,7 @@ function buildVerbMatchMeta(
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const { history, loaded, loadHistory, addToHistory, removeFromHistory, clearHistory } =
     useHistoryStore();
   const { favorites, loadFavorites, toggleFavorite } = useFavoritesStore();
@@ -97,10 +98,22 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     loadFavorites();
   }, [loadHistory, loadFavorites]);
 
-  const results = useMemo((): SearchResult[] => {
-    if (!search.trim()) return [];
+  // Debounce search so the conjugation index build (~96k entries) and Fuse
+  // queries don't run on every keystroke. Empty queries skip the debounce so
+  // clearing the input snaps back to history/favorites immediately.
+  useEffect(() => {
+    if (!search.trim()) {
+      setDebouncedSearch('');
+      return;
+    }
+    const t = setTimeout(() => setDebouncedSearch(search), 120);
+    return () => clearTimeout(t);
+  }, [search]);
 
-    const query = normalizeSearchText(search);
+  const results = useMemo((): SearchResult[] => {
+    if (!debouncedSearch.trim()) return [];
+
+    const query = normalizeSearchText(debouncedSearch);
 
     const exactConjMatches = getExactConjugationMatches(query);
 
@@ -132,7 +145,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       const exactResults = [...grouped.values()];
       const seen = new Set(exactResults.map(result => result.infinitive));
 
-      const verbResults = searchVerbs(search);
+      const verbResults = searchVerbs(debouncedSearch);
       verbResults.forEach((r) => {
         if (!seen.has(r.item.infinitive)) {
           seen.add(r.item.infinitive);
@@ -148,7 +161,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       return exactResults.slice(0, MAX_SEARCH_RESULTS);
     }
 
-    const verbResults = searchVerbs(search)
+    const verbResults = searchVerbs(debouncedSearch)
       .map((r) => ({
         infinitive: r.item.infinitive,
         translation: r.item.translation,
@@ -169,7 +182,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       })
       .map(({ score: _score, ...result }) => result);
 
-    const conjResults = searchConjugations(search);
+    const conjResults = searchConjugations(debouncedSearch);
     const seenConj = new Set<string>(verbResults.map((r) => r.infinitive));
     const conjGrouped: SearchResult[] = [];
 
@@ -189,7 +202,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     });
 
     return [...verbResults, ...conjGrouped].slice(0, MAX_SEARCH_RESULTS);
-  }, [search]);
+  }, [debouncedSearch]);
 
   const handleVerbPress = (infinitive: string, tense?: string, form?: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
