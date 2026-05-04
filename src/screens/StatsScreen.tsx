@@ -99,11 +99,11 @@ export default function StatsScreen() {
   const getDayColor = (day: number) => {
     const key = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const data = dailyMap[key];
-    if (!data) return null;
+    if (!data || data.total <= 0) return null;
     const pct = Math.round((data.correct / data.total) * 100);
-    if (pct >= 80) return { bg: '#E8F5E9', text: '#2E7D32' };
-    if (pct >= 50) return { bg: '#FFF8E1', text: '#F57F17' };
-    return { bg: '#FFEBEE', text: '#C62828' };
+    if (pct >= 80) return { bg: colors.scoreHighBg, text: colors.scoreHighText };
+    if (pct >= 50) return { bg: colors.scoreMidBg, text: colors.scoreMidText };
+    return { bg: colors.scoreLowBg, text: colors.scoreLowText };
   };
 
   const getDayKey = (day: number) =>
@@ -271,15 +271,15 @@ export default function StatsScreen() {
       {/* Legend */}
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: '#E8F5E9' }]} />
+          <View style={[styles.legendDot, { backgroundColor: colors.scoreHighBg }]} />
           <Text style={[styles.legendText, { color: colors.textMuted }]}>≥80%</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: '#FFF8E1' }]} />
+          <View style={[styles.legendDot, { backgroundColor: colors.scoreMidBg }]} />
           <Text style={[styles.legendText, { color: colors.textMuted }]}>≥50%</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: '#FFEBEE' }]} />
+          <View style={[styles.legendDot, { backgroundColor: colors.scoreLowBg }]} />
           <Text style={[styles.legendText, { color: colors.textMuted }]}>&lt;50%</Text>
         </View>
       </View>

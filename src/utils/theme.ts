@@ -29,6 +29,10 @@ const lightColors = {
   irregularTag: '#FFF3E0',
   irregularTagText: '#E65100',
 
+  scoreHighBg: '#E8F5E9', scoreHighText: '#2E7D32',
+  scoreMidBg: '#FFF8E1', scoreMidText: '#F57F17',
+  scoreLowBg: '#FFEBEE', scoreLowText: '#C62828',
+
   levelA1Bg: '#E0F7FA', levelA1Text: '#00838F',
   levelA2Bg: '#E0F2F1', levelA2Text: '#00695C',
   levelB1Bg: '#E3F2FD', levelB1Text: '#1565C0',
@@ -65,6 +69,10 @@ const darkColors = {
   regularTagText: '#66BB6A',
   irregularTag: '#3E2200',
   irregularTagText: '#FFB74D',
+
+  scoreHighBg: '#1B3A1B', scoreHighText: '#66BB6A',
+  scoreMidBg: '#3E2200', scoreMidText: '#FFB74D',
+  scoreLowBg: '#3A1212', scoreLowText: '#EF5350',
 
   levelA1Bg: '#0A2E30', levelA1Text: '#4DD0E1',
   levelA2Bg: '#0D2E2B', levelA2Text: '#4DB6AC',
