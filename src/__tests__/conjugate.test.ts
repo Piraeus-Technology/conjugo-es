@@ -1376,6 +1376,29 @@ describe('Dataset integrity regressions', () => {
     const verb = (require('../data/verbs.json') as Record<string, VerbData>)['demoler'];
     expect(forms('demoler', verb, 'present')).toEqual(['demuelo', 'demueles', 'demuele', 'demolemos', 'demoléis', 'demuelen']);
   });
+
+  test('discernir keeps regular preterite stem in derived subjunctive imperfect', () => {
+    const verb = (require('../data/verbs.json') as Record<string, VerbData>)['discernir'];
+    expect(forms('discernir', verb, 'subjunctive_imperfect')).toEqual([
+      'discerniera',
+      'discernieras',
+      'discerniera',
+      'discerniéramos',
+      'discernierais',
+      'discernieran',
+    ]);
+  });
+
+  test('demoler stem change reaches present subjunctive and imperative forms', () => {
+    const verb = (require('../data/verbs.json') as Record<string, VerbData>)['demoler'];
+    expect(forms('demoler', verb, 'subjunctive_present')).toEqual(['demuela', 'demuelas', 'demuela', 'demolamos', 'demoláis', 'demuelan']);
+    const affirmative = conjugate('demoler', verb, 'imperative_affirmative');
+    const negative = conjugate('demoler', verb, 'imperative_negative');
+    expect(affirmative[0].disabled).toBe(true);
+    expect(negative[0].disabled).toBe(true);
+    expect(affirmative.slice(1).map(r => r.form)).toEqual(['demuele', 'demuela', 'demolamos', 'demoled', 'demuelan']);
+    expect(negative.slice(1).map(r => r.form)).toEqual(['no demuelas', 'no demuela', 'no demolamos', 'no demoláis', 'no demuelan']);
+  });
 });
 
 // ============ ADDITIONAL SPELLING-CHANGE COVERAGE ============
