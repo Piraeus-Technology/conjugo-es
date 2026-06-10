@@ -9,14 +9,6 @@ import {
 
 const TIP_SKUS = ['tip_small', 'tip_medium', 'tip_large'];
 
-const NO_OP_RESULT = {
-  products: [] as any[],
-  loading: false,
-  unavailable: true,
-  unsupported: true,
-  tip: async () => {},
-};
-
 type TipTransactionLike = {
   transactionId?: string | null;
   purchaseToken?: string | null;
@@ -42,34 +34,32 @@ try {
   // react-native-iap not available (Expo Go, web, etc.)
 }
 
-export function useTipJar() {
-  if (!iapModule) {
-    return NO_OP_RESULT;
-  }
-  return useTipJarNative();
-}
+type Product = import('react-native-iap').Product;
+type Purchase = import('react-native-iap').Purchase;
+type PurchaseError = import('react-native-iap').PurchaseError;
 
-function useTipJarNative() {
-  const {
-    initConnection,
-    endConnection,
-    fetchProducts,
-    getAvailablePurchases,
-    requestPurchase,
-    finishTransaction,
-    purchaseUpdatedListener,
-    purchaseErrorListener,
-    ErrorCode,
-  } = iapModule;
-  type Product = import('react-native-iap').Product;
-  type Purchase = import('react-native-iap').Purchase;
-  type PurchaseError = import('react-native-iap').PurchaseError;
+export function useTipJar() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [unavailable, setUnavailable] = useState(false);
-  const [unsupported] = useState(false);
+  // Without the native module (Expo Go, web) the tip jar is permanently
+  // unsupported; everything below no-ops so hooks are still called
+  // unconditionally.
+  const [unavailable, setUnavailable] = useState(!iapModule);
+  const unsupported = !iapModule;
 
   useEffect(() => {
+    if (!iapModule) return;
+    const {
+      initConnection,
+      endConnection,
+      fetchProducts,
+      getAvailablePurchases,
+      finishTransaction,
+      purchaseUpdatedListener,
+      purchaseErrorListener,
+      ErrorCode,
+    } = iapModule;
+
     let mounted = true;
     let purchaseListener: ReturnType<typeof purchaseUpdatedListener> | null = null;
     let errorListener: ReturnType<typeof purchaseErrorListener> | null = null;
@@ -199,15 +189,21 @@ function useTipJarNative() {
   }, []);
 
   const tip = useCallback(async (sku: string) => {
+    if (!iapModule) return;
     setLoading(true);
     try {
-      await requestPurchase({
+      await iapModule.requestPurchase({
         request: { apple: { sku }, google: { skus: [sku] } },
         type: 'in-app',
       });
     } catch {
+      // surfaced by the error listener
+    } finally {
+      // Always clear the spinner once the request settles: deferred
+      // purchases (iOS Ask to Buy) and abandoned flows may never emit a
+      // listener event, which used to leave the button loading forever.
+      // The purchase listener still clears it on the normal path.
       setLoading(false);
-      // handled by error listener
     }
   }, []);
 
