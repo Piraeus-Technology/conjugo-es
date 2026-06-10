@@ -43,6 +43,12 @@ const tenseGroups = [
     label: 'Progressive',
     tenses: ['present_progressive', 'past_progressive'] as Tense[],
   },
+  {
+    // Searching a gerund/participle navigates here with this initialTense;
+    // without a section for it the screen used to open with no table at all.
+    label: 'Nonfinite',
+    tenses: ['gerund_participle'] as Tense[],
+  },
 ];
 
 const familyBases = ['decir', 'hacer', 'poner', 'tener', 'venir', 'traer', 'ver', 'oír', 'reír'] as const;

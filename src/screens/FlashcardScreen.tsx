@@ -6,9 +6,6 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
-  Modal,
-  Pressable,
-  Alert,
   AppState,
 } from 'react-native';
 import type { AppStateStatus } from 'react-native';
@@ -79,6 +76,29 @@ function generateCard(
       personIndex: picked.index,
       answer: picked.form,
     });
+  }
+
+  if (candidates.length === 0) {
+    // Degenerate settings/data: scan deterministically for any valid card
+    // instead of crashing in the reduce below.
+    for (const [verb, data] of verbEntries) {
+      for (const tense of activeTenseList) {
+        const results = conjugate(verb, data, tense);
+        const idx = results.findIndex(
+          (r, i) => !r.disabled && r.form !== '—' && (includeVosotros || i !== 4),
+        );
+        if (idx !== -1) {
+          return {
+            verb,
+            translation: data.translation,
+            tense,
+            personIndex: idx,
+            answer: results[idx].form,
+          };
+        }
+      }
+    }
+    throw new Error('No conjugable cards for the current practice settings');
   }
 
   return candidates.reduce((best, candidate) =>
@@ -172,7 +192,10 @@ export default function FlashcardScreen() {
   };
 
   const handleGotIt = () => {
-    if (!card) return;
+    // The flipped gate also guards re-entry: the buttons stay tappable during
+    // the 200ms flip-back animation, and a double-tap would record the card twice
+    if (!card || !flipped) return;
+    setFlipped(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setNewReviewed(r => r + 1);
     setNewCorrect(c => c + 1);
@@ -183,7 +206,8 @@ export default function FlashcardScreen() {
   };
 
   const handleMissed = () => {
-    if (!card) return;
+    if (!card || !flipped) return;
+    setFlipped(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setNewReviewed(r => r + 1);
     recordResult(card.verb, card.tense, card.personIndex, false).catch((e) =>

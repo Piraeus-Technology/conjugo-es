@@ -76,10 +76,27 @@ function useTipJarNative() {
     // Track per-mount finishTransaction failures by stable transaction key so
     // OS replays don't trap the user in repeated attention alerts.
     const failedTransactionIds = new Set<string>();
+    // Claimed-before-finish keys shared by the listener and the Android
+    // startup sweep, so the same transaction can't be finished twice (the
+    // loser of that race throws and used to alert "Purchase Needs Attention"
+    // for a purchase that actually completed fine).
+    const claimedTransactionKeys = new Set<string>();
+    const claimTransaction = (purchase: Purchase): boolean => {
+      const key = getTipTransactionKey(purchase);
+      if (!key) return true; // no stable key to dedupe on — proceed
+      if (claimedTransactionKeys.has(key)) return false;
+      claimedTransactionKeys.add(key);
+      return true;
+    };
+    const releaseTransactionClaim = (purchase: Purchase) => {
+      const key = getTipTransactionKey(purchase);
+      if (key) claimedTransactionKeys.delete(key);
+    };
     retainIapConnection();
 
     const handlePurchaseUpdated = async (purchase: Purchase) => {
       const txKey = getTipTransactionKey(purchase);
+      if (!claimTransaction(purchase)) return; // the other path is finishing it
       try {
         await finishTransaction({ purchase, isConsumable: true });
         if (!mounted) return;
@@ -91,6 +108,8 @@ function useTipJarNative() {
         if (txKey) failedTransactionIds.delete(txKey);
       } catch (error) {
         console.warn('Failed to finish tip transaction:', error);
+        // Release the claim so an OS replay can retry the finish.
+        releaseTransactionClaim(purchase);
         if (!mounted) return;
         setLoading(false);
         if (txKey && failedTransactionIds.has(txKey)) {
@@ -141,8 +160,14 @@ function useTipJarNative() {
           try {
             const pendingPurchases = await getAvailablePurchases();
             for (const purchase of pendingPurchases) {
-              if (TIP_SKUS.includes(purchase.productId)) {
+              if (!TIP_SKUS.includes(purchase.productId)) continue;
+              if (!claimTransaction(purchase)) continue; // listener already finishing it
+              try {
                 await finishTransaction({ purchase, isConsumable: true });
+              } catch {
+                // Release so a later replay can retry; one stuck purchase
+                // shouldn't abort the rest of the sweep.
+                releaseTransactionClaim(purchase);
               }
             }
           } catch {

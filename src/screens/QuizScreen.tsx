@@ -4,16 +4,12 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Modal,
-  Pressable,
-  Alert,
   AppState,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import * as StoreReview from 'expo-store-review';
 import { useNavigation } from '@react-navigation/native';
-import { speak } from '../utils/speech';
 import verbs from '../data/verbs.json';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
@@ -84,6 +80,23 @@ function pickWeightedPrompt(
     });
   }
 
+  if (candidates.length === 0) {
+    // Degenerate settings/data: scan deterministically for any valid prompt
+    // instead of crashing in the reduce below.
+    for (const [verb, data] of verbEntries) {
+      for (const tense of activeTenses) {
+        const results = conjugate(verb, data, tense);
+        const idx = results.findIndex(
+          (r, i) => !r.disabled && r.form !== '—' && (includeVosotros || i !== 4),
+        );
+        if (idx !== -1) {
+          return { verb, data, tense, personIndex: idx, answer: results[idx].form };
+        }
+      }
+    }
+    throw new Error('No conjugable prompts for the current practice settings');
+  }
+
   return candidates.reduce((best, candidate) =>
     getWeight(candidate.verb, candidate.tense, candidate.personIndex) >
       getWeight(best.verb, best.tense, best.personIndex)
@@ -108,7 +121,10 @@ function generateQuestion(
   // Priority 1: Same verb, same tense, different person (hardest)
   const sameVerbSameTense: string[] = [];
   results.forEach((r, i) => {
-    if (i !== personIndex && r.form !== '—' && !r.disabled && r.form !== correctAnswer) {
+    // The self-includes check matters: persons can share a form within a
+    // tense (yo/él "hablaba"), and duplicates here become duplicate options
+    if (i !== personIndex && r.form !== '—' && !r.disabled && r.form !== correctAnswer
+        && !sameVerbSameTense.includes(r.form)) {
       sameVerbSameTense.push(r.form);
     }
   });
@@ -119,7 +135,10 @@ function generateQuestion(
     if (t === tense) continue;
     const otherResults = conjugate(verb, data, t);
     const form = otherResults[personIndex].form;
-    if (form !== '—' && !otherResults[personIndex].disabled && form !== correctAnswer && !sameVerbSameTense.includes(form)) {
+    // Self-includes check: present and preterite nosotros forms are identical
+    // for -ar/-ir verbs, so this pool can otherwise hold the same form twice
+    if (form !== '—' && !otherResults[personIndex].disabled && form !== correctAnswer
+        && !sameVerbSameTense.includes(form) && !sameVerbDiffTense.includes(form)) {
       sameVerbDiffTense.push(form);
     }
   }
@@ -149,8 +168,11 @@ function generateQuestion(
     }
   }
 
-  // Fallback: same tense, different verb (only if needed)
-  while (selected.length < 3) {
+  // Fallback: same tense, different verb (only if needed). Bounded so a tiny
+  // verb pool with colliding forms can't spin this loop forever.
+  let fallbackAttempts = 0;
+  while (selected.length < 3 && fallbackAttempts < 200) {
+    fallbackAttempts++;
     const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
     const otherResults = conjugate(otherVerb, otherData, tense);
     const form = otherResults[personIndex].form;
@@ -170,7 +192,9 @@ function generateQuestion(
 
 export default function QuizScreen() {
   const colors = useColors();
-  const { totalQuestions, totalCorrect, bestStreak, loadStats, recordAnswer } = useQuizStore();
+  // Only subscribe to what this screen uses — the totals re-render on every answer
+  const loadStats = useQuizStore((s) => s.loadStats);
+  const recordAnswer = useQuizStore((s) => s.recordAnswer);
   const {
     loaded: weightsLoaded,
     loadError: weightsLoadError,
