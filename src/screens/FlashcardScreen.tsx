@@ -13,8 +13,10 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
+import { pickWeightedPrompt } from '../utils/practicePrompts';
+import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { useNavigation } from '@react-navigation/native';
-import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
+import { tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
@@ -22,11 +24,6 @@ import { speak, stopSpeech } from '../utils/speech';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 import { canRunFocusedScreenEffect } from '../utils/screenActivity';
-import {
-  COMMON_VERB_POOL_SIZE,
-  WEIGHTED_CANDIDATE_COUNT,
-  WEIGHTED_PICK_COMMON_BIAS,
-} from '../utils/constants';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
@@ -51,63 +48,14 @@ function generateCard(
 ): Card {
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
   const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
-  const commonCount = Math.min(COMMON_VERB_POOL_SIZE, verbEntries.length);
-
-  const candidates: Card[] = [];
-  let attempts = 0;
-  while (candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
-    attempts++;
-    const idx = Math.random() < WEIGHTED_PICK_COMMON_BIAS
-      ? Math.floor(Math.random() * commonCount)
-      : Math.floor(Math.random() * verbEntries.length);
-    const [verb, data] = verbEntries[idx];
-    const tense = activeTenseList[Math.floor(Math.random() * activeTenseList.length)];
-    const results = conjugate(verb, data, tense);
-    const validPersons = results
-      .map((r, i) => ({ index: i, ...r }))
-      .filter(r => !r.disabled && r.form !== '—' && (includeVosotros || r.index !== 4));
-
-    if (validPersons.length === 0) continue;
-
-    const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
-    candidates.push({
-      verb,
-      translation: data.translation,
-      tense,
-      personIndex: picked.index,
-      answer: picked.form,
-    });
-  }
-
-  if (candidates.length === 0) {
-    // Degenerate settings/data: scan deterministically for any valid card
-    // instead of crashing in the reduce below.
-    for (const [verb, data] of verbEntries) {
-      for (const tense of activeTenseList) {
-        const results = conjugate(verb, data, tense);
-        const idx = results.findIndex(
-          (r, i) => !r.disabled && r.form !== '—' && (includeVosotros || i !== 4),
-        );
-        if (idx !== -1) {
-          return {
-            verb,
-            translation: data.translation,
-            tense,
-            personIndex: idx,
-            answer: results[idx].form,
-          };
-        }
-      }
-    }
-    throw new Error('No conjugable cards for the current practice settings');
-  }
-
-  return candidates.reduce((best, candidate) =>
-    getWeight(candidate.verb, candidate.tense, candidate.personIndex) >
-      getWeight(best.verb, best.tense, best.personIndex)
-      ? candidate
-      : best
-  );
+  const prompt = pickWeightedPrompt(verbEntries, activeTenseList, getWeight, includeVosotros);
+  return {
+    verb: prompt.verb,
+    translation: prompt.data.translation,
+    tense: prompt.tense,
+    personIndex: prompt.personIndex,
+    answer: prompt.answer,
+  };
 }
 
 export default function FlashcardScreen() {
@@ -218,57 +166,29 @@ export default function FlashcardScreen() {
   };
 
   // Auto-save NEW answers when leaving the screen or app goes to background
-  const newReviewedRef = React.useRef(newReviewed);
-  const newCorrectRef = React.useRef(newCorrect);
-  const lastSavedReviewedRef = React.useRef(0);
-  const lastSavedCorrectRef = React.useRef(0);
-  newReviewedRef.current = newReviewed;
-  newCorrectRef.current = newCorrect;
+  const { unsavedCount, unsavedCorrect } = useSessionAutosave({
+    count: newReviewed,
+    correct: newCorrect,
+    save: ({ count, correct }) => saveSession({ reviewed: count, correct }),
+  });
 
-  // Load today's cumulative totals plus any unsaved in-memory progress.
+  // Today's cumulative totals plus any unsaved in-memory progress.
   const todayKey = getTodayKey();
   const todaySession = sessions.find(s => s.day === todayKey);
-  const reviewed = (todaySession?.reviewed || 0) + (newReviewed - lastSavedReviewedRef.current);
-  const correct = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);
+  const reviewed = (todaySession?.reviewed || 0) + unsavedCount;
+  const correct = (todaySession?.correct || 0) + unsavedCorrect;
 
-  const saveCurrentSession = React.useCallback(async () => {
-    const snapshotReviewed = newReviewedRef.current;
-    const snapshotCorrect = newCorrectRef.current;
-    const unsavedReviewed = snapshotReviewed - lastSavedReviewedRef.current;
-    const unsavedCorrect = snapshotCorrect - lastSavedCorrectRef.current;
-
-    if (unsavedReviewed <= 0) return;
-
-    // Claim the delta synchronously so a re-entrant call (AppState background
-    // + nav blur firing back-to-back) sees zero unsaved and bails instead of
-    // double-counting.
-    const prevSavedReviewed = lastSavedReviewedRef.current;
-    const prevSavedCorrect = lastSavedCorrectRef.current;
-    lastSavedReviewedRef.current = snapshotReviewed;
-    lastSavedCorrectRef.current = snapshotCorrect;
-
-    try {
-      await saveSession({ reviewed: unsavedReviewed, correct: unsavedCorrect });
-    } catch (e) {
-      lastSavedReviewedRef.current = prevSavedReviewed;
-      lastSavedCorrectRef.current = prevSavedCorrect;
-      console.warn('Failed to save flashcard session:', e);
-    }
-  }, [saveSession]);
-
+  // Speech gating only — session saves are handled by useSessionAutosave's
+  // own AppState/blur/unmount listeners.
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       speechGateRef.current.appState = state;
       if (state === 'background' || state === 'inactive') {
         stopSpeech();
-        saveCurrentSession().catch((e) => console.warn('AppState save failed:', e));
       }
     });
-    return () => {
-      sub.remove();
-      saveCurrentSession().catch((e) => console.warn('Unmount save failed:', e));
-    };
-  }, [saveCurrentSession]);
+    return () => sub.remove();
+  }, []);
 
   React.useEffect(() => {
     const unsubscribeFocus = nav.addListener('focus', () => {
@@ -277,13 +197,12 @@ export default function FlashcardScreen() {
     const unsubscribeBlur = nav.addListener('blur', () => {
       speechGateRef.current.focused = false;
       stopSpeech();
-      saveCurrentSession().catch((e) => console.warn('Blur save failed:', e));
     });
     return () => {
       unsubscribeFocus();
       unsubscribeBlur();
     };
-  }, [nav, saveCurrentSession]);
+  }, [nav]);
 
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });

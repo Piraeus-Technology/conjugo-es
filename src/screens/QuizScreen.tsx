@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  AppState,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +11,8 @@ import * as StoreReview from 'expo-store-review';
 import { useNavigation } from '@react-navigation/native';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
+import { pickWeightedPrompt } from '../utils/practicePrompts';
+import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
@@ -19,12 +20,7 @@ import { useSpacedRepStore } from '../store/spacedRepStore';
 import { useSessionStore } from '../store/sessionStore';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useThemeStore } from '../store/themeStore';
-import {
-  COMMON_VERB_POOL_SIZE,
-  REVIEW_PROMPT_STREAK,
-  WEIGHTED_CANDIDATE_COUNT,
-  WEIGHTED_PICK_COMMON_BIAS,
-} from '../utils/constants';
+import { REVIEW_PROMPT_STREAK } from '../utils/constants';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
@@ -38,74 +34,6 @@ interface Question {
   options: string[];
 }
 
-interface PromptCandidate {
-  verb: string;
-  data: VerbData;
-  tense: Tense;
-  personIndex: number;
-  answer: string;
-}
-
-function pickWeightedPrompt(
-  activeTenses: Tense[],
-  getWeight: (verb: string, tense: Tense, personIndex: number) => number,
-  filteredEntries: [string, VerbData][],
-  includeVosotros: boolean = true,
-): PromptCandidate {
-  const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
-  const commonCount = Math.min(COMMON_VERB_POOL_SIZE, verbEntries.length);
-  const candidates: PromptCandidate[] = [];
-
-  let attempts = 0;
-  while (candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
-    attempts++;
-    const idx = Math.random() < WEIGHTED_PICK_COMMON_BIAS
-      ? Math.floor(Math.random() * commonCount)
-      : Math.floor(Math.random() * verbEntries.length);
-    const [verb, data] = verbEntries[idx];
-    const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
-    const results = conjugate(verb, data, tense);
-    const validPersons = results
-      .map((r, i) => ({ index: i, ...r }))
-      .filter(r => !r.disabled && r.form !== '—' && (includeVosotros || r.index !== 4));
-
-    if (validPersons.length === 0) continue;
-
-    const picked = validPersons[Math.floor(Math.random() * validPersons.length)];
-    candidates.push({
-      verb,
-      data,
-      tense,
-      personIndex: picked.index,
-      answer: picked.form,
-    });
-  }
-
-  if (candidates.length === 0) {
-    // Degenerate settings/data: scan deterministically for any valid prompt
-    // instead of crashing in the reduce below.
-    for (const [verb, data] of verbEntries) {
-      for (const tense of activeTenses) {
-        const results = conjugate(verb, data, tense);
-        const idx = results.findIndex(
-          (r, i) => !r.disabled && r.form !== '—' && (includeVosotros || i !== 4),
-        );
-        if (idx !== -1) {
-          return { verb, data, tense, personIndex: idx, answer: results[idx].form };
-        }
-      }
-    }
-    throw new Error('No conjugable prompts for the current practice settings');
-  }
-
-  return candidates.reduce((best, candidate) =>
-    getWeight(candidate.verb, candidate.tense, candidate.personIndex) >
-      getWeight(best.verb, best.tense, best.personIndex)
-      ? candidate
-      : best
-  );
-}
-
 function generateQuestion(
   activeTenses: Tense[],
   getWeight: (verb: string, tense: Tense, personIndex: number) => number,
@@ -113,7 +41,7 @@ function generateQuestion(
   includeVosotros: boolean = true,
 ): Question {
   const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
-  const prompt = pickWeightedPrompt(activeTenses, getWeight, filteredEntries, includeVosotros);
+  const prompt = pickWeightedPrompt(verbEntries, activeTenses, getWeight, includeVosotros);
   const { verb, data, tense, personIndex } = prompt;
   const correctAnswer = prompt.answer;
   const results = conjugate(verb, data, tense);
@@ -292,74 +220,19 @@ export default function QuizScreen() {
   };
 
   // Auto-save NEW answers when leaving the screen or app goes to background
-  const newTotalRef = React.useRef(newTotal);
-  const newCorrectRef = React.useRef(newCorrect);
-  const bestSessionStreakRef = React.useRef(bestSessionStreak);
-  const lastSavedTotalRef = React.useRef(0);
-  const lastSavedCorrectRef = React.useRef(0);
-  const lastSavedBestStreakRef = React.useRef(0);
-  newTotalRef.current = newTotal;
-  newCorrectRef.current = newCorrect;
-  bestSessionStreakRef.current = bestSessionStreak;
+  const { unsavedCount, unsavedCorrect } = useSessionAutosave({
+    count: newTotal,
+    correct: newCorrect,
+    bestStreak: bestSessionStreak,
+    save: ({ count, correct, bestStreak }) =>
+      saveSession({ total: count, correct, streak: bestStreak }),
+  });
 
-  // Load today's cumulative totals plus any unsaved in-memory progress.
+  // Today's cumulative totals plus any unsaved in-memory progress.
   const todayKey = getTodayKey();
   const todaySession = sessions.find(s => s.day === todayKey);
-  const sessionTotal = (todaySession?.total || 0) + (newTotal - lastSavedTotalRef.current);
-  const sessionScore = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);
-
-  const saveCurrentSession = React.useCallback(async () => {
-    const snapshotTotal = newTotalRef.current;
-    const snapshotCorrect = newCorrectRef.current;
-    const unsavedTotal = snapshotTotal - lastSavedTotalRef.current;
-    const unsavedCorrect = snapshotCorrect - lastSavedCorrectRef.current;
-    const unsavedBestStreak = Math.max(bestSessionStreakRef.current, lastSavedBestStreakRef.current);
-
-    if (unsavedTotal <= 0) return;
-
-    // Claim the delta synchronously so a re-entrant call (e.g. AppState
-    // background + nav blur firing back-to-back) sees zero unsaved and bails
-    // instead of double-counting.
-    const prevSavedTotal = lastSavedTotalRef.current;
-    const prevSavedCorrect = lastSavedCorrectRef.current;
-    const prevSavedBestStreak = lastSavedBestStreakRef.current;
-    lastSavedTotalRef.current = snapshotTotal;
-    lastSavedCorrectRef.current = snapshotCorrect;
-    lastSavedBestStreakRef.current = unsavedBestStreak;
-
-    try {
-      await saveSession({
-        total: unsavedTotal,
-        correct: unsavedCorrect,
-        streak: unsavedBestStreak,
-      });
-    } catch (e) {
-      // Roll back so the lost delta gets retried on the next save.
-      lastSavedTotalRef.current = prevSavedTotal;
-      lastSavedCorrectRef.current = prevSavedCorrect;
-      lastSavedBestStreakRef.current = prevSavedBestStreak;
-      console.warn('Failed to save quiz session:', e);
-    }
-  }, [saveSession]);
-
-  React.useEffect(() => {
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'background' || state === 'inactive') {
-        saveCurrentSession().catch((e) => console.warn('AppState save failed:', e));
-      }
-    });
-    return () => {
-      sub.remove();
-      saveCurrentSession().catch((e) => console.warn('Unmount save failed:', e));
-    };
-  }, [saveCurrentSession]);
-
-  React.useEffect(() => {
-    const unsubscribe = nav.addListener('blur', () => {
-      saveCurrentSession().catch((e) => console.warn('Blur save failed:', e));
-    });
-    return unsubscribe;
-  }, [nav, saveCurrentSession]);
+  const sessionTotal = (todaySession?.total || 0) + unsavedCount;
+  const sessionScore = (todaySession?.correct || 0) + unsavedCorrect;
 
 
   const getOptionStyle = (option: string) => {
