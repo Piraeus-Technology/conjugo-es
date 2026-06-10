@@ -1739,8 +1739,7 @@
     "translation": "to acquire",
     "pattern": {
       "stemChange": {
-        "present": "e_ie",
-        "preterite": "e_i"
+        "present": "i_ie"
       }
     },
     "examples": [
@@ -7542,8 +7541,13 @@
   },
   "componer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to compose",
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "compus",
+      "irregularFutureStem": "compondr"
+    },
     "examples": [
       "Compuso una canción para su novia.",
       "Compone música desde los quince años."
@@ -8729,16 +8733,6 @@
       "Almacena la comida en un lugar fresco."
     ],
     "level": "B1"
-  },
-  "alquilar": {
-    "type": "ar",
-    "regular": true,
-    "translation": "to rent",
-    "examples": [
-      "Alquilamos un coche para el viaje.",
-      "Alquila un apartamento cerca del trabajo."
-    ],
-    "level": "B2"
   },
   "alterar": {
     "type": "ar",
@@ -10760,8 +10754,12 @@
   },
   "tatuar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to tattoo",
+    "overrides": {
+      "present": ["tatúo", "tatúas", "tatúa", "tatuamos", "tatuáis", "tatúan"],
+      "subjunctive_present": ["tatúe", "tatúes", "tatúe", "tatuemos", "tatuéis", "tatúen"]
+    },
     "examples": [
       "Se tatuó una estrella en el brazo.",
       "¿Te quieres tatuar?"

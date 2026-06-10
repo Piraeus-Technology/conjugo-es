@@ -163,11 +163,44 @@ const irregularGerundPatterns: Record<string, string> = {
   sonreír: 'sonriendo',
   huir: 'huyendo',
   abstraer: 'abstrayendo',
+  perseguir: 'persiguiendo',
+  proseguir: 'prosiguiendo',
+  prevenir: 'previniendo',
+  teñir: 'tiñendo',
 };
+
+// ============ IRREGULAR TÚ IMPERATIVES ============
+
+// Shortened affirmative tú imperatives. Compounds of tener/poner/venir/salir
+// derive theirs from the base (mantener → mantén); decir/hacer compounds do
+// NOT shorten (bendecir → bendice), so those two only apply on exact match.
+const shortImperativeTuBases: Record<string, string> = {
+  tener: 'ten',
+  poner: 'pon',
+  venir: 'ven',
+  salir: 'sal',
+  hacer: 'haz',
+  decir: 'di',
+};
+const derivableShortImperativeBases = ['tener', 'poner', 'venir', 'salir'];
+
+function getShortImperativeTu(infinitive: string): string | null {
+  const exact = shortImperativeTuBases[infinitive];
+  if (exact) return exact;
+  for (const base of derivableShortImperativeBases) {
+    if (infinitive.endsWith(base) && infinitive !== base) {
+      const prefix = infinitive.slice(0, -base.length);
+      const short = shortImperativeTuBases[base];
+      // Compounds stressed on a final -n syllable take a written accent (mantén, propón)
+      return prefix + (short.endsWith('n') ? accentLastVowel(short) : short);
+    }
+  }
+  return null;
+}
 
 // ============ STEM CHANGE PATTERNS ============
 
-type StemChangePattern = 'e_ie' | 'e_i' | 'o_ue' | 'o_u' | 'u_ue';
+type StemChangePattern = 'e_ie' | 'e_i' | 'i_ie' | 'o_ue' | 'o_u' | 'u_ue';
 
 // Which persons get the stem change (0=yo, 1=tú, 2=él, 3=nos, 4=vos, 5=ellos)
 // Boot verbs: change in yo, tú, él, ellos (not nosotros/vosotros)
@@ -182,6 +215,7 @@ function applyStemChange(
   const changes: Record<StemChangePattern, [string, string]> = {
     e_ie: ['e', 'ie'],
     e_i: ['e', 'i'],
+    i_ie: ['i', 'ie'], // adquirir → adquiero
     o_ue: ['o', 'ue'],
     o_u: ['o', 'u'],
     u_ue: ['u', 'ue'],
@@ -282,19 +316,32 @@ function getPastParticiple(infinitive: string, type: string): string {
   const irregular = getIrregularParticiple(infinitive);
   if (irregular) return irregular;
   const stem = infinitive.slice(0, -2);
-  return type === 'ar' ? stem + 'ado' : stem + 'ido';
+  if (type === 'ar') return stem + 'ado';
+  // Strong-vowel stems take an accented í: caer → caído, leer → leído, oír → oído
+  if (/[aeo]$/.test(stem)) return stem + 'ído';
+  return stem + 'ido';
 }
 
-function getGerund(infinitive: string, type: string): string {
+function getGerund(infinitive: string, verb: VerbData): string {
   if (irregularGerundPatterns[infinitive]) {
     return irregularGerundPatterns[infinitive];
   }
-  // -uir verbs: i between vowels → y (distribuir → distribuyendo)
-  if (infinitive.endsWith('uir')) {
+  // -uir verbs: i between vowels → y (distribuir → distribuyendo).
+  // Not -guir, where the u is orthographic (distinguir → distinguiendo).
+  if (infinitive.endsWith('uir') && !infinitive.endsWith('guir')) {
     return infinitive.slice(0, -2) + 'yendo';
   }
-  const stem = infinitive.slice(0, -2);
-  return type === 'ar' ? stem + 'ando' : stem + 'iendo';
+  let stem = infinitive.slice(0, -2);
+  if (verb.type === 'ar') return stem + 'ando';
+  // -ir verbs raise the stem vowel in the gerund, same as the preterite
+  // 3rd person (divertir → divirtiendo, dormir → durmiendo)
+  if (verb.type === 'ir' && verb.pattern?.stemChange?.preterite) {
+    stem = applyStemChange(stem, verb.pattern.stemChange.preterite);
+  }
+  // ñ absorbs the i (gruñir → gruñendo); strong-vowel stems take y (caer → cayendo)
+  if (/[ñ]$/.test(stem)) return stem + 'endo';
+  if (/[aeo]$/.test(stem)) return stem + 'yendo';
+  return stem + 'iendo';
 }
 
 // ============ SMART CONJUGATION ENGINE ============
@@ -344,6 +391,16 @@ function removeAccents(value: string): string {
   return value.replace(/[áéíóú]/g, char => accentMap[char] ?? char);
 }
 
+function getRegularImperativeTu(ctx: ConjugationContext): string {
+  const short = getShortImperativeTu(ctx.infinitive);
+  if (short) return short;
+  let stem = ctx.stem;
+  if (ctx.pattern?.stemChange?.present) {
+    stem = applyStemChange(stem, ctx.pattern.stemChange.present);
+  }
+  return stem + regularEndings.imperative_affirmative[ctx.verb.type][1];
+}
+
 function getAffirmativeVosotrosForm(ctx: ConjugationContext): string {
   if (ctx.verb.type === 'ir' && ctx.infinitive.endsWith('ír')) {
     return ctx.stem + 'íd';
@@ -363,11 +420,14 @@ function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
   // Derive imperative from subjunctive overrides if available
   const subjOverrides = ctx.verb.overrides?.subjunctive_present ?? ctx.pattern?.fullOverrides?.subjunctive_present;
   if (subjOverrides && ctx.tense === 'imperative_affirmative') {
-    // tú (index 1) uses 3rd person present (handled elsewhere), rest use subjunctive
-    const presentOverrides = ctx.verb.overrides?.present;
+    const presentOverrides = ctx.verb.overrides?.present ?? ctx.pattern?.fullOverrides?.present;
     return pronouns.map((pronoun, i) => {
       if (i === 0) return makeResult(pronoun, '—', true);
-      if (i === 1 && presentOverrides) return makeResult(pronoun, presentOverrides[2], false); // tú = 3rd person present
+      // tú uses 3rd person present, never the subjunctive (averigua, not averigües)
+      if (i === 1) {
+        const tuForm = presentOverrides ? presentOverrides[2] : getRegularImperativeTu(ctx);
+        return makeResult(pronoun, tuForm, false);
+      }
       if (i === 4) return makeResult(pronoun, getAffirmativeVosotrosForm(ctx), false); // vosotros regular
       return makeResult(pronoun, subjOverrides[i], false);
     });
@@ -393,7 +453,9 @@ function tryIrregularFutureConditional(ctx: ConjugationContext, i: number): stri
 /** Handle irregular preterite stems (tuv-, sup-, etc.) */
 function tryIrregularPreterite(ctx: ConjugationContext, i: number): string | null {
   if (ctx.tense === 'preterite' && ctx.pattern?.irregularPreteriteStem) {
-    const pretEndings = ['e', 'iste', 'o', 'imos', 'isteis', 'ieron'];
+    // j-stems take -eron, not -ieron (trajeron, condujeron)
+    const ellosEnding = ctx.pattern.irregularPreteriteStem.endsWith('j') ? 'eron' : 'ieron';
+    const pretEndings = ['e', 'iste', 'o', 'imos', 'isteis', ellosEnding];
     return ctx.pattern.irregularPreteriteStem + pretEndings[i];
   }
   return null;
@@ -402,7 +464,8 @@ function tryIrregularPreterite(ctx: ConjugationContext, i: number): string | nul
 /** Handle yo-go verbs in present tense (tengo, vengo, etc.) */
 function tryYoGo(ctx: ConjugationContext, i: number): string | null {
   if (!ctx.pattern?.yoGo) return null;
-  const goStem = ctx.stem + 'g';
+  // Vowel-final stems insert -ig- (caer → caigo, traer → traigo), not bare -g-
+  const goStem = /[aeo]$/.test(ctx.stem) ? ctx.stem + 'ig' : ctx.stem + 'g';
   if (ctx.tense === 'present' && i === 0) {
     return goStem + 'o';
   }
@@ -717,6 +780,13 @@ function conjugateSimple(
   // 2. Build forms per person
   return pronouns.map((pronoun, i) => {
     const disabled = isImperative && i === 0;
+    if (disabled) return makeResult(pronoun, '—', true);
+
+    // Shortened tú imperatives (ten, pon, ven, sal, mantén, ...)
+    if (tense === 'imperative_affirmative' && i === 1) {
+      const shortTu = getShortImperativeTu(infinitive);
+      if (shortTu) return makeResult(pronoun, shortTu, false);
+    }
 
     // Try special patterns (each returns early if matched)
     const irregFutCond = tryIrregularFutureConditional(ctx, i);
@@ -765,7 +835,7 @@ export function conjugate(
 ): ConjugationResult[] {
   if (tense === 'gerund_participle') {
     return [
-      { pronoun: 'Gerund', form: getGerund(infinitive, verb.type) },
+      { pronoun: 'Gerund', form: getGerund(infinitive, verb) },
       { pronoun: 'Past Participle', form: getPastParticiple(infinitive, verb.type) },
     ];
   }
@@ -780,7 +850,7 @@ export function conjugate(
   }
 
   if (tense in estarForms) {
-    const gerund = getGerund(infinitive, verb.type);
+    const gerund = getGerund(infinitive, verb);
     const estar = estarForms[tense as ProgressiveTense];
     return pronouns.map((pronoun, i) => ({
       pronoun,
