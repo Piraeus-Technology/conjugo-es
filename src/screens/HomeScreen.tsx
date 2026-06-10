@@ -29,9 +29,13 @@ import {
 import { isSearchDebouncePending } from '../utils/searchDebounce';
 
 function getVerbOfTheDay() {
+  // Count days in LOCAL time so the verb rolls over at local midnight,
+  // not UTC midnight.
   const today = new Date();
-  const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
-  const index = daysSinceEpoch % verbEntries.length;
+  const localDays = Math.floor(
+    (today.getTime() - today.getTimezoneOffset() * 60 * 1000) / (1000 * 60 * 60 * 24),
+  );
+  const index = localDays % verbEntries.length;
   return verbEntries[index];
 }
 
@@ -94,6 +98,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const { favorites, loadFavorites, toggleFavorite } = useFavoritesStore();
   const colors = useColors();
   const searchPending = isSearchDebouncePending(search, debouncedSearch);
+  const verbOfTheDay = getVerbOfTheDay();
 
   useEffect(() => {
     loadHistory();
@@ -214,7 +219,8 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   const sections = useMemo(() => {
     if (search.trim()) {
-      if (searchPending) return [];
+      // While the debounce is pending, keep showing the previous results —
+      // returning [] here blanked the list on every keystroke.
       return results.length > 0 ? [{ title: '', data: results }] : [];
     }
 
@@ -376,24 +382,21 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <View style={styles.vodWrapper}>
               <TouchableOpacity
                 style={[styles.vodCard, { backgroundColor: colors.card }]}
-                onPress={() => {
-                  const votd = getVerbOfTheDay();
-                  handleVerbPress(votd.infinitive);
-                }}
+                onPress={() => handleVerbPress(verbOfTheDay.infinitive)}
                 activeOpacity={0.7}
               >
                 <Text style={[styles.vodLabel, { color: colors.textMuted }]}>VERB OF THE DAY</Text>
-                <Text style={[styles.vodVerb, { color: colors.primary }]}>{getVerbOfTheDay().infinitive}</Text>
-                <Text style={[styles.vodTranslation, { color: colors.textSecondary }]}>{getVerbOfTheDay().translation}</Text>
+                <Text style={[styles.vodVerb, { color: colors.primary }]}>{verbOfTheDay.infinitive}</Text>
+                <Text style={[styles.vodTranslation, { color: colors.textSecondary }]}>{verbOfTheDay.translation}</Text>
                 <View style={styles.vodBadgeRow}>
-                  <View style={[styles.vodBadge, { backgroundColor: getVerbOfTheDay().regular ? colors.regularTag : colors.irregularTag }]}>
-                    <Text style={[styles.vodBadgeText, { color: getVerbOfTheDay().regular ? colors.regularTagText : colors.irregularTagText }]}>
-                      {getVerbOfTheDay().regular ? 'Regular' : 'Irregular'}
+                  <View style={[styles.vodBadge, { backgroundColor: verbOfTheDay.regular ? colors.regularTag : colors.irregularTag }]}>
+                    <Text style={[styles.vodBadgeText, { color: verbOfTheDay.regular ? colors.regularTagText : colors.irregularTagText }]}>
+                      {verbOfTheDay.regular ? 'Regular' : 'Irregular'}
                     </Text>
                   </View>
                   <View style={[styles.vodBadge, { backgroundColor: colors.pillBg }]}>
                     <Text style={[styles.vodBadgeText, { color: colors.textSecondary }]}>
-                      -{getVerbOfTheDay().type}
+                      -{verbOfTheDay.type}
                     </Text>
                   </View>
                 </View>

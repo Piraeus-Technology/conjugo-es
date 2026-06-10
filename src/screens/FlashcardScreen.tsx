@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Dimensions,
   AppState,
+  useWindowDimensions,
 } from 'react-native';
 import type { AppStateStatus } from 'react-native';
 import * as Haptics from 'expo-haptics';
@@ -60,6 +60,8 @@ function generateCard(
 
 export default function FlashcardScreen() {
   const colors = useColors();
+  // Track live window width so the card adapts to rotation/split-screen
+  const { width } = useWindowDimensions();
   const isDark = useThemeStore((s) => s.isDark);
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
   const { autoTTS } = useThemeStore();
@@ -267,7 +269,7 @@ export default function FlashcardScreen() {
 
       {/* Card */}
       <TouchableOpacity
-        style={styles.cardContainer}
+        style={[styles.cardContainer, { width: width - spacing.lg * 2 }]}
         onPress={!flipped ? flipToBack : undefined}
         activeOpacity={flipped ? 1 : 0.95}
         accessibilityRole="button"
@@ -350,8 +352,6 @@ export default function FlashcardScreen() {
   );
 }
 
-const { width } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
   statusContainer: {
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   scoreItem: { alignItems: 'center' },
   scoreValue: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.bold },
   scoreLabel: { fontSize: fonts.sizes.xs, marginTop: 2, textTransform: 'uppercase', letterSpacing: 0.5 },
-  cardContainer: { width: width - spacing.lg * 2, height: 320 },
+  cardContainer: { height: 320 },
   card: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', padding: spacing.xl,
@@ -412,13 +412,4 @@ const styles = StyleSheet.create({
     borderRadius: radius.md, borderWidth: 1.5,
   },
   actionButtonText: { fontSize: fonts.sizes.md, fontWeight: fonts.weights.bold },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
-  modalContent: { width: '80%', borderRadius: radius.lg, padding: spacing.xl, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 8 },
-  modalTitle: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.bold, marginBottom: spacing.lg },
-  modalStats: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginBottom: spacing.lg },
-  modalStatItem: { alignItems: 'center' },
-  modalStatValue: { fontSize: 28, fontWeight: fonts.weights.bold },
-  modalStatLabel: { fontSize: fonts.sizes.xs, marginTop: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
-  modalButton: { paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: radius.md, width: '100%', alignItems: 'center' },
-  modalButtonText: { color: '#fff', fontSize: fonts.sizes.md, fontWeight: fonts.weights.bold },
 });

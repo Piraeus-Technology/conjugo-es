@@ -309,8 +309,11 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                         key={i}
                         ref={isHighlighted ? highlightRef as any : undefined}
                         onLayout={isHighlighted ? () => {
-                          // Delay to allow layout to settle before measuring
-                          const timer = setTimeout(() => {
+                          // Delay to allow layout to settle before measuring.
+                          // onLayout is a plain event handler (a returned
+                          // "cleanup" would be ignored); the refs guard
+                          // against firing after unmount.
+                          setTimeout(() => {
                             if (highlightRef.current && scrollContentRef.current) {
                               highlightRef.current.measureLayout(
                                 scrollContentRef.current as any,
@@ -321,7 +324,6 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                               );
                             }
                           }, 400);
-                          return () => clearTimeout(timer);
                         } : undefined}
                         style={[
                           styles.row,

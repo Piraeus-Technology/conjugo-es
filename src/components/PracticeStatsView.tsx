@@ -110,7 +110,9 @@ export default function PracticeStatsView({
   const nextMonth = () => {
     const now = new Date();
     const next = new Date(calYear, calMonth + 1, 1);
-    if (next <= new Date(now.getFullYear(), now.getMonth() + 1, 1)) {
+    // Cap at the current month — paging into a guaranteed-empty future
+    // month is never useful.
+    if (next <= new Date(now.getFullYear(), now.getMonth(), 1)) {
       setCalendarDate(next);
       setSelectedDay(null);
     }
