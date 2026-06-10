@@ -82,8 +82,8 @@ export default function PracticeStatsView({
   const todayData = dailyMap[todayStr];
 
   const streak = React.useMemo(
-    () => computeStreak((key) => hasPositiveCount(dailyMap[key]?.count)),
-    [dailyMap],
+    () => computeStreak((key) => hasPositiveCount(dailyMap[key]?.count), todayStr),
+    [dailyMap, todayStr],
   );
 
   // Calendar

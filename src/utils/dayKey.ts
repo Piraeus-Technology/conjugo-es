@@ -17,3 +17,12 @@ export function getTodayKey(): string {
 export function timestampToDayKey(timestamp: number): string {
   return dateToDayKey(new Date(timestamp));
 }
+
+export function normalizeStoredDayKey(day: string): string {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(day)) return day;
+
+  const parsed = new Date(day);
+  if (!Number.isFinite(parsed.getTime())) return day;
+
+  return dateToDayKey(parsed);
+}

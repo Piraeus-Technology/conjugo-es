@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
-import { getTodayKey, timestampToDayKey } from '../utils/dayKey';
+import { getTodayKey, normalizeStoredDayKey, timestampToDayKey } from '../utils/dayKey';
 import { MAX_DAILY_SESSIONS } from '../utils/constants';
 
 export interface FlashcardSession {
@@ -42,8 +42,14 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
           const dayMap: Record<string, FlashcardSession> = {};
           let didMigrate = false;
           for (const s of parsed) {
-            if (!s.day) didMigrate = true;
-            const day = s.day || timestampToDayKey(s.date);
+            let day: string;
+            if (s.day) {
+              day = normalizeStoredDayKey(s.day);
+              if (day !== s.day) didMigrate = true;
+            } else {
+              didMigrate = true;
+              day = timestampToDayKey(s.date);
+            }
             if (dayMap[day]) {
               didMigrate = true;
               dayMap[day].reviewed += s.reviewed;

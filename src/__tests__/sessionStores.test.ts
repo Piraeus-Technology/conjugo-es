@@ -153,6 +153,56 @@ describe('session store persistence races', () => {
     ]);
   });
 
+  test('quiz load normalizes parseable legacy day keys and writes the migration back', async () => {
+    mockStorage.set('sessions', JSON.stringify([
+      { day: '6/10/2026', total: 2, correct: 1, streak: 1 },
+      { day: '2026-06-10', total: 3, correct: 2, streak: 4 },
+    ]));
+
+    await useSessionStore.getState().loadSessions();
+
+    const expected = [{ day: '2026-06-10', total: 5, correct: 3, streak: 4 }];
+    expect(useSessionStore.getState().sessions).toEqual(expected);
+    expect(JSON.parse(mockStorage.get('sessions')!)).toEqual(expected);
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('sessions', JSON.stringify(expected));
+  });
+
+  test('flashcard load normalizes parseable legacy day keys and writes the migration back', async () => {
+    mockStorage.set('flashcardSessions', JSON.stringify([
+      { day: '6/10/2026', reviewed: 2, correct: 1 },
+      { day: '2026-06-10', reviewed: 3, correct: 2 },
+    ]));
+
+    await useFlashcardSessionStore.getState().loadSessions();
+
+    const expected = [{ day: '2026-06-10', reviewed: 5, correct: 3 }];
+    expect(useFlashcardSessionStore.getState().sessions).toEqual(expected);
+    expect(JSON.parse(mockStorage.get('flashcardSessions')!)).toEqual(expected);
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('flashcardSessions', JSON.stringify(expected));
+  });
+
+  test('quiz load keeps unparseable day keys unchanged', async () => {
+    const stored = [{ day: 'not-a-date', total: 2, correct: 1, streak: 1 }];
+    mockStorage.set('sessions', JSON.stringify(stored));
+
+    await useSessionStore.getState().loadSessions();
+
+    expect(useSessionStore.getState().sessions).toEqual(stored);
+    expect(JSON.parse(mockStorage.get('sessions')!)).toEqual(stored);
+    expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+  });
+
+  test('flashcard load keeps unparseable day keys unchanged', async () => {
+    const stored = [{ day: 'not-a-date', reviewed: 2, correct: 1 }];
+    mockStorage.set('flashcardSessions', JSON.stringify(stored));
+
+    await useFlashcardSessionStore.getState().loadSessions();
+
+    expect(useFlashcardSessionStore.getState().sessions).toEqual(stored);
+    expect(JSON.parse(mockStorage.get('flashcardSessions')!)).toEqual(stored);
+    expect(AsyncStorage.setItem).not.toHaveBeenCalled();
+  });
+
   test('quiz saveSession refuses to write when load failed, preserving disk', async () => {
     mockStorage.set('sessions', JSON.stringify([{ day: today(), total: 100, correct: 80, streak: 5 }]));
     jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('disk locked'));

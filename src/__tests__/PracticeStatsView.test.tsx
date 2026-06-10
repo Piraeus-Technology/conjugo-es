@@ -64,4 +64,22 @@ describe('PracticeStatsView', () => {
     expect(getByText('No stats yet')).toBeTruthy();
     expect(getByText('Start a quiz to see your progress')).toBeTruthy();
   });
+
+  test('recomputes the streak when the current day changes across rerenders', () => {
+    const sessions = [{ day: '2026-06-09', count: 5, correct: 4 }];
+    jest.useFakeTimers();
+    try {
+      jest.setSystemTime(new Date(2026, 5, 10, 12));
+      const { getByText, queryByText, rerender } = render(
+        <PracticeStatsView {...baseProps} sessions={sessions} />,
+      );
+      expect(getByText('1 day streak')).toBeTruthy();
+
+      jest.setSystemTime(new Date(2026, 5, 11, 12));
+      rerender(<PracticeStatsView {...baseProps} sessions={sessions} />);
+      expect(queryByText('1 day streak')).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });

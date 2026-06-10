@@ -1,9 +1,12 @@
 import { buildCalendarWeeks, buildDayKey, computeStreak } from '../utils/activityCalendar';
 import { dateToDayKey } from '../utils/dayKey';
 
-function daysAgoKey(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() - days);
+const TODAY = '2026-06-10';
+
+function offsetDayKey(baseDay: string, offset: number): string {
+  const [year, month, day] = baseDay.split('-').map(Number);
+  const d = new Date(year, month - 1, day);
+  d.setDate(d.getDate() + offset);
   return dateToDayKey(d);
 }
 
@@ -42,22 +45,28 @@ describe('buildDayKey', () => {
 
 describe('computeStreak', () => {
   test('counts consecutive days ending today', () => {
-    const active = new Set([daysAgoKey(0), daysAgoKey(1), daysAgoKey(2)]);
-    expect(computeStreak((key) => active.has(key))).toBe(3);
+    const active = new Set([TODAY, offsetDayKey(TODAY, -1), offsetDayKey(TODAY, -2)]);
+    expect(computeStreak((key) => active.has(key), TODAY)).toBe(3);
   });
 
   test('keeps the streak alive when today has no activity yet', () => {
-    const active = new Set([daysAgoKey(1), daysAgoKey(2)]);
-    expect(computeStreak((key) => active.has(key))).toBe(2);
+    const active = new Set([offsetDayKey(TODAY, -1), offsetDayKey(TODAY, -2)]);
+    expect(computeStreak((key) => active.has(key), TODAY)).toBe(2);
   });
 
   test('returns zero when the last activity was two days ago', () => {
-    const active = new Set([daysAgoKey(2), daysAgoKey(3)]);
-    expect(computeStreak((key) => active.has(key))).toBe(0);
+    const active = new Set([offsetDayKey(TODAY, -2), offsetDayKey(TODAY, -3)]);
+    expect(computeStreak((key) => active.has(key), TODAY)).toBe(0);
   });
 
   test('stops at the first gap', () => {
-    const active = new Set([daysAgoKey(0), daysAgoKey(1), daysAgoKey(3)]);
-    expect(computeStreak((key) => active.has(key))).toBe(2);
+    const active = new Set([TODAY, offsetDayKey(TODAY, -1), offsetDayKey(TODAY, -3)]);
+    expect(computeStreak((key) => active.has(key), TODAY)).toBe(2);
+  });
+
+  test('uses the supplied current day even when activity data is unchanged', () => {
+    const active = new Set([TODAY]);
+    expect(computeStreak((key) => active.has(key), TODAY)).toBe(1);
+    expect(computeStreak((key) => active.has(key), offsetDayKey(TODAY, 2))).toBe(0);
   });
 });

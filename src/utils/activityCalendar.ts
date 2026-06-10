@@ -28,15 +28,23 @@ export function buildDayKey(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
+function dateFromDayKey(dayKey: string): Date {
+  const [year, month, day] = dayKey.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 // Consecutive-day activity streak ending today (or yesterday, so the streak
 // doesn't read as broken before the user practices today).
-export function computeStreak(hasActivity: (dayKey: string) => boolean): number {
+export function computeStreak(
+  hasActivity: (dayKey: string) => boolean,
+  todayKey: string = getTodayKey(),
+): number {
   let count = 0;
-  const todayKey = getTodayKey();
-  const yesterday = new Date();
+  const today = dateFromDayKey(todayKey);
+  const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   if (hasActivity(todayKey) || hasActivity(dateToDayKey(yesterday))) {
-    const checkDate = new Date();
+    const checkDate = new Date(today);
     if (!hasActivity(todayKey)) checkDate.setDate(checkDate.getDate() - 1);
     while (hasActivity(dateToDayKey(checkDate))) {
       count++;
