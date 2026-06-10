@@ -12,6 +12,7 @@ import type { AppStateStatus } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
+import { getTodayKey } from '../utils/dayKey';
 import { useNavigation } from '@react-navigation/native';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
@@ -225,7 +226,7 @@ export default function FlashcardScreen() {
   newCorrectRef.current = newCorrect;
 
   // Load today's cumulative totals plus any unsaved in-memory progress.
-  const todayKey = new Date().toLocaleDateString('en-CA');
+  const todayKey = getTodayKey();
   const todaySession = sessions.find(s => s.day === todayKey);
   const reviewed = (todaySession?.reviewed || 0) + (newReviewed - lastSavedReviewedRef.current);
   const correct = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);

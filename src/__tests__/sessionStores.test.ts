@@ -4,6 +4,7 @@ import {
   useFlashcardSessionStore,
 } from '../store/flashcardSessionStore';
 import { __resetSessionStoreForTests, useSessionStore } from '../store/sessionStore';
+import { getTodayKey } from '../utils/dayKey';
 
 const mockStorage = new Map<string, string>();
 
@@ -29,7 +30,7 @@ function deferred<T = void>() {
   return { promise, resolve, reject };
 }
 
-const today = () => new Date().toLocaleDateString('en-CA');
+const today = () => getTodayKey();
 
 describe('session store persistence races', () => {
   let warnSpy: jest.SpyInstance;

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
+import { createStoreQueue } from '../utils/storeQueue';
 import { Tense } from '../utils/conjugate';
 
 // Track how well the user knows each verb
@@ -53,23 +54,17 @@ export function applyPromptResult(
     ? Math.max(MIN_WEIGHT, current * 0.7)
     : Math.min(MAX_WEIGHT, current * 1.5);
 
-  // Legacy weights were stored by infinitive only. Once an exact prompt has
-  // history, let that more precise signal take over for the verb.
-  delete nextWeights[verb];
+  // Legacy weights were stored by infinitive only and stay as the fallback
+  // for this verb's OTHER prompts (getStoredWeight prefers the prompt key).
+  // Deleting the verb weight here used to reset ~90 sibling prompts of a
+  // struggling verb back to the default after a single answer.
 
   return nextWeights;
 }
 
-// Module-scoped to dedupe concurrent first-load calls and serialize writes
-// against loads (prevents loadWeights from stomping a just-recorded result).
-let loadPromise: Promise<void> | null = null;
-let operationQueue: Promise<void> = Promise.resolve();
-
-function enqueueOperation(operation: () => Promise<void>): Promise<void> {
-  const next = operationQueue.catch(() => undefined).then(operation);
-  operationQueue = next.catch(() => undefined);
-  return next;
-}
+// Dedupes concurrent first-load calls and serializes writes against loads
+// (prevents loadWeights from stomping a just-recorded result).
+const queue = createStoreQueue();
 
 export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
   weights: {},
@@ -78,9 +73,8 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
 
   loadWeights: async () => {
     if (get().loaded) return;
-    if (loadPromise) return loadPromise;
     set({ loadError: false });
-    const attempt = enqueueOperation(async () => {
+    return queue.runLoad(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('spaced_rep_weights');
@@ -96,11 +90,6 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
         set({ loadError: true });
       }
     });
-    const wrapped: Promise<void> = attempt.finally(() => {
-      if (loadPromise === wrapped) loadPromise = null;
-    });
-    loadPromise = wrapped;
-    return loadPromise;
   },
 
   recordResult: async (verb: string, tense: Tense, personIndex: number, correct: boolean) => {
@@ -112,7 +101,7 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
       console.warn('Skipping spaced rep result persistence: store never loaded');
       return;
     }
-    return enqueueOperation(async () => {
+    return queue.enqueue(async () => {
       const weights = applyPromptResult(get().weights, verb, tense, personIndex, correct);
       const persisted = await safeSetItem('spaced_rep_weights', JSON.stringify(weights));
       if (!persisted) {
@@ -129,16 +118,14 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
   },
 
   resetWeights: async () => {
-    return enqueueOperation(async () => {
+    return queue.enqueue(async () => {
       set({ weights: {}, loaded: true, loadError: false });
-      loadPromise = null;
       await safeRemoveItem('spaced_rep_weights');
     });
   },
 }));
 
 export function __resetSpacedRepStoreForTests() {
-  loadPromise = null;
-  operationQueue = Promise.resolve();
+  queue.reset();
   useSpacedRepStore.setState({ weights: {}, loaded: false, loadError: false });
 }

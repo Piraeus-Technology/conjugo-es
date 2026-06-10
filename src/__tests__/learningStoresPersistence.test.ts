@@ -144,8 +144,8 @@ describe('quiz and spaced repetition store persistence', () => {
     await Promise.all([loadPromise, recordPromise]);
 
     const promptKey = buildPromptKey('dormir', 'preterite', 2);
-    expect(useSpacedRepStore.getState().weights).toEqual({ [promptKey]: 3 });
-    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ [promptKey]: 3 });
+    expect(useSpacedRepStore.getState().weights).toEqual({ dormir: 2, [promptKey]: 3 });
+    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ dormir: 2, [promptKey]: 3 });
   });
 
   test('spaced repetition result leaves disk and state untouched when persistence fails', async () => {
@@ -191,8 +191,8 @@ describe('quiz and spaced repetition store persistence', () => {
     expect(useSpacedRepStore.getState()).toMatchObject({
       loaded: true,
       loadError: false,
-      weights: { [promptKey]: 5 },
+      weights: { dormir: 4, [promptKey]: 5 },
     });
-    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ [promptKey]: 5 });
+    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ dormir: 4, [promptKey]: 5 });
   });
 });

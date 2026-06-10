@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
+import { createStoreQueue } from '../utils/storeQueue';
 
 interface QuizStats {
   totalQuestions: number;
@@ -13,16 +14,9 @@ interface QuizStats {
   resetStats: () => Promise<void>;
 }
 
-// Module-scoped to dedupe concurrent first-load calls and serialize writes
-// against loads (prevents loadStats from stomping a just-recorded answer).
-let loadPromise: Promise<void> | null = null;
-let operationQueue: Promise<void> = Promise.resolve();
-
-function enqueueOperation(operation: () => Promise<void>): Promise<void> {
-  const next = operationQueue.catch(() => undefined).then(operation);
-  operationQueue = next.catch(() => undefined);
-  return next;
-}
+// Dedupes concurrent first-load calls and serializes writes against loads
+// (prevents loadStats from stomping a just-recorded answer).
+const queue = createStoreQueue();
 
 export const useQuizStore = create<QuizStats>((set, get) => ({
   totalQuestions: 0,
@@ -33,9 +27,8 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
 
   loadStats: async () => {
     if (get().loaded) return;
-    if (loadPromise) return loadPromise;
     set({ loadError: false });
-    const attempt = enqueueOperation(async () => {
+    return queue.runLoad(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('quiz_stats');
@@ -53,11 +46,6 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
         set({ loadError: true });
       }
     });
-    const wrapped: Promise<void> = attempt.finally(() => {
-      if (loadPromise === wrapped) loadPromise = null;
-    });
-    loadPromise = wrapped;
-    return loadPromise;
   },
 
   recordAnswer: async (correct: boolean, currentStreak: number) => {
@@ -70,7 +58,7 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
       console.warn('Skipping quiz answer persistence: store never loaded');
       return;
     }
-    return enqueueOperation(async () => {
+    return queue.enqueue(async () => {
       const state = get();
       const updated = {
         totalQuestions: state.totalQuestions + 1,
@@ -90,17 +78,15 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
   },
 
   resetStats: async () => {
-    return enqueueOperation(async () => {
+    return queue.enqueue(async () => {
       set({ totalQuestions: 0, totalCorrect: 0, bestStreak: 0, loaded: true, loadError: false });
-      loadPromise = null;
       await safeRemoveItem('quiz_stats');
     });
   },
 }));
 
 export function __resetQuizStoreForTests() {
-  loadPromise = null;
-  operationQueue = Promise.resolve();
+  queue.reset();
   useQuizStore.setState({
     totalQuestions: 0,
     totalCorrect: 0,

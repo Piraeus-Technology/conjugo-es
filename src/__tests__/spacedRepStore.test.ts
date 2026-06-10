@@ -7,11 +7,14 @@ describe('spaced repetition prompt weighting', () => {
     expect(getStoredWeight(weights, 'dormir', 'preterite', 2)).toBe(1.5);
   });
 
-  test('records exact prompt history and drops legacy verb-only weight', () => {
+  test('records exact prompt history and keeps legacy verb weight as sibling fallback', () => {
     const nextWeights = applyPromptResult({ dormir: 1.5 }, 'dormir', 'preterite', 2, false);
 
-    expect(nextWeights.dormir).toBeUndefined();
+    // The legacy verb-level weight must survive so the verb's other ~90
+    // prompts keep their difficulty signal until individually practiced.
+    expect(nextWeights.dormir).toBe(1.5);
     expect(nextWeights[buildPromptKey('dormir', 'preterite', 2)]).toBe(2.25);
+    expect(getStoredWeight(nextWeights, 'dormir', 'present', 0)).toBe(1.5);
   });
 
   test('prefers exact prompt weight over legacy verb weight', () => {

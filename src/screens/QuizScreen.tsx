@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as StoreReview from 'expo-store-review';
 import { useNavigation } from '@react-navigation/native';
 import verbs from '../data/verbs.json';
+import { getTodayKey } from '../utils/dayKey';
 import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
@@ -302,7 +303,7 @@ export default function QuizScreen() {
   bestSessionStreakRef.current = bestSessionStreak;
 
   // Load today's cumulative totals plus any unsaved in-memory progress.
-  const todayKey = new Date().toLocaleDateString('en-CA');
+  const todayKey = getTodayKey();
   const todaySession = sessions.find(s => s.day === todayKey);
   const sessionTotal = (todaySession?.total || 0) + (newTotal - lastSavedTotalRef.current);
   const sessionScore = (todaySession?.correct || 0) + (newCorrect - lastSavedCorrectRef.current);

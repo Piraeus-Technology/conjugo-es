@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
+import { createStoreQueue } from '../utils/storeQueue';
+import { getTodayKey, timestampToDayKey } from '../utils/dayKey';
 import { MAX_DAILY_SESSIONS } from '../utils/constants';
 
 export interface FlashcardSession {
@@ -18,19 +20,8 @@ interface FlashcardSessionStore {
   clearSessions: () => Promise<void>;
 }
 
-function getTodayKey(): string {
-  return new Date().toLocaleDateString('en-CA');
-}
-
 // See sessionStore.ts. Dedupes concurrent first-load calls.
-let loadPromise: Promise<void> | null = null;
-let operationQueue: Promise<void> = Promise.resolve();
-
-function enqueueOperation(operation: () => Promise<void>): Promise<void> {
-  const next = operationQueue.catch(() => undefined).then(operation);
-  operationQueue = next.catch(() => undefined);
-  return next;
-}
+const queue = createStoreQueue();
 
 export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get) => ({
   sessions: [],
@@ -39,9 +30,8 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
 
   loadSessions: async () => {
     if (get().loaded) return;
-    if (loadPromise) return loadPromise;
     set({ loadError: false });
-    const attempt = enqueueOperation(async () => {
+    return queue.runLoad(async () => {
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('flashcardSessions');
@@ -53,7 +43,7 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
           let didMigrate = false;
           for (const s of parsed) {
             if (!s.day) didMigrate = true;
-            const day = s.day || new Date(s.date).toLocaleDateString('en-CA');
+            const day = s.day || timestampToDayKey(s.date);
             if (dayMap[day]) {
               didMigrate = true;
               dayMap[day].reviewed += s.reviewed;
@@ -77,11 +67,6 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
         set({ loadError: true });
       }
     });
-    const wrapped: Promise<void> = attempt.finally(() => {
-      if (loadPromise === wrapped) loadPromise = null;
-    });
-    loadPromise = wrapped;
-    return loadPromise;
   },
 
   saveSession: async (session) => {
@@ -92,7 +77,7 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
       throw new Error('Cannot save flashcard session: store never loaded');
     }
 
-    return enqueueOperation(async () => {
+    return queue.enqueue(async () => {
       const today = getTodayKey();
       const current = get().sessions;
       const existingIndex = current.findIndex(s => s.day === today);
@@ -118,16 +103,14 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
   },
 
   clearSessions: async () => {
-    return enqueueOperation(async () => {
+    return queue.enqueue(async () => {
       set({ sessions: [], loaded: true, loadError: false });
-      loadPromise = null;
       await safeRemoveItem('flashcardSessions');
     });
   },
 }));
 
 export function __resetFlashcardSessionStoreForTests() {
-  loadPromise = null;
-  operationQueue = Promise.resolve();
+  queue.reset();
   useFlashcardSessionStore.setState({ sessions: [], loaded: false, loadError: false });
 }
