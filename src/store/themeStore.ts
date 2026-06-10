@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeSetItem } from '../utils/safeStorage';
+import { createStoreQueue } from '../utils/storeQueue';
 
 interface ThemeStore {
   isDark: boolean;
@@ -13,6 +14,8 @@ interface ThemeStore {
   toggleVosotros: () => Promise<void>;
 }
 
+const queue = createStoreQueue();
+
 export const useThemeStore = create<ThemeStore>((set, get) => ({
   isDark: false,
   autoTTS: false,
@@ -20,37 +23,61 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   loaded: false,
 
   loadTheme: async () => {
-    try {
-      const stored = await AsyncStorage.getItem('theme_mode');
-      const tts = await AsyncStorage.getItem('auto_tts');
-      const vosotros = await AsyncStorage.getItem('include_vosotros');
-      set({
-        isDark: stored === 'dark',
-        autoTTS: tts === 'true',
-        includeVosotros: vosotros !== 'false',
-        loaded: true,
-      });
-    } catch (e) {
-      console.warn('Failed to load theme:', e);
-      set({ loaded: true });
-    }
+    if (get().loaded) return;
+    return queue.runLoad(async () => {
+      if (get().loaded) return;
+      try {
+        const stored = await AsyncStorage.getItem('theme_mode');
+        const tts = await AsyncStorage.getItem('auto_tts');
+        const vosotros = await AsyncStorage.getItem('include_vosotros');
+        set({
+          isDark: stored === 'dark',
+          autoTTS: tts === 'true',
+          includeVosotros: vosotros !== 'false',
+          loaded: true,
+        });
+      } catch (e) {
+        // Unlike the data stores, fall back to defaults and mark loaded:
+        // App.tsx gates ALL rendering on loaded, so refusing here would
+        // blank the app over three recoverable booleans.
+        console.warn('Failed to load theme:', e);
+        set({ loaded: true });
+      }
+    });
   },
 
   toggleTheme: async () => {
-    const newIsDark = !get().isDark;
-    set({ isDark: newIsDark });
-    await safeSetItem('theme_mode', newIsDark ? 'dark' : 'light');
+    return queue.enqueue(async () => {
+      const newIsDark = !get().isDark;
+      set({ isDark: newIsDark });
+      if (!(await safeSetItem('theme_mode', newIsDark ? 'dark' : 'light'))) {
+        console.warn('Theme preference not persisted; will revert on next launch');
+      }
+    });
   },
 
   toggleAutoTTS: async () => {
-    const newAutoTTS = !get().autoTTS;
-    set({ autoTTS: newAutoTTS });
-    await safeSetItem('auto_tts', newAutoTTS ? 'true' : 'false');
+    return queue.enqueue(async () => {
+      const newAutoTTS = !get().autoTTS;
+      set({ autoTTS: newAutoTTS });
+      if (!(await safeSetItem('auto_tts', newAutoTTS ? 'true' : 'false'))) {
+        console.warn('Auto-TTS preference not persisted; will revert on next launch');
+      }
+    });
   },
 
   toggleVosotros: async () => {
-    const newVal = !get().includeVosotros;
-    set({ includeVosotros: newVal });
-    await safeSetItem('include_vosotros', newVal ? 'true' : 'false');
+    return queue.enqueue(async () => {
+      const newVal = !get().includeVosotros;
+      set({ includeVosotros: newVal });
+      if (!(await safeSetItem('include_vosotros', newVal ? 'true' : 'false'))) {
+        console.warn('Vosotros preference not persisted; will revert on next launch');
+      }
+    });
   },
 }));
+
+export function __resetThemeStoreForTests() {
+  queue.reset();
+  useThemeStore.setState({ isDark: false, autoTTS: false, includeVosotros: true, loaded: false });
+}
