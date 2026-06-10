@@ -79,6 +79,11 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
   },
 
   clearHistory: async () => {
+    // Intentional exception to the never-loaded write guard above. This is an
+    // explicit user-initiated destructive action, not a write derived from the
+    // possibly-default in-memory history, and it is the recovery path when the
+    // on-disk history payload is unreadable. quizStore.resetStats follows the
+    // same convention for user-requested deletion.
     return queue.enqueue(async () => {
       const removed = await safeRemoveItem('verb_history');
       if (!removed) {
