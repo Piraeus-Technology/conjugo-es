@@ -27,7 +27,9 @@
       },
       "package": "com.piraeus.conjugoes",
       "versionCode": 21,
-      "permissions": ["com.android.vending.BILLING"]
+      "permissions": [
+        "com.android.vending.BILLING"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +38,9 @@
       "eas": {
         "projectId": "2b815864-9311-430a-8c67-01bddd04b041"
       }
-    }
+    },
+    "plugins": [
+      "expo-asset"
+    ]
   }
 }
