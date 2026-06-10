@@ -67,7 +67,7 @@ export default function FlashcardScreen() {
   const { autoTTS } = useThemeStore();
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
-  const { sessions, loaded: sessionsLoaded, loadSessions, saveSession } = useFlashcardSessionStore();
+  const { sessions, loadSessions, saveSession } = useFlashcardSessionStore();
   const {
     loaded: weightsLoaded,
     loadError: weightsLoadError,
@@ -97,8 +97,9 @@ export default function FlashcardScreen() {
     appState: AppState.currentState as AppStateStatus,
   });
   React.useEffect(() => {
+    const gate = speechGateRef.current;
     return () => {
-      speechGateRef.current.mounted = false;
+      gate.mounted = false;
       stopSpeech();
     };
   }, []);

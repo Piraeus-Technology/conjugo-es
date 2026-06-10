@@ -21,7 +21,7 @@ describe('Verb database integrity', () => {
   });
 
   test('all verb infinitives end in -ar, -er, or -ir', () => {
-    for (const [infinitive, data] of verbEntries) {
+    for (const [infinitive] of verbEntries) {
       const ending = infinitive.slice(-2);
       // Some verbs like "oír" end in -ír
       const normalizedEnding = ending.replace('í', 'i');
@@ -49,9 +49,9 @@ describe('Verb database integrity', () => {
   });
 
   test('override verbs have correct number of forms per tense', () => {
-    for (const [infinitive, data] of verbEntries) {
+    for (const [, data] of verbEntries) {
       if (data.overrides) {
-        for (const [tense, forms] of Object.entries(data.overrides)) {
+        for (const forms of Object.values(data.overrides)) {
           expect(forms).toHaveLength(6);
         }
       }

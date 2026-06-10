@@ -28,6 +28,7 @@ export function getTipTransactionKey(purchase: TipTransactionLike): string | nul
 let iapModule: any = null;
 try {
   if (Platform.OS === 'ios' || Platform.OS === 'android') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- optional native module; import would throw in Expo Go/web
     iapModule = require('react-native-iap');
   }
 } catch {

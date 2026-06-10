@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
-import { tenseNames, Tense, VerbLevel } from '../utils/conjugate';
+import { Tense } from '../utils/conjugate';
 import { usePracticeSettingsStore, allTenses, allLevels } from '../store/practiceSettingsStore';
 
 const tenseGroups: { title: string; tenses: { key: Tense; label: string }[] }[] = [
@@ -70,7 +70,7 @@ export default function PracticeSettingsScreen() {
 
   useEffect(() => {
     loadPracticeSettings();
-  }, []);
+  }, [loadPracticeSettings]);
 
   const allTensesSelected = activeTenses.length === allTenses.length;
   const allLevelsSelected = activeLevels.length === allLevels.length;

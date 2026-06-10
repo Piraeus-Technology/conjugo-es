@@ -93,7 +93,7 @@ function buildVerbMatchMeta(
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const { history, loaded, loadHistory, addToHistory, removeFromHistory, clearHistory } =
+  const { history, loadHistory, addToHistory, removeFromHistory, clearHistory } =
     useHistoryStore();
   const { favorites, loadFavorites, toggleFavorite } = useFavoritesStore();
   const colors = useColors();
@@ -260,7 +260,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     }
 
     return s;
-  }, [search, searchPending, results, favorites, history]);
+  }, [search, results, favorites, history]);
 
   const renderDeleteAction = (
     _progress: Animated.AnimatedInterpolation<number>,

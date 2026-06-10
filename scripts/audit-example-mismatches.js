@@ -70,8 +70,12 @@ const checks = [
   },
   {
     id: 'accent_iar',
-    test: (_inf, data, text) =>
-      /(confío|envío|desafío|amplío|desconfío|confíe|envíe|desafíe|amplíe|desconfíe|río|sonrío)/.test(text) &&
+    // Word boundaries matter: without them "frío" and the noun "río" match
+    // the río alternative in every verb's examples. Also gate on the verb
+    // shape this check is about (-iar verbs plus the reír family).
+    test: (inf, data, text) =>
+      (inf.endsWith('iar') || inf.endsWith('eír')) &&
+      /\b(confío|envío|desafío|amplío|desconfío|confíe|envíe|desafíe|amplíe|desconfíe|río|sonrío)\b/.test(text) &&
       !hasPresentOverride(data, ['confío']) &&
       !hasPresentOverride(data, ['envío']) &&
       !hasPresentOverride(data, ['desafío']) &&
@@ -155,3 +159,4 @@ for (const finding of findings) {
     console.log(`  - ${example}`);
   }
 }
+process.exit(1);

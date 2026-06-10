@@ -1,9 +1,10 @@
+import { getTipTransactionKey } from '../utils/tipJar';
+
+// jest.mock is hoisted above the import at runtime regardless of order.
 jest.mock('react-native', () => ({
   Alert: { alert: jest.fn() },
   Platform: { OS: 'web' },
 }));
-
-import { getTipTransactionKey } from '../utils/tipJar';
 
 describe('tip jar transaction keying', () => {
   test('uses stable transaction identifiers before falling back to no dedupe key', () => {
