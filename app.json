@@ -36,11 +36,12 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2b815864-9311-430a-8c67-01bddd04b041"
+        "projectId": "f6db495c-0f13-49c2-a0bc-0a5d1237f989"
       }
     },
     "plugins": [
       "expo-asset"
-    ]
+    ],
+    "owner": "piraeustechnology"
   }
 }
