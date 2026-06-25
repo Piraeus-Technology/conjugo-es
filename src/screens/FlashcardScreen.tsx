@@ -31,6 +31,10 @@ const quizzableTenses: Tense[] = [
   'present', 'preterite', 'imperfect', 'future', 'conditional',
   'subjunctive_present', 'subjunctive_imperfect',
 ];
+const maxCardHeight = 380;
+const minCardHeight = 210;
+const scoreBarHeightEstimate = 54;
+const buttonRowHeightEstimate = 44;
 
 interface Card {
   verb: string;
@@ -68,8 +72,8 @@ function generateCard(
 
 export default function FlashcardScreen() {
   const colors = useColors();
-  // Track live window width so the card adapts to rotation/split-screen
-  const { width } = useWindowDimensions();
+  // Track live window size so the card adapts to rotation/split-screen
+  const { width, height } = useWindowDimensions();
   const isDark = useThemeStore((s) => s.isDark);
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
   const { autoTTS } = useThemeStore();
@@ -98,6 +102,7 @@ export default function FlashcardScreen() {
   const [flipped, setFlipped] = useState(false);
   const [newReviewed, setNewReviewed] = useState(0);
   const [newCorrect, setNewCorrect] = useState(0);
+  const [layoutHeight, setLayoutHeight] = useState(height);
   const flipAnim = useRef(new Animated.Value(0)).current;
   const speechGateRef = useRef({
     mounted: true,
@@ -217,6 +222,22 @@ export default function FlashcardScreen() {
 
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
+  const availableHeight = layoutHeight || height;
+  const isShortHeight = availableHeight < 600;
+  const isTinyHeight = availableHeight < 420;
+  const verticalPadding = isTinyHeight ? spacing.xs : isShortHeight ? spacing.sm : spacing.lg;
+  const scoreCardGap = isTinyHeight ? spacing.xs : isShortHeight ? spacing.sm : spacing.md;
+  const buttonGap = isTinyHeight ? spacing.xs : isShortHeight ? spacing.sm : spacing.lg;
+  const cardHeight = Math.max(
+    minCardHeight,
+    Math.min(
+      maxCardHeight,
+      availableHeight - (verticalPadding * 2) - scoreBarHeightEstimate - scoreCardGap - buttonGap - buttonRowHeightEstimate,
+    ),
+  );
+  const isCompactCard = cardHeight < 350;
+  const isTinyCard = cardHeight < 275;
+  const cardWidth = Math.max(0, width - spacing.lg * 2);
 
   if (weightsLoadError && !weightsLoaded) {
     return (
@@ -251,121 +272,177 @@ export default function FlashcardScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <View
+      style={[
+        styles.sessionContainer,
+        {
+          backgroundColor: colors.bg,
+          paddingTop: verticalPadding,
+          paddingBottom: verticalPadding,
+        },
+      ]}
+      onLayout={(event) => setLayoutHeight(event.nativeEvent.layout.height)}
+    >
       {/* Score bar */}
-      <View style={[styles.scoreBar, { backgroundColor: colors.card }]}>
+      <View
+        style={[
+          styles.scoreBar,
+          !isShortHeight && styles.scoreBarFloating,
+          isShortHeight && styles.scoreBarCompact,
+          isTinyHeight && styles.scoreBarTiny,
+          { backgroundColor: colors.card },
+        ]}
+      >
         <View style={styles.scoreRow}>
           <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, { color: colors.primary }]}>{reviewed}</Text>
-            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Reviewed</Text>
+            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: colors.primary }]}>{reviewed}</Text>
+            <Text style={[styles.scoreLabel, isShortHeight && styles.scoreLabelCompact, isTinyHeight && styles.scoreLabelTiny, { color: colors.textMuted }]}>Reviewed</Text>
           </View>
           <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, { color: '#2E7D32' }]}>{correct}</Text>
-            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Got It</Text>
+            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: '#2E7D32' }]}>{correct}</Text>
+            <Text style={[styles.scoreLabel, isShortHeight && styles.scoreLabelCompact, isTinyHeight && styles.scoreLabelTiny, { color: colors.textMuted }]}>Got It</Text>
           </View>
           <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, { color: '#C62828' }]}>{reviewed - correct}</Text>
-            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Missed</Text>
+            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: '#C62828' }]}>{reviewed - correct}</Text>
+            <Text style={[styles.scoreLabel, isShortHeight && styles.scoreLabelCompact, isTinyHeight && styles.scoreLabelTiny, { color: colors.textMuted }]}>Missed</Text>
           </View>
           <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
+            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: colors.textSecondary }]}>
               {reviewed > 0 ? Math.round((correct / reviewed) * 100) : 0}%
             </Text>
-            <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Accuracy</Text>
+            <Text style={[styles.scoreLabel, isShortHeight && styles.scoreLabelCompact, isTinyHeight && styles.scoreLabelTiny, { color: colors.textMuted }]}>Accuracy</Text>
           </View>
         </View>
       </View>
 
-      {/* Card */}
-      <TouchableOpacity
-        style={[styles.cardContainer, { width: width - spacing.lg * 2 }]}
-        onPress={!flipped ? flipToBack : undefined}
-        activeOpacity={flipped ? 1 : 0.95}
-        accessibilityRole="button"
-        accessibilityLabel={flipped ? `${card.verb}, ${pronounLabels[card.personIndex]}, answer: ${card.answer}${card.example ? `. Example: ${card.example}` : ''}` : `Tap to reveal conjugation of ${card.verb} for ${pronounLabels[card.personIndex]}`}
-      >
-        {/* Front */}
-        <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: frontOpacity }]}>
-          <Text style={[styles.tenseLabel, { color: colors.textMuted }]}>
-            {tenseNames[card.tense]}
-          </Text>
-          <Text style={[styles.verbText, { color: colors.primary }]}>
-            {card.verb}
-          </Text>
-          <Text style={[styles.translationText, { color: colors.textSecondary }]}>
-            {card.translation}
-          </Text>
-          <Text style={[styles.pronounText, { color: colors.textPrimary }]}>
-            {pronounLabels[card.personIndex]}
-          </Text>
-          <Text style={[styles.tapHint, { color: colors.textMuted }]}>
-            Tap to reveal
-          </Text>
-        </Animated.View>
-
-        {/* Back */}
-        <Animated.View style={[styles.card, styles.cardBack, { backgroundColor: colors.primary + '10', opacity: backOpacity }]}>
-          <Text style={[styles.tenseLabel, { color: colors.textMuted }]}>
-            {tenseNames[card.tense]}
-          </Text>
-          <Text
-            style={[styles.answerText, { color: colors.primary }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.6}
+      <View style={[styles.practiceArea, { marginTop: isShortHeight ? scoreCardGap : 0 }]}>
+        {/* Card */}
+        <TouchableOpacity
+          style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}
+          onPress={!flipped ? flipToBack : undefined}
+          activeOpacity={flipped ? 1 : 0.95}
+          accessible={!flipped}
+          accessibilityRole={!flipped ? 'button' : undefined}
+          accessibilityLabel={!flipped ? `Tap to reveal conjugation of ${card.verb} for ${pronounLabels[card.personIndex]}` : undefined}
+          importantForAccessibility={flipped ? 'no' : 'yes'}
+        >
+          {/* Front */}
+          <Animated.View
+            style={[
+              styles.card,
+              isCompactCard && styles.cardCompact,
+              isTinyCard && styles.cardTiny,
+              { backgroundColor: colors.card, opacity: frontOpacity },
+            ]}
+            accessibilityElementsHidden={flipped}
+            importantForAccessibility={flipped ? 'no-hide-descendants' : 'auto'}
           >
-            {card.answer}
-          </Text>
-          <Text style={[styles.contextText, { color: colors.textSecondary }]}>
-            {pronounLabels[card.personIndex]} · {card.verb}
-          </Text>
-          <Text style={[styles.answerTranslation, { color: colors.textMuted }]}>
-            {card.translation}
-          </Text>
-          {card.example ? (
-            <View style={[styles.exampleBox, { borderTopColor: colors.primary + '20' }]}>
-              <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLE</Text>
-              <Text
-                style={[styles.exampleText, { color: colors.textSecondary }]}
-                numberOfLines={2}
-              >
-                {card.example}
-              </Text>
-            </View>
-          ) : null}
+            <Text style={[styles.tenseLabel, isCompactCard && styles.tenseLabelCompact, isTinyCard && styles.tenseLabelTiny, { color: colors.textMuted }]}>
+              {tenseNames[card.tense]}
+            </Text>
+            <Text style={[styles.verbText, isCompactCard && styles.verbTextCompact, isTinyCard && styles.verbTextTiny, { color: colors.primary }]}>
+              {card.verb}
+            </Text>
+            <Text style={[styles.translationText, isCompactCard && styles.translationTextCompact, isTinyCard && styles.translationTextTiny, { color: colors.textSecondary }]}>
+              {card.translation}
+            </Text>
+            <Text style={[styles.pronounText, isCompactCard && styles.pronounTextCompact, isTinyCard && styles.pronounTextTiny, { color: colors.textPrimary }]}>
+              {pronounLabels[card.personIndex]}
+            </Text>
+            <Text style={[styles.tapHint, isCompactCard && styles.tapHintCompact, isTinyCard && styles.tapHintTiny, { color: colors.textMuted }]}>
+              Tap to reveal
+            </Text>
+          </Animated.View>
+
+          {/* Back */}
+          <Animated.View
+            style={[
+              styles.card,
+              styles.cardBack,
+              isCompactCard && styles.cardCompact,
+              isTinyCard && styles.cardTiny,
+              { backgroundColor: colors.primary + '10', opacity: backOpacity },
+            ]}
+            accessibilityElementsHidden={!flipped}
+            importantForAccessibility={!flipped ? 'no-hide-descendants' : 'auto'}
+          >
+            <Text style={[styles.tenseLabel, isCompactCard && styles.tenseLabelCompact, isTinyCard && styles.tenseLabelTiny, { color: colors.textMuted }]}>
+              {tenseNames[card.tense]}
+            </Text>
+            <Text
+              style={[styles.answerText, isCompactCard && styles.answerTextCompact, isTinyCard && styles.answerTextTiny, { color: colors.primary }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.6}
+            >
+              {card.answer}
+            </Text>
+            <Text style={[styles.contextText, isCompactCard && styles.contextTextCompact, isTinyCard && styles.contextTextTiny, { color: colors.textSecondary }]}>
+              {pronounLabels[card.personIndex]} · {card.verb}
+            </Text>
+            <Text style={[styles.answerTranslation, isCompactCard && styles.answerTranslationCompact, isTinyCard && styles.answerTranslationTiny, { color: colors.textMuted }]}>
+              {card.translation}
+            </Text>
+            {card.example ? (
+              <View style={[styles.exampleBox, isCompactCard && styles.exampleBoxCompact, isTinyCard && styles.exampleBoxTiny, { borderTopColor: colors.primary + '20' }]}>
+                <Text style={[styles.exampleLabel, isCompactCard && styles.exampleLabelCompact, isTinyCard && styles.exampleLabelTiny, { color: colors.textMuted }]}>EXAMPLE</Text>
+                <Text
+                  style={[styles.exampleText, isCompactCard && styles.exampleTextCompact, isTinyCard && styles.exampleTextTiny, { color: colors.textSecondary }]}
+                  numberOfLines={2}
+                >
+                  {card.example}
+                </Text>
+              </View>
+            ) : null}
+            <TouchableOpacity
+              style={[styles.speakButton, isCompactCard && styles.speakButtonCompact, isTinyCard && styles.speakButtonTiny, { backgroundColor: colors.primary }]}
+              onPress={() => speak(card.answer)}
+              accessibilityRole="button"
+              accessibilityLabel={`Play pronunciation of ${card.answer}`}
+            >
+              <Ionicons name="volume-medium" size={isTinyCard ? 16 : isCompactCard ? 18 : 20} color="#fff" />
+            </TouchableOpacity>
+          </Animated.View>
+        </TouchableOpacity>
+
+        {/* Got it / Missed buttons */}
+        <View
+          style={[styles.buttonRow, { marginTop: buttonGap, opacity: flipped ? 1 : 0 }]}
+          pointerEvents={flipped ? 'auto' : 'none'}
+          accessibilityElementsHidden={!flipped}
+          importantForAccessibility={!flipped ? 'no-hide-descendants' : 'auto'}
+        >
           <TouchableOpacity
-            style={[styles.speakButton, { backgroundColor: colors.primary }]}
-            onPress={() => speak(card.answer)}
+            style={[
+              styles.actionButton,
+              isShortHeight && styles.actionButtonCompact,
+              isTinyHeight && styles.actionButtonTiny,
+              { backgroundColor: isDark ? '#3E1A1A' : '#FFEBEE', borderColor: isDark ? '#EF5350' : '#C62828' },
+            ]}
+            onPress={handleMissed}
+            activeOpacity={0.8}
             accessibilityRole="button"
-            accessibilityLabel={`Play pronunciation of ${card.answer}`}
+            accessibilityLabel="Mark card as missed"
           >
-            <Ionicons name="volume-medium" size={20} color="#fff" />
+            <Ionicons name="close" size={isTinyHeight ? 16 : 20} color={isDark ? '#EF5350' : '#C62828'} />
+            <Text style={[styles.actionButtonText, isShortHeight && styles.actionButtonTextCompact, isTinyHeight && styles.actionButtonTextTiny, { color: isDark ? '#EF5350' : '#C62828' }]}>Missed</Text>
           </TouchableOpacity>
-        </Animated.View>
-      </TouchableOpacity>
-
-      {/* Got it / Missed buttons */}
-      <View style={[styles.buttonRow, { opacity: flipped ? 1 : 0 }]} pointerEvents={flipped ? 'auto' : 'none'}>
-        <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: isDark ? '#3E1A1A' : '#FFEBEE', borderColor: isDark ? '#EF5350' : '#C62828' }]}
-          onPress={handleMissed}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Mark card as missed"
-        >
-          <Ionicons name="close" size={20} color={isDark ? '#EF5350' : '#C62828'} />
-          <Text style={[styles.actionButtonText, { color: isDark ? '#EF5350' : '#C62828' }]}>Missed</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: isDark ? '#1A3E1A' : '#E8F5E9', borderColor: isDark ? '#66BB6A' : '#2E7D32' }]}
-          onPress={handleGotIt}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Mark card as got it"
-        >
-          <Ionicons name="checkmark" size={20} color={isDark ? '#66BB6A' : '#2E7D32'} />
-          <Text style={[styles.actionButtonText, { color: isDark ? '#66BB6A' : '#2E7D32' }]}>Got it</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              isShortHeight && styles.actionButtonCompact,
+              isTinyHeight && styles.actionButtonTiny,
+              { backgroundColor: isDark ? '#1A3E1A' : '#E8F5E9', borderColor: isDark ? '#66BB6A' : '#2E7D32' },
+            ]}
+            onPress={handleGotIt}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Mark card as got it"
+          >
+            <Ionicons name="checkmark" size={isTinyHeight ? 16 : 20} color={isDark ? '#66BB6A' : '#2E7D32'} />
+            <Text style={[styles.actionButtonText, isShortHeight && styles.actionButtonTextCompact, isTinyHeight && styles.actionButtonTextTiny, { color: isDark ? '#66BB6A' : '#2E7D32' }]}>Got it</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
     </View>
@@ -374,6 +451,11 @@ export default function FlashcardScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
+  sessionContainer: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+  },
   statusContainer: {
     gap: spacing.md,
   },
@@ -395,34 +477,65 @@ const styles = StyleSheet.create({
     fontWeight: fonts.weights.bold,
   },
   scoreBar: {
+    alignSelf: 'stretch',
+    padding: spacing.sm,
+    borderRadius: radius.md,
+  },
+  scoreBarFloating: {
     position: 'absolute',
     top: spacing.sm,
     left: spacing.lg,
     right: spacing.lg,
-    padding: spacing.sm,
-    borderRadius: radius.md,
   },
+  scoreBarCompact: { paddingVertical: spacing.xs },
+  scoreBarTiny: { paddingVertical: 2, paddingHorizontal: spacing.xs },
   scoreRow: { flexDirection: 'row', justifyContent: 'space-around' },
   scoreItem: { alignItems: 'center' },
   scoreValue: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.bold },
+  scoreValueCompact: { fontSize: fonts.sizes.md },
+  scoreValueTiny: { fontSize: fonts.sizes.sm },
   scoreLabel: { fontSize: fonts.sizes.xs, marginTop: 2, textTransform: 'uppercase', letterSpacing: 0.5 },
-  cardContainer: { height: 380 },
+  scoreLabelCompact: { fontSize: 10, marginTop: 1 },
+  scoreLabelTiny: { fontSize: 9, marginTop: 0, letterSpacing: 0.3 },
+  practiceArea: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+  },
+  cardContainer: {},
   card: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', padding: spacing.xl,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 4,
   },
+  cardCompact: { padding: spacing.md },
+  cardTiny: { padding: 10, borderRadius: radius.md },
   cardBack: { borderWidth: 2, borderColor: 'rgba(0,0,0,0.05)' },
   tenseLabel: {
     fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold,
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: spacing.md,
   },
+  tenseLabelCompact: { marginBottom: spacing.sm },
+  tenseLabelTiny: { fontSize: 10, letterSpacing: 0.8, marginBottom: 2 },
   verbText: { fontSize: 36, fontWeight: fonts.weights.bold, marginBottom: spacing.xs },
+  verbTextCompact: { fontSize: 30, marginBottom: 2 },
+  verbTextTiny: { fontSize: 24, marginBottom: 0 },
   translationText: { fontSize: fonts.sizes.md, fontStyle: 'italic', marginBottom: spacing.lg },
+  translationTextCompact: { marginBottom: spacing.sm },
+  translationTextTiny: { fontSize: fonts.sizes.sm, marginBottom: spacing.xs },
   pronounText: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.medium },
+  pronounTextCompact: { fontSize: fonts.sizes.lg },
+  pronounTextTiny: { fontSize: fonts.sizes.md },
   answerText: { fontSize: 42, fontWeight: fonts.weights.bold, marginBottom: spacing.xs },
+  answerTextCompact: { fontSize: 34, marginBottom: 2 },
+  answerTextTiny: { fontSize: 28, marginBottom: 0 },
   answerTranslation: { fontSize: fonts.sizes.md, fontStyle: 'italic', marginBottom: spacing.md },
+  answerTranslationCompact: { marginBottom: spacing.sm },
+  answerTranslationTiny: { fontSize: 12, marginBottom: spacing.xs },
   contextText: { fontSize: fonts.sizes.sm, marginBottom: spacing.md },
+  contextTextCompact: { marginBottom: spacing.sm },
+  contextTextTiny: { fontSize: 11, marginBottom: 2 },
   exampleBox: {
     alignItems: 'center',
     alignSelf: 'stretch',
@@ -430,25 +543,39 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     marginBottom: spacing.md,
   },
+  exampleBoxCompact: { paddingTop: spacing.sm, marginBottom: spacing.sm },
+  exampleBoxTiny: { paddingTop: spacing.xs, marginBottom: spacing.xs },
   exampleLabel: {
     fontSize: fonts.sizes.xs,
     fontWeight: fonts.weights.semibold,
     letterSpacing: 1,
     marginBottom: spacing.xs,
   },
+  exampleLabelCompact: { marginBottom: 2 },
+  exampleLabelTiny: { fontSize: 9, letterSpacing: 0.7, marginBottom: 1 },
   exampleText: {
     fontSize: fonts.sizes.md,
     lineHeight: 22,
     fontStyle: 'italic',
     textAlign: 'center',
   },
+  exampleTextCompact: { fontSize: fonts.sizes.sm, lineHeight: 18 },
+  exampleTextTiny: { fontSize: 11, lineHeight: 14 },
   speakButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  speakButtonCompact: { width: 40, height: 40, borderRadius: 20 },
+  speakButtonTiny: { width: 32, height: 32, borderRadius: 16 },
   tapHint: { fontSize: fonts.sizes.xs, position: 'absolute', bottom: spacing.lg },
-  buttonRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
+  tapHintCompact: { bottom: spacing.md },
+  tapHintTiny: { fontSize: 10, bottom: spacing.sm },
+  buttonRow: { flexDirection: 'row', gap: spacing.md },
   actionButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: spacing.xs, paddingVertical: spacing.sm + 2, paddingHorizontal: spacing.xl,
     borderRadius: radius.md, borderWidth: 1.5,
   },
+  actionButtonCompact: { paddingVertical: spacing.sm, paddingHorizontal: spacing.lg },
+  actionButtonTiny: { gap: 2, paddingVertical: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.sm },
   actionButtonText: { fontSize: fonts.sizes.md, fontWeight: fonts.weights.bold },
+  actionButtonTextCompact: { fontSize: fonts.sizes.sm },
+  actionButtonTextTiny: { fontSize: 12 },
 });
