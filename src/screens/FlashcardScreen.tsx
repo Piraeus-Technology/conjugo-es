@@ -38,6 +38,7 @@ interface Card {
   tense: Tense;
   personIndex: number;
   answer: string;
+  example: string;
 }
 
 function generateCard(
@@ -49,12 +50,19 @@ function generateCard(
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
   const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
   const prompt = pickWeightedPrompt(verbEntries, activeTenseList, getWeight, includeVosotros);
+  const examples = prompt.data.examples ?? [];
+  // Rotate between the verb's example sentences by person so a verb seen
+  // across multiple cards surfaces both, rather than always the same one.
+  const example = examples.length > 0
+    ? examples[prompt.personIndex % examples.length]
+    : '';
   return {
     verb: prompt.verb,
     translation: prompt.data.translation,
     tense: prompt.tense,
     personIndex: prompt.personIndex,
     answer: prompt.answer,
+    example,
   };
 }
 
@@ -274,7 +282,7 @@ export default function FlashcardScreen() {
         onPress={!flipped ? flipToBack : undefined}
         activeOpacity={flipped ? 1 : 0.95}
         accessibilityRole="button"
-        accessibilityLabel={flipped ? `${card.verb}, ${pronounLabels[card.personIndex]}, answer: ${card.answer}` : `Tap to reveal conjugation of ${card.verb} for ${pronounLabels[card.personIndex]}`}
+        accessibilityLabel={flipped ? `${card.verb}, ${pronounLabels[card.personIndex]}, answer: ${card.answer}${card.example ? `. Example: ${card.example}` : ''}` : `Tap to reveal conjugation of ${card.verb} for ${pronounLabels[card.personIndex]}`}
       >
         {/* Front */}
         <Animated.View style={[styles.card, { backgroundColor: colors.card, opacity: frontOpacity }]}>
@@ -314,6 +322,17 @@ export default function FlashcardScreen() {
           <Text style={[styles.answerTranslation, { color: colors.textMuted }]}>
             {card.translation}
           </Text>
+          {card.example ? (
+            <View style={[styles.exampleBox, { borderTopColor: colors.primary + '20' }]}>
+              <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLE</Text>
+              <Text
+                style={[styles.exampleText, { color: colors.textSecondary }]}
+                numberOfLines={2}
+              >
+                {card.example}
+              </Text>
+            </View>
+          ) : null}
           <TouchableOpacity
             style={[styles.speakButton, { backgroundColor: colors.primary }]}
             onPress={() => speak(card.answer)}
@@ -387,7 +406,7 @@ const styles = StyleSheet.create({
   scoreItem: { alignItems: 'center' },
   scoreValue: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.bold },
   scoreLabel: { fontSize: fonts.sizes.xs, marginTop: 2, textTransform: 'uppercase', letterSpacing: 0.5 },
-  cardContainer: { height: 320 },
+  cardContainer: { height: 380 },
   card: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', padding: spacing.xl,
@@ -404,6 +423,25 @@ const styles = StyleSheet.create({
   answerText: { fontSize: 42, fontWeight: fonts.weights.bold, marginBottom: spacing.xs },
   answerTranslation: { fontSize: fonts.sizes.md, fontStyle: 'italic', marginBottom: spacing.md },
   contextText: { fontSize: fonts.sizes.sm, marginBottom: spacing.md },
+  exampleBox: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    borderTopWidth: 1,
+    paddingTop: spacing.md,
+    marginBottom: spacing.md,
+  },
+  exampleLabel: {
+    fontSize: fonts.sizes.xs,
+    fontWeight: fonts.weights.semibold,
+    letterSpacing: 1,
+    marginBottom: spacing.xs,
+  },
+  exampleText: {
+    fontSize: fonts.sizes.md,
+    lineHeight: 22,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
   speakButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   tapHint: { fontSize: fonts.sizes.xs, position: 'absolute', bottom: spacing.lg },
   buttonRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
