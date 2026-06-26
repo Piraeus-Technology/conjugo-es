@@ -17,7 +17,6 @@ import { pickWeightedPrompt } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { useNavigation } from '@react-navigation/native';
 import { tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
-import { buildExampleSentence, ExampleParts } from '../utils/exampleSentence';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
@@ -32,7 +31,7 @@ const quizzableTenses: Tense[] = [
   'present', 'preterite', 'imperfect', 'future', 'conditional',
   'subjunctive_present', 'subjunctive_imperfect',
 ];
-const maxCardHeight = 380;
+const maxCardHeight = 320;
 const minCardHeight = 210;
 const scoreBarHeightEstimate = 54;
 const buttonRowHeightEstimate = 44;
@@ -43,7 +42,6 @@ interface Card {
   tense: Tense;
   personIndex: number;
   answer: string;
-  example: ExampleParts | null;
 }
 
 function generateCard(
@@ -55,18 +53,12 @@ function generateCard(
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
   const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
   const prompt = pickWeightedPrompt(verbEntries, activeTenseList, getWeight, includeVosotros);
-  // Generate an example sentence built from the exact conjugated form being
-  // drilled, so the example always reinforces the card's form. (The verb's
-  // curated search-page sentences use whatever form they happen to need and
-  // would usually contradict the drilled tense/person.)
-  const example = buildExampleSentence(prompt.tense, prompt.personIndex, prompt.answer, prompt.verb);
   return {
     verb: prompt.verb,
     translation: prompt.data.translation,
     tense: prompt.tense,
     personIndex: prompt.personIndex,
     answer: prompt.answer,
-    example,
   };
 }
 
@@ -383,21 +375,6 @@ export default function FlashcardScreen() {
             <Text style={[styles.answerTranslation, isCompactCard && styles.answerTranslationCompact, isTinyCard && styles.answerTranslationTiny, { color: colors.textMuted }]}>
               {card.translation}
             </Text>
-            {card.example ? (
-              <View style={[styles.exampleBox, isCompactCard && styles.exampleBoxCompact, isTinyCard && styles.exampleBoxTiny, { borderTopColor: colors.primary + '20' }]}>
-                <Text style={[styles.exampleLabel, isCompactCard && styles.exampleLabelCompact, isTinyCard && styles.exampleLabelTiny, { color: colors.textMuted }]}>EXAMPLE</Text>
-                <Text
-                  style={[styles.exampleText, isCompactCard && styles.exampleTextCompact, isTinyCard && styles.exampleTextTiny, { color: colors.textSecondary }]}
-                  numberOfLines={2}
-                >
-                  {card.example.before}
-                  <Text style={{ fontWeight: fonts.weights.bold, color: colors.primary }}>
-                    {card.example.form}
-                  </Text>
-                  {card.example.after}
-                </Text>
-              </View>
-            ) : null}
             <TouchableOpacity
               style={[styles.speakButton, isCompactCard && styles.speakButtonCompact, isTinyCard && styles.speakButtonTiny, { backgroundColor: colors.primary }]}
               onPress={() => speak(card.answer)}
@@ -540,31 +517,6 @@ const styles = StyleSheet.create({
   contextText: { fontSize: fonts.sizes.sm, marginBottom: spacing.md },
   contextTextCompact: { marginBottom: spacing.sm },
   contextTextTiny: { fontSize: 11, marginBottom: 2 },
-  exampleBox: {
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    borderTopWidth: 1,
-    paddingTop: spacing.md,
-    marginBottom: spacing.md,
-  },
-  exampleBoxCompact: { paddingTop: spacing.sm, marginBottom: spacing.sm },
-  exampleBoxTiny: { paddingTop: spacing.xs, marginBottom: spacing.xs },
-  exampleLabel: {
-    fontSize: fonts.sizes.xs,
-    fontWeight: fonts.weights.semibold,
-    letterSpacing: 1,
-    marginBottom: spacing.xs,
-  },
-  exampleLabelCompact: { marginBottom: 2 },
-  exampleLabelTiny: { fontSize: 9, letterSpacing: 0.7, marginBottom: 1 },
-  exampleText: {
-    fontSize: fonts.sizes.md,
-    lineHeight: 22,
-    fontStyle: 'italic',
-    textAlign: 'center',
-  },
-  exampleTextCompact: { fontSize: fonts.sizes.sm, lineHeight: 18 },
-  exampleTextTiny: { fontSize: 11, lineHeight: 14 },
   speakButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   speakButtonCompact: { width: 40, height: 40, borderRadius: 20 },
   speakButtonTiny: { width: 32, height: 32, borderRadius: 16 },
