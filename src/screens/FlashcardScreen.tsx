@@ -17,6 +17,7 @@ import { pickWeightedPrompt } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { useNavigation } from '@react-navigation/native';
 import { tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
+import { buildExampleSentence, ExampleParts } from '../utils/exampleSentence';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
@@ -42,7 +43,7 @@ interface Card {
   tense: Tense;
   personIndex: number;
   answer: string;
-  example: string;
+  example: ExampleParts | null;
 }
 
 function generateCard(
@@ -54,12 +55,11 @@ function generateCard(
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
   const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
   const prompt = pickWeightedPrompt(verbEntries, activeTenseList, getWeight, includeVosotros);
-  const examples = prompt.data.examples ?? [];
-  // Rotate between the verb's example sentences by person so a verb seen
-  // across multiple cards surfaces both, rather than always the same one.
-  const example = examples.length > 0
-    ? examples[prompt.personIndex % examples.length]
-    : '';
+  // Generate an example sentence built from the exact conjugated form being
+  // drilled, so the example always reinforces the card's form. (The verb's
+  // curated search-page sentences use whatever form they happen to need and
+  // would usually contradict the drilled tense/person.)
+  const example = buildExampleSentence(prompt.tense, prompt.personIndex, prompt.answer, prompt.verb);
   return {
     verb: prompt.verb,
     translation: prompt.data.translation,
@@ -390,7 +390,11 @@ export default function FlashcardScreen() {
                   style={[styles.exampleText, isCompactCard && styles.exampleTextCompact, isTinyCard && styles.exampleTextTiny, { color: colors.textSecondary }]}
                   numberOfLines={2}
                 >
-                  {card.example}
+                  {card.example.before}
+                  <Text style={{ fontWeight: fonts.weights.bold, color: colors.primary }}>
+                    {card.example.form}
+                  </Text>
+                  {card.example.after}
                 </Text>
               </View>
             ) : null}
