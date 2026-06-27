@@ -3,12 +3,13 @@ import {
   View,
   Text,
   TouchableOpacity,
+  ScrollView,
   StyleSheet,
   Animated,
   AppState,
   useWindowDimensions,
 } from 'react-native';
-import type { AppStateStatus } from 'react-native';
+import type { AppStateStatus, LayoutChangeEvent } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';
@@ -33,6 +34,9 @@ const quizzableTenses: Tense[] = [
 ];
 const maxCardHeight = 320;
 const minCardHeight = 210;
+const minTinyCardHeight = 144;
+const compactCardHeightThreshold = 300;
+const tinyCardHeightThreshold = 240;
 const scoreBarHeightEstimate = 54;
 const buttonRowHeightEstimate = 44;
 
@@ -68,7 +72,7 @@ export default function FlashcardScreen() {
   const { width, height } = useWindowDimensions();
   const isDark = useThemeStore((s) => s.isDark);
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
-  const { autoTTS } = useThemeStore();
+  const autoTTS = useThemeStore((s) => s.autoTTS);
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
   const { sessions, loadSessions, saveSession } = useFlashcardSessionStore();
@@ -92,6 +96,7 @@ export default function FlashcardScreen() {
 
   const [card, setCard] = useState<Card | null>(null);
   const [flipped, setFlipped] = useState(false);
+  const [backInteractive, setBackInteractive] = useState(false);
   const [newReviewed, setNewReviewed] = useState(0);
   const [newCorrect, setNewCorrect] = useState(0);
   const [layoutHeight, setLayoutHeight] = useState(height);
@@ -130,10 +135,12 @@ export default function FlashcardScreen() {
     if (!loaded || !weightsLoaded || activeTenses.length === 0 || filteredEntries.length === 0) return;
     setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
     setFlipped(false);
+    setBackInteractive(false);
     flipAnim.setValue(0);
   }, [loaded, weightsLoaded, activeTenses, filteredEntries, flipAnim, getWeight, includeVosotros]);
 
   const flipToFront = () => {
+    setBackInteractive(false);
     Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
       setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
       setFlipped(false);
@@ -142,8 +149,11 @@ export default function FlashcardScreen() {
 
   const flipToBack = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setBackInteractive(false);
     setFlipped(true);
-    Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start(() => {
+    Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start(({ finished }) => {
+      if (!finished || !speechGateRef.current.mounted) return;
+      setBackInteractive(true);
       if (canRunFocusedScreenEffect(speechGateRef.current) && autoTTS && card) speak(card.answer);
     });
   };
@@ -153,6 +163,7 @@ export default function FlashcardScreen() {
     // the 200ms flip-back animation, and a double-tap would record the card twice
     if (!card || !flipped) return;
     setFlipped(false);
+    setBackInteractive(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setNewReviewed(r => r + 1);
     setNewCorrect(c => c + 1);
@@ -165,6 +176,7 @@ export default function FlashcardScreen() {
   const handleMissed = () => {
     if (!card || !flipped) return;
     setFlipped(false);
+    setBackInteractive(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setNewReviewed(r => r + 1);
     recordResult(card.verb, card.tense, card.personIndex, false).catch((e) =>
@@ -212,23 +224,33 @@ export default function FlashcardScreen() {
     };
   }, [nav]);
 
+  const handleSessionLayout = React.useCallback((event: LayoutChangeEvent) => {
+    const nextHeight = event.nativeEvent.layout.height;
+    setLayoutHeight((currentHeight) => (
+      currentHeight === nextHeight ? currentHeight : nextHeight
+    ));
+  }, []);
+
   const frontOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0, 0] });
   const backOpacity = flipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
-  const availableHeight = layoutHeight || height;
+  const availableHeight = Math.min(layoutHeight || height, height);
   const isShortHeight = availableHeight < 600;
   const isTinyHeight = availableHeight < 420;
   const verticalPadding = isTinyHeight ? spacing.xs : isShortHeight ? spacing.sm : spacing.lg;
   const scoreCardGap = isTinyHeight ? spacing.xs : isShortHeight ? spacing.sm : spacing.md;
   const buttonGap = isTinyHeight ? spacing.xs : isShortHeight ? spacing.sm : spacing.lg;
+  const availableCardHeight = availableHeight - (verticalPadding * 2) - scoreBarHeightEstimate - scoreCardGap - buttonGap - buttonRowHeightEstimate;
+  const minimumCardHeight = isTinyHeight ? minTinyCardHeight : minCardHeight;
   const cardHeight = Math.max(
-    minCardHeight,
+    minimumCardHeight,
     Math.min(
       maxCardHeight,
-      availableHeight - (verticalPadding * 2) - scoreBarHeightEstimate - scoreCardGap - buttonGap - buttonRowHeightEstimate,
+      availableCardHeight,
     ),
   );
-  const isCompactCard = cardHeight < 350;
-  const isTinyCard = cardHeight < 275;
+  const shouldScrollPracticeArea = availableCardHeight < minimumCardHeight;
+  const isCompactCard = cardHeight < compactCardHeightThreshold;
+  const isTinyCard = cardHeight < tinyCardHeightThreshold;
   const cardWidth = Math.max(0, width - spacing.lg * 2);
 
   if (weightsLoadError && !weightsLoaded) {
@@ -273,7 +295,7 @@ export default function FlashcardScreen() {
           paddingBottom: verticalPadding,
         },
       ]}
-      onLayout={(event) => setLayoutHeight(event.nativeEvent.layout.height)}
+      onLayout={handleSessionLayout}
     >
       {/* Score bar */}
       <View
@@ -307,7 +329,16 @@ export default function FlashcardScreen() {
         </View>
       </View>
 
-      <View style={[styles.practiceArea, { marginTop: isShortHeight ? scoreCardGap : 0 }]}>
+      <ScrollView
+        style={[styles.practiceArea, { marginTop: isShortHeight ? scoreCardGap : 0 }]}
+        contentContainerStyle={[
+          styles.practiceAreaContent,
+          shouldScrollPracticeArea && styles.practiceAreaContentScrolling,
+        ]}
+        scrollEnabled={shouldScrollPracticeArea}
+        showsVerticalScrollIndicator={shouldScrollPracticeArea}
+        bounces={shouldScrollPracticeArea}
+      >
         {/* Card */}
         <TouchableOpacity
           style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}
@@ -326,6 +357,7 @@ export default function FlashcardScreen() {
               isTinyCard && styles.cardTiny,
               { backgroundColor: colors.card, opacity: frontOpacity },
             ]}
+            pointerEvents="none"
             accessibilityElementsHidden={flipped}
             importantForAccessibility={flipped ? 'no-hide-descendants' : 'auto'}
           >
@@ -355,6 +387,7 @@ export default function FlashcardScreen() {
               isTinyCard && styles.cardTiny,
               { backgroundColor: colors.primary + '10', opacity: backOpacity },
             ]}
+            pointerEvents={backInteractive ? 'auto' : 'none'}
             accessibilityElementsHidden={!flipped}
             importantForAccessibility={!flipped ? 'no-hide-descendants' : 'auto'}
           >
@@ -378,6 +411,7 @@ export default function FlashcardScreen() {
             <TouchableOpacity
               style={[styles.speakButton, isCompactCard && styles.speakButtonCompact, isTinyCard && styles.speakButtonTiny, { backgroundColor: colors.primary }]}
               onPress={() => speak(card.answer)}
+              disabled={!backInteractive}
               accessibilityRole="button"
               accessibilityLabel={`Play pronunciation of ${card.answer}`}
             >
@@ -389,9 +423,9 @@ export default function FlashcardScreen() {
         {/* Got it / Missed buttons */}
         <View
           style={[styles.buttonRow, { marginTop: buttonGap, opacity: flipped ? 1 : 0 }]}
-          pointerEvents={flipped ? 'auto' : 'none'}
-          accessibilityElementsHidden={!flipped}
-          importantForAccessibility={!flipped ? 'no-hide-descendants' : 'auto'}
+          pointerEvents={backInteractive ? 'auto' : 'none'}
+          accessibilityElementsHidden={!backInteractive}
+          importantForAccessibility={!backInteractive ? 'no-hide-descendants' : 'auto'}
         >
           <TouchableOpacity
             style={[
@@ -424,7 +458,7 @@ export default function FlashcardScreen() {
             <Text style={[styles.actionButtonText, isShortHeight && styles.actionButtonTextCompact, isTinyHeight && styles.actionButtonTextTiny, { color: isDark ? '#66BB6A' : '#2E7D32' }]}>Got it</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
 
     </View>
   );
@@ -480,9 +514,15 @@ const styles = StyleSheet.create({
   scoreLabelTiny: { fontSize: 9, marginTop: 0, letterSpacing: 0.3 },
   practiceArea: {
     flex: 1,
+    alignSelf: 'stretch',
+  },
+  practiceAreaContent: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'stretch',
+  },
+  practiceAreaContentScrolling: {
+    justifyContent: 'flex-start',
   },
   cardContainer: {},
   card: {
