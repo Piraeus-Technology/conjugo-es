@@ -10,6 +10,8 @@ import {
   Animated,
   Image,
 } from 'react-native';
+// Keep the legacy RNGH Swipeable during the SDK 54 maintenance pass. Its
+// replacement requires Reanimated, which this app otherwise does not use.
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import verbs from '../data/verbs.json';

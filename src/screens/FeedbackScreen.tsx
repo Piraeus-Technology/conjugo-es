@@ -18,12 +18,13 @@ import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 import {
   APP_NAME,
-  APP_REVIEW_URL,
-  APP_STORE_URL,
   APP_VERSION,
   FEEDBACK_EMAIL,
+  getReviewUrl,
+  getShareMessage,
+  getStoreName,
+  getStoreUrl,
   PRIVACY_POLICY_URL,
-  SHARE_MESSAGE,
 } from '../utils/appMeta';
 import { useTipJar } from '../utils/tipJar';
 import { resetAllLearningData } from '../utils/resetLearningData';
@@ -40,6 +41,8 @@ export default function FeedbackScreen() {
     unsupported: tipUnsupported,
     tip,
   } = useTipJar();
+  const storePlatform = Platform.OS === 'android' ? 'android' : Platform.OS === 'ios' ? 'ios' : 'other';
+  const storeName = getStoreName(storePlatform);
 
   const handleSendEmail = () => {
     const subject = encodeURIComponent(`${APP_NAME} Feedback`);
@@ -54,14 +57,14 @@ export default function FeedbackScreen() {
   };
 
   const handleRateApp = () => {
-    const url = Platform.select({
-      ios: APP_REVIEW_URL,
-      android: 'market://details?id=com.piraeus.conjugoes',
-      default: APP_STORE_URL,
-    });
-    Linking.openURL(url).catch(() => {
-      Alert.alert('Not Available Yet', 'Rating will be available once the app is on the App Store.');
-    });
+    Linking.openURL(getReviewUrl(storePlatform))
+      .catch(() => Linking.openURL(getStoreUrl(storePlatform)))
+      .catch(() => {
+        Alert.alert(
+          `Could Not Open ${storeName}`,
+          `Open ${storeName} on this device and search for ${APP_NAME} to leave a rating.`,
+        );
+      });
   };
 
   const handleResetData = () => {
@@ -247,12 +250,12 @@ export default function FeedbackScreen() {
           onPress={handleRateApp}
           activeOpacity={0.7}
           accessibilityRole="button"
-          accessibilityLabel={`Rate ${APP_NAME} on the App Store`}
+          accessibilityLabel={`Rate ${APP_NAME} on ${storeName}`}
         >
           <Text style={styles.rateEmoji}>⭐</Text>
           <View style={styles.rateInfo}>
             <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Enjoying {APP_NAME}?</Text>
-            <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Rate us on the App Store</Text>
+            <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>Rate us on {storeName}</Text>
           </View>
         </TouchableOpacity>
 
@@ -261,7 +264,7 @@ export default function FeedbackScreen() {
           style={[styles.rateCard, { backgroundColor: colors.card }]}
           onPress={() => {
             Share.share({
-              message: SHARE_MESSAGE,
+              message: getShareMessage(storePlatform),
             }).catch((e) => console.warn('Share failed:', e));
           }}
           activeOpacity={0.7}
