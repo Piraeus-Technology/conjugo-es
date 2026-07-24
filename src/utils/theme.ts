@@ -2,10 +2,11 @@ import { useThemeStore } from '../store/themeStore';
 
 const lightColors = {
   primary: '#C8102E',
+  primaryText: '#C8102E',
   primaryLight: '#E8384F',
   primaryDark: '#A00D24',
 
-  accent: '#F4B942',
+  accent: '#8A5A00',
   accentLight: '#FCEABB',
 
   bg: '#FAFAFA',
@@ -14,9 +15,10 @@ const lightColors = {
 
   textPrimary: '#1A1A1A',
   textSecondary: '#6B6B6B',
-  textMuted: '#9E9E9E',
+  textMuted: '#666666',
 
   border: '#E8E5E0',
+  controlBorder: '#76706A',
   divider: '#F0EEEB',
 
   pillBg: '#F0EEEB',
@@ -27,13 +29,16 @@ const lightColors = {
   regularTag: '#E8F5E9',
   regularTagText: '#2E7D32',
   irregularTag: '#FFF3E0',
-  irregularTagText: '#E65100',
+  irregularTagText: '#9C3D00',
 
   scoreHighBg: '#E8F5E9', scoreHighText: '#2E7D32',
-  scoreMidBg: '#FFF8E1', scoreMidText: '#F57F17',
+  scoreMidBg: '#FFF8E1', scoreMidText: '#7A4B00',
   scoreLowBg: '#FFEBEE', scoreLowText: '#C62828',
 
-  levelA1Bg: '#E0F7FA', levelA1Text: '#00838F',
+  successBg: '#E8F5E9', successText: '#256029', successBorder: '#256029',
+  errorBg: '#FFEBEE', errorText: '#A51D22', errorBorder: '#A51D22',
+
+  levelA1Bg: '#E0F7FA', levelA1Text: '#006974',
   levelA2Bg: '#E0F2F1', levelA2Text: '#00695C',
   levelB1Bg: '#E3F2FD', levelB1Text: '#1565C0',
   levelB2Bg: '#EDE7F6', levelB2Text: '#4527A0',
@@ -42,9 +47,10 @@ const lightColors = {
 };
 
 const darkColors = {
-  primary: '#E8384F',
+  primary: '#C8102E',
+  primaryText: '#FF5A6E',
   primaryLight: '#FF5A6E',
-  primaryDark: '#FF6B7A',
+  primaryDark: '#FF8A98',
 
   accent: '#F4B942',
   accentLight: '#3D2E0A',
@@ -55,13 +61,14 @@ const darkColors = {
 
   textPrimary: '#F0F0F0',
   textSecondary: '#A0A0A0',
-  textMuted: '#666666',
+  textMuted: '#B3B3B3',
 
   border: '#333333',
+  controlBorder: '#777777',
   divider: '#2A2A2A',
 
   pillBg: '#2A2A2A',
-  pillActiveBg: '#E8384F',
+  pillActiveBg: '#C8102E',
   pillText: '#A0A0A0',
   pillActiveText: '#FFFFFF',
 
@@ -72,7 +79,10 @@ const darkColors = {
 
   scoreHighBg: '#1B3A1B', scoreHighText: '#66BB6A',
   scoreMidBg: '#3E2200', scoreMidText: '#FFB74D',
-  scoreLowBg: '#3A1212', scoreLowText: '#EF5350',
+  scoreLowBg: '#3A1212', scoreLowText: '#FF8A80',
+
+  successBg: '#1B3A1B', successText: '#81C784', successBorder: '#81C784',
+  errorBg: '#3A1212', errorText: '#FF8A80', errorBorder: '#FF8A80',
 
   levelA1Bg: '#0A2E30', levelA1Text: '#4DD0E1',
   levelA2Bg: '#0D2E2B', levelA2Text: '#4DB6AC',

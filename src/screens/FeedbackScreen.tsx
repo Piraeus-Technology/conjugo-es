@@ -112,7 +112,7 @@ export default function FeedbackScreen() {
           accessibilityRole="button"
           accessibilityLabel="Open quiz stats"
         >
-          <Ionicons name="bar-chart-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
+          <Ionicons name="bar-chart-outline" size={24} color={colors.primaryText} style={{ marginRight: spacing.md }} />
           <View style={{ flex: 1 }}>
             <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Quiz Stats</Text>
             <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>View your progress and daily activity</Text>
@@ -128,7 +128,7 @@ export default function FeedbackScreen() {
           accessibilityRole="button"
           accessibilityLabel="Open flashcard stats"
         >
-          <Ionicons name="layers-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
+          <Ionicons name="layers-outline" size={24} color={colors.primaryText} style={{ marginRight: spacing.md }} />
           <View style={{ flex: 1 }}>
             <Text style={[styles.rateTitle, { color: colors.textPrimary }]}>Flashcard Stats</Text>
             <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>View your flashcard progress</Text>
@@ -181,9 +181,9 @@ export default function FeedbackScreen() {
           accessibilityLabel="Reset all local learning data"
           accessibilityState={{ disabled: resettingData }}
         >
-          <Ionicons name="trash-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
+          <Ionicons name="trash-outline" size={24} color={colors.primaryText} style={{ marginRight: spacing.md }} />
           <View style={styles.rateInfo}>
-            <Text style={[styles.rateTitle, { color: colors.primary }]}>
+            <Text style={[styles.rateTitle, { color: colors.primaryText }]}>
               {resettingData ? 'Resetting…' : 'Reset Learning Data'}
             </Text>
             <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>
@@ -213,7 +213,7 @@ export default function FeedbackScreen() {
                       accessibilityLabel={`Leave a ${product.displayPrice} tip`}
                       accessibilityState={{ disabled: tipLoading }}
                     >
-                      <Text style={[styles.tipPrice, { color: colors.primary }]}>{product.displayPrice}</Text>
+                      <Text style={[styles.tipPrice, { color: colors.primaryText }]}>{product.displayPrice}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>

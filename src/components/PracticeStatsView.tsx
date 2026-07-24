@@ -91,6 +91,10 @@ export default function PracticeStatsView({
   const calMonth = calendarDate.getMonth();
   const monthName = calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const calendarWeeks = React.useMemo(() => buildCalendarWeeks(calYear, calMonth), [calYear, calMonth]);
+  const currentMonth = new Date();
+  const canGoNext =
+    new Date(calYear, calMonth + 1, 1) <=
+    new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
 
   const getDayKey = (day: number) => buildDayKey(calYear, calMonth, day);
 
@@ -154,7 +158,7 @@ export default function PracticeStatsView({
       {streak > 0 && (
         <View style={[styles.streakCard, { backgroundColor: colors.card }]}>
           <Text style={styles.streakEmoji}>🔥</Text>
-          <Text style={[styles.streakText, { color: colors.primary }]}>
+          <Text style={[styles.streakText, { color: colors.primaryText }]}>
             {streak} day streak
           </Text>
         </View>
@@ -165,11 +169,11 @@ export default function PracticeStatsView({
       <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.primary }]}>{totalCount}</Text>
+            <Text style={[styles.statValue, { color: colors.primaryText }]}>{totalCount}</Text>
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>{labels.countLabel}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.primary }]}>
+            <Text style={[styles.statValue, { color: colors.primaryText }]}>
               {getAccuracyPercent(totalCorrect, totalCount) ?? 0}%
             </Text>
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
@@ -188,11 +192,11 @@ export default function PracticeStatsView({
           <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.primary }]}>{todayData.count}</Text>
+                <Text style={[styles.statValue, { color: colors.primaryText }]}>{todayData.count}</Text>
                 <Text style={[styles.statLabel, { color: colors.textMuted }]}>{labels.countLabel}</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.primary }]}>
+                <Text style={[styles.statValue, { color: colors.primaryText }]}>
                   {getAccuracyPercent(todayData.correct, todayData.count) ?? 0}%
                 </Text>
                 <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
@@ -213,12 +217,28 @@ export default function PracticeStatsView({
       <View style={[styles.calendarCard, { backgroundColor: colors.card }]}>
         {/* Month navigation */}
         <View style={styles.calendarHeader}>
-          <TouchableOpacity onPress={prevMonth} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="chevron-back" size={20} color={colors.primary} />
+          <TouchableOpacity
+            style={styles.calendarNavButton}
+            onPress={prevMonth}
+            accessibilityRole="button"
+            accessibilityLabel="Show previous month"
+          >
+            <Ionicons name="chevron-back" size={20} color={colors.primaryText} />
           </TouchableOpacity>
           <Text style={[styles.calendarMonth, { color: colors.textPrimary }]}>{monthName}</Text>
-          <TouchableOpacity onPress={nextMonth} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="chevron-forward" size={20} color={colors.primary} />
+          <TouchableOpacity
+            style={styles.calendarNavButton}
+            onPress={nextMonth}
+            disabled={!canGoNext}
+            accessibilityRole="button"
+            accessibilityLabel="Show next month"
+            accessibilityState={{ disabled: !canGoNext }}
+          >
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={canGoNext ? colors.primaryText : colors.textMuted}
+            />
           </TouchableOpacity>
         </View>
 
@@ -238,8 +258,20 @@ export default function PracticeStatsView({
               }
               const dayColor = getDayColor(day);
               const key = getDayKey(day);
+              const dayData = dailyMap[key];
+              const dayAccuracy = dayData ? getAccuracyPercent(dayData.correct, dayData.count) : null;
+              const hasActivity = hasPositiveCount(dayData?.count);
               const isSelected = selectedDay === key;
               const isToday = key === todayStr;
+              const spokenDate = new Date(`${key}T12:00:00`).toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              });
+              const accessibilityLabel = hasActivity
+                ? `${spokenDate}, ${dayData.count} ${labels.countLabel.toLowerCase()}, ${dayAccuracy}% accuracy`
+                : `${spokenDate}, no activity`;
 
               return (
                 <TouchableOpacity
@@ -247,13 +279,17 @@ export default function PracticeStatsView({
                   style={[
                     styles.calendarCell,
                     dayColor && { backgroundColor: dayColor.bg },
-                    isSelected && { borderWidth: 2, borderColor: colors.primary },
-                    isToday && !dayColor && { borderWidth: 1, borderColor: colors.border },
+                    isSelected && { borderWidth: 2, borderColor: colors.primaryText },
+                    isToday && !dayColor && { borderWidth: 1, borderColor: colors.controlBorder },
                   ]}
                   onPress={() => {
-                    if (hasPositiveCount(dailyMap[key]?.count)) setSelectedDay(isSelected ? null : key);
+                    if (hasActivity) setSelectedDay(isSelected ? null : key);
                   }}
-                  activeOpacity={hasPositiveCount(dailyMap[key]?.count) ? 0.7 : 1}
+                  activeOpacity={hasActivity ? 0.7 : 1}
+                  disabled={!hasActivity}
+                  accessibilityRole="button"
+                  accessibilityLabel={accessibilityLabel}
+                  accessibilityState={{ disabled: !hasActivity, selected: isSelected }}
                 >
                   <Text style={[
                     styles.calendarDay,
@@ -305,7 +341,7 @@ export default function PracticeStatsView({
             {insights.weakForms.map(item => (
               <View key={item.label} style={styles.insightRow}>
                 <Text style={[styles.insightLabel, { color: colors.textPrimary }]}>{item.label}</Text>
-                <Text style={[styles.insightValue, { color: colors.primary }]}>{item.weight.toFixed(1)}x</Text>
+                <Text style={[styles.insightValue, { color: colors.primaryText }]}>{item.weight.toFixed(1)}x</Text>
               </View>
             ))}
           </View>
@@ -447,6 +483,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.md,
+  },
+  calendarNavButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   calendarMonth: {
     fontSize: fonts.sizes.md,

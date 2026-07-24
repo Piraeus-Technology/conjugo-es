@@ -328,7 +328,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           )}
         </View>
         {item.matchType === 'favorite' ? (
-          <Ionicons name="heart" size={16} color={colors.primary} style={{ marginLeft: 8 }} />
+          <Ionicons name="heart" size={16} color={colors.primaryText} style={{ marginLeft: 8 }} />
         ) : (
           <Ionicons name="chevron-forward" size={18} color={colors.textMuted} style={{ marginLeft: 8 }} />
         )}
@@ -386,9 +386,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 style={[styles.vodCard, { backgroundColor: colors.card }]}
                 onPress={() => handleVerbPress(verbOfTheDay.infinitive)}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={`Verb of the day: ${verbOfTheDay.infinitive}, ${verbOfTheDay.translation}, ${verbOfTheDay.regular ? 'regular' : 'irregular'} verb`}
+                accessibilityHint="Opens the full conjugation"
               >
                 <Text style={[styles.vodLabel, { color: colors.textMuted }]}>VERB OF THE DAY</Text>
-                <Text style={[styles.vodVerb, { color: colors.primary }]}>{verbOfTheDay.infinitive}</Text>
+                <Text style={[styles.vodVerb, { color: colors.primaryText }]}>{verbOfTheDay.infinitive}</Text>
                 <Text style={[styles.vodTranslation, { color: colors.textSecondary }]}>{verbOfTheDay.translation}</Text>
                 <View style={styles.vodBadgeRow}>
                   <View style={[styles.vodBadge, { backgroundColor: verbOfTheDay.regular ? colors.regularTag : colors.irregularTag }]}>
@@ -417,7 +420,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   accessibilityLabel="Clear recent verbs"
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Text style={[styles.clearButton, { color: colors.primary }]}>Clear</Text>
+                  <Text style={[styles.clearButton, { color: colors.primaryText }]}>Clear</Text>
                 </TouchableOpacity>
               )}
             </View>

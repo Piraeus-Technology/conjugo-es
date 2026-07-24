@@ -97,12 +97,16 @@ export default function PracticeSettingsScreen() {
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Tenses</Text>
         <TouchableOpacity
+          style={styles.selectAllButton}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setActiveTenses(allTensesSelected ? ['present'] : [...allTenses]);
           }}
+          accessibilityRole="checkbox"
+          accessibilityLabel="Select all tenses"
+          accessibilityState={{ checked: allTensesSelected }}
         >
-          <Text style={[styles.selectAllText, { color: colors.primary }]}>
+          <Text style={[styles.selectAllText, { color: colors.primaryText }]}>
             {allTensesSelected ? 'Deselect All' : 'Select All'}
           </Text>
         </TouchableOpacity>
@@ -125,12 +129,15 @@ export default function PracticeSettingsScreen() {
                     toggleTense(item.key);
                   }}
                   activeOpacity={0.7}
+                  accessibilityRole="checkbox"
+                  accessibilityLabel={`${group.title}: ${item.label}`}
+                  accessibilityState={{ checked: active }}
                 >
                   <Text style={[styles.rowText, { color: colors.textPrimary }]}>{item.label}</Text>
                   <Ionicons
                     name={active ? 'checkmark-circle' : 'ellipse-outline'}
                     size={24}
-                    color={active ? colors.primary : colors.border}
+                    color={active ? colors.primaryText : colors.controlBorder}
                   />
                 </TouchableOpacity>
               );
@@ -143,12 +150,16 @@ export default function PracticeSettingsScreen() {
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Levels</Text>
         <TouchableOpacity
+          style={styles.selectAllButton}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setActiveLevels(allLevelsSelected ? ['A1'] : [...allLevels]);
           }}
+          accessibilityRole="checkbox"
+          accessibilityLabel="Select all proficiency levels"
+          accessibilityState={{ checked: allLevelsSelected }}
         >
-          <Text style={[styles.selectAllText, { color: colors.primary }]}>
+          <Text style={[styles.selectAllText, { color: colors.primaryText }]}>
             {allLevelsSelected ? 'Deselect All' : 'Select All'}
           </Text>
         </TouchableOpacity>
@@ -168,12 +179,15 @@ export default function PracticeSettingsScreen() {
                 toggleLevel(level);
               }}
               activeOpacity={0.7}
+              accessibilityRole="checkbox"
+              accessibilityLabel={`Level ${level}`}
+              accessibilityState={{ checked: active }}
             >
               <Text style={[styles.rowText, { color: colors.textPrimary }]}>{level}</Text>
               <Ionicons
                 name={active ? 'checkmark-circle' : 'ellipse-outline'}
                 size={24}
-                color={active ? colors.accent || colors.primary : colors.border}
+                color={active ? colors.accent : colors.controlBorder}
               />
             </TouchableOpacity>
           );
@@ -185,6 +199,8 @@ export default function PracticeSettingsScreen() {
         style={[styles.startButton, { backgroundColor: colors.primary }]}
         onPress={handleStart}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={mode === 'quiz' ? 'Start quiz' : 'Start flashcards'}
       >
         <Ionicons name="play" size={20} color="#fff" />
         <Text style={styles.startButtonText}>
@@ -218,6 +234,10 @@ const styles = StyleSheet.create({
   selectAllText: {
     fontSize: fonts.sizes.sm,
     fontWeight: fonts.weights.medium,
+  },
+  selectAllButton: {
+    minHeight: 44,
+    justifyContent: 'center',
   },
   groupLabel: {
     fontSize: fonts.sizes.xs,
@@ -254,6 +274,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginTop: spacing.xl,
     padding: spacing.md,
+    minHeight: 52,
     borderRadius: radius.md,
   },
   startButtonText: {

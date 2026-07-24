@@ -4,6 +4,8 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
+  useWindowDimensions,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +29,7 @@ const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/e
 
 export default function QuizScreen() {
   const colors = useColors();
+  const { fontScale } = useWindowDimensions();
   // Only subscribe to what this screen uses — the totals re-render on every answer
   const loadStats = useQuizStore((s) => s.loadStats);
   const recordAnswer = useQuizStore((s) => s.recordAnswer);
@@ -39,7 +42,6 @@ export default function QuizScreen() {
   } = useSpacedRepStore();
   const { activeTenses, activeLevels, loaded: settingsLoaded, loadPracticeSettings } = usePracticeSettingsStore();
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
-  const isDark = useThemeStore((s) => s.isDark);
   const nav = useNavigation<any>();
 
   const filteredEntries = React.useMemo(() =>
@@ -64,8 +66,8 @@ export default function QuizScreen() {
           accessibilityRole="button"
           accessibilityLabel="Open tense and level settings"
         >
-          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
-          <Ionicons name="options-outline" size={18} color={colors.primary} />
+          <Text style={{ color: colors.primaryText, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
+          <Ionicons name="options-outline" size={18} color={colors.primaryText} />
         </TouchableOpacity>
       ),
     });
@@ -143,21 +145,21 @@ export default function QuizScreen() {
 
   const getOptionStyle = (option: string) => {
     if (!answered || !question) {
-      return { backgroundColor: colors.card, borderColor: colors.border };
+      return { backgroundColor: colors.card, borderColor: colors.controlBorder };
     }
     if (option === question.correctAnswer) {
-      return { backgroundColor: isDark ? '#1A3E1A' : '#E8F5E9', borderColor: isDark ? '#66BB6A' : '#4CAF50' };
+      return { backgroundColor: colors.successBg, borderColor: colors.successBorder };
     }
     if (option === selectedAnswer && !isCorrect) {
-      return { backgroundColor: isDark ? '#3E1A1A' : '#FFEBEE', borderColor: isDark ? '#EF5350' : '#E53935' };
+      return { backgroundColor: colors.errorBg, borderColor: colors.errorBorder };
     }
-    return { backgroundColor: colors.card, borderColor: colors.border, opacity: 0.4 };
+    return { backgroundColor: colors.card, borderColor: colors.controlBorder, opacity: 0.55 };
   };
 
   const getOptionTextColor = (option: string) => {
     if (!answered || !question) return colors.textPrimary;
-    if (option === question.correctAnswer) return isDark ? '#66BB6A' : '#2E7D32';
-    if (option === selectedAnswer && !isCorrect) return isDark ? '#EF5350' : '#C62828';
+    if (option === question.correctAnswer) return colors.successText;
+    if (option === selectedAnswer && !isCorrect) return colors.errorText;
     return colors.textMuted;
   };
 
@@ -192,24 +194,27 @@ export default function QuizScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      <View style={styles.content}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.bg }]}
+      contentContainerStyle={styles.content}
+      alwaysBounceVertical={false}
+    >
         {/* Session score bar — pinned to the top */}
         <View style={[styles.scoreCard, { backgroundColor: colors.card }]}>
           <View style={styles.scoreRow}>
-            <View style={styles.scoreItem}>
-              <Text style={[styles.scoreValue, { color: colors.primary }]}>{sessionTotal}</Text>
+            <View style={[styles.scoreItem, fontScale >= 1.5 && styles.scoreItemLargeText]}>
+              <Text style={[styles.scoreValue, { color: colors.primaryText }]}>{sessionTotal}</Text>
               <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Reviewed</Text>
             </View>
-            <View style={styles.scoreItem}>
-              <Text style={[styles.scoreValue, { color: '#2E7D32' }]}>{sessionScore}</Text>
+            <View style={[styles.scoreItem, fontScale >= 1.5 && styles.scoreItemLargeText]}>
+              <Text style={[styles.scoreValue, { color: colors.successText }]}>{sessionScore}</Text>
               <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Got It</Text>
             </View>
-            <View style={styles.scoreItem}>
-              <Text style={[styles.scoreValue, { color: '#C62828' }]}>{sessionTotal - sessionScore}</Text>
+            <View style={[styles.scoreItem, fontScale >= 1.5 && styles.scoreItemLargeText]}>
+              <Text style={[styles.scoreValue, { color: colors.errorText }]}>{sessionTotal - sessionScore}</Text>
               <Text style={[styles.scoreLabel, { color: colors.textMuted }]}>Missed</Text>
             </View>
-            <View style={styles.scoreItem}>
+            <View style={[styles.scoreItem, fontScale >= 1.5 && styles.scoreItemLargeText]}>
               <Text style={[styles.scoreValue, { color: colors.textSecondary }]}>
                 {sessionTotal > 0 ? Math.round((sessionScore / sessionTotal) * 100) : 0}%
               </Text>
@@ -224,11 +229,7 @@ export default function QuizScreen() {
           <Text style={[styles.questionLabel, { color: colors.textMuted }]}>
             {tenseNames[question.tense]}
           </Text>
-          <Text
-            style={[styles.questionVerb, { color: colors.primary }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-          >
+          <Text style={[styles.questionVerb, { color: colors.primaryText }]}>
             {question.verb}
           </Text>
           <Text style={[styles.questionTranslation, { color: colors.textSecondary }]}>
@@ -254,17 +255,14 @@ export default function QuizScreen() {
             >
               <Text
                 style={[styles.optionText, { color: getOptionTextColor(option) }]}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.7}
               >
                 {option}
               </Text>
               {answered && option === question.correctAnswer && (
-                <Ionicons name="checkmark-circle" size={22} color="#4CAF50" style={{ marginLeft: 8 }} />
+                <Ionicons name="checkmark-circle" size={22} color={colors.successText} style={{ marginLeft: 8 }} />
               )}
               {answered && option === selectedAnswer && !isCorrect && option !== question.correctAnswer && (
-                <Ionicons name="close-circle" size={22} color="#E53935" style={{ marginLeft: 8 }} />
+                <Ionicons name="close-circle" size={22} color={colors.errorText} style={{ marginLeft: 8 }} />
               )}
             </TouchableOpacity>
           ))}
@@ -284,9 +282,7 @@ export default function QuizScreen() {
           </TouchableOpacity>
         </View>
         </View>
-      </View>
-
-    </View>
+    </ScrollView>
   );
 }
 
@@ -316,13 +312,13 @@ const styles = StyleSheet.create({
     fontWeight: fonts.weights.bold,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
   },
   quizBody: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     gap: spacing.lg,
   },
@@ -333,10 +329,16 @@ const styles = StyleSheet.create({
   },
   scoreRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-around',
   },
   scoreItem: {
     alignItems: 'center',
+    width: '25%',
+  },
+  scoreItemLargeText: {
+    width: '50%',
+    paddingVertical: spacing.xs,
   },
   scoreValue: {
     fontSize: fonts.sizes.lg,
@@ -364,6 +366,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: fonts.weights.bold,
     marginBottom: spacing.xs,
+    textAlign: 'center',
   },
   questionTranslation: {
     fontSize: fonts.sizes.sm,
@@ -390,6 +393,8 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: fonts.sizes.lg,
     fontWeight: fonts.weights.semibold,
+    flexShrink: 1,
+    textAlign: 'center',
   },
   bottomRow: {
     flexDirection: 'row',

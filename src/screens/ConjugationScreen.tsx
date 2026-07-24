@@ -113,7 +113,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   if (!verb) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center', padding: spacing.lg }]}>
-        <Text style={[styles.infinitive, { color: colors.primary, marginBottom: spacing.sm }]}>{infinitive}</Text>
+        <Text style={[styles.infinitive, { color: colors.primaryText, marginBottom: spacing.sm }]}>{infinitive}</Text>
         <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md, textAlign: 'center' }}>
           This verb is not available in the current dataset.
         </Text>
@@ -127,8 +127,9 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
       <View style={[styles.header, { backgroundColor: colors.card }]}>
         <View style={styles.headerTop}>
           <View style={styles.infinitiveRow}>
-            <Text style={[styles.infinitive, { color: colors.primary }]}>{infinitive}</Text>
+            <Text style={[styles.infinitive, { color: colors.primaryText }]}>{infinitive}</Text>
             <TouchableOpacity
+              style={styles.headerIconButton}
               onPress={() => speak(infinitive)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               accessibilityRole="button"
@@ -138,6 +139,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
             </TouchableOpacity>
           </View>
           <TouchableOpacity
+            style={styles.headerIconButton}
             onPress={() => toggleFavorite(infinitive)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessibilityRole="button"
@@ -186,6 +188,9 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                     ]}
                     onPress={() => toggleTense(tense)}
                     activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${tenseNames[tense]} conjugations`}
+                    accessibilityState={{ selected: isOpen, expanded: isOpen }}
                   >
                     <Text
                       style={[
@@ -251,6 +256,14 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                           }
                         }}
                         activeOpacity={row.disabled ? 1 : 0.6}
+                        accessibilityRole="button"
+                        accessibilityLabel={
+                          row.disabled
+                            ? `${row.pronoun}, unavailable in ${tenseNames[tense]}`
+                            : `Play pronunciation: ${row.pronoun}, ${row.form}`
+                        }
+                        accessibilityHint={row.disabled ? undefined : 'Speaks this conjugation aloud'}
+                        accessibilityState={{ disabled: row.disabled }}
                       >
                         <Text
                           style={[
@@ -269,7 +282,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                                 ? [styles.disabledForm, { color: colors.textMuted }]
                                 : [
                                     styles.form,
-                                    { color: colors.primary },
+                                    { color: colors.primaryText },
                                     isHighlighted && { color: colors.primaryDark, fontWeight: fonts.weights.bold },
                                   ]
                             }
@@ -298,7 +311,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           {snapshotRows.map((row) => (
             <View key={`${openTense ?? 'present'}-${row.index}`} style={styles.snapshotRow}>
               <Text style={[styles.snapshotPronoun, { color: colors.textSecondary }]}>{row.pronoun}</Text>
-              <Text style={[styles.snapshotForm, { color: colors.primary }]}>{row.form}</Text>
+              <Text style={[styles.snapshotForm, { color: colors.primaryText }]}>{row.form}</Text>
             </View>
           ))}
         </View>
@@ -309,7 +322,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           <Text style={[styles.detailLabel, { color: colors.textMuted }]}>RULE NOTES</Text>
           {ruleNotes.map((note) => (
             <View key={note} style={styles.noteRow}>
-              <Ionicons name="sparkles-outline" size={14} color={colors.primary} style={styles.noteIcon} />
+              <Ionicons name="sparkles-outline" size={14} color={colors.primaryText} style={styles.noteIcon} />
               <Text style={[styles.noteText, { color: colors.textSecondary }]}>{note}</Text>
             </View>
           ))}
@@ -329,8 +342,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                   navigation.push('Conjugation', { infinitive: relatedInfinitive });
                 }}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={`Open ${relatedInfinitive}, ${relatedVerb.translation}`}
               >
-                <Text style={[styles.relatedInfinitive, { color: colors.primary }]}>{relatedInfinitive}</Text>
+                <Text style={[styles.relatedInfinitive, { color: colors.primaryText }]}>{relatedInfinitive}</Text>
                 <Text style={[styles.relatedTranslation, { color: colors.textMuted }]} numberOfLines={1}>
                   {relatedVerb.translation}
                 </Text>
@@ -361,10 +376,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
           <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
             <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
             <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
-              Yo <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{yoForm}</Text> todos los días.
+              Yo <Text style={{ color: colors.primaryText, fontWeight: fonts.weights.semibold }}>{yoForm}</Text> todos los días.
             </Text>
             <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
-              Él <Text style={{ color: colors.primary, fontWeight: fonts.weights.semibold }}>{elForm}</Text> mucho.
+              Él <Text style={{ color: colors.primaryText, fontWeight: fonts.weights.semibold }}>{elForm}</Text> mucho.
             </Text>
           </View>
         );
@@ -389,6 +404,12 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  headerIconButton: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   infinitiveRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
   speakButton: { padding: 4 },

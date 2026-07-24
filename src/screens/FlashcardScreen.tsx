@@ -70,7 +70,6 @@ export default function FlashcardScreen() {
   const colors = useColors();
   // Track live window size so the card adapts to rotation/split-screen
   const { width, height } = useWindowDimensions();
-  const isDark = useThemeStore((s) => s.isDark);
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
   const autoTTS = useThemeStore((s) => s.autoTTS);
   const nav = useNavigation<any>();
@@ -124,8 +123,8 @@ export default function FlashcardScreen() {
           accessibilityRole="button"
           accessibilityLabel="Open tense and level settings"
         >
-          <Text style={{ color: colors.primary, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
-          <Ionicons name="options-outline" size={18} color={colors.primary} />
+          <Text style={{ color: colors.primaryText, fontSize: 14, fontWeight: '600' }}>Tenses</Text>
+          <Ionicons name="options-outline" size={18} color={colors.primaryText} />
         </TouchableOpacity>
       ),
     });
@@ -309,15 +308,15 @@ export default function FlashcardScreen() {
       >
         <View style={styles.scoreRow}>
           <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: colors.primary }]}>{reviewed}</Text>
+            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: colors.primaryText }]}>{reviewed}</Text>
             <Text style={[styles.scoreLabel, isShortHeight && styles.scoreLabelCompact, isTinyHeight && styles.scoreLabelTiny, { color: colors.textMuted }]}>Reviewed</Text>
           </View>
           <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: '#2E7D32' }]}>{correct}</Text>
+            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: colors.successText }]}>{correct}</Text>
             <Text style={[styles.scoreLabel, isShortHeight && styles.scoreLabelCompact, isTinyHeight && styles.scoreLabelTiny, { color: colors.textMuted }]}>Got It</Text>
           </View>
           <View style={styles.scoreItem}>
-            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: '#C62828' }]}>{reviewed - correct}</Text>
+            <Text style={[styles.scoreValue, isShortHeight && styles.scoreValueCompact, isTinyHeight && styles.scoreValueTiny, { color: colors.errorText }]}>{reviewed - correct}</Text>
             <Text style={[styles.scoreLabel, isShortHeight && styles.scoreLabelCompact, isTinyHeight && styles.scoreLabelTiny, { color: colors.textMuted }]}>Missed</Text>
           </View>
           <View style={styles.scoreItem}>
@@ -364,7 +363,7 @@ export default function FlashcardScreen() {
             <Text style={[styles.tenseLabel, isCompactCard && styles.tenseLabelCompact, isTinyCard && styles.tenseLabelTiny, { color: colors.textMuted }]}>
               {tenseNames[card.tense]}
             </Text>
-            <Text style={[styles.verbText, isCompactCard && styles.verbTextCompact, isTinyCard && styles.verbTextTiny, { color: colors.primary }]}>
+            <Text style={[styles.verbText, isCompactCard && styles.verbTextCompact, isTinyCard && styles.verbTextTiny, { color: colors.primaryText }]}>
               {card.verb}
             </Text>
             <Text style={[styles.translationText, isCompactCard && styles.translationTextCompact, isTinyCard && styles.translationTextTiny, { color: colors.textSecondary }]}>
@@ -395,7 +394,7 @@ export default function FlashcardScreen() {
               {tenseNames[card.tense]}
             </Text>
             <Text
-              style={[styles.answerText, isCompactCard && styles.answerTextCompact, isTinyCard && styles.answerTextTiny, { color: colors.primary }]}
+              style={[styles.answerText, isCompactCard && styles.answerTextCompact, isTinyCard && styles.answerTextTiny, { color: colors.primaryText }]}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
@@ -409,7 +408,7 @@ export default function FlashcardScreen() {
               {card.translation}
             </Text>
             <TouchableOpacity
-              style={[styles.speakButton, isCompactCard && styles.speakButtonCompact, isTinyCard && styles.speakButtonTiny, { backgroundColor: colors.primary }]}
+              style={[styles.speakButton, { backgroundColor: colors.primary }]}
               onPress={() => speak(card.answer)}
               disabled={!backInteractive}
               accessibilityRole="button"
@@ -432,30 +431,30 @@ export default function FlashcardScreen() {
               styles.actionButton,
               isShortHeight && styles.actionButtonCompact,
               isTinyHeight && styles.actionButtonTiny,
-              { backgroundColor: isDark ? '#3E1A1A' : '#FFEBEE', borderColor: isDark ? '#EF5350' : '#C62828' },
+              { backgroundColor: colors.errorBg, borderColor: colors.errorBorder },
             ]}
             onPress={handleMissed}
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Mark card as missed"
           >
-            <Ionicons name="close" size={isTinyHeight ? 16 : 20} color={isDark ? '#EF5350' : '#C62828'} />
-            <Text style={[styles.actionButtonText, isShortHeight && styles.actionButtonTextCompact, isTinyHeight && styles.actionButtonTextTiny, { color: isDark ? '#EF5350' : '#C62828' }]}>Missed</Text>
+            <Ionicons name="close" size={isTinyHeight ? 16 : 20} color={colors.errorText} />
+            <Text style={[styles.actionButtonText, isShortHeight && styles.actionButtonTextCompact, isTinyHeight && styles.actionButtonTextTiny, { color: colors.errorText }]}>Missed</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.actionButton,
               isShortHeight && styles.actionButtonCompact,
               isTinyHeight && styles.actionButtonTiny,
-              { backgroundColor: isDark ? '#1A3E1A' : '#E8F5E9', borderColor: isDark ? '#66BB6A' : '#2E7D32' },
+              { backgroundColor: colors.successBg, borderColor: colors.successBorder },
             ]}
             onPress={handleGotIt}
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Mark card as got it"
           >
-            <Ionicons name="checkmark" size={isTinyHeight ? 16 : 20} color={isDark ? '#66BB6A' : '#2E7D32'} />
-            <Text style={[styles.actionButtonText, isShortHeight && styles.actionButtonTextCompact, isTinyHeight && styles.actionButtonTextTiny, { color: isDark ? '#66BB6A' : '#2E7D32' }]}>Got it</Text>
+            <Ionicons name="checkmark" size={isTinyHeight ? 16 : 20} color={colors.successText} />
+            <Text style={[styles.actionButtonText, isShortHeight && styles.actionButtonTextCompact, isTinyHeight && styles.actionButtonTextTiny, { color: colors.successText }]}>Got it</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
