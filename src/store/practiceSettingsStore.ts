@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { safeSetItem } from '../utils/safeStorage';
+import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
 import type { Tense, VerbLevel } from '../utils/conjugate';
 
@@ -13,6 +13,7 @@ interface PracticeSettingsStore {
   setActiveLevels: (levels: VerbLevel[]) => Promise<void>;
   toggleTense: (tense: Tense) => Promise<void>;
   toggleLevel: (level: VerbLevel) => Promise<void>;
+  resetPracticeSettings: () => Promise<boolean>;
 }
 
 const allTenses: Tense[] = [
@@ -119,6 +120,22 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       }
       set({ activeLevels: updated });
       await persistSnapshot(get);
+    });
+  },
+
+  resetPracticeSettings: async () => {
+    return queue.enqueue(async () => {
+      const removed = await safeRemoveItem('practiceSettings');
+      if (!removed) {
+        console.warn('Failed to reset practice settings');
+        return false;
+      }
+      set({
+        activeTenses: [...allTenses],
+        activeLevels: [...allLevels],
+        loaded: true,
+      });
+      return true;
     });
   },
 }));

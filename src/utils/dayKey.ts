@@ -18,8 +18,22 @@ export function timestampToDayKey(timestamp: number): string {
   return dateToDayKey(new Date(timestamp));
 }
 
+export function isValidDayKey(day: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const date = Number(match[3]);
+  const parsed = new Date(year, month - 1, date);
+  return (
+    parsed.getFullYear() === year
+    && parsed.getMonth() === month - 1
+    && parsed.getDate() === date
+  );
+}
+
 export function normalizeStoredDayKey(day: string): string {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(day)) return day;
+  if (isValidDayKey(day)) return day;
 
   const parsed = new Date(day);
   if (!Number.isFinite(parsed.getTime())) return day;

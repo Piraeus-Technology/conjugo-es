@@ -26,8 +26,10 @@ import {
   SHARE_MESSAGE,
 } from '../utils/appMeta';
 import { useTipJar } from '../utils/tipJar';
+import { resetAllLearningData } from '../utils/resetLearningData';
 
 export default function FeedbackScreen() {
+  const [resettingData, setResettingData] = React.useState(false);
   const colors = useColors();
   const nav = useNavigation<any>();
   const { isDark, autoTTS, includeVosotros, toggleTheme, toggleAutoTTS, toggleVosotros } = useThemeStore();
@@ -60,6 +62,37 @@ export default function FeedbackScreen() {
     Linking.openURL(url).catch(() => {
       Alert.alert('Not Available Yet', 'Rating will be available once the app is on the App Store.');
     });
+  };
+
+  const handleResetData = () => {
+    Alert.alert(
+      'Reset Learning Data?',
+      'This permanently removes your favorites, history, practice settings, progress, and learning weights from this device.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: () => {
+            setResettingData(true);
+            resetAllLearningData()
+              .then((success) => {
+                Alert.alert(
+                  success ? 'Learning Data Reset' : 'Reset Incomplete',
+                  success
+                    ? 'All local learning data and preferences were removed.'
+                    : 'Some local data could not be removed. Please try again.',
+                );
+              })
+              .catch((error) => {
+                console.warn('Failed to reset learning data:', error);
+                Alert.alert('Reset Failed', 'Local learning data could not be removed. Please try again.');
+              })
+              .finally(() => setResettingData(false));
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -134,6 +167,27 @@ export default function FeedbackScreen() {
             />
           </View>
         </View>
+
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Your Data</Text>
+        <TouchableOpacity
+          style={[styles.rateCard, { backgroundColor: colors.card }]}
+          onPress={handleResetData}
+          disabled={resettingData}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Reset all local learning data"
+          accessibilityState={{ disabled: resettingData }}
+        >
+          <Ionicons name="trash-outline" size={24} color={colors.primary} style={{ marginRight: spacing.md }} />
+          <View style={styles.rateInfo}>
+            <Text style={[styles.rateTitle, { color: colors.primary }]}>
+              {resettingData ? 'Resetting…' : 'Reset Learning Data'}
+            </Text>
+            <Text style={[styles.rateSubtitle, { color: colors.textSecondary }]}>
+              Remove progress, favorites, history, and preferences
+            </Text>
+          </View>
+        </TouchableOpacity>
 
         {/* Tip Jar */}
         {(products.length > 0 || tipUnavailable) && (

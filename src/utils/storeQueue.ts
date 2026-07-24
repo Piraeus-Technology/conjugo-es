@@ -4,7 +4,7 @@
 // resolving load can't stomp a just-persisted write.
 export interface StoreQueue {
   /** Serialize an operation behind everything already queued. */
-  enqueue: (operation: () => Promise<void>) => Promise<void>;
+  enqueue: <T>(operation: () => Promise<T>) => Promise<T>;
   /** Run a load, deduping concurrent callers onto the same in-flight promise. */
   runLoad: (load: () => Promise<void>) => Promise<void>;
   /** Test-only: drop any in-flight promises. */
@@ -15,9 +15,9 @@ export function createStoreQueue(): StoreQueue {
   let loadPromise: Promise<void> | null = null;
   let operationQueue: Promise<void> = Promise.resolve();
 
-  const enqueue = (operation: () => Promise<void>): Promise<void> => {
+  const enqueue = <T>(operation: () => Promise<T>): Promise<T> => {
     const next = operationQueue.catch(() => undefined).then(operation);
-    operationQueue = next.catch(() => undefined);
+    operationQueue = next.then(() => undefined, () => undefined);
     return next;
   };
 

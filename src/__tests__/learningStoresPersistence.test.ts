@@ -3,6 +3,7 @@ import { __resetQuizStoreForTests, useQuizStore } from '../store/quizStore';
 import {
   __resetSpacedRepStoreForTests,
   buildPromptKey,
+  parseStoredWeights,
   useSpacedRepStore,
 } from '../store/spacedRepStore';
 
@@ -90,6 +91,47 @@ describe('quiz and spaced repetition store persistence', () => {
     });
   });
 
+  test('quiz reset leaves state intact when deletion fails', async () => {
+    useQuizStore.setState({
+      totalQuestions: 5,
+      totalCorrect: 4,
+      bestStreak: 3,
+      loaded: true,
+    });
+    mockStorage.set(
+      'quiz_stats',
+      JSON.stringify({ totalQuestions: 5, totalCorrect: 4, bestStreak: 3 }),
+    );
+    jest.mocked(AsyncStorage.removeItem).mockRejectedValueOnce(new Error('disk locked'));
+
+    await expect(useQuizStore.getState().resetStats()).resolves.toBe(false);
+
+    expect(useQuizStore.getState()).toMatchObject({
+      totalQuestions: 5,
+      totalCorrect: 4,
+      bestStreak: 3,
+    });
+    expect(mockStorage.has('quiz_stats')).toBe(true);
+  });
+
+  test.each([
+    ['malformed JSON', '{not-json'],
+    ['right JSON with the wrong shape', JSON.stringify({ totalQuestions: 'many' })],
+  ])('quiz store recovers its key from %s', async (_label, stored) => {
+    mockStorage.set('quiz_stats', stored);
+
+    await useQuizStore.getState().loadStats();
+
+    expect(useQuizStore.getState()).toMatchObject({
+      totalQuestions: 0,
+      totalCorrect: 0,
+      bestStreak: 0,
+      loaded: true,
+      loadError: false,
+    });
+    expect(mockStorage.has('quiz_stats')).toBe(false);
+  });
+
   test('quiz answer refuses to write when initial load failed, preserving disk', async () => {
     mockStorage.set('quiz_stats', JSON.stringify({ totalQuestions: 100, totalCorrect: 80, bestStreak: 12 }));
     jest.mocked(AsyncStorage.getItem).mockRejectedValueOnce(new Error('disk locked'));
@@ -159,6 +201,32 @@ describe('quiz and spaced repetition store persistence', () => {
 
     expect(useSpacedRepStore.getState().weights).toEqual({ dormir: 2 });
     expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({ dormir: 2 });
+  });
+
+  test('spaced repetition reset leaves state intact when deletion fails', async () => {
+    useSpacedRepStore.setState({ weights: { dormir: 2 }, loaded: true });
+    mockStorage.set('spaced_rep_weights', JSON.stringify({ dormir: 2 }));
+    jest.mocked(AsyncStorage.removeItem).mockRejectedValueOnce(new Error('disk locked'));
+
+    await expect(useSpacedRepStore.getState().resetWeights()).resolves.toBe(false);
+
+    expect(useSpacedRepStore.getState().weights).toEqual({ dormir: 2 });
+    expect(mockStorage.has('spaced_rep_weights')).toBe(true);
+  });
+
+  test('spaced repetition rejects non-finite and wrong-shape weights', async () => {
+    expect(parseStoredWeights({ dormir: Number.NaN })).toBeNull();
+    expect(parseStoredWeights({ dormir: 'heavy' })).toBeNull();
+
+    mockStorage.set('spaced_rep_weights', JSON.stringify({ dormir: null }));
+    await useSpacedRepStore.getState().loadWeights();
+
+    expect(useSpacedRepStore.getState()).toMatchObject({
+      weights: {},
+      loaded: true,
+      loadError: false,
+    });
+    expect(mockStorage.has('spaced_rep_weights')).toBe(false);
   });
 
   test('spaced repetition refuses to write when initial load failed, preserving disk', async () => {

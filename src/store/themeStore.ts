@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { safeSetItem } from '../utils/safeStorage';
+import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
 
 interface ThemeStore {
@@ -12,6 +12,7 @@ interface ThemeStore {
   toggleTheme: () => Promise<void>;
   toggleAutoTTS: () => Promise<void>;
   toggleVosotros: () => Promise<void>;
+  resetPreferences: () => Promise<boolean>;
 }
 
 const queue = createStoreQueue();
@@ -73,6 +74,27 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       if (!(await safeSetItem('include_vosotros', newVal ? 'true' : 'false'))) {
         console.warn('Vosotros preference not persisted; will revert on next launch');
       }
+    });
+  },
+
+  resetPreferences: async () => {
+    return queue.enqueue(async () => {
+      const removed = await Promise.all([
+        safeRemoveItem('theme_mode'),
+        safeRemoveItem('auto_tts'),
+        safeRemoveItem('include_vosotros'),
+      ]);
+      if (removed.some((success) => !success)) {
+        console.warn('Failed to reset one or more display preferences');
+        return false;
+      }
+      set({
+        isDark: false,
+        autoTTS: false,
+        includeVosotros: true,
+        loaded: true,
+      });
+      return true;
     });
   },
 }));

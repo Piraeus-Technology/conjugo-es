@@ -17,13 +17,30 @@ interface SpacedRepStore {
   loadWeights: () => Promise<void>;
   recordResult: (verb: string, tense: Tense, personIndex: number, correct: boolean) => Promise<void>;
   getWeight: (verb: string, tense: Tense, personIndex: number) => number;
-  resetWeights: () => Promise<void>;
+  resetWeights: () => Promise<boolean>;
 }
 
 const DEFAULT_WEIGHT = 1;
 const MIN_WEIGHT = 0.2;
 const MAX_WEIGHT = 5;
 const PROMPT_KEY_SEPARATOR = '::';
+
+export function parseStoredWeights(value: unknown): VerbWeight | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const entries = Object.entries(value);
+  if (
+    entries.some(
+      ([key, weight]) =>
+        key.length === 0
+        || typeof weight !== 'number'
+        || !Number.isFinite(weight)
+        || weight <= 0,
+    )
+  ) {
+    return null;
+  }
+  return Object.fromEntries(entries) as VerbWeight;
+}
 
 export function buildPromptKey(verb: string, tense: Tense, personIndex: number): string {
   return `${verb}${PROMPT_KEY_SEPARATOR}${tense}${PROMPT_KEY_SEPARATOR}${personIndex}`;
@@ -79,7 +96,23 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
       try {
         const stored = await AsyncStorage.getItem('spaced_rep_weights');
         if (stored) {
-          set({ weights: JSON.parse(stored), loaded: true, loadError: false });
+          let weights: VerbWeight | null = null;
+          try {
+            weights = parseStoredWeights(JSON.parse(stored));
+          } catch {
+            // Treat malformed JSON as per-key corruption.
+          }
+          if (!weights) {
+            console.warn('Discarding corrupt spaced repetition weights');
+            const removed = await safeRemoveItem('spaced_rep_weights');
+            if (!removed) {
+              set({ loadError: true });
+              return;
+            }
+            set({ weights: {}, loaded: true, loadError: false });
+            return;
+          }
+          set({ weights, loaded: true, loadError: false });
         } else {
           set({ loaded: true, loadError: false });
         }
@@ -119,8 +152,13 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
 
   resetWeights: async () => {
     return queue.enqueue(async () => {
+      const removed = await safeRemoveItem('spaced_rep_weights');
+      if (!removed) {
+        console.warn('Failed to reset spaced repetition weights');
+        return false;
+      }
       set({ weights: {}, loaded: true, loadError: false });
-      await safeRemoveItem('spaced_rep_weights');
+      return true;
     });
   },
 }));

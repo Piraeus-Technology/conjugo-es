@@ -11,7 +11,35 @@ interface QuizStats {
   loadError: boolean;
   loadStats: () => Promise<void>;
   recordAnswer: (correct: boolean, currentStreak: number) => Promise<void>;
-  resetStats: () => Promise<void>;
+  resetStats: () => Promise<boolean>;
+}
+
+interface PersistedQuizStats {
+  totalQuestions: number;
+  totalCorrect: number;
+  bestStreak: number;
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return Number.isInteger(value) && (value as number) >= 0;
+}
+
+export function parseStoredQuizStats(value: unknown): PersistedQuizStats | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const candidate = value as Record<string, unknown>;
+  if (
+    !isNonNegativeInteger(candidate.totalQuestions)
+    || !isNonNegativeInteger(candidate.totalCorrect)
+    || !isNonNegativeInteger(candidate.bestStreak)
+    || candidate.totalCorrect > candidate.totalQuestions
+  ) {
+    return null;
+  }
+  return {
+    totalQuestions: candidate.totalQuestions,
+    totalCorrect: candidate.totalCorrect,
+    bestStreak: candidate.bestStreak,
+  };
 }
 
 // Dedupes concurrent first-load calls and serializes writes against loads
@@ -33,7 +61,29 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
       try {
         const stored = await AsyncStorage.getItem('quiz_stats');
         if (stored) {
-          const data = JSON.parse(stored);
+          let data: PersistedQuizStats | null = null;
+          try {
+            data = parseStoredQuizStats(JSON.parse(stored));
+          } catch {
+            // Handled as corrupt data below; storage I/O errors remain in the
+            // outer catch and are retried without deleting anything.
+          }
+          if (!data) {
+            console.warn('Discarding corrupt quiz stats');
+            const removed = await safeRemoveItem('quiz_stats');
+            if (!removed) {
+              set({ loadError: true });
+              return;
+            }
+            set({
+              totalQuestions: 0,
+              totalCorrect: 0,
+              bestStreak: 0,
+              loaded: true,
+              loadError: false,
+            });
+            return;
+          }
           set({ ...data, loaded: true, loadError: false });
         } else {
           set({ loaded: true, loadError: false });
@@ -79,8 +129,13 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
 
   resetStats: async () => {
     return queue.enqueue(async () => {
+      const removed = await safeRemoveItem('quiz_stats');
+      if (!removed) {
+        console.warn('Failed to reset quiz stats');
+        return false;
+      }
       set({ totalQuestions: 0, totalCorrect: 0, bestStreak: 0, loaded: true, loadError: false });
-      await safeRemoveItem('quiz_stats');
+      return true;
     });
   },
 }));

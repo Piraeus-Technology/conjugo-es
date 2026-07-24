@@ -1,12 +1,11 @@
 import React from 'react';
 import { AppState } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-interface SessionDelta {
-  count: number;
-  correct: number;
-  bestStreak: number;
-}
+import {
+  createSessionSaveCoordinator,
+  type SessionDelta,
+  type SessionSaveCoordinator,
+} from '../utils/sessionSaveCoordinator';
 
 // Auto-saves new answers when the screen blurs, the app backgrounds, or the
 // component unmounts. The delta is claimed synchronously before the async
@@ -29,44 +28,26 @@ export function useSessionAutosave({
   const correctRef = React.useRef(correct);
   const bestStreakRef = React.useRef(bestStreak);
   const saveRef = React.useRef(save);
-  const lastSavedCountRef = React.useRef(0);
-  const lastSavedCorrectRef = React.useRef(0);
-  const lastSavedBestStreakRef = React.useRef(0);
   countRef.current = count;
   correctRef.current = correct;
   bestStreakRef.current = bestStreak;
   saveRef.current = save;
 
-  const saveNow = React.useCallback(async () => {
-    const snapshotCount = countRef.current;
-    const snapshotCorrect = correctRef.current;
-    const unsavedCount = snapshotCount - lastSavedCountRef.current;
-    const unsavedCorrect = snapshotCorrect - lastSavedCorrectRef.current;
-    const unsavedBestStreak = Math.max(bestStreakRef.current, lastSavedBestStreakRef.current);
-
-    if (unsavedCount <= 0) return;
-
-    const prevSavedCount = lastSavedCountRef.current;
-    const prevSavedCorrect = lastSavedCorrectRef.current;
-    const prevSavedBestStreak = lastSavedBestStreakRef.current;
-    lastSavedCountRef.current = snapshotCount;
-    lastSavedCorrectRef.current = snapshotCorrect;
-    lastSavedBestStreakRef.current = unsavedBestStreak;
-
-    try {
-      await saveRef.current({
-        count: unsavedCount,
-        correct: unsavedCorrect,
-        bestStreak: unsavedBestStreak,
-      });
-    } catch (e) {
-      // Roll back so the lost delta gets retried on the next save.
-      lastSavedCountRef.current = prevSavedCount;
-      lastSavedCorrectRef.current = prevSavedCorrect;
-      lastSavedBestStreakRef.current = prevSavedBestStreak;
-      console.warn('Failed to save session:', e);
-    }
-  }, []);
+  const coordinatorRef = React.useRef<SessionSaveCoordinator | null>(null);
+  if (!coordinatorRef.current) {
+    coordinatorRef.current = createSessionSaveCoordinator(
+      () => ({
+        count: countRef.current,
+        correct: correctRef.current,
+        bestStreak: bestStreakRef.current,
+      }),
+      (delta) => saveRef.current(delta),
+    );
+  }
+  const saveNow = React.useCallback(
+    () => coordinatorRef.current!.saveNow(),
+    [],
+  );
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
@@ -87,8 +68,6 @@ export function useSessionAutosave({
     return unsubscribe;
   }, [nav, saveNow]);
 
-  return {
-    unsavedCount: count - lastSavedCountRef.current,
-    unsavedCorrect: correct - lastSavedCorrectRef.current,
-  };
+  const unsaved = coordinatorRef.current.getUnsaved();
+  return { unsavedCount: unsaved.count, unsavedCorrect: unsaved.correct };
 }

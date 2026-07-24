@@ -2,7 +2,12 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
-import { getTodayKey, normalizeStoredDayKey, timestampToDayKey } from '../utils/dayKey';
+import {
+  getTodayKey,
+  isValidDayKey,
+  normalizeStoredDayKey,
+  timestampToDayKey,
+} from '../utils/dayKey';
 import { MAX_DAILY_SESSIONS } from '../utils/constants';
 
 export interface FlashcardSession {
@@ -17,7 +22,60 @@ interface FlashcardSessionStore {
   loadError: boolean;
   loadSessions: () => Promise<void>;
   saveSession: (session: Omit<FlashcardSession, 'day'>) => Promise<void>;
-  clearSessions: () => Promise<void>;
+  clearSessions: () => Promise<boolean>;
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return Number.isInteger(value) && (value as number) >= 0;
+}
+
+export function parseStoredFlashcardSessions(
+  value: unknown,
+): { sessions: FlashcardSession[]; didMigrate: boolean } | null {
+  if (!Array.isArray(value)) return null;
+  const dayMap: Record<string, FlashcardSession> = {};
+  let didMigrate = false;
+
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const stored = raw as Record<string, unknown>;
+    if (
+      !isNonNegativeInteger(stored.reviewed)
+      || !isNonNegativeInteger(stored.correct)
+      || stored.correct > stored.reviewed
+    ) {
+      return null;
+    }
+
+    let day: string;
+    if (typeof stored.day === 'string') {
+      day = normalizeStoredDayKey(stored.day);
+      if (!isValidDayKey(day)) return null;
+      if (day !== stored.day) didMigrate = true;
+    } else if (typeof stored.date === 'number' && Number.isFinite(stored.date)) {
+      day = timestampToDayKey(stored.date);
+      didMigrate = true;
+    } else {
+      return null;
+    }
+
+    if (dayMap[day]) {
+      didMigrate = true;
+      dayMap[day].reviewed += stored.reviewed;
+      dayMap[day].correct += stored.correct;
+    } else {
+      dayMap[day] = {
+        day,
+        reviewed: stored.reviewed,
+        correct: stored.correct,
+      };
+    }
+  }
+
+  return {
+    sessions: Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day)),
+    didMigrate,
+  };
 }
 
 // See sessionStore.ts. Dedupes concurrent first-load calls.
@@ -36,32 +94,25 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
       try {
         const stored = await AsyncStorage.getItem('flashcardSessions');
         if (stored) {
-          const parsed = JSON.parse(stored);
-          // Migrate old format (date: timestamp) to new format (day: 'YYYY-MM-DD').
-          // Only write back if we actually transformed something.
-          const dayMap: Record<string, FlashcardSession> = {};
-          let didMigrate = false;
-          for (const s of parsed) {
-            let day: string;
-            if (s.day) {
-              day = normalizeStoredDayKey(s.day);
-              if (day !== s.day) didMigrate = true;
-            } else {
-              didMigrate = true;
-              day = timestampToDayKey(s.date);
-            }
-            if (dayMap[day]) {
-              didMigrate = true;
-              dayMap[day].reviewed += s.reviewed;
-              dayMap[day].correct += s.correct;
-            } else {
-              dayMap[day] = { day, reviewed: s.reviewed, correct: s.correct };
-            }
+          let parsed: ReturnType<typeof parseStoredFlashcardSessions> = null;
+          try {
+            parsed = parseStoredFlashcardSessions(JSON.parse(stored));
+          } catch {
+            // Treat malformed JSON as per-key corruption.
           }
-          const sessions = Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day));
-          set({ sessions, loaded: true, loadError: false });
-          if (didMigrate) {
-            await safeSetItem('flashcardSessions', JSON.stringify(sessions));
+          if (!parsed) {
+            console.warn('Discarding corrupt flashcard sessions');
+            const removed = await safeRemoveItem('flashcardSessions');
+            if (!removed) {
+              set({ loadError: true });
+              return;
+            }
+            set({ sessions: [], loaded: true, loadError: false });
+            return;
+          }
+          set({ sessions: parsed.sessions, loaded: true, loadError: false });
+          if (parsed.didMigrate) {
+            await safeSetItem('flashcardSessions', JSON.stringify(parsed.sessions));
           }
         } else {
           set({ loaded: true, loadError: false });
@@ -110,8 +161,13 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
 
   clearSessions: async () => {
     return queue.enqueue(async () => {
+      const removed = await safeRemoveItem('flashcardSessions');
+      if (!removed) {
+        console.warn('Failed to clear flashcard sessions');
+        return false;
+      }
       set({ sessions: [], loaded: true, loadError: false });
-      await safeRemoveItem('flashcardSessions');
+      return true;
     });
   },
 }));

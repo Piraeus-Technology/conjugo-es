@@ -11,7 +11,7 @@ interface HistoryStore {
   loadHistory: () => Promise<void>;
   addToHistory: (verb: string) => Promise<void>;
   removeFromHistory: (verb: string) => Promise<void>;
-  clearHistory: () => Promise<void>;
+  clearHistory: () => Promise<boolean>;
 }
 
 const queue = createStoreQueue();
@@ -88,9 +88,10 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
       const removed = await safeRemoveItem('verb_history');
       if (!removed) {
         console.warn('Failed to clear history');
-        return;
+        return false;
       }
       set({ history: [], loaded: true, loadError: false });
+      return true;
     });
   },
 }));

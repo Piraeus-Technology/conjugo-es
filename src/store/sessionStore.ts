@@ -2,7 +2,12 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
-import { getTodayKey, normalizeStoredDayKey, timestampToDayKey } from '../utils/dayKey';
+import {
+  getTodayKey,
+  isValidDayKey,
+  normalizeStoredDayKey,
+  timestampToDayKey,
+} from '../utils/dayKey';
 import { MAX_DAILY_SESSIONS } from '../utils/constants';
 
 export interface Session {
@@ -18,7 +23,64 @@ interface SessionStore {
   loadError: boolean;
   loadSessions: () => Promise<void>;
   saveSession: (session: Omit<Session, 'day'>) => Promise<void>;
-  clearSessions: () => Promise<void>;
+  clearSessions: () => Promise<boolean>;
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return Number.isInteger(value) && (value as number) >= 0;
+}
+
+export function parseStoredQuizSessions(
+  value: unknown,
+): { sessions: Session[]; didMigrate: boolean } | null {
+  if (!Array.isArray(value)) return null;
+  const dayMap: Record<string, Session> = {};
+  let didMigrate = false;
+
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+    const stored = raw as Record<string, unknown>;
+    if (
+      !isNonNegativeInteger(stored.total)
+      || !isNonNegativeInteger(stored.correct)
+      || !isNonNegativeInteger(stored.streak ?? 0)
+      || stored.correct > stored.total
+    ) {
+      return null;
+    }
+
+    let day: string;
+    if (typeof stored.day === 'string') {
+      day = normalizeStoredDayKey(stored.day);
+      if (!isValidDayKey(day)) return null;
+      if (day !== stored.day) didMigrate = true;
+    } else if (typeof stored.date === 'number' && Number.isFinite(stored.date)) {
+      day = timestampToDayKey(stored.date);
+      didMigrate = true;
+    } else {
+      return null;
+    }
+
+    const streak = isNonNegativeInteger(stored.streak) ? stored.streak : 0;
+    if (dayMap[day]) {
+      didMigrate = true;
+      dayMap[day].total += stored.total;
+      dayMap[day].correct += stored.correct;
+      dayMap[day].streak = Math.max(dayMap[day].streak, streak);
+    } else {
+      dayMap[day] = {
+        day,
+        total: stored.total,
+        correct: stored.correct,
+        streak,
+      };
+    }
+  }
+
+  return {
+    sessions: Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day)),
+    didMigrate,
+  };
 }
 
 // Dedupes concurrent first-load calls from multiple screens.
@@ -37,33 +99,25 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       try {
         const stored = await AsyncStorage.getItem('sessions');
         if (stored) {
-          const parsed = JSON.parse(stored);
-          // Migrate old format (date: timestamp) to new format (day: 'YYYY-MM-DD').
-          // Only write back if we actually transformed something.
-          const dayMap: Record<string, Session> = {};
-          let didMigrate = false;
-          for (const s of parsed) {
-            let day: string;
-            if (s.day) {
-              day = normalizeStoredDayKey(s.day);
-              if (day !== s.day) didMigrate = true;
-            } else {
-              didMigrate = true;
-              day = timestampToDayKey(s.date);
-            }
-            if (dayMap[day]) {
-              didMigrate = true;
-              dayMap[day].total += s.total;
-              dayMap[day].correct += s.correct;
-              dayMap[day].streak = Math.max(dayMap[day].streak, s.streak || 0);
-            } else {
-              dayMap[day] = { day, total: s.total, correct: s.correct, streak: s.streak || 0 };
-            }
+          let parsed: ReturnType<typeof parseStoredQuizSessions> = null;
+          try {
+            parsed = parseStoredQuizSessions(JSON.parse(stored));
+          } catch {
+            // Treat malformed JSON as per-key corruption.
           }
-          const sessions = Object.values(dayMap).sort((a, b) => b.day.localeCompare(a.day));
-          set({ sessions, loaded: true, loadError: false });
-          if (didMigrate) {
-            await safeSetItem('sessions', JSON.stringify(sessions));
+          if (!parsed) {
+            console.warn('Discarding corrupt quiz sessions');
+            const removed = await safeRemoveItem('sessions');
+            if (!removed) {
+              set({ loadError: true });
+              return;
+            }
+            set({ sessions: [], loaded: true, loadError: false });
+            return;
+          }
+          set({ sessions: parsed.sessions, loaded: true, loadError: false });
+          if (parsed.didMigrate) {
+            await safeSetItem('sessions', JSON.stringify(parsed.sessions));
           }
         } else {
           set({ loaded: true, loadError: false });
@@ -116,8 +170,13 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   clearSessions: async () => {
     return queue.enqueue(async () => {
+      const removed = await safeRemoveItem('sessions');
+      if (!removed) {
+        console.warn('Failed to clear quiz sessions');
+        return false;
+      }
       set({ sessions: [], loaded: true, loadError: false });
-      await safeRemoveItem('sessions');
+      return true;
     });
   },
 }));
