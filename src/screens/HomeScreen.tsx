@@ -13,7 +13,7 @@ import {
 // Keep the legacy RNGH Swipeable during the SDK 54 maintenance pass. Its
 // replacement requires Reanimated, which this app otherwise does not use.
 import { Swipeable } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import verbs from '../data/verbs.json';
 import { VerbData, tenseNames } from '../utils/conjugate';
 import { useHistoryStore } from '../store/historyStore';
@@ -21,7 +21,6 @@ import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { MAX_SEARCH_RESULTS } from '../utils/constants';
 import {
-  getExactConjugationMatches,
   normalizeSearchText,
   searchConjugations,
   searchVerbs,
@@ -92,14 +91,115 @@ function buildVerbMatchMeta(
   };
 }
 
+function buildVerbSearchResults(searchValue: string, query: string): SearchResult[] {
+  return searchVerbs(searchValue)
+    .map((result) => ({
+      infinitive: result.item.infinitive,
+      translation: result.item.translation,
+      matchType: 'infinitive' as const,
+      score: result.score ?? 1,
+      ...buildVerbMatchMeta(query, result.item),
+    }))
+    .sort((first, second) => {
+      const firstExactInfinitive = normalizeSearchText(first.infinitive) === query ? 1 : 0;
+      const secondExactInfinitive = normalizeSearchText(second.infinitive) === query ? 1 : 0;
+      if (firstExactInfinitive !== secondExactInfinitive) {
+        return secondExactInfinitive - firstExactInfinitive;
+      }
+
+      const firstExactTranslation = normalizeSearchText(first.translation) === query ? 1 : 0;
+      const secondExactTranslation = normalizeSearchText(second.translation) === query ? 1 : 0;
+      if (firstExactTranslation !== secondExactTranslation) {
+        return secondExactTranslation - firstExactTranslation;
+      }
+
+      return first.score - second.score;
+    })
+    .map(({ score: _score, ...result }) => result);
+}
+
+async function buildSearchResults(
+  searchValue: string,
+  shouldCancel: () => boolean,
+): Promise<SearchResult[]> {
+  const query = normalizeSearchText(searchValue);
+  const verbResults = buildVerbSearchResults(searchValue, query);
+  if (query.length < 3) return verbResults.slice(0, MAX_SEARCH_RESULTS);
+
+  const conjugationResults = await searchConjugations(searchValue, shouldCancel);
+  if (shouldCancel()) return verbResults.slice(0, MAX_SEARCH_RESULTS);
+  const exactConjugations = conjugationResults
+    .map((result) => result.item)
+    .filter((conjugation) => conjugation.normalizedForm === query);
+  if (exactConjugations.length > 0) {
+    const grouped = new Map<string, SearchResult>();
+
+    exactConjugations.forEach((conjugation) => {
+      const detail = `"${conjugation.form}" — ${tenseNames[conjugation.tense]}, ${conjugation.pronoun}`;
+      const existing = grouped.get(conjugation.infinitive);
+      if (existing) {
+        if (existing.matchDetail && !existing.matchDetail.includes(detail)) {
+          const details = existing.matchDetail.split(' · ');
+          if (details.length < 2) {
+            existing.matchDetail = [...details, detail].join(' · ');
+          }
+        }
+        return;
+      }
+
+      grouped.set(conjugation.infinitive, {
+        infinitive: conjugation.infinitive,
+        translation: conjugation.translation,
+        matchType: 'conjugation',
+        matchLabel: 'Conjugation match',
+        matchDetail: detail,
+        matchTense: conjugation.tense,
+        matchForm: conjugation.form,
+      });
+    });
+
+    const exactResults = [...grouped.values()];
+    const seen = new Set(exactResults.map((result) => result.infinitive));
+    verbResults.forEach((result) => {
+      if (!seen.has(result.infinitive)) {
+        seen.add(result.infinitive);
+        exactResults.push(result);
+      }
+    });
+    return exactResults.slice(0, MAX_SEARCH_RESULTS);
+  }
+
+  const seen = new Set(verbResults.map((result) => result.infinitive));
+  const groupedConjugations: SearchResult[] = [];
+
+  conjugationResults.forEach((result) => {
+    if (seen.has(result.item.infinitive)) return;
+    seen.add(result.item.infinitive);
+    groupedConjugations.push({
+      infinitive: result.item.infinitive,
+      translation: result.item.translation,
+      matchType: 'conjugation',
+      matchLabel: 'Conjugation match',
+      matchDetail: `"${result.item.form}" — ${tenseNames[result.item.tense]}, ${result.item.pronoun}`,
+      matchTense: result.item.tense,
+      matchForm: result.item.form,
+    });
+  });
+
+  return [...verbResults, ...groupedConjugations].slice(0, MAX_SEARCH_RESULTS);
+}
+
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [conjugationSearchPending, setConjugationSearchPending] = useState(false);
   const { history, loadHistory, addToHistory, removeFromHistory, clearHistory } =
     useHistoryStore();
   const { favorites, loadFavorites, toggleFavorite } = useFavoritesStore();
   const colors = useColors();
-  const searchPending = isSearchDebouncePending(search, debouncedSearch);
+  const searchPending =
+    isSearchDebouncePending(search, debouncedSearch) || conjugationSearchPending;
   const verbOfTheDay = getVerbOfTheDay();
 
   useEffect(() => {
@@ -107,9 +207,9 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     loadFavorites();
   }, [loadHistory, loadFavorites]);
 
-  // Debounce search so the conjugation index build (~96k entries) and Fuse
-  // queries don't run on every keystroke. Empty queries skip the debounce so
-  // clearing the input snaps back to history/favorites immediately.
+  // Debounce search so async conjugation queries do not restart on every
+  // keystroke. Empty queries skip the debounce so clearing the input snaps
+  // back to history/favorites immediately.
   useEffect(() => {
     if (!search.trim()) {
       setDebouncedSearch('');
@@ -119,98 +219,39 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return () => clearTimeout(t);
   }, [search]);
 
-  const results = useMemo((): SearchResult[] => {
-    if (!debouncedSearch.trim()) return [];
-
-    const query = normalizeSearchText(debouncedSearch);
-
-    const exactConjMatches = getExactConjugationMatches(query);
-
-    if (exactConjMatches.length > 0) {
-      const grouped = new Map<string, SearchResult>();
-
-      exactConjMatches.forEach((c) => {
-        const detail = `"${c.form}" — ${tenseNames[c.tense]}, ${c.pronoun}`;
-        const existing = grouped.get(c.infinitive);
-        if (existing) {
-          if (existing.matchDetail && !existing.matchDetail.includes(detail)) {
-            const details = existing.matchDetail.split(' · ');
-            if (details.length < 2) existing.matchDetail = [...details, detail].join(' · ');
-          }
-          return;
-        }
-
-        grouped.set(c.infinitive, {
-          infinitive: c.infinitive,
-          translation: c.translation,
-          matchType: 'conjugation',
-          matchLabel: 'Conjugation match',
-          matchDetail: detail,
-          matchTense: c.tense,
-          matchForm: c.form,
-        });
-      });
-
-      const exactResults = [...grouped.values()];
-      const seen = new Set(exactResults.map(result => result.infinitive));
-
-      const verbResults = searchVerbs(debouncedSearch);
-      verbResults.forEach((r) => {
-        if (!seen.has(r.item.infinitive)) {
-          seen.add(r.item.infinitive);
-          exactResults.push({
-            infinitive: r.item.infinitive,
-            translation: r.item.translation,
-            matchType: 'infinitive',
-            ...buildVerbMatchMeta(query, r.item),
-          });
-        }
-      });
-
-      return exactResults.slice(0, MAX_SEARCH_RESULTS);
+  useEffect(() => {
+    let cancelled = false;
+    const searchValue = debouncedSearch.trim();
+    if (!searchValue) {
+      setResults([]);
+      setConjugationSearchPending(false);
+      return;
     }
 
-    const verbResults = searchVerbs(debouncedSearch)
-      .map((r) => ({
-        infinitive: r.item.infinitive,
-        translation: r.item.translation,
-        matchType: 'infinitive' as const,
-        score: r.score ?? 1,
-        ...buildVerbMatchMeta(query, r.item),
-      }))
-      .sort((a, b) => {
-        const aExactInfinitive = normalizeSearchText(a.infinitive) === query ? 1 : 0;
-        const bExactInfinitive = normalizeSearchText(b.infinitive) === query ? 1 : 0;
-        if (aExactInfinitive !== bExactInfinitive) return bExactInfinitive - aExactInfinitive;
+    const query = normalizeSearchText(searchValue);
+    // Infinitive/translation matches are cheap, so show them immediately
+    // while the conjugation matrix is scanned in event-loop-sized chunks.
+    setResults(buildVerbSearchResults(searchValue, query).slice(0, MAX_SEARCH_RESULTS));
+    if (query.length < 3) {
+      setConjugationSearchPending(false);
+      return;
+    }
 
-        const aExactTranslation = normalizeSearchText(a.translation) === query ? 1 : 0;
-        const bExactTranslation = normalizeSearchText(b.translation) === query ? 1 : 0;
-        if (aExactTranslation !== bExactTranslation) return bExactTranslation - aExactTranslation;
-
-        return a.score - b.score;
+    setConjugationSearchPending(true);
+    buildSearchResults(searchValue, () => cancelled)
+      .then((nextResults) => {
+        if (!cancelled) setResults(nextResults);
       })
-      .map(({ score: _score, ...result }) => result);
+      .catch((error) => {
+        if (!cancelled) console.warn('Conjugation search failed:', error);
+      })
+      .finally(() => {
+        if (!cancelled) setConjugationSearchPending(false);
+      });
 
-    const conjResults = searchConjugations(debouncedSearch);
-    const seenConj = new Set<string>(verbResults.map((r) => r.infinitive));
-    const conjGrouped: SearchResult[] = [];
-
-    conjResults.forEach((r) => {
-      if (!seenConj.has(r.item.infinitive)) {
-        seenConj.add(r.item.infinitive);
-        conjGrouped.push({
-          infinitive: r.item.infinitive,
-          translation: r.item.translation,
-          matchType: 'conjugation',
-          matchLabel: 'Conjugation match',
-          matchDetail: `"${r.item.form}" — ${tenseNames[r.item.tense]}, ${r.item.pronoun}`,
-          matchTense: r.item.tense,
-          matchForm: r.item.form,
-        });
-      }
-    });
-
-    return [...verbResults, ...conjGrouped].slice(0, MAX_SEARCH_RESULTS);
+    return () => {
+      cancelled = true;
+    };
   }, [debouncedSearch]);
 
   const handleVerbPress = (infinitive: string, tense?: string, form?: string) => {

@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { buildPracticeInsights } from '../utils/practiceInsights';
 import { getAccuracyPercent, hasPositiveCount } from '../utils/statsMath';

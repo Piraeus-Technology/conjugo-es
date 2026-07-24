@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import type { AppStateStatus, LayoutChangeEvent } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
 import { pickWeightedPrompt } from '../utils/practicePrompts';

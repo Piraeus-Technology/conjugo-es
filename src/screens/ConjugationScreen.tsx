@@ -8,7 +8,7 @@ import {
   StyleSheet,
   AppState,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
 import { speak, stopSpeech } from '../utils/speech';
 import verbs from '../data/verbs.json';
