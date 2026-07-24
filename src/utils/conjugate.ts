@@ -2,7 +2,7 @@ const pronouns = ['yo', 'tú', 'él/ella/Ud.', 'nosotros', 'vosotros', 'ellos/el
 
 // ============ REGULAR ENDINGS ============
 
-const regularEndings: Record<string, Record<string, string[]>> = {
+const regularEndings = {
   present: {
     ar: ['o', 'as', 'a', 'amos', 'áis', 'an'],
     er: ['o', 'es', 'e', 'emos', 'éis', 'en'],
@@ -48,23 +48,23 @@ const regularEndings: Record<string, Record<string, string[]>> = {
     er: ['—', 'as', 'a', 'amos', 'áis', 'an'],
     ir: ['—', 'as', 'a', 'amos', 'áis', 'an'],
   },
-};
+} as const satisfies Record<string, Record<'ar' | 'er' | 'ir', readonly string[]>>;
 
 // ============ COMPOUND TENSES ============
 
-const haberForms: Record<string, string[]> = {
+const haberForms = {
   present_perfect: ['he', 'has', 'ha', 'hemos', 'habéis', 'han'],
   past_perfect: ['había', 'habías', 'había', 'habíamos', 'habíais', 'habían'],
   future_perfect: ['habré', 'habrás', 'habrá', 'habremos', 'habréis', 'habrán'],
   conditional_perfect: ['habría', 'habrías', 'habría', 'habríamos', 'habríais', 'habrían'],
-};
+} as const satisfies Record<string, readonly string[]>;
 
 // ============ PROGRESSIVE TENSES ============
 
-const estarForms: Record<string, string[]> = {
+const estarForms = {
   present_progressive: ['estoy', 'estás', 'está', 'estamos', 'estáis', 'están'],
   past_progressive: ['estaba', 'estabas', 'estaba', 'estábamos', 'estabais', 'estaban'],
-};
+} as const satisfies Record<string, readonly string[]>;
 
 // ============ IRREGULAR PARTICIPLES ============
 
@@ -316,6 +316,10 @@ export interface ConjugationResult {
 function getPastParticiple(infinitive: string, type: string): string {
   const irregular = getIrregularParticiple(infinitive);
   if (irregular) return irregular;
+  return getRegularPastParticiple(infinitive, type);
+}
+
+export function getRegularPastParticiple(infinitive: string, type: string): string {
   const stem = infinitive.slice(0, -2);
   if (type === 'ar') return stem + 'ado';
   // Strong-vowel stems take an accented í: caer → caído, leer → leído, oír → oído
@@ -353,7 +357,7 @@ interface ConjugationContext {
   verb: VerbData;
   pattern: IrregularPattern | undefined;
   tense: SimpleTense;
-  endings: string[];
+  endings: readonly string[];
   isImperative: boolean;
 }
 

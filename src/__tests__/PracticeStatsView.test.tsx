@@ -55,7 +55,8 @@ describe('PracticeStatsView', () => {
       />,
     );
     expect(getByText('1 day streak')).toBeTruthy();
-    expect(getAllByText('80%')).toHaveLength(2); // All Time + Today cards
+    expect(getByText('Recent 365 Active Days')).toBeTruthy();
+    expect(getAllByText('80%')).toHaveLength(2); // Recent + Today cards
     expect(getByText('8/10')).toBeTruthy();
   });
 

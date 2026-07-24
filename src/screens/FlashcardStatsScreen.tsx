@@ -41,7 +41,7 @@ export default function FlashcardStatsScreen() {
       }}
       labels={{
         countLabel: 'Cards',
-        daysLabel: 'Sessions',
+        daysLabel: 'Active Days',
         loadingText: 'Loading flashcard stats...',
         errorText: 'Could not load flashcard stats.',
         retryAccessibilityLabel: 'Retry loading flashcard stats',

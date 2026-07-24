@@ -1,10 +1,11 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { Tense } from '../utils/conjugate';
 
 export type SearchStackParamList = {
   SearchHome: undefined;
   Conjugation: {
     infinitive: string;
-    initialTense?: string;
+    initialTense?: Tense;
     highlightForm?: string;
   };
 };
@@ -14,7 +15,7 @@ export type RootStackParamList = {
   Search: undefined;
   Conjugation: {
     infinitive: string;
-    initialTense?: string;
+    initialTense?: Tense;
     highlightForm?: string;
   };
   Feedback: undefined;

@@ -73,7 +73,7 @@ export default function PracticeStatsView({
     return map;
   }, [sessions]);
 
-  // All-time totals
+  // Totals across the retained recent active-day rows.
   const totalCount = React.useMemo(() => sessions.reduce((sum, s) => sum + s.count, 0), [sessions]);
   const totalCorrect = React.useMemo(() => sessions.reduce((sum, s) => sum + s.correct, 0), [sessions]);
 
@@ -160,8 +160,8 @@ export default function PracticeStatsView({
         </View>
       )}
 
-      {/* All-time stats */}
-      <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>All Time</Text>
+      {/* Retained recent activity */}
+      <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Recent 365 Active Days</Text>
       <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
