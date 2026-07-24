@@ -11,9 +11,9 @@ import * as StoreReview from 'expo-store-review';
 import { useNavigation } from '@react-navigation/native';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
-import { pickWeightedPrompt } from '../utils/practicePrompts';
+import { generateQuestion, type Question } from '../utils/quizQuestion';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
-import { conjugate, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
+import { tenseNames, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
@@ -24,100 +24,6 @@ import { REVIEW_PROMPT_STREAK } from '../utils/constants';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
-
-interface Question {
-  verb: string;
-  translation: string;
-  tense: Tense;
-  personIndex: number;
-  correctAnswer: string;
-  options: string[];
-}
-
-function generateQuestion(
-  activeTenses: Tense[],
-  getWeight: (verb: string, tense: Tense, personIndex: number) => number,
-  filteredEntries: [string, VerbData][],
-  includeVosotros: boolean = true,
-): Question {
-  const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
-  const prompt = pickWeightedPrompt(verbEntries, activeTenses, getWeight, includeVosotros);
-  const { verb, data, tense, personIndex } = prompt;
-  const correctAnswer = prompt.answer;
-  const results = conjugate(verb, data, tense);
-
-  // Generate wrong answers — prioritize hard distractors
-  // Priority 1: Same verb, same tense, different person (hardest)
-  const sameVerbSameTense: string[] = [];
-  results.forEach((r, i) => {
-    // The self-includes check matters: persons can share a form within a
-    // tense (yo/él "hablaba"), and duplicates here become duplicate options
-    if (i !== personIndex && r.form !== '—' && !r.disabled && r.form !== correctAnswer
-        && !sameVerbSameTense.includes(r.form)) {
-      sameVerbSameTense.push(r.form);
-    }
-  });
-
-  // Priority 2: Same verb, different tense, same person
-  const sameVerbDiffTense: string[] = [];
-  for (const t of activeTenses) {
-    if (t === tense) continue;
-    const otherResults = conjugate(verb, data, t);
-    const form = otherResults[personIndex].form;
-    // Self-includes check: present and preterite nosotros forms are identical
-    // for -ar/-ir verbs, so this pool can otherwise hold the same form twice
-    if (form !== '—' && !otherResults[personIndex].disabled && form !== correctAnswer
-        && !sameVerbSameTense.includes(form) && !sameVerbDiffTense.includes(form)) {
-      sameVerbDiffTense.push(form);
-    }
-  }
-
-  // Pick distractors: 1-2 from same tense different person, 1-2 from different tense same person
-  const selected: string[] = [];
-
-  // Shuffle both pools
-  for (let i = sameVerbSameTense.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sameVerbSameTense[i], sameVerbSameTense[j]] = [sameVerbSameTense[j], sameVerbSameTense[i]]; }
-  for (let i = sameVerbDiffTense.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sameVerbDiffTense[i], sameVerbDiffTense[j]] = [sameVerbDiffTense[j], sameVerbDiffTense[i]]; }
-
-  // Mix: try to get at least 1 from each pool, fill the rest
-  if (sameVerbSameTense.length > 0 && sameVerbDiffTense.length > 0) {
-    // At least 1 same-tense-diff-person, at least 1 diff-tense-same-person
-    selected.push(sameVerbSameTense.shift()!);
-    selected.push(sameVerbDiffTense.shift()!);
-    // Fill third from whichever has more
-    const remaining = [...sameVerbSameTense, ...sameVerbDiffTense];
-    if (remaining.length > 0) {
-      selected.push(remaining[Math.floor(Math.random() * remaining.length)]);
-    }
-  } else {
-    // Only one pool available, use it
-    const pool = sameVerbSameTense.length > 0 ? sameVerbSameTense : sameVerbDiffTense;
-    while (selected.length < 3 && pool.length > 0) {
-      selected.push(pool.shift()!);
-    }
-  }
-
-  // Fallback: same tense, different verb (only if needed). Bounded so a tiny
-  // verb pool with colliding forms can't spin this loop forever.
-  let fallbackAttempts = 0;
-  while (selected.length < 3 && fallbackAttempts < 200) {
-    fallbackAttempts++;
-    const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
-    const otherResults = conjugate(otherVerb, otherData, tense);
-    const form = otherResults[personIndex].form;
-    if (form !== correctAnswer && form !== '—' && !selected.includes(form)) {
-      selected.push(form);
-    }
-  }
-
-  const options = [correctAnswer, ...selected];
-  for (let i = options.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [options[i], options[j]] = [options[j], options[i]];
-  }
-
-  return { verb, translation: data.translation, tense, personIndex, correctAnswer, options };
-}
 
 export default function QuizScreen() {
   const colors = useColors();

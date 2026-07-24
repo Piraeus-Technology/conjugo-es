@@ -1191,6 +1191,7 @@
     "type": "ar",
     "regular": false,
     "translation": "to freeze",
+    "impersonal": true,
     "pattern": {
       "stemChange": {
         "present": "e_ie"
@@ -1236,6 +1237,7 @@
     "type": "ar",
     "regular": false,
     "translation": "to snow",
+    "impersonal": true,
     "pattern": {
       "stemChange": {
         "present": "e_ie"
@@ -2133,6 +2135,7 @@
     "type": "er",
     "regular": false,
     "translation": "to rain",
+    "impersonal": true,
     "pattern": {
       "stemChange": {
         "present": "o_ue"
@@ -2921,6 +2924,7 @@
     "type": "er",
     "regular": false,
     "translation": "to dawn",
+    "impersonal": true,
     "pattern": {
       "yoZco": true
     },
@@ -2934,6 +2938,7 @@
     "type": "er",
     "regular": false,
     "translation": "to get dark",
+    "impersonal": true,
     "pattern": {
       "yoZco": true
     },
@@ -12333,6 +12338,7 @@
     "type": "er",
     "regular": false,
     "translation": "to get dark (evening)",
+    "impersonal": true,
     "examples": [
       "Atardece más tarde en verano.",
       "Atardeció mientras paseábamos por la playa."

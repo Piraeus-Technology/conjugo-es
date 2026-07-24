@@ -40,7 +40,16 @@
       }
     },
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      "react-native-iap",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.2.0"
+          }
+        }
+      ]
     ],
     "owner": "piraeustechnology"
   }

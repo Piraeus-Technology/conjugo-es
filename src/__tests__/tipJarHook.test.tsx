@@ -66,6 +66,10 @@ describe('useTipJar', () => {
   test('loads in-app products sorted by price and reports available', async () => {
     const { result } = await renderLoadedTipJar();
 
+    expect(mockIap.purchaseUpdatedListener).toHaveBeenCalledTimes(2);
+    expect(mockIap.initConnection.mock.invocationCallOrder[0]).toBeLessThan(
+      mockIap.purchaseUpdatedListener.mock.invocationCallOrder[1],
+    );
     expect(result.current.unsupported).toBe(false);
     expect(result.current.unavailable).toBe(false);
     expect(result.current.products.map((p: any) => p.id)).toEqual(['tip_small', 'tip_large']);
@@ -90,6 +94,20 @@ describe('useTipJar', () => {
     expect(mockIap.finishTransaction).toHaveBeenCalledTimes(1);
     expect(mockIap.finishTransaction).toHaveBeenCalledWith({ purchase, isConsumable: true });
     expect(alertSpy).toHaveBeenCalledWith('Thank You!', expect.any(String));
+  });
+
+  test('does not finish purchases outside the tip-jar SKU allowlist', async () => {
+    await renderLoadedTipJar();
+
+    await act(async () => {
+      await latestPurchaseHandler()({
+        transactionId: 'tx-other',
+        productId: 'premium_entitlement',
+      });
+    });
+
+    expect(mockIap.finishTransaction).not.toHaveBeenCalled();
+    expect(alertSpy).not.toHaveBeenCalled();
   });
 
   test('deduplicates replayed purchase events for the same transaction', async () => {
@@ -142,6 +160,34 @@ describe('useTipJar', () => {
     });
 
     expect(mockIap.requestPurchase).toHaveBeenCalledTimes(1);
+    expect(result.current.loading).toBe(false);
+  });
+
+  test('tip() surfaces an immediate non-cancellation request failure', async () => {
+    mockIap.requestPurchase.mockRejectedValueOnce({
+      code: 'E_NETWORK_ERROR',
+    });
+    const { result } = await renderLoadedTipJar();
+
+    await act(async () => {
+      await result.current.tip('tip_small');
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith('Purchase Failed', expect.any(String));
+    expect(result.current.loading).toBe(false);
+  });
+
+  test('tip() keeps an immediate cancellation silent', async () => {
+    mockIap.requestPurchase.mockRejectedValueOnce({
+      code: 'E_USER_CANCELLED',
+    });
+    const { result } = await renderLoadedTipJar();
+
+    await act(async () => {
+      await result.current.tip('tip_small');
+    });
+
+    expect(alertSpy).not.toHaveBeenCalled();
     expect(result.current.loading).toBe(false);
   });
 

@@ -118,6 +118,57 @@ describe('Regular -ir verb: vivir', () => {
   });
 });
 
+describe('I-absorption after ñ and ll', () => {
+  const gruñir: VerbData = { type: 'ir', regular: true, translation: 'to growl' };
+  const tañir: VerbData = { type: 'ir', regular: true, translation: 'to ring bells' };
+  const zambullir: VerbData = { type: 'ir', regular: true, translation: 'to dive' };
+
+  test.each([
+    ['gruñir', gruñir, 'gruñó', 'gruñeron', 'gruñera'],
+    ['tañir', tañir, 'tañó', 'tañeron', 'tañera'],
+    ['zambullir', zambullir, 'zambulló', 'zambulleron', 'zambullera'],
+  ] as const)(
+    '%s absorbs the preterite and imperfect-subjunctive i',
+    (infinitive, verb, thirdSingular, thirdPlural, imperfectSubjunctive) => {
+      const preterite = forms(infinitive, verb, 'preterite');
+      expect(preterite[2]).toBe(thirdSingular);
+      expect(preterite[5]).toBe(thirdPlural);
+      expect(forms(infinitive, verb, 'subjunctive_imperfect')[2]).toBe(imperfectSubjunctive);
+    },
+  );
+
+  test('zambullir gerund absorbs i after ll', () => {
+    expect(forms('zambullir', zambullir, 'gerund_participle')[0]).toBe('zambullendo');
+  });
+});
+
+describe('Impersonal verb restrictions', () => {
+  const llover: VerbData = {
+    type: 'er',
+    regular: false,
+    translation: 'to rain',
+    impersonal: true,
+    pattern: { stemChange: { present: 'o_ue' } },
+  };
+
+  test('only third-person singular finite forms remain available', () => {
+    const present = conjugate('llover', llover, 'present');
+    expect(present.map((row) => row.disabled)).toEqual([
+      true, true, false, true, true, true,
+    ]);
+    expect(present.map((row) => row.form)).toEqual([
+      '—', '—', 'llueve', '—', '—', '—',
+    ]);
+  });
+
+  test('imperatives are entirely disabled', () => {
+    expect(
+      conjugate('llover', llover, 'imperative_affirmative')
+        .every((row) => row.disabled && row.form === '—'),
+    ).toBe(true);
+  });
+});
+
 // ============ STEM-CHANGING VERBS ============
 
 describe('Stem change e→ie: pensar', () => {

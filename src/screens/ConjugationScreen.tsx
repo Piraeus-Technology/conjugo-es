@@ -122,6 +122,10 @@ function getRuleNotes(infinitive: string, verb: VerbData): string[] {
     notes.add('Some core forms are fully overridden rather than generated from a regular pattern.');
   }
 
+  if (verb.impersonal) {
+    notes.add('Used impersonally in the third-person singular.');
+  }
+
   return [...notes];
 }
 

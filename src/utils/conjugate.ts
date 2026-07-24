@@ -298,6 +298,7 @@ export interface VerbData {
   type: 'ar' | 'er' | 'ir';
   regular: boolean;
   translation: string;
+  impersonal?: boolean;
   level?: VerbLevel;
   examples?: string[];
   pattern?: IrregularPattern;
@@ -338,8 +339,8 @@ function getGerund(infinitive: string, verb: VerbData): string {
   if (verb.type === 'ir' && verb.pattern?.stemChange?.preterite) {
     stem = applyStemChange(stem, verb.pattern.stemChange.preterite);
   }
-  // ñ absorbs the i (gruñir → gruñendo); strong-vowel stems take y (caer → cayendo)
-  if (/[ñ]$/.test(stem)) return stem + 'endo';
+  // ñ/ll absorb the i (gruñir → gruñendo, zambullir → zambullendo).
+  if (/(?:ñ|ll)$/.test(stem)) return stem + 'endo';
   if (/[aeo]$/.test(stem)) return stem + 'yendo';
   return stem + 'iendo';
 }
@@ -694,7 +695,10 @@ function trySubjunctiveImperfect(ctx: ConjugationContext, i: number): string | n
     if (ctx.verb.type === 'ir' && ctx.pattern?.stemChange?.preterite) {
       preteriteStem = applyStemChange(preteriteStem, ctx.pattern.stemChange.preterite);
     }
-    subjStem = preteriteStem + (ctx.verb.type === 'ar' ? 'a' : 'ie');
+    const endingVowel = ctx.verb.type === 'ar'
+      ? 'a'
+      : /(?:ñ|ll)$/.test(preteriteStem) ? 'e' : 'ie';
+    subjStem = preteriteStem + endingVowel;
   }
 
   const accentStem = i === 3 ? accentLastVowel(subjStem) : subjStem;
@@ -815,9 +819,13 @@ function conjugateSimple(
     currentStem = applyStemChanges(ctx, i, currentStem);
 
     // Build final form
+    const ending = tense === 'preterite' && (i === 2 || i === 5)
+      && /(?:ñ|ll)$/.test(currentStem)
+      ? (i === 2 ? 'ó' : 'eron')
+      : endings[i];
     const form = tense === 'imperative_affirmative' && i === 4
       ? getAffirmativeVosotrosForm(ctx)
-      : currentStem + endings[i];
+      : currentStem + ending;
     const finalForm = isImperative && tense === 'imperative_negative' && i !== 0
       ? `no ${form}`
       : form;
@@ -843,20 +851,41 @@ export function conjugate(
   if (tense in haberForms) {
     const participle = getPastParticiple(infinitive, verb.type);
     const haber = haberForms[tense as CompoundTense];
-    return pronouns.map((pronoun, i) => ({
+    const results = pronouns.map((pronoun, i) => ({
       pronoun,
       form: `${haber[i]} ${participle}`,
     }));
+    return applyUsageRestrictions(verb, tense, results);
   }
 
   if (tense in estarForms) {
     const gerund = getGerund(infinitive, verb);
     const estar = estarForms[tense as ProgressiveTense];
-    return pronouns.map((pronoun, i) => ({
+    const results = pronouns.map((pronoun, i) => ({
       pronoun,
       form: `${estar[i]} ${gerund}`,
     }));
+    return applyUsageRestrictions(verb, tense, results);
   }
 
-  return conjugateSimple(infinitive, verb, tense as SimpleTense);
+  return applyUsageRestrictions(
+    verb,
+    tense,
+    conjugateSimple(infinitive, verb, tense as SimpleTense),
+  );
+}
+
+function applyUsageRestrictions(
+  verb: VerbData,
+  tense: Tense,
+  results: ConjugationResult[],
+): ConjugationResult[] {
+  if (!verb.impersonal || tense === 'gerund_participle') return results;
+
+  const isImperative = imperativeTenses.includes(tense);
+  return results.map((result, index) =>
+    !isImperative && index === 2
+      ? result
+      : { ...result, form: '—', disabled: true },
+  );
 }

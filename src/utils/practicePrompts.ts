@@ -1,6 +1,6 @@
 import { conjugate, Tense, VerbData } from './conjugate';
 import {
-  COMMON_VERB_POOL_SIZE,
+  CORE_PRACTICE_VERBS,
   WEIGHTED_CANDIDATE_COUNT,
   WEIGHTED_PICK_COMMON_BIAS,
 } from './constants';
@@ -13,9 +13,29 @@ export interface PromptCandidate {
   answer: string;
 }
 
+const corePracticeVerbSet = new Set<string>(CORE_PRACTICE_VERBS);
+
+export function getCorePracticeEntries(
+  verbEntries: [string, VerbData][],
+): [string, VerbData][] {
+  const curatedBeginners = verbEntries.filter(
+    ([verb, data]) =>
+      corePracticeVerbSet.has(verb) && (data.level === 'A1' || data.level === 'A2'),
+  );
+
+  if (curatedBeginners.length > 0) return curatedBeginners;
+
+  // A custom data set may not contain the curated core. Preserve the intended
+  // beginner bias where possible, then fall back to the caller's full pool.
+  const beginnerEntries = verbEntries.filter(
+    ([, data]) => data.level === 'A1' || data.level === 'A2',
+  );
+  return beginnerEntries.length > 0 ? beginnerEntries : verbEntries;
+}
+
 // Weighted random prompt selection shared by the quiz and flashcard screens:
 // sample a handful of valid (verb, tense, person) candidates with a bias
-// toward the common-verb pool, then keep the one the user struggles with
+// toward a curated beginner core, then keep the one the user struggles with
 // most according to the spaced-repetition weights.
 export function pickWeightedPrompt(
   verbEntries: [string, VerbData][],
@@ -23,16 +43,16 @@ export function pickWeightedPrompt(
   getWeight: (verb: string, tense: Tense, personIndex: number) => number,
   includeVosotros: boolean = true,
 ): PromptCandidate {
-  const commonCount = Math.min(COMMON_VERB_POOL_SIZE, verbEntries.length);
+  const coreEntries = getCorePracticeEntries(verbEntries);
   const candidates: PromptCandidate[] = [];
 
   let attempts = 0;
   while (candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
     attempts++;
-    const idx = Math.random() < WEIGHTED_PICK_COMMON_BIAS
-      ? Math.floor(Math.random() * commonCount)
-      : Math.floor(Math.random() * verbEntries.length);
-    const [verb, data] = verbEntries[idx];
+    const source = Math.random() < WEIGHTED_PICK_COMMON_BIAS
+      ? coreEntries
+      : verbEntries;
+    const [verb, data] = source[Math.floor(Math.random() * source.length)];
     const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
     const results = conjugate(verb, data, tense);
     const validPersons = results
