@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
-import type { Tense, VerbLevel } from '../utils/conjugate';
+import { practiceTenses, type Tense, type VerbLevel } from '../utils/conjugate';
 
 interface PracticeSettingsStore {
   activeTenses: Tense[];
@@ -16,20 +16,14 @@ interface PracticeSettingsStore {
   resetPracticeSettings: () => Promise<boolean>;
 }
 
-const allTenses: Tense[] = [
-  'present', 'preterite', 'imperfect', 'future', 'conditional',
-  'subjunctive_present', 'subjunctive_imperfect',
-  'imperative_affirmative', 'imperative_negative',
-  'present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect',
-  'present_progressive', 'past_progressive',
-];
+const allTenses: Tense[] = [...practiceTenses];
 
 const allLevels: VerbLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 const queue = createStoreQueue();
 
-function parseStoredSubset<T>(value: unknown, valid: T[]): T[] {
-  if (!Array.isArray(value)) return [];
+function parseStoredSubset<T>(value: unknown, valid: T[]): T[] | null {
+  if (!Array.isArray(value)) return null;
   return value.filter((item): item is T => valid.includes(item as T));
 }
 
@@ -51,8 +45,8 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
         const tenses = parseStoredSubset(parsed?.activeTenses, allTenses);
         const levels = parseStoredSubset(parsed?.activeLevels, allLevels);
         set({
-          activeTenses: tenses.length > 0 ? tenses : [...allTenses],
-          activeLevels: levels.length > 0 ? levels : [...allLevels],
+          activeTenses: tenses ?? [...allTenses],
+          activeLevels: levels ?? [...allLevels],
           loaded: true,
         });
       } catch (e) {
@@ -70,8 +64,7 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       await get().loadPracticeSettings();
     }
     return queue.enqueue(async () => {
-      const safe = tenses.length > 0 ? tenses : ['present' as Tense];
-      set({ activeTenses: safe });
+      set({ activeTenses: [...tenses] });
       await persistSnapshot(get);
     });
   },
@@ -81,8 +74,7 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       await get().loadPracticeSettings();
     }
     return queue.enqueue(async () => {
-      const safe = levels.length > 0 ? levels : ['A1' as VerbLevel];
-      set({ activeLevels: safe });
+      set({ activeLevels: [...levels] });
       await persistSnapshot(get);
     });
   },
@@ -95,7 +87,6 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       const current = get().activeTenses;
       let updated: Tense[];
       if (current.includes(tense)) {
-        if (current.length <= 1) return;
         updated = current.filter(t => t !== tense);
       } else {
         updated = [...current, tense];
@@ -113,7 +104,6 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       const current = get().activeLevels;
       let updated: VerbLevel[];
       if (current.includes(level)) {
-        if (current.length <= 1) return;
         updated = current.filter(l => l !== level);
       } else {
         updated = [...current, level];

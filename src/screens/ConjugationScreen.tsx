@@ -149,7 +149,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
             <Ionicons
               name={favorited ? 'heart' : 'heart-outline'}
               size={28}
-              color={favorited ? colors.primary : colors.textMuted}
+              color={favorited ? colors.primaryText : colors.textMuted}
             />
           </TouchableOpacity>
         </View>
@@ -304,7 +304,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
       </View>
 
       {snapshotRows.length > 0 && (
-        <View style={[styles.detailBox, { backgroundColor: colors.card }]}>
+        <View style={[
+          styles.detailBox,
+          { backgroundColor: colors.card, borderColor: colors.controlBorder },
+        ]}>
           <Text style={[styles.detailLabel, { color: colors.textMuted }]}>
             {`${tenseNames[openTense ?? 'present']} Snapshot`.toUpperCase()}
           </Text>
@@ -318,7 +321,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
       )}
 
       {ruleNotes.length > 0 && (
-        <View style={[styles.detailBox, { backgroundColor: colors.card }]}>
+        <View style={[
+          styles.detailBox,
+          { backgroundColor: colors.card, borderColor: colors.controlBorder },
+        ]}>
           <Text style={[styles.detailLabel, { color: colors.textMuted }]}>RULE NOTES</Text>
           {ruleNotes.map((note) => (
             <View key={note} style={styles.noteRow}>
@@ -330,7 +336,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
       )}
 
       {relatedVerbs.length > 0 && (
-        <View style={[styles.detailBox, { backgroundColor: colors.card }]}>
+        <View style={[
+          styles.detailBox,
+          { backgroundColor: colors.card, borderColor: colors.controlBorder },
+        ]}>
           <Text style={[styles.detailLabel, { color: colors.textMuted }]}>RELATED VERBS</Text>
           <View style={styles.relatedGrid}>
             {relatedVerbs.map(([relatedInfinitive, relatedVerb]) => (
@@ -359,7 +368,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
       {(() => {
         if (verb.examples && verb.examples.length > 0) {
           return (
-            <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
+            <View style={[
+              styles.exampleBox,
+              { backgroundColor: colors.card, borderColor: colors.controlBorder },
+            ]}>
               <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
               {verb.examples.map((ex, i) => (
                 <Text key={i} style={[styles.exampleText, { color: colors.textSecondary }]}>
@@ -373,7 +385,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
         const yoForm = present[0].form;
         const elForm = present[2].form;
         return (
-          <View style={[styles.exampleBox, { backgroundColor: colors.card }]}>
+          <View style={[
+            styles.exampleBox,
+            { backgroundColor: colors.card, borderColor: colors.controlBorder },
+          ]}>
             <Text style={[styles.exampleLabel, { color: colors.textMuted }]}>EXAMPLES</Text>
             <Text style={[styles.exampleText, { color: colors.textSecondary }]}>
               Yo <Text style={{ color: colors.primaryText, fontWeight: fonts.weights.semibold }}>{yoForm}</Text> todos los días.
@@ -412,7 +427,6 @@ const styles = StyleSheet.create({
   },
   infinitiveRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
-  speakButton: { padding: 4 },
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
   metaRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.md, gap: spacing.sm },
   tag: {
@@ -427,7 +441,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
@@ -494,7 +507,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.06)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,

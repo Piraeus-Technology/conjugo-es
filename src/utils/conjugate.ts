@@ -268,6 +268,13 @@ export const allTenses: Tense[] = [
   'gerund_participle',
 ];
 
+// Practice prompts require a person-indexed form. Derive this list from the
+// canonical tense list so adding a new finite tense cannot silently omit it
+// from practice settings.
+export const practiceTenses: Tense[] = allTenses.filter(
+  (tense) => tense !== 'gerund_participle',
+);
+
 export const tenseNames: Record<Tense, string> = {
   present: 'Present',
   preterite: 'Preterite',

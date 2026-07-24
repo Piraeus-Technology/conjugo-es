@@ -145,7 +145,7 @@ export default function FeedbackScreen() {
             <Switch
               value={isDark}
               onValueChange={toggleTheme}
-              trackColor={{ false: isDark ? colors.border : '#C5C0BA', true: colors.primary }}
+              trackColor={{ false: colors.controlBorder, true: colors.primaryText }}
               thumbColor="#fff"
             />
           </View>
@@ -155,7 +155,7 @@ export default function FeedbackScreen() {
             <Switch
               value={autoTTS}
               onValueChange={toggleAutoTTS}
-              trackColor={{ false: isDark ? colors.border : '#C5C0BA', true: colors.primary }}
+              trackColor={{ false: colors.controlBorder, true: colors.primaryText }}
               thumbColor="#fff"
             />
           </View>
@@ -165,7 +165,7 @@ export default function FeedbackScreen() {
             <Switch
               value={includeVosotros}
               onValueChange={toggleVosotros}
-              trackColor={{ false: isDark ? colors.border : '#C5C0BA', true: colors.primary }}
+              trackColor={{ false: colors.controlBorder, true: colors.primaryText }}
               thumbColor="#fff"
             />
           </View>
@@ -205,7 +205,7 @@ export default function FeedbackScreen() {
                   {products.map((product) => (
                     <TouchableOpacity
                       key={product.id}
-                      style={[styles.tipButton, { backgroundColor: colors.card, borderColor: colors.primary }]}
+                      style={[styles.tipButton, { backgroundColor: colors.card, borderColor: colors.primaryText }]}
                       onPress={() => tip(product.id)}
                       disabled={tipLoading}
                       activeOpacity={0.7}

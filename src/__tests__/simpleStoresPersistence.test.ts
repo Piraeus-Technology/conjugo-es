@@ -4,7 +4,6 @@ import { __resetHistoryStoreForTests, useHistoryStore } from '../store/historySt
 import { __resetThemeStoreForTests, useThemeStore } from '../store/themeStore';
 import {
   __resetPracticeSettingsStoreForTests,
-  allLevels,
   allTenses,
   usePracticeSettingsStore,
 } from '../store/practiceSettingsStore';
@@ -168,7 +167,7 @@ describe('simple store persistence', () => {
       expect(persisted.activeLevels).toEqual(usePracticeSettingsStore.getState().activeLevels);
     });
 
-    test('unknown or empty persisted values fall back to defaults', async () => {
+    test('filters unknown values and preserves an intentional empty selection', async () => {
       mockStorage.set(
         'practiceSettings',
         JSON.stringify({ activeTenses: ['present', 'bogus_tense'], activeLevels: [] }),
@@ -176,7 +175,23 @@ describe('simple store persistence', () => {
       await usePracticeSettingsStore.getState().loadPracticeSettings();
 
       expect(usePracticeSettingsStore.getState().activeTenses).toEqual(['present']);
-      expect(usePracticeSettingsStore.getState().activeLevels).toEqual(allLevels);
+      expect(usePracticeSettingsStore.getState().activeLevels).toEqual([]);
+    });
+
+    test('deselect-all state persists across a store remount', async () => {
+      await usePracticeSettingsStore.getState().loadPracticeSettings();
+      await usePracticeSettingsStore.getState().setActiveTenses([]);
+      await usePracticeSettingsStore.getState().setActiveLevels([]);
+
+      expect(JSON.parse(mockStorage.get('practiceSettings')!)).toEqual({
+        activeTenses: [],
+        activeLevels: [],
+      });
+
+      __resetPracticeSettingsStoreForTests();
+      await usePracticeSettingsStore.getState().loadPracticeSettings();
+      expect(usePracticeSettingsStore.getState().activeTenses).toEqual([]);
+      expect(usePracticeSettingsStore.getState().activeLevels).toEqual([]);
     });
 
     test('reload after loaded is a no-op and keeps array identities stable', async () => {

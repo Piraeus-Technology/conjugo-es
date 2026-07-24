@@ -33,6 +33,7 @@ export default function QuizScreen() {
   // Only subscribe to what this screen uses — the totals re-render on every answer
   const loadStats = useQuizStore((s) => s.loadStats);
   const recordAnswer = useQuizStore((s) => s.recordAnswer);
+  const claimReviewPrompt = useQuizStore((s) => s.claimReviewPrompt);
   const {
     loaded: weightsLoaded,
     loadError: weightsLoadError,
@@ -81,9 +82,12 @@ export default function QuizScreen() {
   }, [loadStats, loadWeights, loadSessions, loadPracticeSettings]);
 
   useEffect(() => {
-    if (weightsLoaded && settingsLoaded && activeTenses.length > 0 && filteredEntries.length > 0) {
+    if (!weightsLoaded || !settingsLoaded) return;
+    if (activeTenses.length > 0 && filteredEntries.length > 0) {
       setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros));
       setSelectedAnswer(null);
+    } else {
+      setQuestion(null);
     }
   }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries, includeVosotros, getWeight]);
 
@@ -103,11 +107,16 @@ export default function QuizScreen() {
       setStreak(newStreak);
       if (newStreak > bestSessionStreak) setBestSessionStreak(newStreak);
       recordAnswer(true, newStreak);
-      // Prompt for rating after a streak of 10
+      // Claim a persisted milestone first so another 10-answer streak (or a
+      // remount) cannot prompt this installation again.
       if (newStreak === REVIEW_PROMPT_STREAK) {
-        StoreReview.isAvailableAsync()
+        claimReviewPrompt()
+          .then((claimed) => {
+            if (!claimed) return;
+            return StoreReview.isAvailableAsync();
+          })
           .then((available) => {
-            if (available) return StoreReview.requestReview();
+            if (available === true) return StoreReview.requestReview();
           })
           .catch((e) => console.warn('StoreReview failed:', e));
       }

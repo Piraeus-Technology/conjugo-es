@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSessionStore } from '../store/sessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
+import { useQuizStore } from '../store/quizStore';
 import PracticeStatsView, { DayCounts } from '../components/PracticeStatsView';
 
 export default function StatsScreen() {
@@ -16,11 +17,20 @@ export default function StatsScreen() {
     loadError: weightsLoadError,
     loadWeights,
   } = useSpacedRepStore();
+  const {
+    totalQuestions,
+    totalCorrect,
+    bestStreak,
+    loaded: lifetimeLoaded,
+    loadError: lifetimeLoadError,
+    loadStats,
+  } = useQuizStore();
 
   React.useEffect(() => {
     loadSessions();
     loadWeights();
-  }, [loadSessions, loadWeights]);
+    loadStats();
+  }, [loadSessions, loadWeights, loadStats]);
 
   const dayCounts: DayCounts[] = React.useMemo(
     () => sessions.map(s => ({ day: s.day, count: s.total, correct: s.correct })),
@@ -30,14 +40,15 @@ export default function StatsScreen() {
   return (
     <PracticeStatsView
       sessions={dayCounts}
-      sessionsLoaded={sessionsLoaded}
-      sessionsLoadError={sessionsLoadError}
+      sessionsLoaded={sessionsLoaded && lifetimeLoaded}
+      sessionsLoadError={sessionsLoadError || lifetimeLoadError}
       weights={weights}
       weightsLoaded={weightsLoaded}
       weightsLoadError={weightsLoadError}
       onRetry={() => {
         loadSessions();
         loadWeights();
+        loadStats();
       }}
       labels={{
         countLabel: 'Questions',
@@ -47,6 +58,11 @@ export default function StatsScreen() {
         retryAccessibilityLabel: 'Retry loading stats',
         emptyIcon: 'bar-chart-outline',
         emptySubtitle: 'Start a quiz to see your progress',
+      }}
+      lifetimeStats={{
+        count: totalQuestions,
+        correct: totalCorrect,
+        bestStreak,
       }}
     />
   );

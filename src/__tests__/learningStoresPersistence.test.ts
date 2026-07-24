@@ -175,6 +175,26 @@ describe('quiz and spaced repetition store persistence', () => {
     });
   });
 
+  test('review prompt milestone can be claimed only once across reloads', async () => {
+    mockStorage.set(
+      'quiz_stats',
+      JSON.stringify({ totalQuestions: 10, totalCorrect: 10, bestStreak: 10 }),
+    );
+    await useQuizStore.getState().loadStats();
+
+    await expect(useQuizStore.getState().claimReviewPrompt()).resolves.toBe(true);
+    await expect(useQuizStore.getState().claimReviewPrompt()).resolves.toBe(false);
+    expect(JSON.parse(mockStorage.get('quiz_stats')!)).toMatchObject({
+      reviewPrompted: true,
+    });
+
+    __resetQuizStoreForTests();
+    await useQuizStore.getState().loadStats();
+
+    expect(useQuizStore.getState().reviewPrompted).toBe(true);
+    await expect(useQuizStore.getState().claimReviewPrompt()).resolves.toBe(false);
+  });
+
   test('spaced repetition result waits for an in-flight initial load and preserves loaded weights', async () => {
     const load = deferred<string | null>();
     jest.mocked(AsyncStorage.getItem).mockImplementationOnce(() => load.promise);

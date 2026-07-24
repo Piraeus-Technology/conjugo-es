@@ -28,10 +28,6 @@ import { canRunFocusedScreenEffect } from '../utils/screenActivity';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
-const quizzableTenses: Tense[] = [
-  'present', 'preterite', 'imperfect', 'future', 'conditional',
-  'subjunctive_present', 'subjunctive_imperfect',
-];
 const maxCardHeight = 320;
 const minCardHeight = 210;
 const minTinyCardHeight = 144;
@@ -55,8 +51,7 @@ function generateCard(
   includeVosotros: boolean = true,
 ): Card {
   const verbEntries = entries.length > 0 ? entries : allVerbEntries;
-  const activeTenseList = tenses.length > 0 ? tenses : quizzableTenses;
-  const prompt = pickWeightedPrompt(verbEntries, activeTenseList, getWeight, includeVosotros);
+  const prompt = pickWeightedPrompt(verbEntries, tenses, getWeight, includeVosotros);
   return {
     verb: prompt.verb,
     translation: prompt.data.translation,
@@ -131,7 +126,11 @@ export default function FlashcardScreen() {
   }, [nav, colors]);
 
   React.useEffect(() => {
-    if (!loaded || !weightsLoaded || activeTenses.length === 0 || filteredEntries.length === 0) return;
+    if (!loaded || !weightsLoaded) return;
+    if (activeTenses.length === 0 || filteredEntries.length === 0) {
+      setCard(null);
+      return;
+    }
     setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
     setFlipped(false);
     setBackInteractive(false);
@@ -384,7 +383,11 @@ export default function FlashcardScreen() {
               styles.cardBack,
               isCompactCard && styles.cardCompact,
               isTinyCard && styles.cardTiny,
-              { backgroundColor: colors.primary + '10', opacity: backOpacity },
+              {
+                backgroundColor: colors.primary + '10',
+                borderColor: colors.controlBorder,
+                opacity: backOpacity,
+              },
             ]}
             pointerEvents={backInteractive ? 'auto' : 'none'}
             accessibilityElementsHidden={!flipped}
@@ -531,7 +534,7 @@ const styles = StyleSheet.create({
   },
   cardCompact: { padding: spacing.md },
   cardTiny: { padding: 10, borderRadius: radius.md },
-  cardBack: { borderWidth: 2, borderColor: 'rgba(0,0,0,0.05)' },
+  cardBack: { borderWidth: 2 },
   tenseLabel: {
     fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold,
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: spacing.md,
@@ -557,8 +560,6 @@ const styles = StyleSheet.create({
   contextTextCompact: { marginBottom: spacing.sm },
   contextTextTiny: { fontSize: 11, marginBottom: 2 },
   speakButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  speakButtonCompact: { width: 40, height: 40, borderRadius: 20 },
-  speakButtonTiny: { width: 32, height: 32, borderRadius: 16 },
   tapHint: { fontSize: fonts.sizes.xs, position: 'absolute', bottom: spacing.lg },
   tapHintCompact: { bottom: spacing.md },
   tapHintTiny: { fontSize: 10, bottom: spacing.sm },

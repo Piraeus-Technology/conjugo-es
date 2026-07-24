@@ -21,7 +21,13 @@ jobs:
         run: npm run typecheck
       - name: Lint
         run: npm run lint
-      - name: Tests
-        run: npx jest --silent
+      - name: Tests and meaningful coverage
+        run: npm run coverage
       - name: Verb example audit
         run: npm run audit:examples
+      - name: Expo project health
+        run: npx expo-doctor
+        env:
+          # Jest 30 and eslint-config-expo 56 are deliberate exceptions in
+          # this SDK 54 branch; all other doctor checks still run.
+          EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK: 1

@@ -55,7 +55,13 @@ describe('reset all learning data', () => {
   });
 
   test('clears progress, weights, sessions, favorites, history, and preferences', async () => {
-    useQuizStore.setState({ totalQuestions: 4, totalCorrect: 3, bestStreak: 2, loaded: true });
+    useQuizStore.setState({
+      totalQuestions: 4,
+      totalCorrect: 3,
+      bestStreak: 2,
+      reviewPrompted: true,
+      loaded: true,
+    });
     useSpacedRepStore.setState({ weights: { hablar: 2 }, loaded: true });
     useSessionStore.setState({
       sessions: [{ day: '2026-07-24', total: 4, correct: 3, streak: 2 }],
@@ -100,6 +106,7 @@ describe('reset all learning data', () => {
       totalQuestions: 0,
       totalCorrect: 0,
       bestStreak: 0,
+      reviewPrompted: false,
     });
     expect(useSpacedRepStore.getState().weights).toEqual({});
     expect(useSessionStore.getState().sessions).toEqual([]);

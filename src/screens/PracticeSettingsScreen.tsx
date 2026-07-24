@@ -74,6 +74,7 @@ export default function PracticeSettingsScreen() {
 
   const allTensesSelected = activeTenses.length === allTenses.length;
   const allLevelsSelected = activeLevels.length === allLevels.length;
+  const canStart = activeTenses.length > 0 && activeLevels.length > 0;
 
   const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -100,7 +101,7 @@ export default function PracticeSettingsScreen() {
           style={styles.selectAllButton}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            setActiveTenses(allTensesSelected ? ['present'] : [...allTenses]);
+            setActiveTenses(allTensesSelected ? [] : [...allTenses]);
           }}
           accessibilityRole="checkbox"
           accessibilityLabel="Select all tenses"
@@ -153,7 +154,7 @@ export default function PracticeSettingsScreen() {
           style={styles.selectAllButton}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            setActiveLevels(allLevelsSelected ? ['A1'] : [...allLevels]);
+            setActiveLevels(allLevelsSelected ? [] : [...allLevels]);
           }}
           accessibilityRole="checkbox"
           accessibilityLabel="Select all proficiency levels"
@@ -196,11 +197,16 @@ export default function PracticeSettingsScreen() {
 
       {/* Start button */}
       <TouchableOpacity
-        style={[styles.startButton, { backgroundColor: colors.primary }]}
+        style={[
+          styles.startButton,
+          { backgroundColor: colors.primary, opacity: canStart ? 1 : 0.45 },
+        ]}
         onPress={handleStart}
         activeOpacity={0.8}
+        disabled={!canStart}
         accessibilityRole="button"
         accessibilityLabel={mode === 'quiz' ? 'Start quiz' : 'Start flashcards'}
+        accessibilityState={{ disabled: !canStart }}
       >
         <Ionicons name="play" size={20} color="#fff" />
         <Text style={styles.startButtonText}>

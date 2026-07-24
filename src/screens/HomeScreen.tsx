@@ -351,7 +351,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <Text
               style={[
                 styles.matchLabel,
-                { color: item.matchType === 'conjugation' ? colors.primary : colors.textSecondary },
+                { color: item.matchType === 'conjugation' ? colors.primaryText : colors.textSecondary },
               ]}
             >
               {item.matchLabel}
@@ -361,7 +361,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <Text
               style={[
                 styles.matchDetail,
-                { color: item.matchType === 'conjugation' ? colors.primary : colors.textMuted },
+                { color: item.matchType === 'conjugation' ? colors.primaryText : colors.textMuted },
               ]}
             >
               {item.matchDetail}
@@ -542,7 +542,6 @@ const styles = StyleSheet.create({
   emptyContainer: { alignItems: 'center', paddingTop: spacing.lg },
   emptyText: { fontSize: fonts.sizes.md, marginTop: spacing.md },
   heroLogo: { width: 160, height: 160, borderRadius: 32 },
-  heroTitle: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold, marginTop: spacing.md },
   heroSubtitle: { fontSize: fonts.sizes.md, marginTop: spacing.md },
   vodWrapper: {
     marginTop: spacing.sm,

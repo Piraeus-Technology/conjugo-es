@@ -43,6 +43,11 @@ interface PracticeStatsViewProps {
   onRetry: () => void;
   labels: PracticeStatsLabels;
   showWeakVerbs?: boolean;
+  lifetimeStats?: {
+    count: number;
+    correct: number;
+    bestStreak: number;
+  };
 }
 
 export default function PracticeStatsView({
@@ -55,6 +60,7 @@ export default function PracticeStatsView({
   onRetry,
   labels,
   showWeakVerbs = false,
+  lifetimeStats,
 }: PracticeStatsViewProps) {
   const colors = useColors();
   const [calendarDate, setCalendarDate] = useState(new Date());
@@ -164,8 +170,47 @@ export default function PracticeStatsView({
         </View>
       )}
 
+      {lifetimeStats && (
+        <>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Lifetime</Text>
+          <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.primaryText }]}>
+                  {lifetimeStats.count}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>
+                  {labels.countLabel}
+                </Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: colors.primaryText }]}>
+                  {getAccuracyPercent(lifetimeStats.correct, lifetimeStats.count) ?? 0}%
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
+              </View>
+              <View
+                style={styles.statItem}
+                accessible
+                accessibilityLabel={`Lifetime best streak: ${lifetimeStats.bestStreak}`}
+              >
+                <Text style={[styles.statValue, { color: colors.accent }]}>
+                  {lifetimeStats.bestStreak}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.textMuted }]}>Best Streak</Text>
+              </View>
+            </View>
+          </View>
+        </>
+      )}
+
       {/* Retained recent activity */}
-      <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Recent 365 Active Days</Text>
+      <Text style={[
+        styles.sectionTitle,
+        { color: colors.textSecondary, marginTop: lifetimeStats ? spacing.lg : 0 },
+      ]}>
+        Recent 365 Active Days
+      </Text>
       <View style={[styles.statsCard, { backgroundColor: colors.card }]}>
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
@@ -179,7 +224,7 @@ export default function PracticeStatsView({
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>Accuracy</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.accent || colors.primary }]}>{sessions.length}</Text>
+            <Text style={[styles.statValue, { color: colors.accent }]}>{sessions.length}</Text>
             <Text style={[styles.statLabel, { color: colors.textMuted }]}>{labels.daysLabel}</Text>
           </View>
         </View>
@@ -387,7 +432,7 @@ export default function PracticeStatsView({
       )}
 
       {/* Empty state */}
-      {totalCount === 0 && (
+      {totalCount === 0 && (!lifetimeStats || lifetimeStats.count === 0) && (
         <View style={styles.emptyContainer}>
           <Ionicons name={labels.emptyIcon} size={48} color={colors.textMuted} />
           <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No stats yet</Text>

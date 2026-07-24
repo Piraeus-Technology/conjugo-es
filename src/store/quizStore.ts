@@ -7,10 +7,12 @@ interface QuizStats {
   totalQuestions: number;
   totalCorrect: number;
   bestStreak: number;
+  reviewPrompted: boolean;
   loaded: boolean;
   loadError: boolean;
   loadStats: () => Promise<void>;
   recordAnswer: (correct: boolean, currentStreak: number) => Promise<void>;
+  claimReviewPrompt: () => Promise<boolean>;
   resetStats: () => Promise<boolean>;
 }
 
@@ -18,6 +20,7 @@ interface PersistedQuizStats {
   totalQuestions: number;
   totalCorrect: number;
   bestStreak: number;
+  reviewPrompted: boolean;
 }
 
 function isNonNegativeInteger(value: unknown): value is number {
@@ -31,6 +34,7 @@ export function parseStoredQuizStats(value: unknown): PersistedQuizStats | null 
     !isNonNegativeInteger(candidate.totalQuestions)
     || !isNonNegativeInteger(candidate.totalCorrect)
     || !isNonNegativeInteger(candidate.bestStreak)
+    || (candidate.reviewPrompted !== undefined && typeof candidate.reviewPrompted !== 'boolean')
     || candidate.totalCorrect > candidate.totalQuestions
   ) {
     return null;
@@ -39,6 +43,7 @@ export function parseStoredQuizStats(value: unknown): PersistedQuizStats | null 
     totalQuestions: candidate.totalQuestions,
     totalCorrect: candidate.totalCorrect,
     bestStreak: candidate.bestStreak,
+    reviewPrompted: candidate.reviewPrompted === true,
   };
 }
 
@@ -50,6 +55,7 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
   totalQuestions: 0,
   totalCorrect: 0,
   bestStreak: 0,
+  reviewPrompted: false,
   loaded: false,
   loadError: false,
 
@@ -79,6 +85,7 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
               totalQuestions: 0,
               totalCorrect: 0,
               bestStreak: 0,
+              reviewPrompted: false,
               loaded: true,
               loadError: false,
             });
@@ -115,7 +122,13 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
         totalCorrect: state.totalCorrect + (correct ? 1 : 0),
         bestStreak: Math.max(state.bestStreak, currentStreak),
       };
-      const persisted = await safeSetItem('quiz_stats', JSON.stringify(updated));
+      const persisted = await safeSetItem(
+        'quiz_stats',
+        JSON.stringify({
+          ...updated,
+          ...(state.reviewPrompted ? { reviewPrompted: true } : {}),
+        }),
+      );
       if (!persisted) {
         // Don't throw or set: leave in-memory aligned with disk so a
         // transient AsyncStorage flake doesn't desync the global store
@@ -127,6 +140,33 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
     });
   },
 
+  claimReviewPrompt: async () => {
+    if (!get().loaded) {
+      await get().loadStats();
+    }
+    if (!get().loaded) return false;
+
+    return queue.enqueue(async () => {
+      const state = get();
+      if (state.reviewPrompted) return false;
+      const persisted = await safeSetItem(
+        'quiz_stats',
+        JSON.stringify({
+          totalQuestions: state.totalQuestions,
+          totalCorrect: state.totalCorrect,
+          bestStreak: state.bestStreak,
+          reviewPrompted: true,
+        }),
+      );
+      if (!persisted) {
+        console.warn('Failed to persist review prompt milestone');
+        return false;
+      }
+      set({ reviewPrompted: true });
+      return true;
+    });
+  },
+
   resetStats: async () => {
     return queue.enqueue(async () => {
       const removed = await safeRemoveItem('quiz_stats');
@@ -134,7 +174,14 @@ export const useQuizStore = create<QuizStats>((set, get) => ({
         console.warn('Failed to reset quiz stats');
         return false;
       }
-      set({ totalQuestions: 0, totalCorrect: 0, bestStreak: 0, loaded: true, loadError: false });
+      set({
+        totalQuestions: 0,
+        totalCorrect: 0,
+        bestStreak: 0,
+        reviewPrompted: false,
+        loaded: true,
+        loadError: false,
+      });
       return true;
     });
   },
@@ -146,6 +193,7 @@ export function __resetQuizStoreForTests() {
     totalQuestions: 0,
     totalCorrect: 0,
     bestStreak: 0,
+    reviewPrompted: false,
     loaded: false,
     loadError: false,
   });

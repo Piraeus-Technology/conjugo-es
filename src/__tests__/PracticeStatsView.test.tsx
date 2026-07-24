@@ -60,6 +60,19 @@ describe('PracticeStatsView', () => {
     expect(getByText('8/10')).toBeTruthy();
   });
 
+  test('surfaces lifetime quiz totals independently of retained active days', () => {
+    const { getByText, getByLabelText } = render(
+      <PracticeStatsView
+        {...baseProps}
+        lifetimeStats={{ count: 125, correct: 100, bestStreak: 14 }}
+      />,
+    );
+    expect(getByText('Lifetime')).toBeTruthy();
+    expect(getByText('125')).toBeTruthy();
+    expect(getByText('80%')).toBeTruthy();
+    expect(getByLabelText('Lifetime best streak: 14')).toBeTruthy();
+  });
+
   test('renders the empty state when there are no sessions', () => {
     const { getByText } = render(<PracticeStatsView {...baseProps} />);
     expect(getByText('No stats yet')).toBeTruthy();

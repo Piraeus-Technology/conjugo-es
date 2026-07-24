@@ -15,11 +15,14 @@ import QuizScreen from './src/screens/QuizScreen';
 import PracticeSettingsScreen from './src/screens/PracticeSettingsScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import FlashcardStatsScreen from './src/screens/FlashcardStatsScreen';
+import AppErrorBoundary from './src/components/AppErrorBoundary';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 import type { SearchStackParamList } from './src/types/navigation';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch((error) => {
+  console.warn('Could not keep splash screen visible:', error);
+});
 
 const QuizStack = createNativeStackNavigator();
 const FlashcardStack = createNativeStackNavigator();
@@ -87,7 +90,7 @@ function SearchStackScreen() {
       id="SearchStack"
       screenOptions={{
         headerStyle: { backgroundColor: colors.bg },
-        headerTintColor: colors.primary,
+        headerTintColor: colors.primaryText,
         headerTitleStyle: {
           fontWeight: fonts.weights.semibold,
           color: colors.textPrimary,
@@ -115,7 +118,7 @@ function SearchStackScreen() {
   );
 }
 
-export default function App() {
+function AppContent() {
   const { isDark, loaded, loadTheme } = useThemeStore();
   const colors = useColors();
 
@@ -125,7 +128,11 @@ export default function App() {
 
   const onLayoutRootView = useCallback(async () => {
     if (loaded) {
-      await SplashScreen.hideAsync();
+      try {
+        await SplashScreen.hideAsync();
+      } catch (error) {
+        console.warn('Could not hide splash screen:', error);
+      }
     }
   }, [loaded]);
 
@@ -138,7 +145,7 @@ export default function App() {
       background: colors.bg,
       card: colors.bg,
       text: colors.textPrimary,
-      primary: colors.primary,
+      primary: colors.primaryText,
     },
   };
 
@@ -152,7 +159,7 @@ export default function App() {
         <Tab.Navigator
           id="MainTabs"
           screenOptions={{
-            tabBarActiveTintColor: colors.primary,
+            tabBarActiveTintColor: colors.primaryText,
             tabBarInactiveTintColor: colors.textMuted,
             tabBarStyle: {
               backgroundColor: colors.bg,
@@ -163,7 +170,7 @@ export default function App() {
               fontWeight: fonts.weights.medium,
             },
             headerStyle: { backgroundColor: colors.bg },
-            headerTintColor: colors.primary,
+            headerTintColor: colors.primaryText,
             headerTitleStyle: {
               fontWeight: fonts.weights.semibold,
               color: colors.textPrimary,
@@ -219,5 +226,13 @@ export default function App() {
         </Tab.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>
+  );
+}
+
+export default function App() {
+  return (
+    <AppErrorBoundary>
+      <AppContent />
+    </AppErrorBoundary>
   );
 }
