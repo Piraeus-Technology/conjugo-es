@@ -1,4 +1,12 @@
-import { conjugate, VerbData, Tense } from '../utils/conjugate';
+import {
+  conjugate,
+  crossTensePersonLabels,
+  getPersonLabel,
+  imperativeTenses,
+  PERSON_COUNT,
+  VerbData,
+  Tense,
+} from '../utils/conjugate';
 
 // Helper to extract just the forms from conjugation results
 function forms(infinitive: string, verb: VerbData, tense: Tense): string[] {
@@ -1533,5 +1541,66 @@ describe('ConjugationResult structure', () => {
     const result = conjugate('hablar', verb, 'imperative_affirmative');
     expect(result[0].disabled).toBe(true);
     expect(result[1].disabled).toBeFalsy();
+  });
+});
+
+// ============ IMPERATIVE PERSON LABELS ============
+
+// Usted/ustedes take third-person grammatical agreement but refer to the
+// listener, so cells that can read él/ella and ellos/ellas in other tenses are
+// labelled usted and ustedes here.
+describe('imperative person labels', () => {
+  const imperativeLabels = ['yo', 'tú', 'usted', 'nosotros', 'vosotros', 'ustedes'];
+  const indicativeLabels = ['yo', 'tú', 'él/ella/Ud.', 'nosotros', 'vosotros', 'ellos/ellas/Uds.'];
+  const regular: VerbData = { type: 'ar', regular: true, translation: 'to speak' };
+
+  test.each(imperativeTenses)('%s labels usted/ustedes, not third person', tense => {
+    expect(conjugate('hablar', regular, tense).map(r => r.pronoun)).toEqual(imperativeLabels);
+  });
+
+  // Irregulars take a different branch (tryOverrides) than the regular path.
+  test('full overrides keep the imperative labels', () => {
+    const ser: VerbData = {
+      type: 'er',
+      regular: false,
+      translation: 'to be',
+      overrides: {
+        imperative_affirmative: ['—', 'sé', 'sea', 'seamos', 'sed', 'sean'],
+        subjunctive_present: ['sea', 'seas', 'sea', 'seamos', 'seáis', 'sean'],
+      },
+    };
+    expect(conjugate('ser', ser, 'imperative_affirmative').map(r => r.pronoun))
+      .toEqual(imperativeLabels);
+    // imperative_negative has no override of its own, so it is derived from the
+    // subjunctive — a third branch again.
+    expect(conjugate('ser', ser, 'imperative_negative').map(r => r.pronoun))
+      .toEqual(imperativeLabels);
+  });
+
+  test.each(['present', 'subjunctive_present', 'present_perfect', 'present_progressive'] as Tense[])(
+    '%s keeps the third-person labels',
+    tense => {
+      expect(conjugate('hablar', regular, tense).map(r => r.pronoun)).toEqual(indicativeLabels);
+    },
+  );
+
+  test('getPersonLabel is tense-aware for the two ambiguous slots', () => {
+    expect(getPersonLabel({ personIndex: 2, tense: 'imperative_affirmative' })).toBe('usted');
+    expect(getPersonLabel({ personIndex: 5, tense: 'imperative_negative' })).toBe('ustedes');
+    expect(getPersonLabel({ personIndex: 2, tense: 'present' })).toBe('él/ella/Ud.');
+    expect(getPersonLabel({ personIndex: 5, tense: 'present' })).toBe('ellos/ellas/Uds.');
+  });
+
+  test('getPersonLabel accepts a prompt object directly', () => {
+    // The shape every call site already has: a prompt carrying its own tense,
+    // so the person and the tense cannot come from different prompts.
+    const prompt = { verb: 'comer', personIndex: 5, tense: 'imperative_affirmative' as Tense };
+    expect(getPersonLabel(prompt)).toBe('ustedes');
+  });
+
+  test('cross-tense labels cover both readings for aggregate views', () => {
+    expect(crossTensePersonLabels).toHaveLength(PERSON_COUNT);
+    expect(crossTensePersonLabels[2]).toContain('Ud.');
+    expect(crossTensePersonLabels[5]).toContain('Uds.');
   });
 });
