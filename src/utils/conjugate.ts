@@ -1,5 +1,11 @@
 const pronouns = ['yo', 'tú', 'él/ella/Ud.', 'nosotros', 'vosotros', 'ellos/ellas/Uds.'];
 
+// The imperative is addressed to the listener, so it has no third person. Its
+// usted/ustedes cells only look third-person because they borrow the present
+// subjunctive — commanding an absent third party needs "que" + subjunctive
+// (que lo hagan ellos), which is a different construction entirely.
+const imperativePronouns = ['yo', 'tú', 'usted', 'nosotros', 'vosotros', 'ustedes'];
+
 // ============ REGULAR ENDINGS ============
 
 const regularEndings = {
@@ -299,6 +305,35 @@ export const imperativeTenses: Tense[] = [
   'imperative_negative',
 ];
 
+/** How many person slots a finite paradigm has. */
+export const PERSON_COUNT = pronouns.length;
+
+/**
+ * Person labels for a tense. Every screen that shows a person must go through
+ * this so the imperative's usted/ustedes labels cannot drift back to the
+ * third-person ones.
+ */
+export function getPersonLabels(tense: Tense): string[] {
+  return imperativeTenses.includes(tense) ? imperativePronouns : pronouns;
+}
+
+/**
+ * Label for a single prompt. Takes the prompt rather than a loose
+ * (personIndex, tense) pair so no call site can pair a person with a tense it
+ * did not come from — that mismatch is what showed imperatives as ellos/ellas.
+ */
+export function getPersonLabel(prompt: { personIndex: number; tense: Tense }): string {
+  return getPersonLabels(prompt.tense)[prompt.personIndex] ?? '';
+}
+
+/**
+ * Tense-neutral person labels, for aggregate views that group prompts across
+ * tenses and so cannot pick a tense-specific label. The composite spelling
+ * carries both readings, which keeps it accurate when imperative prompts land
+ * in the same bucket as indicative ones.
+ */
+export const crossTensePersonLabels: readonly string[] = pronouns;
+
 export type VerbLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 export interface VerbData {
@@ -424,7 +459,7 @@ function getAffirmativeVosotrosForm(ctx: ConjugationContext): string {
 function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
   const overrides = ctx.verb.overrides?.[ctx.tense] ?? ctx.pattern?.fullOverrides?.[ctx.tense];
   if (overrides) {
-    return pronouns.map((pronoun, i) =>
+    return getPersonLabels(ctx.tense).map((pronoun, i) =>
       makeResult(pronoun, overrides[i], ctx.isImperative && i === 0)
     );
   }
@@ -433,7 +468,7 @@ function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
   const subjOverrides = ctx.verb.overrides?.subjunctive_present ?? ctx.pattern?.fullOverrides?.subjunctive_present;
   if (subjOverrides && ctx.tense === 'imperative_affirmative') {
     const presentOverrides = ctx.verb.overrides?.present ?? ctx.pattern?.fullOverrides?.present;
-    return pronouns.map((pronoun, i) => {
+    return getPersonLabels(ctx.tense).map((pronoun, i) => {
       if (i === 0) return makeResult(pronoun, '—', true);
       // tú uses 3rd person present, never the subjunctive (averigua, not averigües)
       if (i === 1) {
@@ -445,7 +480,7 @@ function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
     });
   }
   if (subjOverrides && ctx.tense === 'imperative_negative') {
-    return pronouns.map((pronoun, i) => {
+    return getPersonLabels(ctx.tense).map((pronoun, i) => {
       if (i === 0) return makeResult(pronoun, '—', true);
       return makeResult(pronoun, 'no ' + subjOverrides[i], false);
     });
@@ -793,7 +828,7 @@ function conjugateSimple(
   if (overrideResult) return overrideResult;
 
   // 2. Build forms per person
-  return pronouns.map((pronoun, i) => {
+  return getPersonLabels(tense).map((pronoun, i) => {
     const disabled = isImperative && i === 0;
     if (disabled) return makeResult(pronoun, '—', true);
 
@@ -862,7 +897,7 @@ export function conjugate(
   if (tense in haberForms) {
     const participle = getPastParticiple(infinitive, verb.type);
     const haber = haberForms[tense as CompoundTense];
-    const results = pronouns.map((pronoun, i) => ({
+    const results = getPersonLabels(tense).map((pronoun, i) => ({
       pronoun,
       form: `${haber[i]} ${participle}`,
     }));
@@ -872,7 +907,7 @@ export function conjugate(
   if (tense in estarForms) {
     const gerund = getGerund(infinitive, verb);
     const estar = estarForms[tense as ProgressiveTense];
-    const results = pronouns.map((pronoun, i) => ({
+    const results = getPersonLabels(tense).map((pronoun, i) => ({
       pronoun,
       form: `${estar[i]} ${gerund}`,
     }));

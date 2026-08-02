@@ -17,7 +17,7 @@ import { getTodayKey } from '../utils/dayKey';
 import { pickWeightedPrompt } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { useNavigation } from '@react-navigation/native';
-import { tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
+import { getPersonLabel, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
@@ -27,7 +27,6 @@ import { useThemeStore } from '../store/themeStore';
 import { canRunFocusedScreenEffect } from '../utils/screenActivity';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
-const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
 const maxCardHeight = 320;
 const minCardHeight = 210;
 const minTinyCardHeight = 144;
@@ -344,7 +343,7 @@ export default function FlashcardScreen() {
           activeOpacity={flipped ? 1 : 0.95}
           accessible={!flipped}
           accessibilityRole={!flipped ? 'button' : undefined}
-          accessibilityLabel={!flipped ? `Tap to reveal conjugation of ${card.verb} for ${pronounLabels[card.personIndex]}` : undefined}
+          accessibilityLabel={!flipped ? `Tap to reveal conjugation of ${card.verb} for ${getPersonLabel(card)}` : undefined}
           importantForAccessibility={flipped ? 'no' : 'yes'}
         >
           {/* Front */}
@@ -369,7 +368,7 @@ export default function FlashcardScreen() {
               {card.translation}
             </Text>
             <Text style={[styles.pronounText, isCompactCard && styles.pronounTextCompact, isTinyCard && styles.pronounTextTiny, { color: colors.textPrimary }]}>
-              {pronounLabels[card.personIndex]}
+              {getPersonLabel(card)}
             </Text>
             <Text style={[styles.tapHint, isCompactCard && styles.tapHintCompact, isTinyCard && styles.tapHintTiny, { color: colors.textMuted }]}>
               Tap to reveal
@@ -405,7 +404,7 @@ export default function FlashcardScreen() {
               {card.answer}
             </Text>
             <Text style={[styles.contextText, isCompactCard && styles.contextTextCompact, isTinyCard && styles.contextTextTiny, { color: colors.textSecondary }]}>
-              {pronounLabels[card.personIndex]} · {card.verb}
+              {getPersonLabel(card)} · {card.verb}
             </Text>
             <Text style={[styles.answerTranslation, isCompactCard && styles.answerTranslationCompact, isTinyCard && styles.answerTranslationTiny, { color: colors.textMuted }]}>
               {card.translation}

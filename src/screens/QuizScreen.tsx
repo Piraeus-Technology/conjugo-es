@@ -15,7 +15,7 @@ import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
 import { generateQuestion, type Question } from '../utils/quizQuestion';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
-import { tenseNames, VerbData, VerbLevel } from '../utils/conjugate';
+import { getPersonLabel, tenseNames, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
 import { useSpacedRepStore } from '../store/spacedRepStore';
@@ -25,7 +25,6 @@ import { useThemeStore } from '../store/themeStore';
 import { REVIEW_PROMPT_STREAK } from '../utils/constants';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
-const pronounLabels = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
 
 export default function QuizScreen() {
   const colors = useColors();
@@ -245,7 +244,7 @@ export default function QuizScreen() {
             {question.translation}
           </Text>
           <Text style={[styles.questionPronoun, { color: colors.textPrimary }]}>
-            {pronounLabels[question.personIndex]}
+            {getPersonLabel(question)}
           </Text>
         </View>
 

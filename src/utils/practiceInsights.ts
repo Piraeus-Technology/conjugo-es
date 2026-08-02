@@ -1,8 +1,13 @@
-import { Tense, tenseNames } from './conjugate';
+import {
+  crossTensePersonLabels,
+  getPersonLabel,
+  PERSON_COUNT,
+  Tense,
+  tenseNames,
+} from './conjugate';
 import { INSIGHT_RANK_LIMIT, INSIGHT_WEAK_FORM_LIMIT } from './constants';
 
 type WeightMap = Record<string, number>;
-const practicePronouns = ['yo', 'tú', 'él/ella', 'nosotros', 'vosotros', 'ellos/ellas'];
 
 interface PromptWeightEntry {
   verb: string;
@@ -38,7 +43,7 @@ export function parsePromptWeights(weights: WeightMap): PromptWeightEntry[] {
         !tense ||
         !Number.isInteger(personIndex) ||
         personIndex < 0 ||
-        personIndex >= practicePronouns.length ||
+        personIndex >= PERSON_COUNT ||
         !isTense(tense)
       ) {
         return null;
@@ -78,11 +83,12 @@ export function buildPracticeInsights(weights: WeightMap): PracticeInsights {
       .sort((a, b) => b.weight - a.weight)
       .slice(0, INSIGHT_WEAK_FORM_LIMIT)
       .map(entry => ({
-        label: `${entry.verb} · ${tenseNames[entry.tense]} · ${practicePronouns[entry.personIndex]}`,
+        label: `${entry.verb} · ${tenseNames[entry.tense]} · ${getPersonLabel(entry)}`,
         weight: entry.weight,
       })),
     weakTenses: rankGroupedWeights(challengingPrompts, entry => tenseNames[entry.tense]),
-    weakPersons: rankGroupedWeights(challengingPrompts, entry => practicePronouns[entry.personIndex]),
+    // Grouped across tenses, so this bucket cannot use a tense-specific label.
+    weakPersons: rankGroupedWeights(challengingPrompts, entry => crossTensePersonLabels[entry.personIndex]),
     weakVerbs: rankGroupedWeights(challengingPrompts, entry => entry.verb),
   };
 }
