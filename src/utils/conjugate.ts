@@ -1,9 +1,9 @@
 const pronouns = ['yo', 'tú', 'él/ella/Ud.', 'nosotros', 'vosotros', 'ellos/ellas/Uds.'];
 
-// The imperative is addressed to the listener, so it has no third person. Its
-// usted/ustedes cells only look third-person because they borrow the present
-// subjunctive — commanding an absent third party needs "que" + subjunctive
-// (que lo hagan ellos), which is a different construction entirely.
+// Imperative forms are directed to an addressee. Usted/ustedes are third
+// grammatical person but second person of discourse, so these cells label the
+// listener rather than él/ella or ellos/ellas. Their forms coincide with the
+// present subjunctive.
 const imperativePronouns = ['yo', 'tú', 'usted', 'nosotros', 'vosotros', 'ustedes'];
 
 // ============ REGULAR ENDINGS ============

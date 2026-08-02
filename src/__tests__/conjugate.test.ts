@@ -1546,8 +1546,9 @@ describe('ConjugationResult structure', () => {
 
 // ============ IMPERATIVE PERSON LABELS ============
 
-// The imperative addresses the listener, so it has no third person: the cells
-// that read él/ella and ellos/ellas elsewhere are usted and ustedes here.
+// Usted/ustedes take third-person grammatical agreement but refer to the
+// listener, so cells that can read él/ella and ellos/ellas in other tenses are
+// labelled usted and ustedes here.
 describe('imperative person labels', () => {
   const imperativeLabels = ['yo', 'tú', 'usted', 'nosotros', 'vosotros', 'ustedes'];
   const indicativeLabels = ['yo', 'tú', 'él/ella/Ud.', 'nosotros', 'vosotros', 'ellos/ellas/Uds.'];

@@ -1,6 +1,7 @@
 import {
   crossTensePersonLabels,
   getPersonLabel,
+  imperativeTenses,
   PERSON_COUNT,
   Tense,
   tenseNames,
@@ -74,6 +75,47 @@ function rankGroupedWeights(entries: PromptWeightEntry[], keyFn: (entry: PromptW
     .slice(0, INSIGHT_RANK_LIMIT);
 }
 
+function rankPersonWeights(entries: PromptWeightEntry[]): RankedInsight[] {
+  const grouped = new Map<number, {
+    total: number;
+    count: number;
+    allImperative: boolean;
+    imperativeLabel?: string;
+  }>();
+
+  entries.forEach(entry => {
+    const isImperative = imperativeTenses.includes(entry.tense);
+    const current = grouped.get(entry.personIndex);
+    if (current) {
+      current.total += entry.weight;
+      current.count += 1;
+      current.allImperative = current.allImperative && isImperative;
+      if (isImperative && !current.imperativeLabel) {
+        current.imperativeLabel = getPersonLabel(entry);
+      }
+      return;
+    }
+
+    grouped.set(entry.personIndex, {
+      total: entry.weight,
+      count: 1,
+      allImperative: isImperative,
+      imperativeLabel: isImperative ? getPersonLabel(entry) : undefined,
+    });
+  });
+
+  return Array.from(grouped.entries())
+    .map(([personIndex, value]) => ({
+      label: value.allImperative
+        ? value.imperativeLabel ?? crossTensePersonLabels[personIndex]
+        : crossTensePersonLabels[personIndex],
+      weight: value.total / value.count,
+      count: value.count,
+    }))
+    .sort((a, b) => b.weight - a.weight || (b.count ?? 0) - (a.count ?? 0))
+    .slice(0, INSIGHT_RANK_LIMIT);
+}
+
 export function buildPracticeInsights(weights: WeightMap): PracticeInsights {
   const promptWeights = parsePromptWeights(weights);
   const challengingPrompts = promptWeights.filter(entry => entry.weight > 1);
@@ -87,8 +129,9 @@ export function buildPracticeInsights(weights: WeightMap): PracticeInsights {
         weight: entry.weight,
       })),
     weakTenses: rankGroupedWeights(challengingPrompts, entry => tenseNames[entry.tense]),
-    // Grouped across tenses, so this bucket cannot use a tense-specific label.
-    weakPersons: rankGroupedWeights(challengingPrompts, entry => crossTensePersonLabels[entry.personIndex]),
+    // Keep the composite label for mixed/non-imperative buckets, but do not
+    // introduce third-party labels into an all-imperative bucket.
+    weakPersons: rankPersonWeights(challengingPrompts),
     weakVerbs: rankGroupedWeights(challengingPrompts, entry => entry.verb),
   };
 }

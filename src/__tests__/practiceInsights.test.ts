@@ -36,9 +36,22 @@ describe('buildPracticeInsights person labels', () => {
     expect(insights.weakForms[0].label).toBe('comer · Present · ellos/ellas/Uds.');
   });
 
-  // weakPersons groups across tenses, so it cannot use a tense-specific label:
-  // the composite spelling stays true for both the imperative and indicative
-  // prompts that land in the same bucket.
+  test('weakPersons labels all-imperative buckets usted/ustedes', () => {
+    const insights = buildPracticeInsights({
+      [key('comer', 'imperative_affirmative', 5)]: 4,
+      [key('hablar', 'imperative_negative', 5)]: 2,
+      [key('comer', 'imperative_negative', 2)]: 3,
+    });
+
+    expect(insights.weakPersons).toEqual(expect.arrayContaining([
+      { label: 'ustedes', weight: 3, count: 2 },
+      { label: 'usted', weight: 3, count: 1 },
+    ]));
+    expect(insights.weakPersons.map(person => person.label).join(' ')).not.toMatch(/él|ellos/);
+  });
+
+  // When imperative and indicative prompts land in the same person bucket, the
+  // composite spelling stays true for both readings.
   test('weakPersons aggregates imperative and indicative into one labelled bucket', () => {
     const insights = buildPracticeInsights({
       [key('comer', 'imperative_affirmative', 5)]: 4,
