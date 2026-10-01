@@ -1,3 +1,4 @@
+import verbs from '../data/verbs.json';
 import {
   crossTensePersonLabels,
   getPersonLabel,
@@ -41,6 +42,7 @@ export function parsePromptWeights(weights: WeightMap): PromptWeightEntry[] {
       const personIndex = Number(person);
       if (
         !verb ||
+        !Object.prototype.hasOwnProperty.call(verbs, verb) ||
         !tense ||
         !Number.isInteger(personIndex) ||
         personIndex < 0 ||

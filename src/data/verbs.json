@@ -2143,7 +2143,7 @@
     },
     "examples": [
       "¿Me ayudas a mover esta mesa?",
-      "Se mudó a otra ciudad por trabajo."
+      "Movió la silla para dejar pasar a su amigo."
     ],
     "level": "A2"
   },
@@ -2620,7 +2620,7 @@
       "Conseguí el trabajo que quería.",
       "¿Conseguiste las entradas para el concierto?"
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "proseguir": {
     "type": "ir",
@@ -2945,7 +2945,7 @@
       "yoZco": true
     },
     "examples": [
-      "Amanecimos en la montaña.",
+      "Amaneció nublado en la montaña.",
       "Amanece a las seis en verano."
     ],
     "level": "B2"
@@ -8636,15 +8636,15 @@
     ],
     "level": "C1"
   },
-  "aconsolar": {
+  "aconsejar": {
     "type": "ar",
     "regular": true,
-    "translation": "to console",
+    "translation": "to advise",
     "examples": [
       "Me aconsejaron buscar otro empleo.",
       "Aconséjale que descanse más."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "acumular": {
     "type": "ar",
@@ -9833,7 +9833,7 @@
   "gravar": {
     "type": "ar",
     "regular": true,
-    "translation": "to tax/record",
+    "translation": "to tax",
     "examples": [
       "Gravaron los productos importados.",
       "El gobierno grava las bebidas azucaradas."
@@ -11263,9 +11263,9 @@
       "spellingChange": "gir_j"
     }
   },
-  "tañir": {
-    "type": "ir",
-    "regular": true,
+  "tañer": {
+    "type": "er",
+    "regular": false,
     "translation": "to play (bells)",
     "examples": [
       "Las campanas tañen al mediodía.",
@@ -12601,5 +12601,15 @@
       "No transgredas los límites establecidos."
     ],
     "level": "C2"
+  },
+  "gustar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to like",
+    "examples": [
+      "Me gusta aprender español.",
+      "Nos gustó la película."
+    ],
+    "level": "A1"
   }
 }
