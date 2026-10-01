@@ -29,6 +29,8 @@ describe.each(Object.entries(themes))('%s theme contrast', (_name, colors) => {
     ['muted text on app background', colors.textMuted, colors.bg],
     ['muted text on cards', colors.textMuted, colors.card],
     ['primary text on cards', colors.primaryText, colors.card],
+    ['header back/action tint', colors.primaryText, colors.bg],
+    ['header title text', colors.textPrimary, colors.bg],
     ['regular tag text', colors.regularTagText, colors.regularTag],
     ['irregular tag text', colors.irregularTagText, colors.irregularTag],
     ['high score text', colors.scoreHighText, colors.scoreHighBg],

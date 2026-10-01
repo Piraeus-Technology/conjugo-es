@@ -704,6 +704,13 @@ function trySpellingChangePreterite(ctx: ConjugationContext, i: number): string 
 /** Handle UIR verbs with y-insertion (construyo, destruyen, etc.) */
 function tryUirVerb(ctx: ConjugationContext, i: number): string | null {
   if (ctx.pattern?.spellingChange !== 'uir_uy') return null;
+  // RAE 2010: ui is an orthographic diphthong. A consonant-only prefix
+  // makes these forms monosyllables (hui/huis, flui/fluis); a prefix with
+  // another vowel preserves stress accents (incluí, construís).
+  if (/^[^aeiouáéíóúü]+uir$/.test(ctx.infinitive)) {
+    if (ctx.tense === 'preterite' && i === 0) return ctx.stem + 'i';
+    if (ctx.tense === 'present' && i === 4) return ctx.stem + 'is';
+  }
   const uirStem = ctx.stem.slice(0, -1) + 'uy';
   if (ctx.tense === 'present' && [0, 1, 2, 5].includes(i)) {
     return uirStem + ctx.endings[i];

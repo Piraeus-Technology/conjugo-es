@@ -5,6 +5,9 @@ import { __resetThemeStoreForTests, useThemeStore } from '../store/themeStore';
 import {
   __resetPracticeSettingsStoreForTests,
   allTenses,
+  allLevels,
+  beginnerTenses,
+  beginnerLevels,
   usePracticeSettingsStore,
 } from '../store/practiceSettingsStore';
 
@@ -153,6 +156,36 @@ describe('simple store persistence', () => {
   });
 
   describe('practice settings', () => {
+    test('fresh install persists beginner defaults before any activity', async () => {
+      await usePracticeSettingsStore.getState().loadPracticeSettings();
+      expect(usePracticeSettingsStore.getState().activeTenses).toEqual(beginnerTenses);
+      expect(usePracticeSettingsStore.getState().activeLevels).toEqual(beginnerLevels);
+      mockStorage.set('verb_history', '["hablar"]');
+      __resetPracticeSettingsStoreForTests();
+      await usePracticeSettingsStore.getState().loadPracticeSettings();
+      expect(usePracticeSettingsStore.getState().activeLevels).toEqual(beginnerLevels);
+    });
+
+    test.each(['quiz_stats', 'sessions', 'flashcardSessions', 'spaced_rep_weights', 'verb_history', 'favorites', 'theme_mode', 'auto_tts', 'include_vosotros'])(
+      'existing %s without settings retains every tense and level', async key => {
+        mockStorage.set(key, key === 'sessions' ? '[{"day":"2026-10-01","total":3,"correct":2,"streak":2}]' : 'stored');
+        await usePracticeSettingsStore.getState().loadPracticeSettings();
+        expect(usePracticeSettingsStore.getState().activeTenses).toEqual(allTenses);
+        expect(usePracticeSettingsStore.getState().activeLevels).toEqual(allLevels);
+        expect(JSON.parse(mockStorage.get('practiceSettings')!).activeLevels).toEqual(allLevels);
+      },
+    );
+
+    test('stored selections remain exact; Select All still selects everything', async () => {
+      mockStorage.set('practiceSettings', JSON.stringify({ activeTenses: ['conditional'], activeLevels: ['C1', 'C2'] }));
+      await usePracticeSettingsStore.getState().loadPracticeSettings();
+      expect(usePracticeSettingsStore.getState().activeTenses).toEqual(['conditional']);
+      expect(usePracticeSettingsStore.getState().activeLevels).toEqual(['C1', 'C2']);
+      await usePracticeSettingsStore.getState().setActiveTenses(allTenses);
+      await usePracticeSettingsStore.getState().setActiveLevels(allLevels);
+      expect(JSON.parse(mockStorage.get('practiceSettings')!)).toEqual({ activeTenses: allTenses, activeLevels: allLevels });
+    });
+
     test('concurrent tense and level toggles both persist (no patch clobber)', async () => {
       await usePracticeSettingsStore.getState().loadPracticeSettings();
       await Promise.all([

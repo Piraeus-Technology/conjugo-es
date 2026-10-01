@@ -1216,7 +1216,7 @@ describe('Accented infinitives', () => {
       overrides: {
         present: ['río', 'ríes', 'ríe', 'reímos', 'reís', 'ríen'],
         preterite: ['reí', 'reíste', 'rio', 'reímos', 'reísteis', 'rieron'],
-        subjunctive_present: ['ría', 'rías', 'ría', 'riamos', 'riáis', 'rían'],
+        subjunctive_present: ['ría', 'rías', 'ría', 'riamos', 'riais', 'rían'],
       },
     };
     expect(forms('reír', verb, 'future')[0]).toBe('reiré');
@@ -1232,15 +1232,15 @@ describe('Accented infinitives', () => {
     }, 'imperative_affirmative')[4].form).toBe('oíd');
   });
 
-  test('reír and sonreír keep accented 3rd-person preterite forms', () => {
+  test('reír uses monosyllabic rio while sonreír keeps sonrió', () => {
     const reir: VerbData = {
       type: 'ir',
       regular: false,
       translation: 'to laugh',
       overrides: {
         present: ['río', 'ríes', 'ríe', 'reímos', 'reís', 'ríen'],
-        preterite: ['reí', 'reíste', 'rió', 'reímos', 'reísteis', 'rieron'],
-        subjunctive_present: ['ría', 'rías', 'ría', 'riamos', 'riáis', 'rían'],
+        preterite: ['reí', 'reíste', 'rio', 'reímos', 'reísteis', 'rieron'],
+        subjunctive_present: ['ría', 'rías', 'ría', 'riamos', 'riais', 'rían'],
       },
     };
     const sonreir: VerbData = {
@@ -1253,7 +1253,7 @@ describe('Accented infinitives', () => {
         subjunctive_present: ['sonría', 'sonrías', 'sonría', 'sonriamos', 'sonriáis', 'sonrían'],
       },
     };
-    expect(forms('reír', reir, 'preterite')[2]).toBe('rió');
+    expect(forms('reír', reir, 'preterite')[2]).toBe('rio');
     expect(forms('sonreír', sonreir, 'preterite')[2]).toBe('sonrió');
   });
 });

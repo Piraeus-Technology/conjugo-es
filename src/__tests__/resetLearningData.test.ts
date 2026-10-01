@@ -13,8 +13,8 @@ import {
 } from '../store/historyStore';
 import {
   __resetPracticeSettingsStoreForTests,
-  allLevels,
-  allTenses,
+  beginnerLevels,
+  beginnerTenses,
   usePracticeSettingsStore,
 } from '../store/practiceSettingsStore';
 import { __resetQuizStoreForTests, useQuizStore } from '../store/quizStore';
@@ -113,14 +113,18 @@ describe('reset all learning data', () => {
     expect(useFlashcardSessionStore.getState().sessions).toEqual([]);
     expect(useFavoritesStore.getState().favorites).toEqual([]);
     expect(useHistoryStore.getState().history).toEqual([]);
-    expect(usePracticeSettingsStore.getState().activeTenses).toEqual(allTenses);
-    expect(usePracticeSettingsStore.getState().activeLevels).toEqual(allLevels);
+    expect(usePracticeSettingsStore.getState().activeTenses).toEqual(beginnerTenses);
+    expect(usePracticeSettingsStore.getState().activeLevels).toEqual(beginnerLevels);
     expect(useThemeStore.getState()).toMatchObject({
       isDark: false,
       autoTTS: false,
       includeVosotros: true,
     });
-    expect(mockStorage.size).toBe(0);
+    expect([...mockStorage.keys()]).toEqual(['practiceSettings']);
+    __resetPracticeSettingsStoreForTests();
+    await usePracticeSettingsStore.getState().loadPracticeSettings();
+    expect(usePracticeSettingsStore.getState().activeTenses).toEqual(beginnerTenses);
+    expect(usePracticeSettingsStore.getState().activeLevels).toEqual(beginnerLevels);
     expect(AsyncStorage.removeItem).toHaveBeenCalled();
   });
 });

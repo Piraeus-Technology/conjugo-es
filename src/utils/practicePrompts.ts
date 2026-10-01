@@ -34,9 +34,10 @@ export function getCorePracticeEntries(
 }
 
 // Weighted random prompt selection shared by the quiz and flashcard screens:
-// sample a handful of valid (verb, tense, person) candidates with a bias
-// toward a curated beginner core, then keep the one the user struggles with
-// most according to the spaced-repetition weights.
+// Keep the existing curated-core distribution for beginner-only selections.
+// Otherwise sample a level uniformly before sampling a verb so dataset size
+// and the beginner core cannot drown out higher levels. Difficulty weights
+// still choose among the sampled candidates.
 export function pickWeightedPrompt(
   verbEntries: [string, VerbData][],
   activeTenses: Tense[],
@@ -44,14 +45,24 @@ export function pickWeightedPrompt(
   includeVosotros: boolean = true,
 ): PromptCandidate {
   const coreEntries = getCorePracticeEntries(verbEntries);
+  const beginnerOnly = verbEntries.every(([, data]) => data.level === 'A1' || data.level === 'A2');
+  const byLevel = new Map<VerbData['level'], [string, VerbData][]>();
+  if (!beginnerOnly) {
+    for (const entry of verbEntries) {
+      const group = byLevel.get(entry[1].level) ?? [];
+      group.push(entry);
+      byLevel.set(entry[1].level, group);
+    }
+  }
+  const levelPools = [...byLevel.values()];
   const candidates: PromptCandidate[] = [];
 
   let attempts = 0;
   while (candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
     attempts++;
-    const source = Math.random() < WEIGHTED_PICK_COMMON_BIAS
-      ? coreEntries
-      : verbEntries;
+    const source = beginnerOnly
+      ? (Math.random() < WEIGHTED_PICK_COMMON_BIAS ? coreEntries : verbEntries)
+      : levelPools[Math.floor(Math.random() * levelPools.length)];
     const [verb, data] = source[Math.floor(Math.random() * source.length)];
     const tense = activeTenses[Math.floor(Math.random() * activeTenses.length)];
     const results = conjugate(verb, data, tense);
