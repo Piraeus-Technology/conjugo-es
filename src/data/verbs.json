@@ -12611,5 +12611,141 @@
       "Nos gustó la película."
     ],
     "level": "A1"
+  },
+  "andar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to walk",
+    "examples": [
+      "Ando por el parque todas las mañanas.",
+      "Ayer anduvimos por el centro de la ciudad."
+    ],
+    "level": "A1",
+    "pattern": {
+      "irregularPreteriteStem": "anduv"
+    }
+  },
+  "continuar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to continue",
+    "examples": [
+      "Continúo con mis estudios de español.",
+      "Continuamos el viaje después de comer."
+    ],
+    "level": "A2",
+    "pattern": {
+      "stemChange": {
+        "present": "u_ú"
+      }
+    }
+  },
+  "llenar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to fill",
+    "examples": [
+      "Lleno la botella de agua antes de salir.",
+      "Llenaron la sala de flores."
+    ],
+    "level": "A2"
+  },
+  "quitar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to remove",
+    "examples": [
+      "Quita los platos de la mesa, por favor.",
+      "Quité una mancha de la camisa."
+    ],
+    "level": "A2"
+  },
+  "gastar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to spend",
+    "examples": [
+      "Gasto poco dinero en ropa.",
+      "Gastamos demasiado en las vacaciones."
+    ],
+    "level": "A2"
+  },
+  "dudar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to doubt",
+    "examples": [
+      "Dudo que esa información sea correcta.",
+      "No dudes en pedir ayuda."
+    ],
+    "level": "B1"
+  },
+  "reunir": {
+    "type": "ir",
+    "regular": false,
+    "translation": "to gather",
+    "examples": [
+      "La profesora reúne a los alumnos en el patio.",
+      "Reunimos todos los documentos necesarios."
+    ],
+    "level": "B1",
+    "pattern": {
+      "stemChange": {
+        "present": "u_ú"
+      }
+    }
+  },
+  "actuar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to act",
+    "examples": [
+      "Actúo con cuidado en situaciones difíciles.",
+      "Los bomberos actuaron rápidamente."
+    ],
+    "level": "B1",
+    "pattern": {
+      "stemChange": {
+        "present": "u_ú"
+      }
+    }
+  },
+  "saltar": {
+    "type": "ar",
+    "regular": true,
+    "translation": "to jump",
+    "examples": [
+      "El niño salta sobre los charcos.",
+      "Saltamos de alegría al recibir la noticia."
+    ],
+    "level": "A2"
+  },
+  "acostar": {
+    "type": "ar",
+    "regular": false,
+    "translation": "to put to bed",
+    "examples": [
+      "Acuesto al bebé a las ocho.",
+      "Acostamos a los niños después de cenar."
+    ],
+    "level": "A2",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
+  },
+  "escoger": {
+    "type": "er",
+    "regular": false,
+    "translation": "to choose",
+    "examples": [
+      "Escojo la fruta más fresca.",
+      "Escogimos una mesa junto a la ventana."
+    ],
+    "level": "A2",
+    "pattern": {
+      "spellingChange": "ger_j"
+    }
   }
 }
