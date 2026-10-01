@@ -33,7 +33,7 @@ function QuizStackScreen() {
   return (
     <QuizStack.Navigator id="QuizStack" screenOptions={{
       headerStyle: { backgroundColor: colors.bg },
-      headerTintColor: colors.textPrimary,
+      headerTintColor: colors.primaryText,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
       headerTitleAlign: 'center' as const,
       headerShadowVisible: false,
@@ -49,7 +49,7 @@ function FlashcardStackScreen() {
   return (
     <FlashcardStack.Navigator id="FlashcardStack" screenOptions={{
       headerStyle: { backgroundColor: colors.bg },
-      headerTintColor: colors.textPrimary,
+      headerTintColor: colors.primaryText,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
       headerTitleAlign: 'center' as const,
       headerShadowVisible: false,
@@ -67,7 +67,7 @@ function MoreStackScreen() {
   return (
     <MoreStack.Navigator id="MoreStack" screenOptions={{
       headerStyle: { backgroundColor: colors.bg },
-      headerTintColor: colors.textPrimary,
+      headerTintColor: colors.primaryText,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
       headerTitleAlign: 'center' as const,
       headerShadowVisible: false,
