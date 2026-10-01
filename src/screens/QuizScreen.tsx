@@ -196,6 +196,14 @@ function QuizScreenSession() {
   if (!question) return (
     <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' }]}>
       <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>No matching verbs</Text>
+      <TouchableOpacity
+        style={[styles.retryButton, { backgroundColor: colors.primary }]}
+        onPress={() => nav.navigate('PracticeSettings', { mode: 'quiz' })}
+        accessibilityRole="button"
+        accessibilityLabel="Change quiz practice settings"
+      >
+        <Text style={styles.retryButtonText}>Change Settings</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -275,7 +283,12 @@ function QuizScreenSession() {
         </View>
 
         {/* Next */}
-        <View style={[styles.bottomRow, { opacity: answered ? 1 : 0 }]} pointerEvents={answered ? 'auto' : 'none'}>
+        <View
+          style={[styles.bottomRow, { opacity: answered ? 1 : 0 }]}
+          pointerEvents={answered ? 'auto' : 'none'}
+          accessibilityElementsHidden={!answered}
+          importantForAccessibility={answered ? 'auto' : 'no-hide-descendants'}
+        >
           <TouchableOpacity
             style={[styles.bottomButton, { backgroundColor: colors.primary }]}
             onPress={handleNext}

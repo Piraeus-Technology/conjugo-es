@@ -28,16 +28,14 @@ import {
   type VerbEntry,
 } from '../utils/verbSearch';
 import { isSearchDebouncePending } from '../utils/searchDebounce';
+import { getVerbOfTheDayIndex } from '../utils/verbOfTheDay';
+
+const dailyVerbEntries = [...verbEntries].sort((first, second) =>
+  first.infinitive.localeCompare(second.infinitive, 'es'),
+);
 
 function getVerbOfTheDay() {
-  // Count days in LOCAL time so the verb rolls over at local midnight,
-  // not UTC midnight.
-  const today = new Date();
-  const localDays = Math.floor(
-    (today.getTime() - today.getTimezoneOffset() * 60 * 1000) / (1000 * 60 * 60 * 24),
-  );
-  const index = localDays % verbEntries.length;
-  return verbEntries[index];
+  return dailyVerbEntries[getVerbOfTheDayIndex(dailyVerbEntries.length)];
 }
 
 interface SearchResult {

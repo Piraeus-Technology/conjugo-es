@@ -22,6 +22,7 @@ import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { getFamilyKey, getRuleNotes } from '../utils/conjugationInsights';
 import type { ConjugationScreenProps } from '../types/navigation';
+import { getSnapshotRows } from '../utils/conjugationSnapshot';
 
 const tenseGroups = [
   {
@@ -51,19 +52,6 @@ const tenseGroups = [
     tenses: ['gerund_participle'] as Tense[],
   },
 ];
-
-function getSnapshotRows(infinitive: string, verb: VerbData, tense: Tense | null) {
-  const targetTense = tense ?? 'present';
-  const rows = conjugate(infinitive, verb, targetTense)
-    .map((row, index) => ({ ...row, index }))
-    .filter(row => !row.disabled && row.form !== '—');
-
-  const preferred = [0, 2, 3]
-    .map(index => rows.find(row => row.index === index))
-    .filter(Boolean) as (typeof rows[number])[];
-
-  return preferred.length > 0 ? preferred : rows.slice(0, 3);
-}
 
 export default function ConjugationScreen({ route, navigation }: ConjugationScreenProps) {
   const { infinitive } = route.params;

@@ -278,6 +278,14 @@ function FlashcardScreenSession() {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center' }]}>
         <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>No matching flashcards</Text>
+        <TouchableOpacity
+          style={[styles.retryButton, { backgroundColor: colors.primary }]}
+          onPress={() => nav.navigate('PracticeSettings', { mode: 'flashcards' })}
+          accessibilityRole="button"
+          accessibilityLabel="Change flashcard practice settings"
+        >
+          <Text style={styles.retryButtonText}>Change Settings</Text>
+        </TouchableOpacity>
       </View>
     );
   }

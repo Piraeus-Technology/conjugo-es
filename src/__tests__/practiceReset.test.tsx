@@ -3,11 +3,13 @@ import { Animated } from 'react-native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import QuizScreen from '../screens/QuizScreen';
 import FlashcardScreen from '../screens/FlashcardScreen';
+import PracticeSettingsScreen from '../screens/PracticeSettingsScreen';
 import { useQuizStore } from '../store/quizStore';
 import { useSessionStore } from '../store/sessionStore';
 import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { usePracticeResetStore } from '../store/practiceResetStore';
 import { resetAllLearningData } from '../utils/resetLearningData';
+import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
 
 const mockStorage = new Map<string, string>();
 const mockListeners: Record<string, Set<() => void>> = {};
@@ -24,7 +26,10 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(async (key: string, value: string) => { mockStorage.set(key, value); }),
   removeItem: jest.fn(async (key: string) => { mockStorage.delete(key); }),
 }));
-jest.mock('@react-navigation/native', () => ({ useNavigation: () => mockNavigation }));
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => mockNavigation,
+  useRoute: () => ({ params: { mode: 'quiz' } }),
+}));
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn(async () => undefined), impactAsync: jest.fn(async () => undefined),
@@ -90,4 +95,34 @@ test('flashcard reset drops pre-reset deltas and starts the next card fresh', as
   } finally {
     timing.mockRestore();
   }
+});
+
+test('Next becomes accessible only after the quiz answer', async () => {
+  const screen = render(<QuizScreen />);
+  await screen.findByLabelText('Answer: hablo');
+  expect(screen.queryByLabelText('Next question')).toBeNull();
+  await act(async () => { fireEvent.press(screen.getByLabelText('Answer: hablo')); });
+  expect(screen.getByLabelText('Next question')).toBeTruthy();
+});
+
+test.each([
+  ['quiz', QuizScreen, 'Change quiz practice settings'],
+  ['flashcards', FlashcardScreen, 'Change flashcard practice settings'],
+] as const)('%s empty state opens its practice settings', async (mode, Component, label) => {
+  usePracticeSettingsStore.setState({ activeTenses: [], loaded: true });
+  const screen = render(<Component />);
+  const button = await screen.findByLabelText(label);
+  fireEvent.press(button);
+  expect(mockNavigation.navigate).toHaveBeenCalledWith('PracticeSettings', { mode });
+});
+
+test.each([
+  [[], ['A1'], 'Select at least one tense to start.'],
+  [['present'], [], 'Select at least one level to start.'],
+  [[], [], 'Select at least one tense and one level to start.'],
+] as const)('explains the disabled Start button (%s, %s)', (tenses, levels, hint) => {
+  usePracticeSettingsStore.setState({ activeTenses: [...tenses], activeLevels: [...levels], loaded: true });
+  const screen = render(<PracticeSettingsScreen />);
+  expect(screen.getByText(hint)).toBeTruthy();
+  expect(screen.getByLabelText('Start quiz')).toBeDisabled();
 });
