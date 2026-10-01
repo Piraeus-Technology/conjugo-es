@@ -426,7 +426,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 onPress={() => handleVerbPress(verbOfTheDay.infinitive)}
                 activeOpacity={0.7}
                 accessibilityRole="button"
-                accessibilityLabel={`Verb of the day: ${verbOfTheDay.infinitive}, ${verbOfTheDay.translation}, ${verbOfTheDay.regular ? 'regular' : 'irregular'} verb`}
+                accessibilityLabel={`Verb of the day: ${verbOfTheDay.infinitive}, ${verbOfTheDay.translation}, ${verbOfTheDay.regular ? 'regular' : 'irregular'} verb, level ${verbOfTheDay.level}`}
                 accessibilityHint="Opens the full conjugation"
               >
                 <Text style={[styles.vodLabel, { color: colors.textMuted }]}>VERB OF THE DAY</Text>
@@ -443,6 +443,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                       -{verbOfTheDay.type}
                     </Text>
                   </View>
+                  {verbOfTheDay.level && (
+                    <View style={[styles.vodBadge, { backgroundColor: colors[`level${verbOfTheDay.level}Bg`] }]}>
+                      <Text style={[styles.vodBadgeText, { color: colors[`level${verbOfTheDay.level}Text`] }]}>
+                        {verbOfTheDay.level}
+                      </Text>
+                    </View>
+                  )}
                 </View>
               </TouchableOpacity>
             </View>
