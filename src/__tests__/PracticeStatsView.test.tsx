@@ -1,6 +1,10 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, cleanup } from '@testing-library/react-native';
 import PracticeStatsView, { PracticeStatsLabels } from '../components/PracticeStatsView';
+import StatsScreen from '../screens/StatsScreen';
+import { useSessionStore } from '../store/sessionStore';
+import { useSpacedRepStore } from '../store/spacedRepStore';
+import { useQuizStore } from '../store/quizStore';
 import { getTodayKey } from '../utils/dayKey';
 
 const labels: PracticeStatsLabels = {
@@ -96,4 +100,25 @@ describe('PracticeStatsView', () => {
       jest.useRealTimers();
     }
   });
+});
+
+// Targeted product regression: the quiz screen enables the existing shared panel.
+test('Quiz Stats shows weakest verbs from shared prompt weights', () => {
+  const sessions = useSessionStore.getState();
+  const weights = useSpacedRepStore.getState();
+  const quiz = useQuizStore.getState();
+  try {
+    useSessionStore.setState({ loaded: true, loadError: false, sessions: [] });
+    useSpacedRepStore.setState({ loaded: true, loadError: false, weights: { 'hablar::present::0': 3 } });
+    useQuizStore.setState({ loaded: true, loadError: false });
+    const screen = render(<StatsScreen />);
+    expect(screen.getByText('Weakest verbs')).toBeTruthy();
+    expect(screen.getByText('hablar')).toBeTruthy();
+    expect(screen.getAllByText('1 forms · 3.0x').length).toBeGreaterThan(0);
+  } finally {
+    cleanup();
+    useSessionStore.setState(sessions);
+    useSpacedRepStore.setState(weights);
+    useQuizStore.setState(quiz);
+  }
 });

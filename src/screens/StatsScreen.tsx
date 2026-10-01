@@ -39,6 +39,7 @@ export default function StatsScreen() {
 
   return (
     <PracticeStatsView
+      showWeakVerbs
       sessions={dayCounts}
       sessionsLoaded={sessionsLoaded && lifetimeLoaded}
       sessionsLoadError={sessionsLoadError || lifetimeLoadError}
