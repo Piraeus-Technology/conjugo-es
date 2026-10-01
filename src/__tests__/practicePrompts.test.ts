@@ -22,9 +22,10 @@ describe('practice prompt selection', () => {
     jest.restoreAllMocks();
   });
 
-  test('default prompts favor curated A1/A2 verbs without relying on JSON order', () => {
+  test('beginner-only prompts retain the curated A1/A2 distribution', () => {
     jest.spyOn(Math, 'random').mockImplementation(seededRandom(0xC0FFEE));
-    const coreEntries = getCorePracticeEntries(allVerbEntries);
+    const beginnerEntries = allVerbEntries.filter(([, data]) => data.level === 'A1' || data.level === 'A2');
+    const coreEntries = getCorePracticeEntries(beginnerEntries);
 
     expect(coreEntries.map(([verb]) => verb)).toEqual(
       expect.arrayContaining(['hablar', 'comer', 'vivir']),
@@ -32,24 +33,43 @@ describe('practice prompt selection', () => {
     expect(coreEntries.every(([, data]) => data.level === 'A1' || data.level === 'A2')).toBe(true);
 
     const counts = new Map<string, number>();
-    let beginnerPrompts = 0;
+    let corePrompts = 0;
+    let a1Prompts = 0;
     const sampleSize = 3000;
 
     for (let index = 0; index < sampleSize; index += 1) {
       const prompt = pickWeightedPrompt(
-        allVerbEntries,
+        beginnerEntries,
         ['present'],
         flatWeight,
       );
       counts.set(prompt.verb, (counts.get(prompt.verb) ?? 0) + 1);
-      if (prompt.data.level === 'A1' || prompt.data.level === 'A2') {
-        beginnerPrompts += 1;
-      }
+      if (coreEntries.some(([verb]) => verb === prompt.verb)) corePrompts++;
+      if (prompt.data.level === 'A1') a1Prompts++;
     }
 
-    expect(beginnerPrompts / sampleSize).toBeGreaterThan(0.65);
+    expect(corePrompts / sampleSize).toBeGreaterThan(0.75);
+    expect(a1Prompts / sampleSize).toBeGreaterThan(0.79);
+    expect(a1Prompts / sampleSize).toBeLessThan(0.87);
     for (const foundationalVerb of ['hablar', 'comer', 'vivir']) {
       expect(counts.get(foundationalVerb) ?? 0).toBeGreaterThanOrEqual(10);
+    }
+  });
+
+  test.each([
+    ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
+    ['B1', 'B2', 'C1', 'C2'],
+  ])('neutral prompts balance selected levels (%s...)', (...levels) => {
+    jest.spyOn(Math, 'random').mockImplementation(seededRandom(0xC0FFEE));
+    const pool = allVerbEntries.filter(([, data]) => levels.includes(data.level!));
+    const counts = new Map<string, number>();
+    for (let i = 0; i < 6000; i++) {
+      const prompt = pickWeightedPrompt(pool, ['present', 'preterite'], flatWeight);
+      counts.set(prompt.data.level!, (counts.get(prompt.data.level!) ?? 0) + 1);
+    }
+    for (const level of levels) {
+      expect((counts.get(level) ?? 0) / 6000).toBeGreaterThan(0.12);
+      expect((counts.get(level) ?? 0) / 6000).toBeLessThan(0.30);
     }
   });
 
