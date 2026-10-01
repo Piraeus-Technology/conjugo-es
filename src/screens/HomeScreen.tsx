@@ -124,7 +124,7 @@ async function buildSearchResults(
 ): Promise<SearchResult[]> {
   const query = normalizeSearchText(searchValue);
   const verbResults = buildVerbSearchResults(searchValue, query);
-  if (query.length < 3) return verbResults.slice(0, MAX_SEARCH_RESULTS);
+  if (!query) return verbResults.slice(0, MAX_SEARCH_RESULTS);
 
   const conjugationResults = await searchConjugations(searchValue, shouldCancel);
   if (shouldCancel()) return verbResults.slice(0, MAX_SEARCH_RESULTS);
@@ -232,7 +232,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     // Infinitive/translation matches are cheap, so show them immediately
     // while the conjugation matrix is scanned in event-loop-sized chunks.
     setResults(buildVerbSearchResults(searchValue, query).slice(0, MAX_SEARCH_RESULTS));
-    if (query.length < 3) {
+    if (!query) {
       setConjugationSearchPending(false);
       return;
     }

@@ -9,6 +9,7 @@ import {
   timestampToDayKey,
 } from '../utils/dayKey';
 import { MAX_DAILY_SESSIONS } from '../utils/constants';
+import { isCurrentPracticeSession, usePracticeResetStore } from './practiceResetStore';
 
 export interface Session {
   day: string; // 'YYYY-MM-DD'
@@ -22,7 +23,7 @@ interface SessionStore {
   loaded: boolean;
   loadError: boolean;
   loadSessions: () => Promise<void>;
-  saveSession: (session: Omit<Session, 'day'>) => Promise<void>;
+  saveSession: (session: Omit<Session, 'day'> & { day?: string }) => Promise<void>;
   clearSessions: () => Promise<boolean>;
 }
 
@@ -133,6 +134,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   saveSession: async (session) => {
+    const version = usePracticeResetStore.getState().version;
+    const day = session.day ?? getTodayKey();
+    if (!isValidDayKey(day)) throw new Error('Invalid session day');
     if (!get().loaded) {
       await get().loadSessions();
     }
@@ -141,7 +145,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     }
 
     return queue.enqueue(async () => {
-      const today = getTodayKey();
+      if (!isCurrentPracticeSession(version)) return;
+      const today = day;
       const current = get().sessions;
       const existingIndex = current.findIndex(s => s.day === today);
 
@@ -157,7 +162,9 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         };
       } else {
         // New day
-        updated = [{ ...session, day: today }, ...current].slice(0, MAX_DAILY_SESSIONS);
+        updated = [{ ...session, day: today }, ...current]
+          .sort((first, second) => second.day.localeCompare(first.day))
+          .slice(0, MAX_DAILY_SESSIONS);
       }
 
       const persisted = await safeSetItem('sessions', JSON.stringify(updated));

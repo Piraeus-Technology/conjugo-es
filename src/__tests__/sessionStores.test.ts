@@ -47,6 +47,17 @@ describe('session store persistence races', () => {
     warnSpy.mockRestore();
   });
 
+  test('both stores honor answer dates and sort backfilled days before retention', async () => {
+    useSessionStore.setState({ sessions: [{ day: '2026-10-01', total: 1, correct: 1, streak: 1 }], loaded: true });
+    useFlashcardSessionStore.setState({ sessions: [{ day: '2026-10-01', reviewed: 1, correct: 1 }], loaded: true });
+    await useSessionStore.getState().saveSession({ day: '2026-09-30', total: 2, correct: 1, streak: 1 });
+    await useFlashcardSessionStore.getState().saveSession({ day: '2026-09-30', reviewed: 2, correct: 1 });
+    expect(useSessionStore.getState().sessions.map(session => session.day)).toEqual(['2026-10-01', '2026-09-30']);
+    expect(useFlashcardSessionStore.getState().sessions.map(session => session.day)).toEqual(['2026-10-01', '2026-09-30']);
+    expect(useSessionStore.getState().sessions[1].total).toBe(2);
+    expect(useFlashcardSessionStore.getState().sessions[1].reviewed).toBe(2);
+  });
+
   test('quiz save waits for an in-flight initial load and preserves both totals', async () => {
     const load = deferred<string | null>();
     jest.mocked(AsyncStorage.getItem).mockImplementationOnce(() => load.promise);

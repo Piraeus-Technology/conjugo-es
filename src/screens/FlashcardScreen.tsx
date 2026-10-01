@@ -16,6 +16,7 @@ import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
 import { pickWeightedPrompt } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
+import { usePracticeResetStore } from '../store/practiceResetStore';
 import { useNavigation } from '@react-navigation/native';
 import { getPersonLabel, tenseNames, Tense, VerbData, VerbLevel } from '../utils/conjugate';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
@@ -61,6 +62,11 @@ function generateCard(
 }
 
 export default function FlashcardScreen() {
+  const { version, resetting } = usePracticeResetStore();
+  return resetting ? null : <FlashcardScreenSession key={version} />;
+}
+
+function FlashcardScreenSession() {
   const colors = useColors();
   // Track live window size so the card adapts to rotation/split-screen
   const { width, height } = useWindowDimensions();
@@ -90,8 +96,6 @@ export default function FlashcardScreen() {
   const [card, setCard] = useState<Card | null>(null);
   const [flipped, setFlipped] = useState(false);
   const [backInteractive, setBackInteractive] = useState(false);
-  const [newReviewed, setNewReviewed] = useState(0);
-  const [newCorrect, setNewCorrect] = useState(0);
   const [layoutHeight, setLayoutHeight] = useState(height);
   const flipAnim = useRef(new Animated.Value(0)).current;
   const speechGateRef = useRef({
@@ -162,8 +166,7 @@ export default function FlashcardScreen() {
     setFlipped(false);
     setBackInteractive(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setNewReviewed(r => r + 1);
-    setNewCorrect(c => c + 1);
+    recordProgress(true);
     recordResult(card.verb, card.tense, card.personIndex, true).catch((e) =>
       console.warn('Failed to record flashcard result:', e),
     );
@@ -175,18 +178,15 @@ export default function FlashcardScreen() {
     setFlipped(false);
     setBackInteractive(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    setNewReviewed(r => r + 1);
+    recordProgress(false);
     recordResult(card.verb, card.tense, card.personIndex, false).catch((e) =>
       console.warn('Failed to record flashcard result:', e),
     );
     flipToFront();
   };
 
-  // Auto-save NEW answers when leaving the screen or app goes to background
-  const { unsavedCount, unsavedCorrect } = useSessionAutosave({
-    count: newReviewed,
-    correct: newCorrect,
-    save: ({ count, correct }) => saveSession({ reviewed: count, correct }),
+  const { unsavedCount, unsavedCorrect, recordProgress } = useSessionAutosave({
+    save: ({ day, count, correct }) => saveSession({ day, reviewed: count, correct }),
   });
 
   // Today's cumulative totals plus any unsaved in-memory progress.

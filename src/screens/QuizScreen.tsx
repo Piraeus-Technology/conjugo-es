@@ -15,6 +15,7 @@ import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
 import { generateQuestion, type Question } from '../utils/quizQuestion';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
+import { usePracticeResetStore } from '../store/practiceResetStore';
 import { getPersonLabel, tenseNames, VerbData, VerbLevel } from '../utils/conjugate';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useQuizStore } from '../store/quizStore';
@@ -27,6 +28,11 @@ import { REVIEW_PROMPT_STREAK } from '../utils/constants';
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 
 export default function QuizScreen() {
+  const { version, resetting } = usePracticeResetStore();
+  return resetting ? null : <QuizScreenSession key={version} />;
+}
+
+function QuizScreenSession() {
   const colors = useColors();
   const { fontScale } = useWindowDimensions();
   // Only subscribe to what this screen uses — the totals re-render on every answer
@@ -51,10 +57,7 @@ export default function QuizScreen() {
   const { sessions, loadSessions, saveSession } = useSessionStore();
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [newCorrect, setNewCorrect] = useState(0);
-  const [newTotal, setNewTotal] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [bestSessionStreak, setBestSessionStreak] = useState(0);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
@@ -96,15 +99,13 @@ export default function QuizScreen() {
   const handleAnswer = (answer: string) => {
     if (answered || !question) return;
     setSelectedAnswer(answer);
-    setNewTotal(t => t + 1);
 
     const correct = answer === question.correctAnswer;
     if (correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setNewCorrect(s => s + 1);
       const newStreak = streak + 1;
       setStreak(newStreak);
-      if (newStreak > bestSessionStreak) setBestSessionStreak(newStreak);
+      recordProgress(true, newStreak);
       recordAnswer(true, newStreak);
       // Claim a persisted milestone first so another 10-answer streak (or a
       // remount) cannot prompt this installation again.
@@ -122,6 +123,7 @@ export default function QuizScreen() {
     } else {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setStreak(0);
+      recordProgress(false);
       recordAnswer(false, 0);
     }
     recordResult(question.verb, question.tense, question.personIndex, correct).catch((e) =>
@@ -135,13 +137,9 @@ export default function QuizScreen() {
     setSelectedAnswer(null);
   };
 
-  // Auto-save NEW answers when leaving the screen or app goes to background
-  const { unsavedCount, unsavedCorrect } = useSessionAutosave({
-    count: newTotal,
-    correct: newCorrect,
-    bestStreak: bestSessionStreak,
-    save: ({ count, correct, bestStreak }) =>
-      saveSession({ total: count, correct, streak: bestStreak }),
+  const { unsavedCount, unsavedCorrect, recordProgress } = useSessionAutosave({
+    save: ({ day, count, correct, bestStreak }) =>
+      saveSession({ day, total: count, correct, streak: bestStreak }),
   });
 
   // Today's cumulative totals plus any unsaved in-memory progress.
