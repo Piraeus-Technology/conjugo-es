@@ -618,6 +618,14 @@
         "preveamos",
         "preveáis",
         "prevean"
+      ],
+      "imperfect": [
+        "preveía",
+        "preveías",
+        "preveía",
+        "preveíamos",
+        "preveíais",
+        "preveían"
       ]
     },
     "examples": [
@@ -646,6 +654,14 @@
         "entreveamos",
         "entreveáis",
         "entrevean"
+      ],
+      "imperfect": [
+        "entreveía",
+        "entreveías",
+        "entreveía",
+        "entreveíamos",
+        "entreveíais",
+        "entreveían"
       ]
     },
     "examples": [
@@ -4119,7 +4135,10 @@
     "regular": false,
     "translation": "to overturn",
     "pattern": {
-      "spellingChange": "car_qué"
+      "spellingChange": "car_qué",
+      "stemChange": {
+        "present": "o_ue"
+      }
     },
     "examples": [
       "El camión volcó en la curva.",
@@ -8491,13 +8510,18 @@
   },
   "prohibir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to prohibit",
     "examples": [
       "Prohibieron fumar en los restaurantes.",
       "Está prohibido usar el teléfono aquí."
     ],
-    "level": "B1"
+    "level": "B1",
+    "pattern": {
+      "stemChange": {
+        "present": "i_í"
+      }
+    }
   },
   "pulir": {
     "type": "ir",
@@ -8571,13 +8595,16 @@
   },
   "zurcir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to mend/darn",
     "examples": [
       "Zurcí el agujero de mi calcetín.",
       "Mi abuela zurcía la ropa vieja."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "cer_z"
+    }
   },
   "abusar": {
     "type": "ar",
@@ -9504,13 +9531,18 @@
   },
   "encerrar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to lock up",
     "examples": [
       "Encerraron al prisionero en su celda.",
       "Se encerró en su habitación a llorar."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
   },
   "enfermar": {
     "type": "ar",
@@ -9567,13 +9599,18 @@
   },
   "enterrar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to bury",
     "examples": [
       "Enterraron el tesoro bajo un árbol.",
       "Enterraron a su abuelo en el cementerio."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
   },
   "entrenar": {
     "type": "ar",
@@ -10241,13 +10278,18 @@
   },
   "poblar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to populate",
     "examples": [
       "Poblaron la isla hace miles de años.",
       "Los colonos poblaron la región."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
   },
   "podar": {
     "type": "ar",
@@ -10762,8 +10804,22 @@
     "regular": false,
     "translation": "to tattoo",
     "overrides": {
-      "present": ["tatúo", "tatúas", "tatúa", "tatuamos", "tatuáis", "tatúan"],
-      "subjunctive_present": ["tatúe", "tatúes", "tatúe", "tatuemos", "tatuéis", "tatúen"]
+      "present": [
+        "tatúo",
+        "tatúas",
+        "tatúa",
+        "tatuamos",
+        "tatuáis",
+        "tatúan"
+      ],
+      "subjunctive_present": [
+        "tatúe",
+        "tatúes",
+        "tatúe",
+        "tatuemos",
+        "tatuéis",
+        "tatúen"
+      ]
     },
     "examples": [
       "Se tatuó una estrella en el brazo.",
@@ -11058,13 +11114,16 @@
   },
   "esparcir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to scatter",
     "examples": [
       "Esparcieron las semillas por el campo.",
       "Esparce las flores sobre la mesa."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "spellingChange": "cer_z"
+    }
   },
   "fingir": {
     "type": "ir",
@@ -11220,7 +11279,8 @@
     "translation": "to dye",
     "pattern": {
       "stemChange": {
-        "present": "e_i"
+        "present": "e_i",
+        "preterite": "e_i"
       }
     },
     "overrides": {
@@ -11411,13 +11471,18 @@
   },
   "acrecentar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to increase",
     "examples": [
       "Acrecentaron su riqueza con inversiones.",
       "La experiencia acrecienta la sabiduría."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    }
   },
   "activar": {
     "type": "ar",
@@ -11537,13 +11602,18 @@
   },
   "aislar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to isolate",
     "examples": [
       "Aislaron la zona contaminada.",
       "Se aisló del mundo durante un mes."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pattern": {
+      "stemChange": {
+        "present": "i_í"
+      }
+    }
   },
   "alabar": {
     "type": "ar",
@@ -11928,7 +11998,10 @@
     ],
     "level": "B2",
     "pattern": {
-      "spellingChange": "gar_gué"
+      "spellingChange": "gar_gué",
+      "stemChange": {
+        "present": "e_ie"
+      }
     }
   },
   "censurar": {
@@ -11966,13 +12039,18 @@
   },
   "colar": {
     "type": "ar",
-    "regular": true,
+    "regular": false,
     "translation": "to strain/sneak in",
     "examples": [
       "Se coló en la fila sin que lo vieran.",
       "Cuela el jugo para quitar las semillas."
     ],
-    "level": "C2"
+    "level": "C2",
+    "pattern": {
+      "stemChange": {
+        "present": "o_ue"
+      }
+    }
   },
   "combinar": {
     "type": "ar",
