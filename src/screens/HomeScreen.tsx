@@ -28,16 +28,14 @@ import {
   type VerbEntry,
 } from '../utils/verbSearch';
 import { isSearchDebouncePending } from '../utils/searchDebounce';
+import { getVerbOfTheDayIndex } from '../utils/verbOfTheDay';
+
+const dailyVerbEntries = [...verbEntries].sort((first, second) =>
+  first.infinitive.localeCompare(second.infinitive, 'es'),
+);
 
 function getVerbOfTheDay() {
-  // Count days in LOCAL time so the verb rolls over at local midnight,
-  // not UTC midnight.
-  const today = new Date();
-  const localDays = Math.floor(
-    (today.getTime() - today.getTimezoneOffset() * 60 * 1000) / (1000 * 60 * 60 * 24),
-  );
-  const index = localDays % verbEntries.length;
-  return verbEntries[index];
+  return dailyVerbEntries[getVerbOfTheDayIndex(dailyVerbEntries.length)];
 }
 
 interface SearchResult {
@@ -124,7 +122,7 @@ async function buildSearchResults(
 ): Promise<SearchResult[]> {
   const query = normalizeSearchText(searchValue);
   const verbResults = buildVerbSearchResults(searchValue, query);
-  if (query.length < 3) return verbResults.slice(0, MAX_SEARCH_RESULTS);
+  if (!query) return verbResults.slice(0, MAX_SEARCH_RESULTS);
 
   const conjugationResults = await searchConjugations(searchValue, shouldCancel);
   if (shouldCancel()) return verbResults.slice(0, MAX_SEARCH_RESULTS);
@@ -232,7 +230,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     // Infinitive/translation matches are cheap, so show them immediately
     // while the conjugation matrix is scanned in event-loop-sized chunks.
     setResults(buildVerbSearchResults(searchValue, query).slice(0, MAX_SEARCH_RESULTS));
-    if (query.length < 3) {
+    if (!query) {
       setConjugationSearchPending(false);
       return;
     }

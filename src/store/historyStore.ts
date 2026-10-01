@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue, parseStoredStringArray } from '../utils/storeQueue';
+import { migrateVerbList } from '../utils/verbIdentity';
 import { MAX_HISTORY_SIZE } from '../utils/constants';
 
 interface HistoryStore {
@@ -28,7 +29,15 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('verb_history');
-        set({ history: parseStoredStringArray(stored), loaded: true, loadError: false });
+        const original = parseStoredStringArray(stored);
+        const history = migrateVerbList(original);
+        if (JSON.stringify(original) !== JSON.stringify(history)) {
+          if (!(await safeSetItem('verb_history', JSON.stringify(history)))) {
+            set({ loadError: true });
+            return;
+          }
+        }
+        set({ history, loaded: true, loadError: false });
       } catch (e) {
         // Don't set loaded: true — that would let the next write persist
         // the empty default over the user's real (but currently unreadable)

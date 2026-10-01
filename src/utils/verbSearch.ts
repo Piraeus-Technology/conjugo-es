@@ -191,9 +191,12 @@ export async function searchConjugations(
   shouldCancel?: () => boolean,
 ): Promise<FuseResult<ConjMatch>[]> {
   const normalizedQuery = normalizeSearchText(query);
-  if (normalizedQuery.length < 3) return [];
+  if (!normalizedQuery) return [];
 
-  const scan = await scanConjugations(normalizedQuery, { shouldCancel });
+  const scan = await scanConjugations(normalizedQuery, {
+    shouldCancel,
+    exactOnly: normalizedQuery.length < 3,
+  });
   return scan.matches.map(({ match, score }, refIndex) => ({
     item: match,
     refIndex,
@@ -202,7 +205,7 @@ export async function searchConjugations(
 }
 
 export async function getExactConjugationMatches(normalizedQuery: string): Promise<ConjMatch[]> {
-  if (normalizedQuery.length < 3) return [];
+  if (!normalizedQuery) return [];
   const scan = await scanConjugations(normalizedQuery, { exactOnly: true });
   return scan.matches.map(({ match }) => match);
 }
@@ -221,6 +224,7 @@ export async function __searchConjugationsForTests(
   const scan = await scanConjugations(normalizeSearchText(query), {
     scheduleYield,
     batchSize,
+    exactOnly: normalizeSearchText(query).length < 3,
   });
   return {
     evaluatedFormCount: scan.evaluatedFormCount,

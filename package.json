@@ -47,6 +47,7 @@
     "@types/react": "~19.1.10",
     "eslint": "^9.39.4",
     "eslint-config-expo": "^56.0.4",
+    "istanbul-lib-coverage": "^3.2.2",
     "jest": "^30.3.0",
     "jest-expo": "~54.0.0",
     "react-test-renderer": "^19.1.0",

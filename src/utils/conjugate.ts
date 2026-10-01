@@ -178,14 +178,17 @@ const irregularGerundPatterns: Record<string, string> = {
 // ============ IRREGULAR TÚ IMPERATIVES ============
 
 // Shortened affirmative tú imperatives. Compounds of tener/poner/venir/salir
-// derive theirs from the base (mantener → mantén); decir/hacer compounds do
-// NOT shorten (bendecir → bendice), so those two only apply on exact match.
+// derive theirs from the base (mantener → mantén). Hacer compounds use
+// explicit entries (deshaz, rehaz); decir compounds keep forms like bendice.
+// Satisfacer deliberately retains satisface rather than choosing satisfaz.
 const shortImperativeTuBases: Record<string, string> = {
   tener: 'ten',
   poner: 'pon',
   venir: 'ven',
   salir: 'sal',
   hacer: 'haz',
+  deshacer: 'deshaz',
+  rehacer: 'rehaz',
   decir: 'di',
 };
 const derivableShortImperativeBases = ['tener', 'poner', 'venir', 'salir'];
@@ -206,7 +209,7 @@ function getShortImperativeTu(infinitive: string): string | null {
 
 // ============ STEM CHANGE PATTERNS ============
 
-type StemChangePattern = 'e_ie' | 'e_i' | 'i_ie' | 'o_ue' | 'o_u' | 'u_ue';
+type StemChangePattern = 'e_ie' | 'e_i' | 'i_ie' | 'o_ue' | 'o_u' | 'u_ue' | 'i_í' | 'u_ú';
 
 // Which persons get the stem change (0=yo, 1=tú, 2=él, 3=nos, 4=vos, 5=ellos)
 // Boot verbs: change in yo, tú, él, ellos (not nosotros/vosotros)
@@ -225,6 +228,8 @@ function applyStemChange(
     o_ue: ['o', 'ue'],
     o_u: ['o', 'u'],
     u_ue: ['u', 'ue'],
+    i_í: ['i', 'í'],
+    u_ú: ['u', 'ú'],
   };
   const [from, to] = changes[pattern];
   // Change the LAST occurrence of the vowel in the stem
@@ -373,6 +378,9 @@ function getGerund(infinitive: string, verb: VerbData): string {
   if (irregularGerundPatterns[infinitive]) {
     return irregularGerundPatterns[infinitive];
   }
+  if (infinitive.endsWith('decir')) {
+    return infinitive.slice(0, -5) + 'diciendo';
+  }
   // -uir verbs: i between vowels → y (distribuir → distribuyendo).
   // Not -guir, where the u is orthographic (distinguir → distinguiendo).
   if (infinitive.endsWith('uir') && !infinitive.endsWith('guir')) {
@@ -472,7 +480,8 @@ function tryOverrides(ctx: ConjugationContext): ConjugationResult[] | null {
       if (i === 0) return makeResult(pronoun, '—', true);
       // tú uses 3rd person present, never the subjunctive (averigua, not averigües)
       if (i === 1) {
-        const tuForm = presentOverrides ? presentOverrides[2] : getRegularImperativeTu(ctx);
+        const tuForm = getShortImperativeTu(ctx.infinitive)
+          ?? (presentOverrides ? presentOverrides[2] : getRegularImperativeTu(ctx));
         return makeResult(pronoun, tuForm, false);
       }
       if (i === 4) return makeResult(pronoun, getAffirmativeVosotrosForm(ctx), false); // vosotros regular
@@ -865,7 +874,7 @@ function conjugateSimple(
     currentStem = applyStemChanges(ctx, i, currentStem);
 
     // Build final form
-    const ending = tense === 'preterite' && (i === 2 || i === 5)
+    const ending = verb.type !== 'ar' && tense === 'preterite' && (i === 2 || i === 5)
       && /(?:ñ|ll)$/.test(currentStem)
       ? (i === 2 ? 'ó' : 'eron')
       : endings[i];

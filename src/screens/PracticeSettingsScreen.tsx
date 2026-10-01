@@ -195,6 +195,16 @@ export default function PracticeSettingsScreen() {
         })}
       </View>
 
+      {!canStart && (
+        <Text style={{ color: colors.textSecondary, marginTop: spacing.md }} accessibilityLiveRegion="polite">
+          {activeTenses.length === 0 && activeLevels.length === 0
+            ? 'Select at least one tense and one level to start.'
+            : activeTenses.length === 0
+              ? 'Select at least one tense to start.'
+              : 'Select at least one level to start.'}
+        </Text>
+      )}
+
       {/* Start button */}
       <TouchableOpacity
         style={[

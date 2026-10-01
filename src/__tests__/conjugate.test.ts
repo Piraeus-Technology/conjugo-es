@@ -1,3 +1,4 @@
+import verbs from '../data/verbs.json';
 import {
   conjugate,
   crossTensePersonLabels,
@@ -128,12 +129,12 @@ describe('Regular -ir verb: vivir', () => {
 
 describe('I-absorption after ñ and ll', () => {
   const gruñir: VerbData = { type: 'ir', regular: true, translation: 'to growl' };
-  const tañir: VerbData = { type: 'ir', regular: true, translation: 'to ring bells' };
+  const tañer = (verbs as Record<string, VerbData>).tañer;
   const zambullir: VerbData = { type: 'ir', regular: true, translation: 'to dive' };
 
   test.each([
     ['gruñir', gruñir, 'gruñó', 'gruñeron', 'gruñera'],
-    ['tañir', tañir, 'tañó', 'tañeron', 'tañera'],
+    ['tañer', tañer, 'tañó', 'tañeron', 'tañera'],
     ['zambullir', zambullir, 'zambulló', 'zambulleron', 'zambullera'],
   ] as const)(
     '%s absorbs the preterite and imperfect-subjunctive i',

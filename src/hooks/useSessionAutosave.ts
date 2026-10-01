@@ -1,73 +1,48 @@
 import React from 'react';
 import { AppState } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {
-  createSessionSaveCoordinator,
-  type SessionDelta,
-  type SessionSaveCoordinator,
-} from '../utils/sessionSaveCoordinator';
+import { createDatedSessionSaveCoordinator, type DatedSessionDelta } from '../utils/sessionSaveCoordinator';
+import { isCurrentPracticeSession, usePracticeResetStore } from '../store/practiceResetStore';
 
-// Auto-saves new answers when the screen blurs, the app backgrounds, or the
-// component unmounts. The delta is claimed synchronously before the async
-// save so re-entrant triggers (AppState background + nav blur firing
-// back-to-back) see zero unsaved and bail instead of double-counting; a
-// failed save rolls the claim back so the delta is retried next time.
-export function useSessionAutosave({
-  count,
-  correct,
-  bestStreak = 0,
-  save,
-}: {
-  count: number;
-  correct: number;
-  bestStreak?: number;
-  save: (delta: SessionDelta) => Promise<void>;
-}): { unsavedCount: number; unsavedCorrect: number } {
+// Capture the local day synchronously with each answer. Each day's delta uses
+// the same serialized claim/rollback coordinator for blur/background/unmount.
+export function useSessionAutosave({ save }: {
+  save: (delta: DatedSessionDelta) => Promise<void>;
+}) {
   const nav = useNavigation();
-  const countRef = React.useRef(count);
-  const correctRef = React.useRef(correct);
-  const bestStreakRef = React.useRef(bestStreak);
+  const version = React.useRef(usePracticeResetStore.getState().version).current;
   const saveRef = React.useRef(save);
-  countRef.current = count;
-  correctRef.current = correct;
-  bestStreakRef.current = bestStreak;
   saveRef.current = save;
-
-  const coordinatorRef = React.useRef<SessionSaveCoordinator | null>(null);
+  const [, refresh] = React.useReducer((value: number) => value + 1, 0);
+  const coordinatorRef = React.useRef<ReturnType<typeof createDatedSessionSaveCoordinator> | null>(null);
   if (!coordinatorRef.current) {
-    coordinatorRef.current = createSessionSaveCoordinator(
-      () => ({
-        count: countRef.current,
-        correct: correctRef.current,
-        bestStreak: bestStreakRef.current,
-      }),
-      (delta) => saveRef.current(delta),
+    coordinatorRef.current = createDatedSessionSaveCoordinator(
+      delta => saveRef.current(delta),
+      () => isCurrentPracticeSession(version),
     );
   }
-  const saveNow = React.useCallback(
-    () => coordinatorRef.current!.saveNow(),
-    [],
-  );
+  const saveNow = React.useCallback(() => coordinatorRef.current!.saveNow(), []);
+  const recordProgress = React.useCallback((correct: boolean, bestStreak = 0) => {
+    coordinatorRef.current!.recordAnswer(correct, bestStreak);
+    refresh();
+  }, [refresh]);
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'background' || state === 'inactive') {
-        saveNow().catch((e) => console.warn('AppState save failed:', e));
+        saveNow().catch((error) => console.warn('AppState save failed:', error));
       }
     });
     return () => {
       sub.remove();
-      saveNow().catch((e) => console.warn('Unmount save failed:', e));
+      saveNow().catch((error) => console.warn('Unmount save failed:', error));
     };
   }, [saveNow]);
 
-  React.useEffect(() => {
-    const unsubscribe = nav.addListener('blur', () => {
-      saveNow().catch((e) => console.warn('Blur save failed:', e));
-    });
-    return unsubscribe;
-  }, [nav, saveNow]);
+  React.useEffect(() => nav.addListener('blur', () => {
+    saveNow().catch((error) => console.warn('Blur save failed:', error));
+  }), [nav, saveNow]);
 
   const unsaved = coordinatorRef.current.getUnsaved();
-  return { unsavedCount: unsaved.count, unsavedCorrect: unsaved.correct };
+  return { unsavedCount: unsaved.count, unsavedCorrect: unsaved.correct, recordProgress };
 }

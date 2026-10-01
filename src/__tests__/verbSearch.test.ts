@@ -6,6 +6,31 @@ import {
 } from '../utils/verbSearch';
 
 describe('conjugation search', () => {
+  test.each([
+    ['sé', 'saber'], ['es', 'ser'], ['va', 'ir'], ['di', 'decir'],
+    ['he', 'haber'], ['da', 'dar'], ['ve', 'ver'], ['fue', 'ser'],
+  ])('finds the exact short form %s', async (query, infinitive) => {
+    const matches = await searchConjugations(query);
+    expect(matches).toEqual(expect.arrayContaining([
+      expect.objectContaining({ item: expect.objectContaining({ infinitive }) }),
+    ]));
+    if (query.length < 3) {
+      expect(matches.every(result => result.item.normalizedForm === normalizeSearchText(query))).toBe(true);
+      expect(matches.every(result => result.score === 0)).toBe(true);
+    }
+    const exact = await getExactConjugationMatches(normalizeSearchText(query));
+    expect(exact.some(result => result.infinitive === infinitive)).toBe(true);
+  });
+
+  test('short exact lookups yield in chunks and do not retain fuzzy matches', async () => {
+    let yields = 0;
+    const stats = await __searchConjugationsForTests('sé', async () => { yields += 1; });
+    expect(stats.evaluatedFormCount).toBeGreaterThan(50_000);
+    expect(yields).toBeGreaterThan(50);
+    expect(stats.retainedMatchCount).toBeLessThan(20);
+    expect(await searchConjugations('')).toEqual([]);
+  });
+
   test('scans in bounded chunks without retaining the full conjugation matrix', async () => {
     let chunkStarted = performance.now();
     let longestChunkMs = 0;

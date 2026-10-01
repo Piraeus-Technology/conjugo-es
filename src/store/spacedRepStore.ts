@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
 import { Tense } from '../utils/conjugate';
+import { migrateVerbWeights } from '../utils/verbIdentity';
 
 // Track how well the user knows each verb
 // weight: higher = more likely to appear (user struggles with it)
@@ -112,7 +113,14 @@ export const useSpacedRepStore = create<SpacedRepStore>((set, get) => ({
             set({ weights: {}, loaded: true, loadError: false });
             return;
           }
-          set({ weights, loaded: true, loadError: false });
+          const migrated = migrateVerbWeights(weights);
+          if (JSON.stringify(weights) !== JSON.stringify(migrated)) {
+            if (!(await safeSetItem('spaced_rep_weights', JSON.stringify(migrated)))) {
+              set({ loadError: true });
+              return;
+            }
+          }
+          set({ weights: migrated, loaded: true, loadError: false });
         } else {
           set({ loaded: true, loadError: false });
         }

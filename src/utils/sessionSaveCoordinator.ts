@@ -1,3 +1,5 @@
+import { getTodayKey } from './dayKey';
+
 export interface SessionDelta {
   count: number;
   correct: number;
@@ -66,6 +68,46 @@ export function createSessionSaveCoordinator(
         count: Math.max(0, snapshot.count - lastSavedCount),
         correct: Math.max(0, snapshot.correct - lastSavedCorrect),
       };
+    },
+  };
+}
+
+export interface DatedSessionDelta extends SessionDelta {
+  day: string;
+}
+
+export function createDatedSessionSaveCoordinator(
+  save: (delta: DatedSessionDelta) => Promise<void>,
+  isCurrent: () => boolean = () => true,
+  onError?: (error: unknown) => void,
+) {
+  const days = new Map<string, { snapshot: SessionDelta; coordinator: SessionSaveCoordinator }>();
+  return {
+    recordAnswer(correct: boolean, bestStreak = 0, day = getTodayKey()) {
+      if (!isCurrent()) return;
+      let entry = days.get(day);
+      if (!entry) {
+        const snapshot: SessionDelta = { count: 0, correct: 0, bestStreak: 0 };
+        entry = {
+          snapshot,
+          coordinator: createSessionSaveCoordinator(
+            () => snapshot,
+            delta => isCurrent() ? save({ ...delta, day }) : Promise.resolve(),
+            onError,
+          ),
+        };
+        days.set(day, entry);
+      }
+      entry.snapshot.count += 1;
+      entry.snapshot.correct += correct ? 1 : 0;
+      entry.snapshot.bestStreak = Math.max(entry.snapshot.bestStreak, bestStreak);
+    },
+    async saveNow() {
+      if (!isCurrent()) return;
+      await Promise.all([...days.values()].map(entry => entry.coordinator.saveNow()));
+    },
+    getUnsaved(day = getTodayKey()) {
+      return days.get(day)?.coordinator.getUnsaved() ?? { count: 0, correct: 0 };
     },
   };
 }

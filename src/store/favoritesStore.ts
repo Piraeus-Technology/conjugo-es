@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue, parseStoredStringArray } from '../utils/storeQueue';
+import { migrateVerbList } from '../utils/verbIdentity';
 
 interface FavoritesStore {
   favorites: string[];
@@ -27,7 +28,15 @@ export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('favorites');
-        set({ favorites: parseStoredStringArray(stored), loaded: true, loadError: false });
+        const original = parseStoredStringArray(stored);
+        const favorites = migrateVerbList(original);
+        if (JSON.stringify(original) !== JSON.stringify(favorites)) {
+          if (!(await safeSetItem('favorites', JSON.stringify(favorites)))) {
+            set({ loadError: true });
+            return;
+          }
+        }
+        set({ favorites, loaded: true, loadError: false });
       } catch (e) {
         // Don't set loaded: true — that would let the next toggle persist
         // the empty default over the user's real (but currently unreadable)
