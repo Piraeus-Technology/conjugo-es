@@ -16,6 +16,7 @@ import PracticeSettingsScreen from './src/screens/PracticeSettingsScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import FlashcardStatsScreen from './src/screens/FlashcardStatsScreen';
 import AppErrorBoundary from './src/components/AppErrorBoundary';
+import { usePracticeSettingsStore } from './src/store/practiceSettingsStore';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
 import type { SearchStackParamList } from './src/types/navigation';
@@ -121,22 +122,24 @@ function SearchStackScreen() {
 function AppContent() {
   const { isDark, loaded, loadTheme } = useThemeStore();
   const colors = useColors();
+  const { loaded: practiceLoaded, loadPracticeSettings } = usePracticeSettingsStore();
 
   useEffect(() => {
     loadTheme();
-  }, [loadTheme]);
+    loadPracticeSettings();
+  }, [loadTheme, loadPracticeSettings]);
 
   const onLayoutRootView = useCallback(async () => {
-    if (loaded) {
+    if (loaded && practiceLoaded) {
       try {
         await SplashScreen.hideAsync();
       } catch (error) {
         console.warn('Could not hide splash screen:', error);
       }
     }
-  }, [loaded]);
+  }, [loaded, practiceLoaded]);
 
-  if (!loaded) return null;
+  if (!loaded || !practiceLoaded) return null;
 
   const navTheme = {
     ...(isDark ? DarkTheme : DefaultTheme),

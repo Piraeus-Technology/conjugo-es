@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { safeRemoveItem, safeSetItem } from '../utils/safeStorage';
+import { safeSetItem } from '../utils/safeStorage';
 import { createStoreQueue } from '../utils/storeQueue';
 import { practiceTenses, type Tense, type VerbLevel } from '../utils/conjugate';
 
@@ -20,6 +20,15 @@ const allTenses: Tense[] = [...practiceTenses];
 
 const allLevels: VerbLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
+export const beginnerTenses: Tense[] = ['present', 'preterite', 'imperfect', 'future', 'imperative_affirmative'];
+export const beginnerLevels: VerbLevel[] = ['A1', 'A2'];
+
+// These keys were written by 1.2.x independently of Practice Settings. Any
+// surviving key is conservative evidence of an existing installation, even
+// if its value is empty/corrupt. A never-used installation with no persisted
+// state is indistinguishable from a new one.
+const legacyKeys = ['quiz_stats', 'sessions', 'flashcardSessions', 'spaced_rep_weights',
+  'favorites', 'verb_history', 'theme_mode', 'auto_tts', 'include_vosotros'];
 const queue = createStoreQueue();
 
 function parseStoredSubset<T>(value: unknown, valid: T[]): T[] | null {
@@ -41,12 +50,26 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
       if (get().loaded) return;
       try {
         const stored = await AsyncStorage.getItem('practiceSettings');
+        const legacyValues = stored === null
+          ? await Promise.all(legacyKeys.map(key => AsyncStorage.getItem(key)))
+          : [];
+        const fresh = stored === null && legacyValues.every(value => value === null);
+        const defaultTenses = fresh ? beginnerTenses : allTenses;
+        const defaultLevels = fresh ? beginnerLevels : allLevels;
         const parsed = stored ? JSON.parse(stored) : {};
         const tenses = parseStoredSubset(parsed?.activeTenses, allTenses);
         const levels = parseStoredSubset(parsed?.activeLevels, allLevels);
+        // Resolve and persist before App renders any screen that could write
+        // history. Persist legacy defaults too, so later clearing history
+        // cannot silently reclassify an existing learner as a beginner.
+        const snapshot = {
+          activeTenses: tenses ?? [...defaultTenses],
+          activeLevels: levels ?? [...defaultLevels],
+        };
+        if (stored === null) await safeSetItem('practiceSettings', JSON.stringify(snapshot));
         set({
-          activeTenses: tenses ?? [...allTenses],
-          activeLevels: levels ?? [...allLevels],
+          activeTenses: tenses ?? [...defaultTenses],
+          activeLevels: levels ?? [...defaultLevels],
           loaded: true,
         });
       } catch (e) {
@@ -115,14 +138,16 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
 
   resetPracticeSettings: async () => {
     return queue.enqueue(async () => {
-      const removed = await safeRemoveItem('practiceSettings');
-      if (!removed) {
+      const persisted = await safeSetItem('practiceSettings', JSON.stringify({
+        activeTenses: beginnerTenses, activeLevels: beginnerLevels,
+      }));
+      if (!persisted) {
         console.warn('Failed to reset practice settings');
         return false;
       }
       set({
-        activeTenses: [...allTenses],
-        activeLevels: [...allLevels],
+        activeTenses: [...beginnerTenses],
+        activeLevels: [...beginnerLevels],
         loaded: true,
       });
       return true;
