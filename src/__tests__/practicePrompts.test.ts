@@ -1,7 +1,9 @@
 import verbs from '../data/verbs.json';
 import { generateQuestion } from '../utils/quizQuestion';
 import {
+  createPracticeSession,
   getCorePracticeEntries,
+  MISSED_PROMPT_DELAY,
   pickWeightedPrompt,
 } from '../utils/practicePrompts';
 import type { Tense, VerbData } from '../utils/conjugate';
@@ -117,6 +119,39 @@ describe('practice prompt selection', () => {
     for (let index = 0; index < 50; index += 1) {
       const prompt = pickWeightedPrompt(pool, ['imperative_affirmative', 'imperative_negative'], flatWeight);
       expect(prompt.verb).toBe('hablar');
+    }
+  });
+
+  test('a missed prompt returns on the third draw in its own session', () => {
+    jest.spyOn(Math, 'random').mockImplementation(seededRandom(223));
+    const session = createPracticeSession();
+    const next = () => session.next(allVerbEntries, ['present', 'preterite'], flatWeight, true);
+    const missed = next();
+    session.recordMiss(missed);
+    for (let index = 1; index < MISSED_PROMPT_DELAY; index += 1) {
+      expect(next()).not.toEqual(missed);
+    }
+    expect(next()).toEqual(missed);
+  });
+
+  test('a settings change drops queued prompts that are no longer eligible', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0);
+    const session = createPracticeSession();
+    const entries = allVerbEntries.filter(([verb]) => verb === 'hablar');
+    const missed = { verb: 'hablar', tense: 'present', personIndex: 4 } as const;
+    session.recordMiss(missed);
+    session.prune(entries, ['present'], false);
+    session.next(entries, ['present'], flatWeight, true);
+    session.next(entries, ['present'], flatWeight, true);
+    expect(session.next(entries, ['present'], flatWeight, true).personIndex).toBe(0);
+  });
+
+  test('negative imperative and bare options are never mixed', () => {
+    jest.spyOn(Math, 'random').mockImplementation(seededRandom(0xB4));
+    for (let index = 0; index < 100; index += 1) {
+      const question = generateQuestion(['present', 'imperative_negative'], flatWeight, allVerbEntries);
+      expect(question.options).toHaveLength(4);
+      expect(question.options.every(option => option.startsWith('no ') === question.correctAnswer.startsWith('no '))).toBe(true);
     }
   });
 });

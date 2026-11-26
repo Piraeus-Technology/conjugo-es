@@ -1,6 +1,6 @@
 import verbs from '../data/verbs.json';
 import { conjugate, type Tense, type VerbData } from './conjugate';
-import { pickWeightedPrompt } from './practicePrompts';
+import { pickWeightedPrompt, type createPracticeSession } from './practicePrompts';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 
@@ -18,9 +18,12 @@ export function generateQuestion(
   getWeight: (verb: string, tense: Tense, personIndex: number) => number,
   filteredEntries: [string, VerbData][],
   includeVosotros: boolean = true,
+  session?: ReturnType<typeof createPracticeSession>,
 ): Question {
   const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
-  const prompt = pickWeightedPrompt(verbEntries, activeTenses, getWeight, includeVosotros);
+  const prompt = session
+    ? session.next(verbEntries, activeTenses, getWeight, includeVosotros)
+    : pickWeightedPrompt(verbEntries, activeTenses, getWeight, includeVosotros);
   const { verb, data, tense, personIndex } = prompt;
   const correctAnswer = prompt.answer;
   const results = conjugate(verb, data, tense);
@@ -47,6 +50,7 @@ export function generateQuestion(
     const form = otherResults[personIndex].form;
     if (
       form !== '—'
+      && form.startsWith('no ') === correctAnswer.startsWith('no ')
       && !otherResults[personIndex].disabled
       && form !== correctAnswer
       && !sameVerbSameTense.includes(form)
@@ -86,6 +90,7 @@ export function generateQuestion(
   while (selected.length < 3 && fallbackAttempts < 200) {
     fallbackAttempts += 1;
     const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
+    if (otherData.pronominalOnly) continue;
     const otherResults = conjugate(otherVerb, otherData, tense);
     const form = otherResults[personIndex].form;
     if (form !== correctAnswer && form !== '—' && !selected.includes(form)) {

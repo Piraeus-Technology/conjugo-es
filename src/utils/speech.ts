@@ -1,13 +1,17 @@
 import * as Speech from 'expo-speech';
 
+let speechRequest = 0;
+
 // Speech is best-effort UX: a missing es-ES voice or TTS engine failure
 // should never crash or block the caller, just warn.
 export function speak(text: string) {
+  const request = ++speechRequest;
   // stop() is async on Android; chain it so the old utterance can't clip
   // the new one when taps come quickly.
   Promise.resolve(Speech.stop())
     .catch(() => undefined)
     .then(() => {
+      if (request !== speechRequest) return;
       Speech.speak(text, {
         language: 'es-ES',
         rate: 0.85,
@@ -18,5 +22,6 @@ export function speak(text: string) {
 }
 
 export function stopSpeech() {
+  speechRequest += 1;
   Promise.resolve(Speech.stop()).catch(() => undefined);
 }

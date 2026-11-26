@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
 import { generateQuestion, type Question } from '../utils/quizQuestion';
+import { createPracticeSession } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { usePracticeResetStore } from '../store/practiceResetStore';
 import { getPersonLabel, tenseNames, VerbData, VerbLevel } from '../utils/conjugate';
@@ -58,6 +59,7 @@ function QuizScreenSession() {
   const [question, setQuestion] = useState<Question | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [streak, setStreak] = useState(0);
+  const [practiceSession] = useState(createPracticeSession);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
@@ -86,12 +88,13 @@ function QuizScreenSession() {
   useEffect(() => {
     if (!weightsLoaded || !settingsLoaded) return;
     if (activeTenses.length > 0 && filteredEntries.length > 0) {
-      setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros));
+      setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros, practiceSession));
       setSelectedAnswer(null);
     } else {
+      practiceSession.prune(filteredEntries, activeTenses, includeVosotros);
       setQuestion(null);
     }
-  }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries, includeVosotros, getWeight]);
+  }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries, includeVosotros, getWeight, practiceSession]);
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
@@ -121,6 +124,7 @@ function QuizScreenSession() {
           .catch((e) => console.warn('StoreReview failed:', e));
       }
     } else {
+      practiceSession.recordMiss(question);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setStreak(0);
       recordProgress(false);
@@ -133,7 +137,7 @@ function QuizScreenSession() {
 
   const handleNext = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros));
+    setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros, practiceSession));
     setSelectedAnswer(null);
   };
 

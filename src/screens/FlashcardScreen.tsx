@@ -14,7 +14,7 @@ import * as Haptics from 'expo-haptics';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
-import { pickWeightedPrompt } from '../utils/practicePrompts';
+import { createPracticeSession } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { usePracticeResetStore } from '../store/practiceResetStore';
 import { useNavigation } from '@react-navigation/native';
@@ -44,22 +44,7 @@ interface Card {
   answer: string;
 }
 
-function generateCard(
-  entries: [string, VerbData][],
-  tenses: Tense[],
-  getWeight: (verb: string, tense: Tense, personIndex: number) => number,
-  includeVosotros: boolean = true,
-): Card {
-  const verbEntries = entries.length > 0 ? entries : allVerbEntries;
-  const prompt = pickWeightedPrompt(verbEntries, tenses, getWeight, includeVosotros);
-  return {
-    verb: prompt.verb,
-    translation: prompt.data.translation,
-    tense: prompt.tense,
-    personIndex: prompt.personIndex,
-    answer: prompt.answer,
-  };
-}
+type CardPhase = 'front' | 'revealing' | 'back' | 'advancing';
 
 export default function FlashcardScreen() {
   const { version, resetting } = usePracticeResetStore();
@@ -71,7 +56,6 @@ function FlashcardScreenSession() {
   // Track live window size so the card adapts to rotation/split-screen
   const { width, height } = useWindowDimensions();
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
-  const autoTTS = useThemeStore((s) => s.autoTTS);
   const nav = useNavigation<any>();
   const { activeTenses, activeLevels, loaded, loadPracticeSettings } = usePracticeSettingsStore();
   const { sessions, loadSessions, saveSession } = useFlashcardSessionStore();
@@ -94,10 +78,18 @@ function FlashcardScreenSession() {
   }, [loadPracticeSettings, loadWeights, loadSessions]);
 
   const [card, setCard] = useState<Card | null>(null);
-  const [flipped, setFlipped] = useState(false);
-  const [backInteractive, setBackInteractive] = useState(false);
+  const [practiceSession] = useState(createPracticeSession);
+  const [phase, setPhase] = useState<CardPhase>('front');
+  const phaseRef = useRef<CardPhase>('front');
+  const updatePhase = React.useCallback((nextPhase: CardPhase) => {
+    phaseRef.current = nextPhase;
+    setPhase(nextPhase);
+  }, []);
+  const frontInteractive = phase === 'front';
+  const backInteractive = phase === 'back';
   const [layoutHeight, setLayoutHeight] = useState(height);
   const flipAnim = useRef(new Animated.Value(0)).current;
+  const transitionRef = useRef<Animated.CompositeAnimation | null>(null);
   const speechGateRef = useRef({
     mounted: true,
     focused: true,
@@ -105,6 +97,7 @@ function FlashcardScreenSession() {
   });
   React.useEffect(() => {
     const gate = speechGateRef.current;
+    gate.mounted = true;
     return () => {
       gate.mounted = false;
       stopSpeech();
@@ -128,61 +121,62 @@ function FlashcardScreenSession() {
     });
   }, [nav, colors]);
 
-  React.useEffect(() => {
-    if (!loaded || !weightsLoaded) return;
-    if (activeTenses.length === 0 || filteredEntries.length === 0) {
-      setCard(null);
-      return;
-    }
-    setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
-    setFlipped(false);
-    setBackInteractive(false);
-    flipAnim.setValue(0);
-  }, [loaded, weightsLoaded, activeTenses, filteredEntries, flipAnim, getWeight, includeVosotros]);
+  const advance = React.useCallback(() => {
+    const prompt = practiceSession.next(filteredEntries, activeTenses, getWeight, includeVosotros);
+    setCard({ ...prompt, translation: prompt.data.translation });
+    updatePhase('front');
+  }, [practiceSession, filteredEntries, activeTenses, getWeight, includeVosotros, updatePhase]);
 
-  const flipToFront = () => {
-    setBackInteractive(false);
-    Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
-      setCard(generateCard(filteredEntries, activeTenses, getWeight, includeVosotros));
-      setFlipped(false);
-    });
-  };
+  React.useLayoutEffect(() => {
+    if (!loaded || !weightsLoaded) return;
+    stopSpeech();
+    flipAnim.setValue(0);
+    if (activeTenses.length === 0 || filteredEntries.length === 0) {
+      practiceSession.prune(filteredEntries, activeTenses, includeVosotros);
+      setCard(null);
+      updatePhase('front');
+    } else {
+      advance();
+    }
+    return () => {
+      const transition = transitionRef.current;
+      transitionRef.current = null;
+      transition?.stop();
+    };
+  }, [loaded, weightsLoaded, activeTenses, filteredEntries, flipAnim, advance,
+    includeVosotros, practiceSession, updatePhase]);
 
   const flipToBack = () => {
+    if (!card || phaseRef.current !== 'front') return;
+    updatePhase('revealing');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setBackInteractive(false);
-    setFlipped(true);
-    Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start(({ finished }) => {
-      if (!finished || !speechGateRef.current.mounted) return;
-      setBackInteractive(true);
-      if (canRunFocusedScreenEffect(speechGateRef.current) && autoTTS && card) speak(card.answer);
+    const transition = Animated.timing(flipAnim, { toValue: 1, duration: 300, useNativeDriver: true });
+    transitionRef.current = transition;
+    transition.start(({ finished }) => {
+      if (!finished || transitionRef.current !== transition) return;
+      transitionRef.current = null;
+      updatePhase('back');
+      if (canRunFocusedScreenEffect(speechGateRef.current) && useThemeStore.getState().autoTTS) speak(card.answer);
     });
   };
 
-  const handleGotIt = () => {
-    // The flipped gate also guards re-entry: the buttons stay tappable during
-    // the 200ms flip-back animation, and a double-tap would record the card twice
-    if (!card || !flipped) return;
-    setFlipped(false);
-    setBackInteractive(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    recordProgress(true);
-    recordResult(card.verb, card.tense, card.personIndex, true).catch((e) =>
+  const grade = (correct: boolean) => {
+    if (!card || phaseRef.current !== 'back') return;
+    updatePhase('advancing');
+    stopSpeech();
+    Haptics.notificationAsync(correct ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Error);
+    if (!correct) practiceSession.recordMiss(card);
+    recordProgress(correct);
+    recordResult(card.verb, card.tense, card.personIndex, correct).catch((e) =>
       console.warn('Failed to record flashcard result:', e),
     );
-    flipToFront();
-  };
-
-  const handleMissed = () => {
-    if (!card || !flipped) return;
-    setFlipped(false);
-    setBackInteractive(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    recordProgress(false);
-    recordResult(card.verb, card.tense, card.personIndex, false).catch((e) =>
-      console.warn('Failed to record flashcard result:', e),
-    );
-    flipToFront();
+    const transition = Animated.timing(flipAnim, { toValue: 0, duration: 200, useNativeDriver: true });
+    transitionRef.current = transition;
+    transition.start(({ finished }) => {
+      if (!finished || transitionRef.current !== transition) return;
+      transitionRef.current = null;
+      advance();
+    });
   };
 
   const { unsavedCount, unsavedCorrect, recordProgress } = useSessionAutosave({
@@ -347,12 +341,12 @@ function FlashcardScreenSession() {
         {/* Card */}
         <TouchableOpacity
           style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}
-          onPress={!flipped ? flipToBack : undefined}
-          activeOpacity={flipped ? 1 : 0.95}
-          accessible={!flipped}
-          accessibilityRole={!flipped ? 'button' : undefined}
-          accessibilityLabel={!flipped ? `Tap to reveal conjugation of ${card.verb} for ${getPersonLabel(card)}` : undefined}
-          importantForAccessibility={flipped ? 'no' : 'yes'}
+          onPress={frontInteractive ? flipToBack : undefined}
+          activeOpacity={frontInteractive ? 0.95 : 1}
+          accessible={frontInteractive}
+          accessibilityRole={frontInteractive ? 'button' : undefined}
+          accessibilityLabel={frontInteractive ? `Tap to reveal conjugation of ${card.verb} for ${getPersonLabel(card)}` : undefined}
+          importantForAccessibility={frontInteractive ? 'yes' : 'no'}
         >
           {/* Front */}
           <Animated.View
@@ -360,11 +354,11 @@ function FlashcardScreenSession() {
               styles.card,
               isCompactCard && styles.cardCompact,
               isTinyCard && styles.cardTiny,
-              { backgroundColor: colors.card, opacity: frontOpacity },
+              { backgroundColor: colors.card, opacity: phase === 'advancing' ? 0 : frontOpacity },
             ]}
             pointerEvents="none"
-            accessibilityElementsHidden={flipped}
-            importantForAccessibility={flipped ? 'no-hide-descendants' : 'auto'}
+            accessibilityElementsHidden={!frontInteractive}
+            importantForAccessibility={frontInteractive ? 'auto' : 'no-hide-descendants'}
           >
             <Text style={[styles.tenseLabel, isCompactCard && styles.tenseLabelCompact, isTinyCard && styles.tenseLabelTiny, { color: colors.textMuted }]}>
               {tenseNames[card.tense]}
@@ -397,8 +391,8 @@ function FlashcardScreenSession() {
               },
             ]}
             pointerEvents={backInteractive ? 'auto' : 'none'}
-            accessibilityElementsHidden={!flipped}
-            importantForAccessibility={!flipped ? 'no-hide-descendants' : 'auto'}
+            accessibilityElementsHidden={!backInteractive}
+            importantForAccessibility={backInteractive ? 'auto' : 'no-hide-descendants'}
           >
             <Text style={[styles.tenseLabel, isCompactCard && styles.tenseLabelCompact, isTinyCard && styles.tenseLabelTiny, { color: colors.textMuted }]}>
               {tenseNames[card.tense]}
@@ -431,7 +425,7 @@ function FlashcardScreenSession() {
 
         {/* Got it / Missed buttons */}
         <View
-          style={[styles.buttonRow, { marginTop: buttonGap, opacity: flipped ? 1 : 0 }]}
+          style={[styles.buttonRow, { marginTop: buttonGap, opacity: backInteractive ? 1 : 0 }]}
           pointerEvents={backInteractive ? 'auto' : 'none'}
           accessibilityElementsHidden={!backInteractive}
           importantForAccessibility={!backInteractive ? 'no-hide-descendants' : 'auto'}
@@ -443,7 +437,8 @@ function FlashcardScreenSession() {
               isTinyHeight && styles.actionButtonTiny,
               { backgroundColor: colors.errorBg, borderColor: colors.errorBorder },
             ]}
-            onPress={handleMissed}
+            disabled={!backInteractive}
+            onPress={() => grade(false)}
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Mark card as missed"
@@ -458,7 +453,8 @@ function FlashcardScreenSession() {
               isTinyHeight && styles.actionButtonTiny,
               { backgroundColor: colors.successBg, borderColor: colors.successBorder },
             ]}
-            onPress={handleGotIt}
+            disabled={!backInteractive}
+            onPress={() => grade(true)}
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel="Mark card as got it"

@@ -10,6 +10,9 @@ import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { usePracticeResetStore } from '../store/practiceResetStore';
 import { resetAllLearningData } from '../utils/resetLearningData';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
+import { useThemeStore } from '../store/themeStore';
+import { speak } from '../utils/speech';
+import type { PromptCandidate } from '../utils/practicePrompts';
 
 const mockStorage = new Map<string, string>();
 const mockListeners: Record<string, Set<() => void>> = {};
@@ -20,6 +23,10 @@ const mockNavigation = {
     return () => { mockListeners[event].delete(listener); };
   }),
 };
+const mockFlashcardPrompt = jest.fn<PromptCandidate, []>(() => ({
+  verb: 'hablar', data: { type: 'ar', regular: true, translation: 'to speak' },
+  tense: 'present', personIndex: 0, answer: 'hablo',
+}));
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(async (key: string) => mockStorage.get(key) ?? null),
@@ -44,11 +51,13 @@ jest.mock('../utils/quizQuestion', () => ({
     correctAnswer: 'hablo', options: ['hablo', 'hablas', 'habla', 'hablan'],
   }),
 }));
-jest.mock('../utils/practicePrompts', () => ({
-  pickWeightedPrompt: () => ({
-    verb: 'hablar', data: { translation: 'to speak' }, tense: 'present', personIndex: 0, answer: 'hablo',
-  }),
-}));
+jest.mock('../utils/practicePrompts', () => {
+  const actual = jest.requireActual('../utils/practicePrompts');
+  return {
+    ...actual,
+    createPracticeSession: () => ({ ...actual.createPracticeSession(), next: mockFlashcardPrompt }),
+  };
+});
 
 beforeEach(async () => {
   await resetAllLearningData();
@@ -94,6 +103,37 @@ test('flashcard reset drops pre-reset deltas and starts the next card fresh', as
     expect(usePracticeResetStore.getState().resetting).toBe(false);
   } finally {
     timing.mockRestore();
+  }
+});
+
+test('taps during flashcard flip-back cannot reveal the next answer', async () => {
+  jest.useFakeTimers();
+  const nativeTiming = Animated.timing;
+  const timing = jest.spyOn(Animated, 'timing').mockImplementation((value, config) =>
+    nativeTiming(value, { ...config, useNativeDriver: false }),
+  );
+  mockFlashcardPrompt.mockImplementationOnce(() => ({
+    verb: 'comer', data: { type: 'er', regular: true, translation: 'to eat' },
+    tense: 'present', personIndex: 0, answer: 'como',
+  }));
+  useThemeStore.setState({ autoTTS: true });
+  try {
+    const screen = render(<FlashcardScreen />);
+    const firstFront = await screen.findByLabelText('Tap to reveal conjugation of comer for yo');
+    await act(async () => { fireEvent.press(firstFront); });
+    expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
+    await act(async () => { jest.advanceTimersByTime(350); });
+    await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
+    await act(async () => { fireEvent.press(firstFront); });
+    expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
+    await act(async () => { jest.advanceTimersByTime(350); });
+    expect(screen.getByLabelText('Tap to reveal conjugation of hablar for yo')).toBeTruthy();
+    expect(screen.queryByLabelText('Play pronunciation of hablo')).toBeNull();
+    expect(speak).not.toHaveBeenCalledWith('hablo');
+    screen.unmount();
+  } finally {
+    timing.mockRestore();
+    jest.useRealTimers();
   }
 });
 

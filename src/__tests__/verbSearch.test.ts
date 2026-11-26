@@ -31,6 +31,19 @@ describe('conjugation search', () => {
     expect(await searchConjugations('')).toEqual([]);
   });
 
+  test.each([
+    ['habló', 'hablar', 'preterite', 'habló'],
+    ['no hables', 'hablar', 'imperative_negative', 'no hables'],
+    ['hablo', 'hablar', 'present', 'hablo'],
+    ['comió', 'comer', 'preterite', 'comió'],
+    ['vivía', 'vivir', 'imperfect', 'vivía'],
+    ['comio', 'comer', 'preterite', 'comió'],
+  ])('ranks %s first for %s with the table spelling', async (query, infinitive, tense, form) => {
+    const matches = await searchConjugations(query);
+    expect(matches.find(result => result.item.infinitive === infinitive)?.item)
+      .toMatchObject({ tense, form });
+  });
+
   test('scans in bounded chunks without retaining the full conjugation matrix', async () => {
     let chunkStarted = performance.now();
     let longestChunkMs = 0;

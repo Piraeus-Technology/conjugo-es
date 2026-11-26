@@ -13,6 +13,46 @@ export interface PromptCandidate {
   answer: string;
 }
 
+type PromptIdentity = Pick<PromptCandidate, 'verb' | 'tense' | 'personIndex'>;
+type WeightForPrompt = (verb: string, tense: Tense, personIndex: number) => number;
+type SkipPrompt = (verb: string, tense: Tense, personIndex: number) => boolean;
+type PracticeEntries = [string, VerbData][];
+
+export const MISSED_PROMPT_DELAY = 3;
+
+export function createPracticeSession() {
+  let promptCount = 0;
+  let missed: { prompt: PromptIdentity; due: number }[] = [];
+
+  function prune(entries: PracticeEntries, tenses: Tense[], includeVosotros: boolean) {
+    missed = missed.filter(({ prompt: { verb, tense, personIndex } }) => {
+      if (!tenses.includes(tense) || (!includeVosotros && personIndex === 4)) return false;
+      const entry = entries.find(([infinitive]) => infinitive === verb);
+      return entry && getPracticeAnswer(verb, entry[1], tense, personIndex);
+    });
+  }
+
+  return {
+    prune,
+    recordMiss({ verb, tense, personIndex }: PromptIdentity) {
+      missed.push({ prompt: { verb, tense, personIndex }, due: promptCount + MISSED_PROMPT_DELAY });
+    },
+    next(entries: PracticeEntries, tenses: Tense[], getWeight: WeightForPrompt, includeVosotros: boolean) {
+      prune(entries, tenses, includeVosotros);
+      promptCount += 1;
+      if (missed[0]?.due <= promptCount) {
+        const { prompt } = missed.shift()!;
+        const data = entries.find(([verb]) => verb === prompt.verb)![1];
+        const answer = getPracticeAnswer(prompt.verb, data, prompt.tense, prompt.personIndex)!;
+        return { ...prompt, data, answer };
+      }
+      const skip: SkipPrompt | undefined = missed.length === 0 ? undefined : (verb, tense, personIndex) =>
+        missed.some(({ prompt }) => prompt.verb === verb && prompt.tense === tense && prompt.personIndex === personIndex);
+      return pickWeightedPrompt(entries, tenses, getWeight, includeVosotros, skip);
+    },
+  };
+}
+
 const corePracticeVerbSet = new Set<string>(CORE_PRACTICE_VERBS);
 
 export function getPracticeAnswer(
@@ -49,8 +89,9 @@ export function getCorePracticeEntries(
 export function pickWeightedPrompt(
   entries: [string, VerbData][],
   activeTenses: Tense[],
-  getWeight: (verb: string, tense: Tense, personIndex: number) => number,
+  getWeight: WeightForPrompt,
   includeVosotros: boolean = true,
+  skip?: SkipPrompt,
 ): PromptCandidate {
   const verbEntries = entries.filter(([, data]) => !data.pronominalOnly);
   const coreEntries = getCorePracticeEntries(verbEntries);
@@ -78,7 +119,8 @@ export function pickWeightedPrompt(
     const results = conjugate(verb, data, tense);
     const validPersons = results
       .map((r, i) => ({ index: i, ...r }))
-      .filter(r => !r.disabled && r.form !== '—' && (includeVosotros || r.index !== 4));
+      .filter(r => !r.disabled && r.form !== '—' && (includeVosotros || r.index !== 4)
+        && !skip?.(verb, tense, r.index));
 
     if (validPersons.length === 0) continue;
 
@@ -99,13 +141,14 @@ export function pickWeightedPrompt(
       for (const tense of activeTenses) {
         const results = conjugate(verb, data, tense);
         const idx = results.findIndex(
-          (r, i) => !r.disabled && r.form !== '—' && (includeVosotros || i !== 4),
+          (r, i) => !r.disabled && r.form !== '—' && (includeVosotros || i !== 4) && !skip?.(verb, tense, i),
         );
         if (idx !== -1) {
           return { verb, data, tense, personIndex: idx, answer: results[idx].form };
         }
       }
     }
+    if (skip) return pickWeightedPrompt(entries, activeTenses, getWeight, includeVosotros);
     throw new Error('No conjugable prompts for the current practice settings');
   }
 

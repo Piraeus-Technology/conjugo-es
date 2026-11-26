@@ -478,12 +478,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
         ListEmptyComponent={
           search.trim() ? (
-            searchPending ? null : (
             <View style={styles.emptyContainer}>
-              <Ionicons name="search-outline" size={48} color={colors.border} />
-              <Text style={[styles.emptyText, { color: colors.textMuted }]}>No verbs found</Text>
+              {!searchPending && <Ionicons name="search-outline" size={48} color={colors.border} />}
+              <Text accessibilityLiveRegion="polite" style={[styles.emptyText, { color: colors.textMuted }]}>
+                {searchPending ? 'Searching…' : 'No verbs found'}
+              </Text>
             </View>
-            )
           ) : sections.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Image source={require('../../assets/logo.png')} style={styles.heroLogo} />

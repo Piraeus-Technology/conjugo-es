@@ -19,11 +19,16 @@ export interface ConjMatch {
 }
 
 export function normalizeSearchText(value: string): string {
-  return value
-    .toLowerCase()
+  return normalizeWrittenForm(value)
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/^no\s+/, '')
+    .replace(/^no\s+/, '');
+}
+
+function normalizeWrittenForm(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFC')
     .replace(/[^\p{L}\p{N}\s]/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -66,6 +71,7 @@ interface ConjugationScanOptions {
 interface RankedConjugationMatch {
   match: ConjMatch;
   score: number;
+  writtenMatch: boolean;
 }
 
 interface ConjugationScanResult {
@@ -119,7 +125,7 @@ function editDistanceScore(
 }
 
 async function scanConjugations(
-  normalizedQuery: string,
+  query: string,
   options: ConjugationScanOptions = {},
 ): Promise<ConjugationScanResult> {
   const {
@@ -128,6 +134,8 @@ async function scanConjugations(
     shouldCancel = () => false,
     exactOnly = false,
   } = options;
+  const normalizedQuery = normalizeSearchText(query);
+  const writtenQuery = normalizeWrittenForm(query);
   const ranked: RankedConjugationMatch[] = [];
   const previous = new Array<number>(normalizedQuery.length + 1);
   const current = new Array<number>(normalizedQuery.length + 1);
@@ -143,7 +151,7 @@ async function scanConjugations(
       for (const result of results) {
         if (result.disabled || result.form === '—') continue;
 
-        const form = result.form.replace(/^no\s+/, '');
+        const form = result.form;
         const normalizedForm = normalizeSearchText(form);
         evaluatedFormCount += 1;
         const score = exactOnly
@@ -153,6 +161,7 @@ async function scanConjugations(
 
         ranked.push({
           score,
+          writtenMatch: score === 0 && normalizeWrittenForm(form) === writtenQuery,
           match: {
             infinitive: entry.infinitive,
             translation: entry.translation,
@@ -173,6 +182,7 @@ async function scanConjugations(
 
   ranked.sort((first, second) =>
     first.score - second.score ||
+    Number(second.writtenMatch) - Number(first.writtenMatch) ||
     first.match.infinitive.localeCompare(second.match.infinitive),
   );
   return {
@@ -193,7 +203,7 @@ export async function searchConjugations(
   const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) return [];
 
-  const scan = await scanConjugations(normalizedQuery, {
+  const scan = await scanConjugations(query, {
     shouldCancel,
     exactOnly: normalizedQuery.length < 3,
   });
@@ -221,7 +231,7 @@ export async function __searchConjugationsForTests(
   scheduleYield: () => Promise<void>,
   batchSize = CONJUGATION_BUILD_BATCH_SIZE,
 ): Promise<ConjugationSearchStats> {
-  const scan = await scanConjugations(normalizeSearchText(query), {
+  const scan = await scanConjugations(query, {
     scheduleYield,
     batchSize,
     exactOnly: normalizeSearchText(query).length < 3,
