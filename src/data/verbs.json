@@ -1187,7 +1187,7 @@
       "Atravesamos el puente con cuidado.",
       "El río atraviesa toda la ciudad."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "gobernar": {
     "type": "ar",
@@ -1479,7 +1479,7 @@
       "La enfermera atiende a los pacientes con cariño.",
       "¿Quién me atiende, por favor?"
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "tender": {
     "type": "er",
@@ -1840,7 +1840,7 @@
       "Prueba este pastel, está delicioso.",
       "Probaron un nuevo método de enseñanza."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "soñar": {
     "type": "ar",
@@ -1915,7 +1915,7 @@
       "Apuesto a que mañana hace sol.",
       "Apostaron todo su dinero en ese proyecto."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "aprobar": {
     "type": "ar",
@@ -2020,7 +2020,7 @@
       "Sonó el teléfono a las tres de la mañana.",
       "Esa canción me suena, pero no recuerdo el nombre."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "forzar": {
     "type": "ar",
@@ -2084,7 +2084,7 @@
       "Almorzamos juntos en la cafetería del trabajo.",
       "¿A qué hora almuerzas normalmente?"
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "colgar": {
     "type": "ar",
@@ -2100,7 +2100,7 @@
       "Cuelga el abrigo en el perchero.",
       "Colgaron las luces de Navidad en el balcón."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "rogar": {
     "type": "ar",
@@ -2514,7 +2514,7 @@
       "La empresa despidió a veinte empleados.",
       "Se despide de sus amigos en el aeropuerto."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "impedir": {
     "type": "ir",
@@ -2799,7 +2799,7 @@
       "De repente apareció un gato en la ventana.",
       "Aparecen nuevas tiendas cada mes."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "desaparecer": {
     "type": "er",
@@ -2812,7 +2812,7 @@
       "El gato desapareció durante tres días.",
       "Las nubes desaparecen con el viento."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "establecer": {
     "type": "er",
@@ -2864,7 +2864,7 @@
       "Permanecimos en silencio durante la ceremonia.",
       "Permanece tranquilo, todo saldrá bien."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "reconocer": {
     "type": "er",
@@ -2956,7 +2956,7 @@
       "Amaneció nublado en la montaña.",
       "Amanece a las seis en verano."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "anochecer": {
     "type": "er",
@@ -3382,7 +3382,7 @@
       "Huyeron del incendio a tiempo.",
       "No huyas de tus problemas."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "contribuir": {
     "type": "ir",
@@ -3655,7 +3655,7 @@
       "Practico español todos los días.",
       "Practicábamos natación en el verano."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "indicar": {
     "type": "ar",
@@ -3941,7 +3941,7 @@
       "Pescamos truchas en el lago.",
       "Mi abuelo pescaba todos los domingos."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "picar": {
     "type": "ar",
@@ -4110,7 +4110,7 @@
       "El ejército atacó al amanecer.",
       "Los mosquitos me atacan por la noche."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "rascar": {
     "type": "ar",
@@ -4191,7 +4191,7 @@
       "Entregué el informe a tiempo.",
       "Entregan los paquetes a domicilio."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "apagar": {
     "type": "ar",
@@ -4217,7 +4217,7 @@
       "Cargué las maletas en el coche.",
       "Necesito cargar mi teléfono."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "castigar": {
     "type": "ar",
@@ -4529,7 +4529,7 @@
       "Lanzó la pelota con toda su fuerza.",
       "La empresa lanza un nuevo producto mañana."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "organizar": {
     "type": "ar",
@@ -4607,7 +4607,7 @@
       "Reza todas las noches antes de dormir.",
       "Rezamos por la paz del mundo."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "gozar": {
     "type": "ar",
@@ -4854,7 +4854,7 @@
       "Localizamos el problema en el sistema.",
       "No logro localizar mis llaves."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "memorizar": {
     "type": "ar",
@@ -5075,7 +5075,7 @@
       "Cazaron ciervos en el bosque.",
       "El gato caza ratones por instinto."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "rechazar": {
     "type": "ar",
@@ -5114,7 +5114,7 @@
       "El avión aterrizó sin problemas.",
       "Aterrizamos en Madrid a las tres."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "rebotar": {
     "type": "ar",
@@ -5380,7 +5380,7 @@
       "Viajamos a Japón el año pasado.",
       "Me encanta viajar en tren."
     ],
-    "level": "B2"
+    "level": "A1"
   },
   "descansar": {
     "type": "ar",
@@ -5440,7 +5440,7 @@
       "Mandé un paquete a mi familia.",
       "¿Me mandas la dirección por mensaje?"
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "acabar": {
     "type": "ar",
@@ -5590,7 +5590,7 @@
       "Regresé a casa a medianoche.",
       "¿Cuándo regresas de vacaciones?"
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "aceptar": {
     "type": "ar",
@@ -5620,7 +5620,7 @@
       "Borré el mensaje por accidente.",
       "Borra la pizarra antes de empezar."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "celebrar": {
     "type": "ar",
@@ -5680,7 +5680,7 @@
       "Guarda tus juguetes en la caja.",
       "Guardé el secreto durante años."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "lograr": {
     "type": "ar",
@@ -5740,7 +5740,7 @@
       "Trato de llegar puntual siempre.",
       "Lo trataron con mucho respeto."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "visitar": {
     "type": "ar",
@@ -5760,7 +5760,7 @@
       "Abandonó su trabajo para viajar.",
       "No abandones tus sueños."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "acompañar": {
     "type": "ar",
@@ -5840,7 +5840,7 @@
       "Alimenta al gato dos veces al día.",
       "Se alimentaron de frutas y verduras."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "amar": {
     "type": "ar",
@@ -5850,7 +5850,7 @@
       "Ama a su familia con todo el corazón.",
       "La amé desde el primer momento."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "aportar": {
     "type": "ar",
@@ -5930,7 +5930,7 @@
       "Cancelaron el vuelo por la tormenta.",
       "Tuve que cancelar mi cita."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "capturar": {
     "type": "ar",
@@ -5950,7 +5950,7 @@
       "El accidente causó mucho tráfico.",
       "Sus palabras causaron una gran polémica."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "cenar": {
     "type": "ar",
@@ -5960,7 +5960,7 @@
       "Cenamos juntos todos los viernes.",
       "Cené una ensalada ligera."
     ],
-    "level": "C2"
+    "level": "A1"
   },
   "charlar": {
     "type": "ar",
@@ -6058,7 +6058,7 @@
       "Confío en ti completamente.",
       "Confiaron en el plan del arquitecto."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "confirmar": {
     "type": "ar",
@@ -6108,7 +6108,7 @@
       "Contrataron a diez empleados nuevos.",
       "Quiero contratar un servicio de limpieza."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "controlar": {
     "type": "ar",
@@ -6148,7 +6148,7 @@
       "Cuido a mis sobrinos los fines de semana.",
       "Cuida mucho su salud."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "cultivar": {
     "type": "ar",
@@ -6168,7 +6168,7 @@
       "El médico curó la herida.",
       "Se curó con reposo y paciencia."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "dañar": {
     "type": "ar",
@@ -6248,7 +6248,7 @@
       "Desayuno a las siete de la mañana.",
       "Desayunamos tostadas con mermelada."
     ],
-    "level": "C2"
+    "level": "A1"
   },
   "descargar": {
     "type": "ar",
@@ -6281,7 +6281,7 @@
       "Disfrutamos de un día soleado.",
       "Disfruta cada momento de tu vida."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "diseñar": {
     "type": "ar",
@@ -6301,7 +6301,7 @@
       "El cazador disparó al aire.",
       "Dispararon fuegos artificiales a medianoche."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "dominar": {
     "type": "ar",
@@ -6341,7 +6341,7 @@
       "Echa un poco de sal a la comida.",
       "Lo echaron del trabajo sin aviso."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "eliminar": {
     "type": "ar",
@@ -6351,7 +6351,7 @@
       "Eliminaron las barreras comerciales.",
       "Elimina los archivos que no necesitas."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "emocionar": {
     "type": "ar",
@@ -6424,7 +6424,7 @@
       "No me engañes con mentiras.",
       "Lo engañaron con un producto falso."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "enojar": {
     "type": "ar",
@@ -6482,7 +6482,7 @@
       "Escapó de la prisión por un túnel.",
       "Quiero escapar de la rutina."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "estacionar": {
     "type": "ar",
@@ -6640,7 +6640,7 @@
       "Firmé el contrato esta mañana.",
       "Firma aquí abajo, por favor."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "flotar": {
     "type": "ar",
@@ -6670,7 +6670,7 @@
       "No fumes dentro del edificio.",
       "Dejó de fumar hace tres años."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "generar": {
     "type": "ar",
@@ -6690,7 +6690,7 @@
       "Gira a la derecha en la esquina.",
       "La Tierra gira alrededor del Sol."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "golpear": {
     "type": "ar",
@@ -6700,7 +6700,7 @@
       "Golpeó la mesa con el puño.",
       "Alguien golpea la puerta."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "grabar": {
     "type": "ar",
@@ -6710,7 +6710,7 @@
       "Grabamos un video para el proyecto.",
       "Grabó un disco de canciones propias."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "habitar": {
     "type": "ar",
@@ -6860,7 +6860,7 @@
       "Liberaron a los prisioneros.",
       "Libera tu mente de pensamientos negativos."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "limitar": {
     "type": "ar",
@@ -6880,7 +6880,7 @@
       "Luchamos por nuestros derechos.",
       "Luchó contra la enfermedad con valentía."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "manejar": {
     "type": "ar",
@@ -6900,7 +6900,7 @@
       "La sequía mató las cosechas.",
       "Me mata la curiosidad."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "mezclar": {
     "type": "ar",
@@ -6920,7 +6920,7 @@
       "¿Te molesta si abro la ventana?",
       "Me molestó su actitud."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "montar": {
     "type": "ar",
@@ -6930,7 +6930,7 @@
       "Montamos en bicicleta por el pueblo.",
       "Montaron un negocio juntos."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "mudar": {
     "type": "ar",
@@ -6990,7 +6990,7 @@
       "Para el coche aquí un momento.",
       "No paró de llover en toda la noche."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "patinar": {
     "type": "ar",
@@ -7010,7 +7010,7 @@
       "Los hermanos pelean por todo.",
       "Pelearon por el último trozo de pastel."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "perdonar": {
     "type": "ar",
@@ -7020,7 +7020,7 @@
       "Perdóname por llegar tarde.",
       "Lo perdonó después de mucho tiempo."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "planchar": {
     "type": "ar",
@@ -7060,7 +7060,7 @@
       "Te presento a mi hermano.",
       "Presentaron el proyecto ante el comité."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "prestar": {
     "type": "ar",
@@ -7201,7 +7201,7 @@
       "Respira profundo y relájate.",
       "Respiré aire fresco en la montaña."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "retirar": {
     "type": "ar",
@@ -7221,7 +7221,7 @@
       "Le robaron la cartera en el metro.",
       "Robaron varias obras del museo."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "saludar": {
     "type": "ar",
@@ -7231,7 +7231,7 @@
       "Saluda a tu tía cuando llegue.",
       "Lo saludé con un abrazo."
     ],
-    "level": "B2"
+    "level": "A1"
   },
   "salvar": {
     "type": "ar",
@@ -7241,7 +7241,7 @@
       "Los bomberos salvaron al gato del árbol.",
       "Se salvó por muy poco."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "separar": {
     "type": "ar",
@@ -7261,7 +7261,7 @@
       "No soporto el calor del verano.",
       "Soportó la presión con mucha calma."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "soplar": {
     "type": "ar",
@@ -7464,7 +7464,7 @@
       "Temo que no lleguemos a tiempo.",
       "Temían a los truenos de niños."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "toser": {
     "type": "er",
@@ -7524,7 +7524,7 @@
       "Accedí a su petición.",
       "No puedo acceder a mi cuenta."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "barrer": {
     "type": "er",
@@ -7554,7 +7554,7 @@
       "Cogí el tren de las ocho.",
       "Coge un abrigo, hace frío."
     ],
-    "level": "C2",
+    "level": "A2",
     "pattern": {
       "spellingChange": "ger_j"
     }
@@ -7622,7 +7622,7 @@
       "Escondió el regalo en el armario.",
       "Se esconden detrás del sofá."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "exceder": {
     "type": "er",
@@ -7758,7 +7758,7 @@
       "¿Qué sucedió anoche?",
       "Suceden cosas extrañas en esa casa."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "suspender": {
     "type": "er",
@@ -7944,7 +7944,7 @@
       "Me convenció con sus argumentos.",
       "No logro convencerlo de cambiar de opinión."
     ],
-    "level": "C1",
+    "level": "B1",
     "pattern": {
       "spellingChange": "cer_z"
     }
@@ -7970,7 +7970,7 @@
       "Vencimos al equipo contrario.",
       "Venció su miedo a las alturas."
     ],
-    "level": "B2",
+    "level": "B1",
     "pattern": {
       "spellingChange": "cer_z"
     }
@@ -8073,7 +8073,7 @@
       "Discutimos el problema en la reunión.",
       "No discutas con tu hermano."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "existir": {
     "type": "ir",
@@ -8093,7 +8093,7 @@
       "¿Me permites pasar?",
       "No permitieron la entrada sin invitación."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "sufrir": {
     "type": "ir",
@@ -8123,7 +8123,7 @@
       "Asistí a una conferencia muy interesante.",
       "Asiste a clase todos los días."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "cumplir": {
     "type": "ir",
@@ -8173,7 +8173,7 @@
       "Admitió su error ante todos.",
       "No admiten mascotas en este hotel."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "partir": {
     "type": "ir",
@@ -8223,7 +8223,7 @@
       "No interrumpas cuando alguien habla.",
       "Interrumpieron la transmisión por una emergencia."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "sacudir": {
     "type": "ir",
@@ -8577,7 +8577,7 @@
       "Sobrevivieron al naufragio.",
       "Sobrevive con un sueldo muy bajo."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "suscribir": {
     "type": "ir",
@@ -8640,7 +8640,7 @@
       "Aclaré mis dudas con el profesor.",
       "El cielo se aclaró después de la lluvia."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "aconsejar": {
     "type": "ar",
@@ -8680,7 +8680,7 @@
       "Adivina qué tengo en la mano.",
       "Adivinó la respuesta correcta."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "agitar": {
     "type": "ar",
@@ -8860,7 +8860,7 @@
       "Aprovecha el buen clima para salir.",
       "Aprovechamos la oferta y compramos dos."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "arañar": {
     "type": "ar",
@@ -8970,7 +8970,7 @@
       "Atraparon al ladrón en la esquina.",
       "Atrapa la pelota con las dos manos."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "bajar": {
     "type": "ar",
@@ -8990,7 +8990,7 @@
       "Besó a su hija en la frente.",
       "Se besaron bajo la lluvia."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "bloquear": {
     "type": "ar",
@@ -9083,7 +9083,7 @@
       "Se casaron en una ceremonia íntima.",
       "Mi hermana se casa el próximo mes."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "circular": {
     "type": "ar",
@@ -9626,7 +9626,7 @@
       "Entreno tres veces por semana.",
       "Entrenaron durante meses para la competencia."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "enumerar": {
     "type": "ar",
@@ -9754,7 +9754,7 @@
       "El globo explotó con un gran ruido.",
       "Explotan los recursos naturales sin control."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "extrañar": {
     "type": "ar",
@@ -10087,7 +10087,7 @@
       "Mencionó tu nombre en la reunión.",
       "No menciones ese tema delante de ella."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "mimar": {
     "type": "ar",
@@ -10434,7 +10434,7 @@
       "Quemé la carta después de leerla.",
       "Se quemó la mano con la estufa."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "rajar": {
     "type": "ar",
@@ -10514,7 +10514,7 @@
       "Recuperé mi billetera perdida.",
       "Se recuperó de la operación en un mes."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "refugiar": {
     "type": "ar",
@@ -10707,7 +10707,7 @@
       "Revisa tu tarea antes de entregarla.",
       "Revisaron el motor del coche."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "ridiculizar": {
     "type": "ar",
@@ -10750,7 +10750,7 @@
       "Solucionamos el problema rápidamente.",
       "Hay que solucionar esto antes del viernes."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "sospechar": {
     "type": "ar",
@@ -11139,7 +11139,7 @@
       "Fingió estar enfermo para no ir al trabajo.",
       "No finjas, sé que estás triste."
     ],
-    "level": "C1",
+    "level": "B2",
     "pattern": {
       "spellingChange": "gir_j"
     }
@@ -11605,7 +11605,7 @@
       "No aguanto más este calor.",
       "Aguantó el dolor sin quejarse."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "aislar": {
     "type": "ar",
@@ -11920,7 +11920,7 @@
       "Averigüé su número de teléfono.",
       "Averigua qué pasó en la reunión."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "avisar": {
     "type": "ar",
@@ -11930,7 +11930,7 @@
       "Avísame cuando llegues.",
       "Le avisaron del cambio de planes."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "brindar": {
     "type": "ar",
