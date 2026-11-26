@@ -5,10 +5,13 @@ import { createStoreQueue } from '../utils/storeQueue';
 
 interface ThemeStore {
   isDark: boolean;
+  deviceIsDark: boolean;
+  themeOverride: boolean | null;
   autoTTS: boolean;
   includeVosotros: boolean;
   loaded: boolean;
   loadTheme: () => Promise<void>;
+  setDeviceTheme: (isDark: boolean) => void;
   toggleTheme: () => Promise<void>;
   toggleAutoTTS: () => Promise<void>;
   toggleVosotros: () => Promise<void>;
@@ -19,6 +22,8 @@ const queue = createStoreQueue();
 
 export const useThemeStore = create<ThemeStore>((set, get) => ({
   isDark: false,
+  deviceIsDark: false,
+  themeOverride: null,
   autoTTS: false,
   includeVosotros: true,
   loaded: false,
@@ -31,8 +36,10 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
         const stored = await AsyncStorage.getItem('theme_mode');
         const tts = await AsyncStorage.getItem('auto_tts');
         const vosotros = await AsyncStorage.getItem('include_vosotros');
+        const themeOverride = stored === 'dark' ? true : stored === 'light' ? false : null;
         set({
-          isDark: stored === 'dark',
+          isDark: themeOverride ?? get().deviceIsDark,
+          themeOverride,
           autoTTS: tts === 'true',
           includeVosotros: vosotros !== 'false',
           loaded: true,
@@ -47,10 +54,15 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     });
   },
 
+  setDeviceTheme: (deviceIsDark) => set(state => ({
+    deviceIsDark,
+    isDark: state.themeOverride ?? deviceIsDark,
+  })),
+
   toggleTheme: async () => {
     return queue.enqueue(async () => {
       const newIsDark = !get().isDark;
-      set({ isDark: newIsDark });
+      set({ isDark: newIsDark, themeOverride: newIsDark });
       if (!(await safeSetItem('theme_mode', newIsDark ? 'dark' : 'light'))) {
         console.warn('Theme preference not persisted; will revert on next launch');
       }
@@ -89,7 +101,8 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
         return false;
       }
       set({
-        isDark: false,
+        isDark: get().deviceIsDark,
+        themeOverride: null,
         autoTTS: false,
         includeVosotros: true,
         loaded: true,
@@ -101,5 +114,6 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
 
 export function __resetThemeStoreForTests() {
   queue.reset();
-  useThemeStore.setState({ isDark: false, autoTTS: false, includeVosotros: true, loaded: false });
+  useThemeStore.setState({ isDark: false, deviceIsDark: false, themeOverride: null,
+    autoTTS: false, includeVosotros: true, loaded: false });
 }

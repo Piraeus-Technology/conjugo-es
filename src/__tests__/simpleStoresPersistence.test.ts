@@ -251,6 +251,25 @@ describe('simple store persistence', () => {
   });
 
   describe('theme', () => {
+    test('follows changes to the device theme until a choice is stored, then follows again after reset', async () => {
+      const { setDeviceTheme, loadTheme, toggleTheme, resetPreferences } = useThemeStore.getState();
+      setDeviceTheme(true);
+      await loadTheme();
+      expect(useThemeStore.getState().isDark).toBe(true);
+      setDeviceTheme(false);
+      expect(useThemeStore.getState().isDark).toBe(false);
+      await toggleTheme();
+      setDeviceTheme(false);
+      expect(useThemeStore.getState().isDark).toBe(true);
+      __resetThemeStoreForTests();
+      await loadTheme();
+      expect(useThemeStore.getState().isDark).toBe(true);
+      await resetPreferences();
+      expect(useThemeStore.getState().isDark).toBe(false);
+      setDeviceTheme(true);
+      expect(useThemeStore.getState().isDark).toBe(true);
+    });
+
     test('load failure falls back to defaults but still loads (App gates render on loaded)', async () => {
       jest.mocked(AsyncStorage.getItem).mockImplementation(() =>
         Promise.reject(new Error('disk error')),

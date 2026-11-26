@@ -321,10 +321,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     );
   };
 
-  const handleSwipeDelete = (item: SearchResult) => {
+  const removeSavedVerb = (item: SearchResult) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     if (item.matchType === 'favorite') {
-      toggleFavorite(item.infinitive);
+      if (useFavoritesStore.getState().isFavorite(item.infinitive)) toggleFavorite(item.infinitive);
     } else if (item.matchType === 'history') {
       removeFromHistory(item.infinitive);
     }
@@ -341,6 +341,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         accessibilityRole="button"
         accessibilityLabel={`${item.infinitive}, ${item.translation}`}
         accessibilityHint={item.matchDetail || 'Opens conjugation table'}
+        accessibilityActions={isSwipeable ? [{
+          name: 'remove',
+          label: item.matchType === 'favorite' ? 'Remove from Favorites' : 'Remove from Recent',
+        }] : undefined}
+        onAccessibilityAction={isSwipeable ? ({ nativeEvent }) => {
+          if (nativeEvent.actionName === 'remove') removeSavedVerb(item);
+        } : undefined}
       >
         <View style={styles.verbInfo}>
           <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
@@ -379,7 +386,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return (
       <Swipeable
         renderRightActions={renderDeleteAction}
-        onSwipeableOpen={() => handleSwipeDelete(item)}
+        onSwipeableOpen={() => removeSavedVerb(item)}
         overshootRight={false}
       >
         {row}

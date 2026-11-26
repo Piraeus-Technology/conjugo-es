@@ -67,6 +67,7 @@ export default function PracticeStatsView({
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
   const insights = React.useMemo(() => buildPracticeInsights(weights), [weights]);
+  const hasWeakAreas = weightsLoaded && insights.weakForms.length > 0;
 
   // Map sessions by day (each session is already one day)
   const dailyMap = React.useMemo(() => {
@@ -377,7 +378,7 @@ export default function PracticeStatsView({
         </View>
       </View>
 
-      {weightsLoaded && insights.weakForms.length > 0 && (
+      {hasWeakAreas && (
         <>
           <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Weak Areas</Text>
 
@@ -397,7 +398,7 @@ export default function PracticeStatsView({
               <View key={item.label} style={styles.insightRow}>
                 <Text style={[styles.insightLabel, { color: colors.textPrimary }]}>{item.label}</Text>
                 <Text style={[styles.insightMeta, { color: colors.textMuted }]}>
-                  {item.count} forms · {item.weight.toFixed(1)}x
+                  {item.count} {item.count === 1 ? 'form' : 'forms'} · {item.weight.toFixed(1)}x
                 </Text>
               </View>
             ))}
@@ -409,7 +410,7 @@ export default function PracticeStatsView({
               <View key={item.label} style={styles.insightRow}>
                 <Text style={[styles.insightLabel, { color: colors.textPrimary }]}>{item.label}</Text>
                 <Text style={[styles.insightMeta, { color: colors.textMuted }]}>
-                  {item.count} forms · {item.weight.toFixed(1)}x
+                  {item.count} {item.count === 1 ? 'form' : 'forms'} · {item.weight.toFixed(1)}x
                 </Text>
               </View>
             ))}
@@ -422,7 +423,7 @@ export default function PracticeStatsView({
                 <View key={item.label} style={styles.insightRow}>
                   <Text style={[styles.insightLabel, { color: colors.textPrimary }]}>{item.label}</Text>
                   <Text style={[styles.insightMeta, { color: colors.textMuted }]}>
-                    {item.count} forms · {item.weight.toFixed(1)}x
+                    {item.count} {item.count === 1 ? 'form' : 'forms'} · {item.weight.toFixed(1)}x
                   </Text>
                 </View>
               ))}
@@ -432,7 +433,7 @@ export default function PracticeStatsView({
       )}
 
       {/* Empty state */}
-      {totalCount === 0 && (!lifetimeStats || lifetimeStats.count === 0) && (
+      {!hasWeakAreas && totalCount === 0 && (!lifetimeStats || lifetimeStats.count === 0) && (
         <View style={styles.emptyContainer}>
           <Ionicons name={labels.emptyIcon} size={48} color={colors.textMuted} />
           <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No stats yet</Text>

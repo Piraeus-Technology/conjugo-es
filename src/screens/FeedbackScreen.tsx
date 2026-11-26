@@ -70,7 +70,7 @@ export default function FeedbackScreen() {
   const handleResetData = () => {
     Alert.alert(
       'Reset Learning Data?',
-      'This permanently removes your favorites, history, practice settings, progress, and learning weights from this device.',
+      'This permanently removes your favorites, recently viewed verbs, quiz and flashcard progress (including scores, streaks, and daily activity), learning weights, and selected tenses and levels. It also resets dark mode to follow your device, turns off flashcard audio auto-play, and turns Include Vosotros back on. The app may ask for a rating again.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -143,6 +143,7 @@ export default function FeedbackScreen() {
             <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color={colors.textSecondary} />
             <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Dark Mode</Text>
             <Switch
+              accessibilityLabel="Dark Mode"
               value={isDark}
               onValueChange={toggleTheme}
               trackColor={{ false: colors.controlBorder, true: colors.primaryText }}
@@ -151,8 +152,9 @@ export default function FeedbackScreen() {
           </View>
           <View style={[styles.settingRow, { borderBottomColor: colors.divider }]}>
             <Ionicons name="volume-medium" size={20} color={colors.textSecondary} />
-            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Auto-Play Audio</Text>
+            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Auto-Play Flashcard Audio</Text>
             <Switch
+              accessibilityLabel="Auto-Play Flashcard Audio"
               value={autoTTS}
               onValueChange={toggleAutoTTS}
               trackColor={{ false: colors.controlBorder, true: colors.primaryText }}
@@ -163,6 +165,7 @@ export default function FeedbackScreen() {
             <Ionicons name="people" size={20} color={colors.textSecondary} />
             <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Include Vosotros</Text>
             <Switch
+              accessibilityLabel="Include Vosotros"
               value={includeVosotros}
               onValueChange={toggleVosotros}
               trackColor={{ false: colors.controlBorder, true: colors.primaryText }}

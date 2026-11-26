@@ -114,7 +114,8 @@ test('Quiz Stats shows weakest verbs from shared prompt weights', () => {
     const screen = render(<StatsScreen />);
     expect(screen.getByText('Weakest verbs')).toBeTruthy();
     expect(screen.getByText('hablar')).toBeTruthy();
-    expect(screen.getAllByText('1 forms · 3.0x').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('1 form · 3.0x').length).toBeGreaterThan(0);
+    expect(screen.queryByText('No stats yet')).toBeNull();
   } finally {
     cleanup();
     useSessionStore.setState(sessions);

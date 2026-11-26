@@ -3,8 +3,9 @@
 ## Code and metadata
 
 - [ ] Start from a clean release branch and review every included commit.
-- [ ] Keep `package.json` and `app.json` versions aligned.
-- [ ] Update iOS build number and Android version code as required.
+- [ ] Set the release version in `package.json` (`version`) and `app.json`
+      (`expo.version`). EAS increments the remotely managed iOS build number
+      and Android version code.
 - [ ] Run `npm ci`, typecheck, lint, tests with coverage, and the example audit.
 - [ ] Run Expo Doctor and confirm the required peer-dependency check passes.
 - [ ] Run a clean Expo prebuild and build both native platforms.

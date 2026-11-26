@@ -7498,7 +7498,7 @@
   },
   "romper": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to break",
     "examples": [
       "Rompió el jarrón sin querer.",
@@ -7997,7 +7997,7 @@
   },
   "escribir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to write",
     "examples": [
       "Escribo en mi diario todas las noches.",
@@ -8007,7 +8007,7 @@
   },
   "abrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to open",
     "examples": [
       "Abre la ventana, hace calor.",
@@ -8057,7 +8057,7 @@
   },
   "describir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to describe",
     "examples": [
       "Describe tu día perfecto.",
@@ -8207,7 +8207,7 @@
   },
   "imprimir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to print",
     "examples": [
       "Imprimí los documentos para la reunión.",
@@ -8277,7 +8277,7 @@
   },
   "cubrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to cover",
     "examples": [
       "Cubre la olla con una tapa.",
@@ -8307,7 +8307,7 @@
   },
   "descubrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to discover",
     "examples": [
       "Descubrimos un restaurante increíble.",
@@ -8436,7 +8436,7 @@
   },
   "inscribir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to inscribe/register",
     "examples": [
       "Me inscribí en un curso de cocina.",
@@ -8581,7 +8581,7 @@
   },
   "suscribir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to sign or endorse / to subscribe (suscribirse)",
     "examples": [
       "Me suscribí a la revista.",
@@ -11146,7 +11146,7 @@
   },
   "gruñir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to growl",
     "examples": [
       "El perro gruñó al ver al gato.",
@@ -11248,7 +11248,7 @@
   },
   "pudrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to rot",
     "examples": [
       "La fruta se pudrió en el refrigerador.",
@@ -11330,7 +11330,7 @@
   },
   "zambullir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to plunge someone or something into water / to dive in (zambullirse)",
     "examples": [
       "Se zambulló en la piscina.",
@@ -12478,7 +12478,7 @@
   },
   "competer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to be within one's competence",
     "examples": [
       "Eso no me compete a mí.",
@@ -12542,7 +12542,7 @@
   },
   "encubrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to cover up",
     "examples": [
       "Encubrió el delito de su hermano.",

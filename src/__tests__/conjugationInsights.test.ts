@@ -55,4 +55,13 @@ describe('conjugation insights', () => {
       'Irregular past participle: hecho.',
     );
   });
+
+  test('irregular badges have notes and regular badges do not have irregular form notes', () => {
+    const issues = Object.entries(verbData).flatMap(([infinitive, verb]) => {
+      const notes = getRuleNotes(infinitive, verb);
+      const explainsIrregularity = notes.some(note => !note.startsWith('Used as '));
+      return explainsIrregularity === !verb.regular ? [] : [infinitive];
+    });
+    expect(issues).toEqual([]);
+  });
 });

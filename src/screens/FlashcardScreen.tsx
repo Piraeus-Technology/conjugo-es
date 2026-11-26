@@ -270,7 +270,7 @@ function FlashcardScreenSession() {
 
   if (filteredEntries.length === 0 || activeTenses.length === 0 || !card) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center' }]}>
+      <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', gap: spacing.md }]}>
         <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>No matching flashcards</Text>
         <TouchableOpacity
           style={[styles.retryButton, { backgroundColor: colors.primary }]}
@@ -345,7 +345,7 @@ function FlashcardScreenSession() {
           activeOpacity={frontInteractive ? 0.95 : 1}
           accessible={frontInteractive}
           accessibilityRole={frontInteractive ? 'button' : undefined}
-          accessibilityLabel={frontInteractive ? `Tap to reveal conjugation of ${card.verb} for ${getPersonLabel(card)}` : undefined}
+          accessibilityLabel={frontInteractive ? `Tap to reveal conjugation of ${card.verb} for ${getPersonLabel(card)}, ${tenseNames[card.tense]}` : undefined}
           importantForAccessibility={frontInteractive ? 'yes' : 'no'}
         >
           {/* Front */}

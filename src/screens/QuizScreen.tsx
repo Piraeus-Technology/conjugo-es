@@ -198,7 +198,7 @@ function QuizScreenSession() {
   }
 
   if (!question) return (
-    <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center' }]}>
+    <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center', gap: spacing.md }]}>
       <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md }}>No matching verbs</Text>
       <TouchableOpacity
         style={[styles.retryButton, { backgroundColor: colors.primary }]}

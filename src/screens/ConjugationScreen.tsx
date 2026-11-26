@@ -114,32 +114,30 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
       <View ref={scrollContentRef}>
       <View style={[styles.header, { backgroundColor: colors.card }]}>
         <View style={styles.headerTop}>
-          <View style={styles.infinitiveRow}>
-            <Text style={[styles.infinitive, { color: colors.primaryText }]}>{infinitive}</Text>
+          <Text style={[styles.infinitive, { color: colors.primaryText }]}>{infinitive}</Text>
+          <View style={styles.headerActions}>
             <TouchableOpacity
               style={styles.headerIconButton}
               onPress={() => speak(infinitive)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               accessibilityRole="button"
               accessibilityLabel={`Play pronunciation of ${infinitive}`}
             >
               <Ionicons name="volume-medium-outline" size={22} color={colors.textMuted} />
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.headerIconButton}
+              onPress={() => toggleFavorite(infinitive)}
+              accessibilityRole="button"
+              accessibilityLabel={favorited ? `Remove ${infinitive} from favorites` : `Add ${infinitive} to favorites`}
+              accessibilityState={{ selected: favorited }}
+            >
+              <Ionicons
+                name={favorited ? 'heart' : 'heart-outline'}
+                size={28}
+                color={favorited ? colors.primaryText : colors.textMuted}
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.headerIconButton}
-            onPress={() => toggleFavorite(infinitive)}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            accessibilityRole="button"
-            accessibilityLabel={favorited ? `Remove ${infinitive} from favorites` : `Add ${infinitive} to favorites`}
-            accessibilityState={{ selected: favorited }}
-          >
-            <Ionicons
-              name={favorited ? 'heart' : 'heart-outline'}
-              size={28}
-              color={favorited ? colors.primaryText : colors.textMuted}
-            />
-          </TouchableOpacity>
         </View>
         <Text style={[styles.translation, { color: colors.textSecondary }]}>{verb.translation}</Text>
         <View style={styles.metaRow}>
@@ -406,15 +404,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  headerTop: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  headerActions: { flexDirection: 'row', flexShrink: 0 },
   headerIconButton: {
     minWidth: 44,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  infinitiveRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
+  infinitive: { flex: 1, minWidth: 0, fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
   metaRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.md, gap: spacing.sm },
   tag: {

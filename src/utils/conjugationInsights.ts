@@ -22,17 +22,26 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
     case 'e_i':
       notes.add('Present tense stem change: e -> i in boot forms.');
       break;
+    case 'i_ie':
+      notes.add('Present tense stem change: i -> ie in boot forms.');
+      break;
     case 'u_ue':
       notes.add('Present tense stem change: u -> ue in boot forms.');
+      break;
+    case 'i_í':
+      notes.add('The stem i takes an accent in present-tense boot forms.');
+      break;
+    case 'u_ú':
+      notes.add('The stem u takes an accent in present-tense boot forms.');
       break;
   }
 
   switch (pattern?.stemChange?.preterite) {
     case 'e_i':
-      notes.add('Preterite and related subjunctive forms use e -> i in the third person / nosotros-vosotros patterns.');
+      notes.add('The stem changes from e to i in the third-person preterite and throughout the imperfect subjunctive.');
       break;
     case 'o_u':
-      notes.add('Preterite and related subjunctive forms use o -> u in the third person / nosotros-vosotros patterns.');
+      notes.add('The stem changes from o to u in the third-person preterite and throughout the imperfect subjunctive.');
       break;
   }
 
@@ -73,24 +82,29 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   const regularGerund = verb.type === 'ar' ? `${stem}ando` : `${stem}iendo`;
   const regularParticiple = getRegularPastParticiple(infinitive, verb.type);
 
-  if (gerund !== regularGerund) notes.add(`Irregular gerund: ${gerund}.`);
+  if (verb.type !== 'ar' && /(?:ñ|ll)$/.test(stem) && gerund === `${stem}endo`) {
+    notes.add(`After ñ or ll, the gerund ends in -endo (${gerund}). The third-person preterite endings are -ó and -eron.`);
+  } else if (gerund !== regularGerund) {
+    notes.add(`Irregular gerund: ${gerund}.`);
+  }
   if (participle !== regularParticiple) {
     notes.add(`Irregular past participle: ${participle}.`);
   }
 
-  if (
-    verb.overrides?.present
-    || verb.overrides?.preterite
-    || verb.overrides?.subjunctive_present
-  ) {
-    notes.add('Some core forms are fully overridden rather than generated from a regular pattern.');
+  for (const tense of ['present', 'preterite', 'subjunctive_present'] as const) {
+    if (!verb.overrides?.[tense] && !pattern?.fullOverrides?.[tense]) continue;
+    const example = conjugate(infinitive, verb, tense)[tense === 'preterite' ? 2 : 0];
+    if (!example.disabled) {
+      notes.add(`Some forms have irregular stems or endings, such as ${example.form}.`);
+      break;
+    }
   }
 
   if (verb.impersonal) {
-    notes.add('Used impersonally in the third-person singular.');
+    notes.add('Defective conjugation: only the third-person singular is used for weather or time of day.');
   }
   if (verb.thirdPersonOnly) {
-    notes.add('Used in the third-person singular and plural.');
+    notes.add('Defective conjugation: used only in the third-person singular and plural.');
   }
   if (verb.pronominalOnly) {
     notes.add(`Used as ${infinitive}se: me ${present[0].form}, te ${present[1].form}, se ${present[2].form}.`);

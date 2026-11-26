@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { createDatedSessionSaveCoordinator, type DatedSessionDelta } from '../utils/sessionSaveCoordinator';
 import { isCurrentPracticeSession, usePracticeResetStore } from '../store/practiceResetStore';
 
-// Capture the local day synchronously with each answer. Each day's delta uses
-// the same serialized claim/rollback coordinator for blur/background/unmount.
+// Capture the local day and queue its delta with each answer. Lifecycle
+// events use the same serialized coordinator and can retry a failed write.
 export function useSessionAutosave({ save }: {
   save: (delta: DatedSessionDelta) => Promise<void>;
 }) {
@@ -25,7 +25,8 @@ export function useSessionAutosave({ save }: {
   const recordProgress = React.useCallback((correct: boolean, bestStreak = 0) => {
     coordinatorRef.current!.recordAnswer(correct, bestStreak);
     refresh();
-  }, [refresh]);
+    saveNow().catch((error) => console.warn('Answer save failed:', error));
+  }, [refresh, saveNow]);
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {

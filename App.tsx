@@ -1,8 +1,8 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useLayoutEffect } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StatusBar } from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SplashScreen from 'expo-splash-screen';
@@ -120,9 +120,14 @@ function SearchStackScreen() {
 }
 
 function AppContent() {
-  const { isDark, loaded, loadTheme } = useThemeStore();
+  const { isDark, loaded, loadTheme, setDeviceTheme } = useThemeStore();
+  const deviceIsDark = useColorScheme() === 'dark';
   const colors = useColors();
   const { loaded: practiceLoaded, loadPracticeSettings } = usePracticeSettingsStore();
+
+  useLayoutEffect(() => {
+    setDeviceTheme(deviceIsDark);
+  }, [deviceIsDark, setDeviceTheme]);
 
   useEffect(() => {
     loadTheme();

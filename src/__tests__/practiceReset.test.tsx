@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated } from 'react-native';
+import { Animated, AppState } from 'react-native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import QuizScreen from '../screens/QuizScreen';
 import FlashcardScreen from '../screens/FlashcardScreen';
@@ -72,7 +72,9 @@ test('three correct answers → reset → one correct answer records a streak of
     await act(async () => { fireEvent.press(screen.getByLabelText('Next question')); });
   }
   expect(useQuizStore.getState().bestStreak).toBe(3);
+  expect(JSON.parse(mockStorage.get('sessions')!)[0]).toMatchObject({ total: 3, correct: 3, streak: 3 });
   await act(async () => { mockListeners.blur?.forEach(listener => listener()); });
+  expect(useSessionStore.getState().sessions[0].total).toBe(3);
   await act(async () => { await resetAllLearningData(); });
   await act(async () => { fireEvent.press(screen.getByLabelText('Answer: hablo')); });
   await act(async () => { mockListeners.blur?.forEach(listener => listener()); });
@@ -90,13 +92,14 @@ test('flashcard reset drops pre-reset deltas and starts the next card fresh', as
   }));
   try {
     const screen = render(<FlashcardScreen />);
-    await screen.findByLabelText('Tap to reveal conjugation of hablar for yo');
-    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo')); });
+    await screen.findByLabelText('Tap to reveal conjugation of hablar for yo, Present');
+    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')); });
     await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
-    // Reset before a blur save; stale cleanup must never recreate this card.
+    expect(JSON.parse(mockStorage.get('flashcardSessions')!)[0]).toMatchObject({ reviewed: 1, correct: 1 });
+    // Reset before blur; stale cleanup must never recreate this card.
     await act(async () => { await resetAllLearningData(); });
     expect(useFlashcardSessionStore.getState().sessions).toEqual([]);
-    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo')); });
+    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')); });
     await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as missed')); });
     await act(async () => { mockListeners.blur?.forEach(listener => listener()); });
     expect(useFlashcardSessionStore.getState().sessions[0]).toMatchObject({ reviewed: 1, correct: 0 });
@@ -108,6 +111,8 @@ test('flashcard reset drops pre-reset deltas and starts the next card fresh', as
 
 test('taps during flashcard flip-back cannot reveal the next answer', async () => {
   jest.useFakeTimers();
+  const originalAppState = AppState.currentState;
+  AppState.currentState = 'active';
   const nativeTiming = Animated.timing;
   const timing = jest.spyOn(Animated, 'timing').mockImplementation((value, config) =>
     nativeTiming(value, { ...config, useNativeDriver: false }),
@@ -119,20 +124,23 @@ test('taps during flashcard flip-back cannot reveal the next answer', async () =
   useThemeStore.setState({ autoTTS: true });
   try {
     const screen = render(<FlashcardScreen />);
-    const firstFront = await screen.findByLabelText('Tap to reveal conjugation of comer for yo');
+    const firstFront = await screen.findByLabelText('Tap to reveal conjugation of comer for yo, Present');
     await act(async () => { fireEvent.press(firstFront); });
     expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
     await act(async () => { jest.advanceTimersByTime(350); });
+    expect(speak).toHaveBeenCalledTimes(1);
+    expect(speak).toHaveBeenCalledWith('como');
     await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
     await act(async () => { fireEvent.press(firstFront); });
     expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
     await act(async () => { jest.advanceTimersByTime(350); });
-    expect(screen.getByLabelText('Tap to reveal conjugation of hablar for yo')).toBeTruthy();
+    expect(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')).toBeTruthy();
     expect(screen.queryByLabelText('Play pronunciation of hablo')).toBeNull();
     expect(speak).not.toHaveBeenCalledWith('hablo');
     screen.unmount();
   } finally {
     timing.mockRestore();
+    AppState.currentState = originalAppState;
     jest.useRealTimers();
   }
 });
