@@ -1,4 +1,4 @@
-import { conjugate, Tense, VerbData } from './conjugate';
+import { conjugate, practiceTenses, Tense, VerbData } from './conjugate';
 import {
   CORE_PRACTICE_VERBS,
   WEIGHTED_CANDIDATE_COUNT,
@@ -14,6 +14,14 @@ export interface PromptCandidate {
 }
 
 const corePracticeVerbSet = new Set<string>(CORE_PRACTICE_VERBS);
+
+export function getPracticeAnswer(
+  verb: string, data: VerbData, tense: Tense, personIndex: number,
+): string | undefined {
+  if (data.pronominalOnly || !practiceTenses.includes(tense)) return undefined;
+  const result = conjugate(verb, data, tense)[personIndex];
+  return result && !result.disabled && result.form !== '—' ? result.form : undefined;
+}
 
 export function getCorePracticeEntries(
   verbEntries: [string, VerbData][],
@@ -39,11 +47,12 @@ export function getCorePracticeEntries(
 // and the beginner core cannot drown out higher levels. Difficulty weights
 // still choose among the sampled candidates.
 export function pickWeightedPrompt(
-  verbEntries: [string, VerbData][],
+  entries: [string, VerbData][],
   activeTenses: Tense[],
   getWeight: (verb: string, tense: Tense, personIndex: number) => number,
   includeVosotros: boolean = true,
 ): PromptCandidate {
+  const verbEntries = entries.filter(([, data]) => !data.pronominalOnly);
   const coreEntries = getCorePracticeEntries(verbEntries);
   const beginnerOnly = verbEntries.every(([, data]) => data.level === 'A1' || data.level === 'A2');
   const byLevel = new Map<VerbData['level'], [string, VerbData][]>();
@@ -58,7 +67,8 @@ export function pickWeightedPrompt(
   const candidates: PromptCandidate[] = [];
 
   let attempts = 0;
-  while (candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
+  while (verbEntries.length > 0 && activeTenses.length > 0
+    && candidates.length < WEIGHTED_CANDIDATE_COUNT && attempts < 200) {
     attempts++;
     const source = beginnerOnly
       ? (Math.random() < WEIGHTED_PICK_COMMON_BIAS ? coreEntries : verbEntries)

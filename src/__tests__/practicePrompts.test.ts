@@ -108,4 +108,15 @@ describe('practice prompt selection', () => {
       expect(prompt.personIndex).toBe(2);
     }
   });
+
+  test('skips pronominal-only entries and tenses no longer taught', () => {
+    jest.spyOn(Math, 'random').mockImplementation(seededRandom(0xA3));
+    const pool = allVerbEntries.filter(([verb]) =>
+      ['quejar', 'atrever', 'desvivir', 'adentrar', 'haber', 'soler', 'hablar'].includes(verb),
+    );
+    for (let index = 0; index < 50; index += 1) {
+      const prompt = pickWeightedPrompt(pool, ['imperative_affirmative', 'imperative_negative'], flatWeight);
+      expect(prompt.verb).toBe('hablar');
+    }
+  });
 });

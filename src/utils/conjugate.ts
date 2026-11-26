@@ -86,6 +86,7 @@ const irregularParticiples: Record<string, string> = {
   hacer: 'hecho',
   morir: 'muerto',
   poner: 'puesto',
+  pudrir: 'podrido',
   resolver: 'resuelto',
   romper: 'roto',
   ver: 'visto',
@@ -346,6 +347,10 @@ export interface VerbData {
   regular: boolean;
   translation: string;
   impersonal?: boolean;
+  thirdPersonOnly?: boolean;
+  noImperative?: boolean;
+  allowedTenses?: Tense[];
+  pronominalOnly?: boolean;
   level?: VerbLevel;
   examples?: string[];
   pattern?: IrregularPattern;
@@ -942,12 +947,15 @@ function applyUsageRestrictions(
   tense: Tense,
   results: ConjugationResult[],
 ): ConjugationResult[] {
-  if (!verb.impersonal || tense === 'gerund_participle') return results;
+  const unavailableTense = (verb.allowedTenses && !verb.allowedTenses.includes(tense))
+    || ((verb.impersonal || verb.thirdPersonOnly || verb.noImperative) && imperativeTenses.includes(tense));
+  if (!unavailableTense && !verb.impersonal && !verb.thirdPersonOnly) return results;
 
-  const isImperative = imperativeTenses.includes(tense);
-  return results.map((result, index) =>
-    !isImperative && index === 2
-      ? result
-      : { ...result, form: '—', disabled: true },
-  );
+  return results.map((result, index) => {
+    const unavailablePerson = (verb.impersonal && index !== 2)
+      || (verb.thirdPersonOnly && index !== 2 && index !== 5);
+    return unavailableTense || unavailablePerson
+      ? { ...result, form: '—', disabled: true }
+      : result;
+  });
 }

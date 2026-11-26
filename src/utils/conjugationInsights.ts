@@ -10,6 +10,7 @@ const verFamily = new Set(['ver', 'prever', 'entrever']);
 export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   const notes = new Set<string>();
   const pattern = verb.pattern;
+  const present = conjugate(infinitive, verb, 'present');
 
   switch (pattern?.stemChange?.present) {
     case 'e_ie':
@@ -35,8 +36,8 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
       break;
   }
 
-  if (pattern?.yoGo) notes.add('Irregular yo form: the present tense yo form ends in -go.');
-  if (pattern?.yoZco) notes.add('Irregular yo form: the present tense yo form ends in -zco.');
+  if (pattern?.yoGo && !present[0].disabled) notes.add('Irregular yo form: the present tense yo form ends in -go.');
+  if (pattern?.yoZco && !present[0].disabled) notes.add('Irregular yo form: the present tense yo form ends in -zco.');
   if (pattern?.irregularFutureStem) notes.add('Future and conditional use an irregular stem.');
   if (pattern?.irregularPreteriteStem) notes.add('Preterite and imperfect subjunctive use an irregular preterite stem.');
 
@@ -87,6 +88,12 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
 
   if (verb.impersonal) {
     notes.add('Used impersonally in the third-person singular.');
+  }
+  if (verb.thirdPersonOnly) {
+    notes.add('Used in the third-person singular and plural.');
+  }
+  if (verb.pronominalOnly) {
+    notes.add(`Used as ${infinitive}se: me ${present[0].form}, te ${present[1].form}, se ${present[2].form}.`);
   }
 
   return [...notes];

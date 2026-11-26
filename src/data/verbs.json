@@ -261,7 +261,8 @@
       "Ha llovido mucho esta semana.",
       "Había muchas personas en la fiesta."
     ],
-    "level": "A1"
+    "level": "A1",
+    "noImperative": true
   },
   "hacer": {
     "type": "er",
@@ -366,9 +367,9 @@
         "rehacen"
       ],
       "preterite": [
-        "rehice",
+        "rehíce",
         "rehiciste",
-        "rehizo",
+        "rehízo",
         "rehicimos",
         "rehicisteis",
         "rehicieron"
@@ -383,7 +384,7 @@
       ]
     },
     "examples": [
-      "Rehice el informe después de los comentarios.",
+      "Rehíce el informe después de los comentarios.",
       "Tendremos que rehacer el trabajo."
     ],
     "level": "B2"
@@ -1131,7 +1132,7 @@
   "sentar": {
     "type": "ar",
     "regular": false,
-    "translation": "to seat",
+    "translation": "to seat someone / to sit down (sentarse)",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
@@ -1578,7 +1579,7 @@
   "divertir": {
     "type": "ir",
     "regular": false,
-    "translation": "to amuse/entertain",
+    "translation": "to amuse or entertain / to have fun (divertirse)",
     "pattern": {
       "stemChange": {
         "present": "e_ie",
@@ -2040,7 +2041,7 @@
   "esforzar": {
     "type": "ar",
     "regular": false,
-    "translation": "to make an effort",
+    "translation": "to give strength or encouragement / to make an effort (esforzarse)",
     "pattern": {
       "stemChange": {
         "present": "o_ue"
@@ -2281,7 +2282,14 @@
       "Suelo despertarme temprano.",
       "Solíamos ir a la playa en verano."
     ],
-    "level": "C1"
+    "level": "C1",
+    "allowedTenses": [
+      "present",
+      "imperfect",
+      "subjunctive_present",
+      "subjunctive_imperfect",
+      "present_perfect"
+    ]
   },
   "doler": {
     "type": "er",
@@ -2463,7 +2471,7 @@
   "vestir": {
     "type": "ir",
     "regular": false,
-    "translation": "to dress",
+    "translation": "to dress someone / to get dressed (vestirse)",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2495,7 +2503,7 @@
   "despedir": {
     "type": "ir",
     "regular": false,
-    "translation": "to fire/say goodbye",
+    "translation": "to fire or see someone off / to say goodbye (despedirse)",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -3188,7 +3196,7 @@
   "estremecer": {
     "type": "er",
     "regular": false,
-    "translation": "to shudder",
+    "translation": "to shake or make someone shudder / to shudder (estremecerse)",
     "pattern": {
       "yoZco": true
     },
@@ -3808,7 +3816,7 @@
   "equivocar": {
     "type": "ar",
     "regular": false,
-    "translation": "to mistake",
+    "translation": "to mistake one thing for another / to make a mistake (equivocarse)",
     "pattern": {
       "spellingChange": "car_qué"
     },
@@ -4773,7 +4781,7 @@
   "especializar": {
     "type": "ar",
     "regular": false,
-    "translation": "to specialize",
+    "translation": "to adapt for a specific purpose / to specialize (especializarse)",
     "pattern": {
       "spellingChange": "zar_cé"
     },
@@ -5020,7 +5028,7 @@
   "tranquilizar": {
     "type": "ar",
     "regular": false,
-    "translation": "to calm down",
+    "translation": "to calm someone / to calm down (tranquilizarse)",
     "pattern": {
       "spellingChange": "zar_cé"
     },
@@ -5110,11 +5118,8 @@
   },
   "rebotar": {
     "type": "ar",
-    "regular": false,
+    "regular": true,
     "translation": "to bounce",
-    "pattern": {
-      "spellingChange": "zar_cé"
-    },
     "examples": [
       "La pelota rebotó en la pared.",
       "El cheque rebotó por falta de fondos."
@@ -5770,7 +5775,7 @@
   "acostumbrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to be accustomed",
+    "translation": "to do habitually or accustom someone / to get used to (acostumbrarse)",
     "examples": [
       "Me acostumbré al clima frío.",
       "Acostumbra tomar té por la tarde."
@@ -6010,7 +6015,7 @@
   "concentrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to concentrate",
+    "translation": "to gather or concentrate something / to focus (concentrarse)",
     "examples": [
       "Me concentro mejor por la mañana.",
       "Concéntrate en lo importante."
@@ -6321,7 +6326,7 @@
   "duchar": {
     "type": "ar",
     "regular": true,
-    "translation": "to shower",
+    "translation": "to give someone a shower / to take a shower (ducharse)",
     "examples": [
       "Me ducho todas las mañanas.",
       "Se duchó después del gimnasio."
@@ -6371,7 +6376,7 @@
   "enamorar": {
     "type": "ar",
     "regular": true,
-    "translation": "to fall in love",
+    "translation": "to make someone fall in love / to fall in love (enamorarse)",
     "examples": [
       "Se enamoró a primera vista.",
       "Me enamoré de esta ciudad."
@@ -6391,7 +6396,7 @@
   "enfadar": {
     "type": "ar",
     "regular": true,
-    "translation": "to anger",
+    "translation": "to anger / to get angry (enfadarse)",
     "examples": [
       "Se enfadó porque llegué tarde.",
       "No te enfades conmigo."
@@ -6424,7 +6429,7 @@
   "enojar": {
     "type": "ar",
     "regular": true,
-    "translation": "to annoy/anger",
+    "translation": "to annoy or anger / to get angry (enojarse)",
     "examples": [
       "Se enojó por el comentario.",
       "No te enojes, fue un accidente."
@@ -6930,7 +6935,7 @@
   "mudar": {
     "type": "ar",
     "regular": true,
-    "translation": "to move (house)",
+    "translation": "to change / to move house (mudarse)",
     "examples": [
       "Nos mudamos a una casa más grande.",
       "Se mudó a otra ciudad por trabajo."
@@ -7105,7 +7110,8 @@
       "Se queja del dolor de espalda.",
       "Nos quejamos del mal servicio."
     ],
-    "level": "A2"
+    "level": "A2",
+    "pronominalOnly": true
   },
   "reclamar": {
     "type": "ar",
@@ -7200,7 +7206,7 @@
   "retirar": {
     "type": "ar",
     "regular": true,
-    "translation": "to withdraw/retire",
+    "translation": "to withdraw or remove / to retire (retirarse)",
     "examples": [
       "Retiré dinero del cajero.",
       "Se retiró del cargo a los sesenta años."
@@ -8576,7 +8582,7 @@
   "suscribir": {
     "type": "ir",
     "regular": true,
-    "translation": "to subscribe",
+    "translation": "to sign or endorse / to subscribe (suscribirse)",
     "examples": [
       "Me suscribí a la revista.",
       "Suscribieron un acuerdo de paz."
@@ -8739,7 +8745,7 @@
   "alejar": {
     "type": "ar",
     "regular": true,
-    "translation": "to move away",
+    "translation": "to move someone or something away / to move away (alejarse)",
     "examples": [
       "Aléjate del borde del acantilado.",
       "Se alejó sin decir una palabra."
@@ -9200,7 +9206,7 @@
   "contagiar": {
     "type": "ar",
     "regular": true,
-    "translation": "to infect",
+    "translation": "to infect / to catch an illness (contagiarse)",
     "examples": [
       "Se contagió de gripe en la oficina.",
       "La risa se contagia fácilmente."
@@ -9590,7 +9596,7 @@
   "enterar": {
     "type": "ar",
     "regular": true,
-    "translation": "to inform/find out",
+    "translation": "to inform / to find out (enterarse)",
     "examples": [
       "Me enteré de la noticia por la radio.",
       "Se enteró de todo al llegar."
@@ -10513,7 +10519,7 @@
   "refugiar": {
     "type": "ar",
     "regular": true,
-    "translation": "to take refuge",
+    "translation": "to shelter / to take refuge (refugiarse)",
     "examples": [
       "Se refugiaron de la lluvia bajo un árbol.",
       "Nos refugiamos en una cueva."
@@ -10543,7 +10549,7 @@
   "relajar": {
     "type": "ar",
     "regular": true,
-    "translation": "to relax",
+    "translation": "to loosen or relax something / to unwind (relajarse)",
     "examples": [
       "Relájate, todo va a salir bien.",
       "Me relajé en la piscina del hotel."
@@ -10583,7 +10589,7 @@
   "remontar": {
     "type": "ar",
     "regular": true,
-    "translation": "to go back (in time)",
+    "translation": "to overcome a setback / to date back (remontarse)",
     "examples": [
       "Remontaron un marcador adverso.",
       "Se remonta a la época medieval."
@@ -10646,7 +10652,7 @@
   "resignar": {
     "type": "ar",
     "regular": true,
-    "translation": "to resign oneself",
+    "translation": "to hand over authority / to resign oneself (resignarse)",
     "examples": [
       "Se resignó a esperar un poco más.",
       "No me resigno a perder."
@@ -11325,7 +11331,7 @@
   "zambullir": {
     "type": "ir",
     "regular": true,
-    "translation": "to dive/plunge",
+    "translation": "to plunge someone or something into water / to dive in (zambullirse)",
     "examples": [
       "Se zambulló en la piscina.",
       "Los niños se zambullen en el mar."
@@ -11538,7 +11544,8 @@
       "Se adentraron en el bosque.",
       "No te adentres demasiado en el mar."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pronominalOnly": true
   },
   "adornar": {
     "type": "ar",
@@ -11553,7 +11560,7 @@
   "aferrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to grip/cling",
+    "translation": "to grip / to cling to (aferrarse)",
     "examples": [
       "Se aferra a sus creencias.",
       "Se aferró al pasamanos para no caer."
@@ -11870,9 +11877,9 @@
   "avecindar": {
     "type": "ar",
     "regular": true,
-    "translation": "to settle nearby",
+    "translation": "to admit as a resident / to settle as a resident (avecindarse)",
     "examples": [
-      "Se avecindan tiempos difíciles.",
+      "Muchas familias se avecindaron en la costa.",
       "Se avecindaron en el barrio hace años."
     ],
     "level": "C2"
@@ -11880,7 +11887,7 @@
   "aventurar": {
     "type": "ar",
     "regular": true,
-    "translation": "to venture",
+    "translation": "to risk or venture something / to venture to do something (aventurarse)",
     "examples": [
       "Se aventuró a explorar la cueva.",
       "No me aventuro a opinar sin datos."
@@ -12128,7 +12135,7 @@
   "comprometer": {
     "type": "er",
     "regular": true,
-    "translation": "to compromise",
+    "translation": "to put at risk / to commit oneself (comprometerse)",
     "examples": [
       "Se comprometió a entregar el trabajo el lunes.",
       "Nos comprometimos en diciembre."
@@ -12168,7 +12175,7 @@
   "confederar": {
     "type": "ar",
     "regular": true,
-    "translation": "to confederate",
+    "translation": "to unite groups in a confederation / to form a confederation (confederarse)",
     "examples": [
       "Se confederaron para tener más poder.",
       "Los estados se confederaron en una unión."
@@ -12351,7 +12358,8 @@
     "level": "B2",
     "pattern": {
       "yoZco": true
-    }
+    },
+    "thirdPersonOnly": true
   },
   "acoger": {
     "type": "er",
@@ -12434,7 +12442,8 @@
       "No me atrevo a saltar.",
       "Se atrevió a hablar delante de todos."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pronominalOnly": true
   },
   "bendecir": {
     "type": "ir",
@@ -12475,7 +12484,8 @@
       "Eso no me compete a mí.",
       "Le compete al director tomar esa decisión."
     ],
-    "level": "C1"
+    "level": "C1",
+    "thirdPersonOnly": true
   },
   "desmentir": {
     "type": "ir",
@@ -12501,7 +12511,8 @@
       "Se desvive por sus hijos.",
       "Se desvivía por complacer a todos."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pronominalOnly": true
   },
   "disuadir": {
     "type": "ir",
