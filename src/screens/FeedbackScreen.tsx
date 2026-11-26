@@ -35,7 +35,7 @@ export default function FeedbackScreen() {
   const nav = useNavigation<any>();
   const { isDark, autoTTS, includeVosotros, toggleTheme, toggleAutoTTS, toggleVosotros } = useThemeStore();
   const {
-    products,
+    product,
     loading: tipLoading,
     unavailable: tipUnavailable,
     unsupported: tipUnsupported,
@@ -196,30 +196,25 @@ export default function FeedbackScreen() {
         </TouchableOpacity>
 
         {/* Tip Jar */}
-        {(products.length > 0 || tipUnavailable) && (
+        {(product || tipUnavailable) && (
           <>
             <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Tip Jar</Text>
-            {products.length > 0 ? (
+            {product ? (
               <>
                 <Text style={[styles.tipDescription, { color: colors.textSecondary }]}>
                   {APP_NAME} is free with no ads. If you find it helpful, consider leaving a tip!
                 </Text>
-                <View style={styles.tipRow}>
-                  {products.map((product) => (
-                    <TouchableOpacity
-                      key={product.id}
-                      style={[styles.tipButton, { backgroundColor: colors.card, borderColor: colors.primaryText }]}
-                      onPress={() => tip(product.id)}
-                      disabled={tipLoading}
-                      activeOpacity={0.7}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Leave a ${product.displayPrice} tip`}
-                      accessibilityState={{ disabled: tipLoading }}
-                    >
-                      <Text style={[styles.tipPrice, { color: colors.primaryText }]}>{product.displayPrice}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                <TouchableOpacity
+                  style={[styles.tipButton, { backgroundColor: colors.card, borderColor: colors.primaryText }]}
+                  onPress={tip}
+                  disabled={tipLoading}
+                  activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Leave a ${product.displayPrice} tip`}
+                  accessibilityState={{ disabled: tipLoading }}
+                >
+                  <Text style={[styles.tipPrice, { color: colors.primaryText }]}>{product.displayPrice}</Text>
+                </TouchableOpacity>
               </>
             ) : (
               <Text style={[styles.tipDescription, { color: colors.textMuted }]}>
@@ -338,12 +333,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     lineHeight: 20,
   },
-  tipRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-  },
   tipButton: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.md,

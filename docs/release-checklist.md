@@ -21,13 +21,16 @@
 ## Tip-jar sandbox tests
 
 Run these on physical devices against both Apple and Google sandbox accounts
-for `tip_small`, `tip_medium`, and `tip_large`.
+for `tip_small`.
 
 - [ ] Cold-launch the app, then complete a purchase.
 - [ ] Remount/navigate away and back before completing a purchase.
 - [ ] Cancel a purchase and confirm no error or thank-you state is shown.
 - [ ] Replay or recover an interrupted purchase and confirm it is processed
       once.
+- [ ] Replay a pending transaction for a retired product (`tip_medium` or
+      `tip_large`) and confirm the app finishes it. Include the Android
+      startup recovery path.
 - [ ] Confirm every delivered transaction is finished/acknowledged and does
       not replay on the next cold launch.
 - [ ] Confirm unrelated product identifiers are ignored.

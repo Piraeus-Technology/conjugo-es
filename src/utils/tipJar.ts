@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Alert, Platform } from 'react-native';
 import {
   releaseIapConnection,
@@ -6,7 +6,8 @@ import {
   waitForPendingIapEnd,
 } from './iapLifecycle';
 
-const TIP_SKUS = ['tip_small', 'tip_medium', 'tip_large'];
+const ACTIVE_TIP_SKU = 'tip_small';
+const CONSUMABLE_TIP_SKUS = new Set([ACTIVE_TIP_SKU, 'tip_medium', 'tip_large']);
 
 type TipTransactionLike = {
   transactionId?: string | null;
@@ -39,8 +40,9 @@ type Purchase = import('react-native-iap').Purchase;
 type PurchaseError = import('react-native-iap').PurchaseError;
 
 export function useTipJar() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
+  const startingPurchase = useRef(false);
   // Without the native module (Expo Go, web) the tip jar is permanently
   // unsupported; everything below no-ops so hooks are still called
   // unconditionally.
@@ -85,13 +87,13 @@ export function useTipJar() {
     retainIapConnection();
 
     const handlePurchaseUpdated = async (purchase: Purchase) => {
-      if (!TIP_SKUS.includes(purchase.productId)) return;
+      if (!CONSUMABLE_TIP_SKUS.has(purchase.productId)) return;
       const txKey = getTipTransactionKey(purchase);
       if (!claimTransaction(purchase)) return; // the other path is finishing it
       try {
         await finishTransaction({ purchase, isConsumable: true });
         if (!mounted) return;
-        setLoading(false);
+        if (!startingPurchase.current) setLoading(false);
         // Always thank on success — the user deserves the confirmation
         // even (especially) when the same transaction had previously
         // failed and we'd warned them with "Purchase Needs Attention".
@@ -102,7 +104,7 @@ export function useTipJar() {
         // Release the claim so an OS replay can retry the finish.
         releaseTransactionClaim(purchase);
         if (!mounted) return;
-        setLoading(false);
+        if (!startingPurchase.current) setLoading(false);
         if (txKey && failedTransactionIds.has(txKey)) {
           // Already alerted on this transaction this mount — stay quiet.
           return;
@@ -117,7 +119,7 @@ export function useTipJar() {
 
     const handlePurchaseError = (error: PurchaseError) => {
       if (!mounted) return;
-      setLoading(false);
+      if (!startingPurchase.current) setLoading(false);
       if (error.code !== ErrorCode.UserCancelled) {
         Alert.alert('Purchase Failed', 'Something went wrong. Please try again.');
       }
@@ -150,7 +152,7 @@ export function useTipJar() {
           try {
             const pendingPurchases = await getAvailablePurchases();
             for (const purchase of pendingPurchases) {
-              if (!TIP_SKUS.includes(purchase.productId)) continue;
+              if (!CONSUMABLE_TIP_SKUS.has(purchase.productId)) continue;
               if (!claimTransaction(purchase)) continue; // listener already finishing it
               try {
                 await finishTransaction({ purchase, isConsumable: true });
@@ -165,15 +167,14 @@ export function useTipJar() {
           }
         }
         if (!mounted) return;
-        const items = await fetchProducts({ skus: TIP_SKUS });
+        const items: Product[] = await fetchProducts({ skus: [ACTIVE_TIP_SKU] });
         if (!mounted) return;
-        const inAppItems = (items as Product[]).filter(p => p.type === 'in-app');
-        inAppItems.sort((a, b) => Number(a.price ?? 0) - Number(b.price ?? 0));
-        setProducts(inAppItems);
-        setUnavailable(inAppItems.length === 0);
+        const availableTip = items.find(p => p.id === ACTIVE_TIP_SKU && p.type === 'in-app') ?? null;
+        setProduct(availableTip);
+        setUnavailable(!availableTip);
       } catch {
         if (!mounted) return;
-        setProducts([]);
+        setProduct(null);
         setUnavailable(true);
       }
     };
@@ -188,12 +189,13 @@ export function useTipJar() {
     };
   }, []);
 
-  const tip = useCallback(async (sku: string) => {
-    if (!iapModule) return;
+  const tip = useCallback(async () => {
+    if (!iapModule || startingPurchase.current) return;
+    startingPurchase.current = true;
     setLoading(true);
     try {
       await iapModule.requestPurchase({
-        request: { apple: { sku }, google: { skus: [sku] } },
+        request: { apple: { sku: ACTIVE_TIP_SKU }, google: { skus: [ACTIVE_TIP_SKU] } },
         type: 'in-app',
       });
     } catch (error) {
@@ -206,10 +208,10 @@ export function useTipJar() {
       // Always clear the spinner once the request settles: deferred
       // purchases (iOS Ask to Buy) and abandoned flows may never emit a
       // listener event, which used to leave the button loading forever.
-      // The purchase listener still clears it on the normal path.
+      startingPurchase.current = false;
       setLoading(false);
     }
   }, []);
 
-  return { products, loading, unavailable, unsupported, tip };
+  return { product, loading, unavailable, unsupported, tip };
 }

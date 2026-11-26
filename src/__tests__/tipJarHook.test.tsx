@@ -11,9 +11,9 @@ jest.mock('react-native-iap', () => ({
   endConnection: jest.fn(() => Promise.resolve()),
   fetchProducts: jest.fn(() =>
     Promise.resolve([
-      { id: 'tip_large', type: 'in-app', price: 9.99 },
-      { id: 'tip_small', type: 'in-app', price: 0.99 },
-      { id: 'some_subscription', type: 'subs', price: 1.99 },
+      { id: 'tip_large', type: 'in-app', displayPrice: 'retired price' },
+      { id: 'tip_small', type: 'in-app', displayPrice: 'localized store price' },
+      { id: 'some_subscription', type: 'subs' },
     ]),
   ),
   getAvailablePurchases: jest.fn(() => Promise.resolve([] as unknown[])),
@@ -21,7 +21,7 @@ jest.mock('react-native-iap', () => ({
   finishTransaction: jest.fn(() => Promise.resolve()),
   purchaseUpdatedListener: jest.fn(() => ({ remove: jest.fn() })),
   purchaseErrorListener: jest.fn(() => ({ remove: jest.fn() })),
-  ErrorCode: { UserCancelled: 'E_USER_CANCELLED' },
+  ErrorCode: { UserCancelled: 'user-cancelled' },
 }));
 
 const mockIap = jest.requireMock('react-native-iap');
@@ -42,7 +42,7 @@ function latestErrorHandler(): (error: unknown) => void {
 
 async function renderLoadedTipJar() {
   const utils = renderHook(() => useTipJar());
-  await waitFor(() => expect(utils.result.current.products.length).toBeGreaterThan(0));
+  await waitFor(() => expect(utils.result.current.product).not.toBeNull());
   return utils;
 }
 
@@ -63,7 +63,7 @@ describe('useTipJar', () => {
     __resetIapLifecycleForTests();
   });
 
-  test('loads in-app products sorted by price and reports available', async () => {
+  test('loads and offers only tip_small with the store display price', async () => {
     const { result } = await renderLoadedTipJar();
 
     expect(mockIap.purchaseUpdatedListener).toHaveBeenCalledTimes(2);
@@ -72,7 +72,8 @@ describe('useTipJar', () => {
     );
     expect(result.current.unsupported).toBe(false);
     expect(result.current.unavailable).toBe(false);
-    expect(result.current.products.map((p: any) => p.id)).toEqual(['tip_small', 'tip_large']);
+    expect(mockIap.fetchProducts).toHaveBeenCalledWith({ skus: ['tip_small'] });
+    expect(result.current.product).toMatchObject({ id: 'tip_small', displayPrice: 'localized store price' });
   });
 
   test('reports unavailable when the store returns no tip products', async () => {
@@ -80,7 +81,7 @@ describe('useTipJar', () => {
     const { result } = renderHook(() => useTipJar());
 
     await waitFor(() => expect(result.current.unavailable).toBe(true));
-    expect(result.current.products).toEqual([]);
+    expect(result.current.product).toBeNull();
   });
 
   test('finishes a successful purchase as consumable and thanks the user', async () => {
@@ -122,6 +123,21 @@ describe('useTipJar', () => {
     expect(alertSpy).toHaveBeenCalledTimes(1);
   });
 
+  test.each(['ios', 'android'] as const)('finishes both retired tips through the %s listener', async os => {
+    const osSpy = jest.replaceProperty(Platform, 'OS', os);
+    try {
+      await renderLoadedTipJar();
+      for (const productId of ['tip_medium', 'tip_large']) {
+        const purchase = { transactionId: `retired-${productId}`, productId };
+        await act(async () => { await latestPurchaseHandler()(purchase); });
+        expect(mockIap.finishTransaction).toHaveBeenCalledWith({ purchase, isConsumable: true });
+      }
+      expect(mockIap.finishTransaction).toHaveBeenCalledTimes(2);
+    } finally {
+      osSpy.restore();
+    }
+  });
+
   test('failed finish alerts once, then a successful replay still thanks the user', async () => {
     await renderLoadedTipJar();
 
@@ -156,10 +172,28 @@ describe('useTipJar', () => {
     // Deferred purchase (e.g. iOS Ask to Buy): requestPurchase resolves but
     // no purchase-updated event ever fires.
     await act(async () => {
-      await result.current.tip('tip_small');
+      await result.current.tip();
     });
 
     expect(mockIap.requestPurchase).toHaveBeenCalledTimes(1);
+    expect(result.current.loading).toBe(false);
+  });
+
+  test('two taps during a pending purchase request start only one purchase', async () => {
+    let finishRequest!: () => void;
+    mockIap.requestPurchase.mockReturnValueOnce(new Promise<void>(resolve => { finishRequest = resolve; }));
+    const { result } = await renderLoadedTipJar();
+    let firstTap!: Promise<void>;
+    await act(async () => {
+      firstTap = result.current.tip();
+      await result.current.tip();
+    });
+    expect(mockIap.requestPurchase).toHaveBeenCalledTimes(1);
+    expect(mockIap.requestPurchase).toHaveBeenCalledWith({
+      request: { apple: { sku: 'tip_small' }, google: { skus: ['tip_small'] } }, type: 'in-app',
+    });
+    expect(result.current.loading).toBe(true);
+    await act(async () => { finishRequest(); await firstTap; });
     expect(result.current.loading).toBe(false);
   });
 
@@ -170,7 +204,7 @@ describe('useTipJar', () => {
     const { result } = await renderLoadedTipJar();
 
     await act(async () => {
-      await result.current.tip('tip_small');
+      await result.current.tip();
     });
 
     expect(alertSpy).toHaveBeenCalledWith('Purchase Failed', expect.any(String));
@@ -179,12 +213,12 @@ describe('useTipJar', () => {
 
   test('tip() keeps an immediate cancellation silent', async () => {
     mockIap.requestPurchase.mockRejectedValueOnce({
-      code: 'E_USER_CANCELLED',
+      code: 'user-cancelled',
     });
     const { result } = await renderLoadedTipJar();
 
     await act(async () => {
-      await result.current.tip('tip_small');
+      await result.current.tip();
     });
 
     expect(alertSpy).not.toHaveBeenCalled();
@@ -195,7 +229,7 @@ describe('useTipJar', () => {
     const { result } = await renderLoadedTipJar();
 
     act(() => {
-      latestErrorHandler()({ code: 'E_USER_CANCELLED' });
+      latestErrorHandler()({ code: 'user-cancelled' });
     });
     expect(result.current.loading).toBe(false);
     expect(alertSpy).not.toHaveBeenCalled();
@@ -210,22 +244,24 @@ describe('useTipJar', () => {
     const osSpy = jest.replaceProperty(Platform, 'OS', 'android');
     try {
       const cachedTip = { transactionId: 'tx-cached', productId: 'tip_medium' };
+      const otherRetiredTip = { transactionId: 'tx-retired-large', productId: 'tip_large' };
       const otherSku = { transactionId: 'tx-other', productId: 'not_a_tip' };
-      mockIap.getAvailablePurchases.mockResolvedValueOnce([cachedTip, otherSku]);
+      mockIap.getAvailablePurchases.mockResolvedValueOnce([cachedTip, otherRetiredTip, otherSku]);
 
       await renderLoadedTipJar();
 
-      expect(mockIap.finishTransaction).toHaveBeenCalledTimes(1);
+      expect(mockIap.finishTransaction).toHaveBeenCalledTimes(2);
       expect(mockIap.finishTransaction).toHaveBeenCalledWith({
         purchase: cachedTip,
         isConsumable: true,
       });
+      expect(mockIap.finishTransaction).toHaveBeenCalledWith({ purchase: otherRetiredTip, isConsumable: true });
 
       // A listener replay of the same transaction is skipped — already claimed.
       await act(async () => {
         await latestPurchaseHandler()(cachedTip);
       });
-      expect(mockIap.finishTransaction).toHaveBeenCalledTimes(1);
+      expect(mockIap.finishTransaction).toHaveBeenCalledTimes(2);
     } finally {
       osSpy.restore();
     }
