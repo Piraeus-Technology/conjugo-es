@@ -2985,7 +2985,7 @@
   },
   "amanecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to dawn",
     "impersonal": true,
     "pattern": {
@@ -2999,7 +2999,7 @@
   },
   "anochecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to get dark",
     "impersonal": true,
     "pattern": {
@@ -12472,7 +12472,7 @@
   },
   "acontecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to happen",
     "examples": [
       "Aconteció un milagro en el pueblo.",
@@ -12549,7 +12549,7 @@
   },
   "atardecer": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to get dark (evening)",
     "impersonal": true,
     "examples": [

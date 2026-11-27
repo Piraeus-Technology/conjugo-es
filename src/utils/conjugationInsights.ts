@@ -80,7 +80,14 @@ export function getInflectionNotes(infinitive: string, verb: VerbData): string[]
   }
 
   if (pattern?.yoGo && !present[0].disabled) notes.add('Irregular yo form: the present tense yo form ends in -go.');
-  if (pattern?.yoZco && !present[0].disabled) notes.add('Irregular yo form: the present tense yo form ends in -zco.');
+  if (pattern?.yoZco) {
+    if (!present[0].disabled) {
+      notes.add('Irregular yo form: the present tense yo form ends in -zco.');
+    } else {
+      const example = conjugate(infinitive, verb, 'subjunctive_present').find(row => !row.disabled && /zca(?:s|mos|is|n)?$/.test(row.form));
+      if (example) notes.add(`In the present subjunctive, the stem changes from -c- to -zc-, as in ${example.form}.`);
+    }
+  }
   if (pattern?.irregularFutureStem) {
     const tenses = (['future', 'conditional'] as const).filter(hasForms).map(tense => tenseNames[tense]);
     if (tenses.length) notes.add(`Irregular stem in ${tenses.join(' and ')}.`);
@@ -152,9 +159,12 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   const hasNoImperative = verb.impersonal || verb.thirdPersonOnly || verb.noImperative
     || imperativeTenses.every(tense => unavailableTenses.includes(tense));
   if (hasNoImperative) notes.push('This use has no imperative forms.');
-  const unavailableNamedTenses = unavailableTenses.filter(tense => !hasNoImperative || !imperativeTenses.includes(tense));
+  const unavailableNamedTenses = unavailableTenses
+    .filter(tense => !hasNoImperative || !imperativeTenses.includes(tense))
+    .map(tense => verb.extendedReference && (tense === 'future' || tense === 'future_perfect')
+      ? `${tenseNames[tense]} (including the subjunctive)` : tenseNames[tense]);
   if (unavailableNamedTenses.length) {
-    notes.push(`This verb is not used in these tenses: ${unavailableNamedTenses.map(tense => tenseNames[tense]).join(', ')}.`);
+    notes.push(`This verb is not used in these tenses: ${unavailableNamedTenses.join(', ')}.`);
   }
   if (verb.pronominalOnly) {
     const present = conjugate(infinitive, verb, 'present');

@@ -113,6 +113,9 @@ describe('Common verb conjugation spot checks', () => {
     expect(reference.flatMap(({ rows }) => rows.map(row => row.form))).toEqual(expect.arrayContaining([
       'solés', 'soliese', 'hube solido', 'haya solido', 'hubiera solido', 'hubiese solido', 'haber solido', 'habiendo solido',
     ]));
+    expect(reference.filter(({ rows }) => rows.every(row => row.disabled)).map(({ label }) => label)).toEqual([
+      'Subjunctive Future', 'Subjunctive Future Perfect',
+    ]);
     expect(available('acontecer', 'preterite')).toEqual(['aconteció', 'acontecieron']);
     expect(available('ocurrir', 'present')).toEqual(['ocurre', 'ocurren']);
     expect(available('doler', 'present')).toEqual(['duele', 'duelen']);

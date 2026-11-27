@@ -5,7 +5,7 @@ import {
   getOverrideExample,
   getRuleNotes,
 } from '../utils/conjugationInsights';
-import type { VerbData } from '../utils/conjugate';
+import { allTenses, conjugate, type VerbData } from '../utils/conjugate';
 
 const verbData = verbs as Record<string, VerbData>;
 
@@ -61,11 +61,21 @@ describe('conjugation insights', () => {
   test('irregular badges have notes and regular badges do not have irregular form notes', () => {
     const issues = Object.entries(verbData).flatMap(([infinitive, verb]) => {
       const explainsIrregularity = getInflectionNotes(infinitive, verb).length > 0;
-      return explainsIrregularity === !verb.regular ? [] : [infinitive];
+      if (explainsIrregularity === verb.regular) return [infinitive];
+      if (!verb.regular) return [];
+      const unmarked = { ...verb, pattern: undefined, overrides: undefined };
+      const hasIrregularForm = allTenses.some(tense => {
+        const regular = conjugate(infinitive, unmarked, tense);
+        return conjugate(infinitive, verb, tense).some((row, index) => !row.disabled && row.form !== regular[index].form);
+      });
+      return hasIrregularForm ? [infinitive] : [];
     });
     expect(issues).toEqual([]);
     expect(getRuleNotes('competer', verbData.competer)).toContain('This use has no imperative forms.');
     expect(getInflectionNotes('competer', verbData.competer)).toEqual([]);
+    expect(getInflectionNotes('acontecer', verbData.acontecer)).toEqual([
+      'In the present subjunctive, the stem changes from -c- to -zc-, as in acontezca.',
+    ]);
   });
 
   test('every override note shows a changed form and names the change', () => {
