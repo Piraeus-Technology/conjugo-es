@@ -13,48 +13,36 @@ import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { tenseNames, type Tense } from '../utils/conjugate';
 import { usePracticeSettingsStore, allTenses, allLevels } from '../store/practiceSettingsStore';
 
-const tenseGroups: { title: string; tenses: { key: Tense; label: string }[] }[] = [
+const shortTenseLabels: Partial<Record<Tense, string>> = {
+  subjunctive_present: 'Present',
+  subjunctive_imperfect: 'Imperfect',
+  imperative_affirmative: 'Affirmative',
+  imperative_negative: 'Negative',
+};
+
+const tenseGroups: { title: string; tenses: Tense[] }[] = [
   {
     title: 'Indicative',
-    tenses: [
-      { key: 'present', label: 'Present' },
-      { key: 'preterite', label: 'Preterite' },
-      { key: 'imperfect', label: 'Imperfect' },
-      { key: 'future', label: 'Future' },
-      { key: 'conditional', label: 'Conditional' },
-    ],
+    tenses: ['present', 'preterite', 'imperfect', 'future', 'conditional'],
   },
   {
     title: 'Subjunctive',
-    tenses: [
-      { key: 'subjunctive_present', label: 'Present' },
-      { key: 'subjunctive_imperfect', label: 'Imperfect' },
-    ],
+    tenses: ['subjunctive_present', 'subjunctive_imperfect'],
   },
   {
     title: 'Imperative',
-    tenses: [
-      { key: 'imperative_affirmative', label: 'Affirmative' },
-      { key: 'imperative_negative', label: 'Negative' },
-    ],
+    tenses: ['imperative_affirmative', 'imperative_negative'],
   },
   {
     title: 'Compound',
     tenses: [
-      { key: 'present_perfect', label: 'Present Perfect' },
-      { key: 'past_perfect', label: 'Past Perfect' },
-      { key: 'future_perfect', label: 'Future Perfect' },
-      { key: 'conditional_perfect', label: 'Conditional Perfect' },
-      { key: 'subjunctive_present_perfect', label: tenseNames.subjunctive_present_perfect },
-      { key: 'subjunctive_past_perfect', label: tenseNames.subjunctive_past_perfect },
+      'present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect',
+      'subjunctive_present_perfect', 'subjunctive_past_perfect',
     ],
   },
   {
     title: 'Progressive',
-    tenses: [
-      { key: 'present_progressive', label: 'Present Progressive' },
-      { key: 'past_progressive', label: 'Past Progressive' },
-    ],
+    tenses: ['present_progressive', 'past_progressive'],
   },
 ];
 
@@ -118,25 +106,26 @@ export default function PracticeSettingsScreen() {
         <View key={group.title}>
           <Text style={[styles.groupLabel, { color: colors.textMuted }]}>{group.title}</Text>
           <View style={[styles.card, { backgroundColor: colors.card }]}>
-            {group.tenses.map((item, i) => {
-              const active = activeTenses.includes(item.key);
+            {group.tenses.map((tense, i) => {
+              const active = activeTenses.includes(tense);
+              const label = shortTenseLabels[tense] ?? tenseNames[tense];
               return (
                 <TouchableOpacity
-                  key={item.key}
+                  key={tense}
                   style={[
                     styles.row,
                     i < group.tenses.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.divider },
                   ]}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    toggleTense(item.key);
+                    toggleTense(tense);
                   }}
                   activeOpacity={0.7}
                   accessibilityRole="checkbox"
-                  accessibilityLabel={`${group.title}: ${item.label}`}
+                  accessibilityLabel={`${group.title}: ${label}`}
                   accessibilityState={{ checked: active }}
                 >
-                  <Text style={[styles.rowText, { color: colors.textPrimary }]}>{item.label}</Text>
+                  <Text style={[styles.rowText, { color: colors.textPrimary }]}>{label}</Text>
                   <Ionicons
                     name={active ? 'checkmark-circle' : 'ellipse-outline'}
                     size={24}

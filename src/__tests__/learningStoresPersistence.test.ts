@@ -47,7 +47,7 @@ describe('quiz and spaced repetition store persistence', () => {
     warnSpy.mockRestore();
   });
 
-  test('missed compound subjunctives persist separately and appear in Practice Stats', async () => {
+  test('missed compound subjunctives persist separately and appear in Practice insights', async () => {
     const { recordResult } = useSpacedRepStore.getState();
     await recordResult('morir', 'subjunctive_present_perfect', 0, false);
     await recordResult('morir', 'subjunctive_past_perfect', 0, false);

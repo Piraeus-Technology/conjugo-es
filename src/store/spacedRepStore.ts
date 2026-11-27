@@ -74,8 +74,8 @@ export function applyPromptResult(
 
   // Legacy weights were stored by infinitive only and stay as the fallback
   // for this verb's OTHER prompts (getStoredWeight prefers the prompt key).
-  // Deleting the verb weight here used to reset ~90 sibling prompts of a
-  // struggling verb back to the default after a single answer.
+  // Deleting the verb weight here used to reset the sibling prompts back to
+  // the default after a single answer.
 
   return nextWeights;
 }

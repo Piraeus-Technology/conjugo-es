@@ -45,7 +45,7 @@ test('the conjugation picker and Practice settings list every supported tense in
   expect(settings.getByRole('checkbox', { name: 'Compound: Subjunctive Past Perfect' })).toBeChecked();
 });
 
-test('saved 1.2.3 all-tense settings offer Select All until the two new tenses are selected', async () => {
+test('saved 1.2.3 settings can select all tenses and toggle each new tense by label', async () => {
   const savedTenses: Tense[] = [
     'present', 'preterite', 'imperfect', 'future', 'conditional', 'subjunctive_present',
     'subjunctive_imperfect', 'imperative_affirmative', 'imperative_negative', 'present_perfect',
@@ -71,6 +71,17 @@ test('saved 1.2.3 all-tense settings offer Select All until the two new tenses a
 
   await act(async () => { fireEvent.press(deselectAll); });
   expect(usePracticeSettingsStore.getState().activeTenses).toEqual([]);
+
+  for (const [label, tense] of [
+    ['Subjunctive Present Perfect', 'subjunctive_present_perfect'],
+    ['Subjunctive Past Perfect', 'subjunctive_past_perfect'],
+  ] as const) {
+    const row = settings.getByText(label);
+    await act(async () => { fireEvent.press(row); });
+    expect(usePracticeSettingsStore.getState().activeTenses).toEqual([tense]);
+    await act(async () => { fireEvent.press(row); });
+    expect(usePracticeSettingsStore.getState().activeTenses).toEqual([]);
+  }
 });
 
 test.each([
