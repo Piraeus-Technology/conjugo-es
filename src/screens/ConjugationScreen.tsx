@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   AppState,
+  useWindowDimensions,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -39,7 +40,10 @@ const tenseGroups = [
   },
   {
     label: 'Compound',
-    tenses: ['present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect'] as Tense[],
+    tenses: [
+      'present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect',
+      'subjunctive_present_perfect', 'subjunctive_past_perfect',
+    ] as Tense[],
   },
   {
     label: 'Progressive',
@@ -63,6 +67,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const favorited = isFavorite(infinitive);
   const colors = useColors();
+  const { fontScale } = useWindowDimensions();
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const highlightRef = useRef<ComponentRef<typeof TouchableOpacity>>(null);
   const scrollContentRef = useRef<ComponentRef<typeof View>>(null);
@@ -174,6 +179,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                     key={tense}
                     style={[
                       styles.tenseButton,
+                      fontScale >= 1.5 && styles.fullWidthTenseButton,
                       { backgroundColor: isOpen ? colors.pillActiveBg : colors.pillBg },
                     ]}
                     onPress={() => toggleTense(tense)}
@@ -529,12 +535,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: spacing.xs,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: radius.md,
     width: '48.5%',
   },
-  tenseText: { fontSize: fonts.sizes.xs, fontWeight: fonts.weights.medium },
+  fullWidthTenseButton: { width: '100%' },
+  tenseText: { flexShrink: 1, fontSize: fonts.sizes.xs, fontWeight: fonts.weights.medium },
   table: {
     borderRadius: radius.md,
     padding: spacing.md,

@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
-import { Tense } from '../utils/conjugate';
+import { tenseNames, type Tense } from '../utils/conjugate';
 import { usePracticeSettingsStore, allTenses, allLevels } from '../store/practiceSettingsStore';
 
 const tenseGroups: { title: string; tenses: { key: Tense; label: string }[] }[] = [
@@ -45,6 +45,8 @@ const tenseGroups: { title: string; tenses: { key: Tense; label: string }[] }[] 
       { key: 'past_perfect', label: 'Past Perfect' },
       { key: 'future_perfect', label: 'Future Perfect' },
       { key: 'conditional_perfect', label: 'Conditional Perfect' },
+      { key: 'subjunctive_present_perfect', label: tenseNames.subjunctive_present_perfect },
+      { key: 'subjunctive_past_perfect', label: tenseNames.subjunctive_past_perfect },
     ],
   },
   {
@@ -277,9 +279,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: spacing.xs,
     padding: spacing.md,
   },
   rowText: {
+    flexShrink: 1,
     fontSize: fonts.sizes.md,
     fontWeight: fonts.weights.medium,
   },

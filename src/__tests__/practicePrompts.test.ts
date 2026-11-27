@@ -149,6 +149,23 @@ describe('practice prompt selection', () => {
     ]);
   });
 
+  test.each([
+    ['subjunctive_present_perfect', 'haya muerto'],
+    ['subjunctive_past_perfect', 'hubiera muerto'],
+  ] as const)('%s supports flashcard prompts and four quiz options', (tense, answer) => {
+    jest.spyOn(Math, 'random').mockReturnValue(0);
+    const entries = allVerbEntries.filter(([verb]) => verb === 'morir');
+    const session = createPracticeSession();
+    expect(session.next(entries, [tense], flatWeight, true)).toMatchObject({
+      verb: 'morir', tense, personIndex: 0, answer,
+    });
+    const question = generateQuestion([tense], flatWeight, entries);
+    expect(question).toMatchObject({ verb: 'morir', tense, personIndex: 0, correctAnswer: answer });
+    expect(new Set(question.options).size).toBe(4);
+    expect(question.options).toContain(answer);
+    expect(question.options.every(option => option.endsWith(' muerto'))).toBe(true);
+  });
+
   test('a settings change drops queued prompts that are no longer eligible', () => {
     jest.spyOn(Math, 'random').mockReturnValue(0);
     const session = createPracticeSession();

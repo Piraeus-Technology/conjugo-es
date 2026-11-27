@@ -1,4 +1,4 @@
-import { allTenses, practiceTenses, type Tense } from '../utils/conjugate';
+import { allTenses, practiceTenses, tenseNames, type Tense } from '../utils/conjugate';
 
 // This is a compile-time regression guard: it fails typecheck on the old
 // Record<string, ...> definition because the @ts-expect-error is then unused.
@@ -12,5 +12,9 @@ describe('tense types', () => {
     expect(practiceTenses).toEqual(
       allTenses.filter((tense) => tense !== 'gerund_participle'),
     );
+  });
+
+  test('the ordered tense list includes every tense exactly once', () => {
+    expect([...allTenses].sort()).toEqual(Object.keys(tenseNames).sort());
   });
 });

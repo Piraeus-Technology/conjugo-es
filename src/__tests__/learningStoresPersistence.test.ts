@@ -6,6 +6,7 @@ import {
   parseStoredWeights,
   useSpacedRepStore,
 } from '../store/spacedRepStore';
+import { buildPracticeInsights } from '../utils/practiceInsights';
 
 const mockStorage = new Map<string, string>();
 
@@ -44,6 +45,22 @@ describe('quiz and spaced repetition store persistence', () => {
 
   afterEach(() => {
     warnSpy.mockRestore();
+  });
+
+  test('missed compound subjunctives persist separately and appear in Practice Stats', async () => {
+    const { recordResult } = useSpacedRepStore.getState();
+    await recordResult('morir', 'subjunctive_present_perfect', 0, false);
+    await recordResult('morir', 'subjunctive_past_perfect', 0, false);
+    expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual({
+      'morir::subjunctive_present_perfect::0': 1.5,
+      'morir::subjunctive_past_perfect::0': 1.5,
+    });
+    __resetSpacedRepStoreForTests();
+    await useSpacedRepStore.getState().loadWeights();
+    expect(buildPracticeInsights(useSpacedRepStore.getState().weights).weakTenses).toEqual([
+      { label: 'Subjunctive Present Perfect', weight: 1.5, count: 1 },
+      { label: 'Subjunctive Past Perfect', weight: 1.5, count: 1 },
+    ]);
   });
 
   test('quiz answer waits for an in-flight initial load and preserves loaded totals', async () => {

@@ -63,6 +63,8 @@ const haberForms = {
   past_perfect: ['había', 'habías', 'había', 'habíamos', 'habíais', 'habían'],
   future_perfect: ['habré', 'habrás', 'habrá', 'habremos', 'habréis', 'habrán'],
   conditional_perfect: ['habría', 'habrías', 'habría', 'habríamos', 'habríais', 'habrían'],
+  subjunctive_present_perfect: ['haya', 'hayas', 'haya', 'hayamos', 'hayáis', 'hayan'],
+  subjunctive_past_perfect: ['hubiera', 'hubieras', 'hubiera', 'hubiéramos', 'hubierais', 'hubieran'],
 } as const satisfies Record<string, readonly string[]>;
 
 // ============ PROGRESSIVE TENSES ============
@@ -275,6 +277,8 @@ export const allTenses: Tense[] = [
   'past_perfect',
   'future_perfect',
   'conditional_perfect',
+  'subjunctive_present_perfect',
+  'subjunctive_past_perfect',
   'present_progressive',
   'past_progressive',
   'gerund_participle',
@@ -301,6 +305,8 @@ export const tenseNames: Record<Tense, string> = {
   past_perfect: 'Past Perfect',
   future_perfect: 'Future Perfect',
   conditional_perfect: 'Conditional Perfect',
+  subjunctive_present_perfect: 'Subjunctive Present Perfect',
+  subjunctive_past_perfect: 'Subjunctive Past Perfect',
   present_progressive: 'Present Progressive',
   past_progressive: 'Past Progressive',
   gerund_participle: 'Gerund & Participle',
@@ -924,7 +930,10 @@ export function conjugate(
       pronoun,
       form: `${haber[i]} ${participle}`,
     }));
-    return applyUsageRestrictions(verb, tense, results);
+    const restrictionTense = tense === 'subjunctive_present_perfect' || tense === 'subjunctive_past_perfect'
+      ? 'present_perfect'
+      : tense;
+    return applyUsageRestrictions(verb, restrictionTense, results);
   }
 
   if (tense in estarForms) {
