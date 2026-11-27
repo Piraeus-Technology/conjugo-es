@@ -161,8 +161,7 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   if (hasNoImperative) notes.push('This use has no imperative forms.');
   const unavailableNamedTenses = unavailableTenses
     .filter(tense => !hasNoImperative || !imperativeTenses.includes(tense))
-    .map(tense => verb.extendedReference && (tense === 'future' || tense === 'future_perfect')
-      ? `${tenseNames[tense]} (including the subjunctive)` : tenseNames[tense]);
+    .map(tense => tenseNames[tense]);
   if (unavailableNamedTenses.length) {
     notes.push(`This verb is not used in these tenses: ${unavailableNamedTenses.join(', ')}.`);
   }
