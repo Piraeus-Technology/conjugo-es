@@ -240,10 +240,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <TipJarProvider>
-      <AppErrorBoundary>
+    <AppErrorBoundary>
+      <TipJarProvider>
         <AppContent />
-      </AppErrorBoundary>
-    </TipJarProvider>
+      </TipJarProvider>
+    </AppErrorBoundary>
   );
 }
