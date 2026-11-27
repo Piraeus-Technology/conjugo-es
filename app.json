@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#FFFFFF"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lkh9596.conjugo",
@@ -41,12 +36,26 @@
     },
     "plugins": [
       "expo-asset",
-      "react-native-iap",
       [
-        "expo-build-properties",
+        "expo-iap",
         {
           "android": {
-            "kotlinVersion": "2.2.0"
+            "store": "play"
+          }
+        }
+      ],
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#FFFFFF",
+          "android": {
+            "imageWidth": 200
+          },
+          "ios": {
+            "enableFullScreenImage_legacy": true
           }
         }
       ]

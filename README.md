@@ -7,7 +7,7 @@ weights stay in local device storage.
 
 ## Development
 
-The app currently targets Expo SDK 54 and Node 24. Install and verify it with:
+The app targets Expo SDK 58 and Node 24. Use these commands to install and verify it.
 
 ```sh
 npm ci
@@ -16,17 +16,17 @@ npm run lint
 npm test
 npm run coverage
 npm run audit:examples
-EXPO_DOCTOR_SKIP_DEPENDENCY_VERSION_CHECK=1 npx expo-doctor
+npx expo-doctor
 ```
 
-The doctor version check is skipped because this branch deliberately keeps
-Jest 30, `@types/jest` 30, and `eslint-config-expo` 56. Required peer
-dependencies and the remaining project-health checks still run.
+TypeScript stays on 5.9 for `ts-jest` compatibility and Jest global types.
+The `expo.install.exclude` entry in `package.json` preserves that pin when
+Expo aligns dependencies.
 
 Start Metro with `npm start`, or create local native builds with
 `npm run ios` / `npm run android`. Native project folders are generated from
-`app.json`; do not remove the `react-native-iap` config plugin or its Kotlin
-2.2 build property while the app remains on `react-native-iap` 15.0.0.
+`app.json`. The `expo-iap` config plugin selects Google Play Billing for
+Android builds.
 
 ## Project map
 
@@ -38,8 +38,9 @@ Start Metro with `npm start`, or create local native builds with
 - `docs/index.html` — hosted privacy policy
 
 The tip jar offers one consumable in-app purchase, `tip_small`, and displays
-the store's localized price. The app still finishes delivered transactions for
-the retired `tip_medium` and `tip_large` products. Verify store delivery and
-transaction completion on real devices in both sandboxes.
+the store's localized price. The app also finishes completed purchases of the
+retired `tip_medium` and `tip_large` products. Verify store delivery and
+transaction completion on real devices in both sandboxes using
+release-configuration native builds.
 
 See [the release checklist](docs/release-checklist.md) before shipping.

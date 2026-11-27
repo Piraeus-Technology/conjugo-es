@@ -24,9 +24,11 @@ module.exports = {
         '<rootDir>/src/**/*.tsx',
         '!<rootDir>/src/__tests__/**',
       ],
-      setupFiles: ['<rootDir>/jest.setup.ui.js'],
+      resolver: 'react-native-reanimated/jest/resolver',
+      setupFiles: ['react-native-gesture-handler/jestSetup.js'],
+      setupFilesAfterEnv: ['<rootDir>/jest.setup.ui.js'],
       transformIgnorePatterns: [
-        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)',
+        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-(gesture-handler|reanimated|svg|worklets))',
       ],
     },
   ],
