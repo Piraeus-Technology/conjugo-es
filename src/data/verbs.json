@@ -199,6 +199,7 @@
     "type": "er",
     "regular": false,
     "translation": "to have (auxiliary)",
+    "impersonalCompound": true,
     "overrides": {
       "present": [
         "he",
@@ -1210,7 +1211,7 @@
   "helar": {
     "type": "ar",
     "regular": false,
-    "translation": "to freeze",
+    "translation": "to freeze (weather)",
     "impersonal": true,
     "pattern": {
       "stemChange": {
@@ -1219,7 +1220,7 @@
     },
     "examples": [
       "Anoche heló y las plantas se dañaron.",
-      "El viento helaba los dedos de las manos."
+      "En enero hiela casi todas las noches."
     ],
     "level": "B2"
   },
@@ -8288,6 +8289,7 @@
     "type": "ir",
     "regular": false,
     "translation": "to print",
+    "alternativePastParticiple": "imprimido",
     "examples": [
       "Imprimí los documentos para la reunión.",
       "Imprime dos copias del contrato."

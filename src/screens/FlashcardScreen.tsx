@@ -299,13 +299,16 @@ function FlashcardScreenSession() {
     );
   }
 
+  const visibleFront = phase === 'advancing' ? incomingCard : card;
+  const backInFlow = phase === 'back' || !visibleFront;
   const renderFront = (prompt: Card, opacity: number | Animated.Value | Animated.AnimatedInterpolation<number>) => (
     <Animated.View
       style={[
         styles.card,
+        backInFlow && styles.cardOverlay,
         isCompactCard && styles.cardCompact,
         isTinyCard && styles.cardTiny,
-        { backgroundColor: colors.card, opacity },
+        { backgroundColor: colors.card, minHeight: cardHeight, opacity },
       ]}
       pointerEvents="none"
       accessibilityElementsHidden
@@ -330,7 +333,6 @@ function FlashcardScreenSession() {
   );
 
   const promptLabel = `Tap to reveal conjugation of ${card.verb} for ${getPersonLabel(card)}, ${tenseNames[card.tense]}`;
-  const visibleFront = phase === 'advancing' ? incomingCard : card;
   const visibleFrontOpacity = phase === 'advancing' ? advanceAnim : phase === 'front' ? 1 : frontOpacity;
   const cardLabel = phase === 'advancing' ? 'Next flashcard'
     : phase === 'back' ? `${card.answer}, ${getPersonLabel(card)}, ${tenseNames[card.tense]}`
@@ -342,7 +344,7 @@ function FlashcardScreenSession() {
         styles.sessionContainer,
         {
           backgroundColor: colors.bg,
-          paddingTop: verticalPadding,
+          paddingTop: isTinyHeight ? spacing.xs : spacing.sm,
           paddingBottom: verticalPadding,
         },
       ]}
@@ -352,7 +354,6 @@ function FlashcardScreenSession() {
       <View
         style={[
           styles.scoreBar,
-          !isShortHeight && styles.scoreBarFloating,
           isShortHeight && styles.scoreBarCompact,
           isTinyHeight && styles.scoreBarTiny,
           { backgroundColor: colors.card },
@@ -381,19 +382,17 @@ function FlashcardScreenSession() {
       </View>
 
       <ScrollView
-        style={[styles.practiceArea, { marginTop: isShortHeight ? scoreCardGap : 0 }]}
+        style={[styles.practiceArea, { marginTop: scoreCardGap }]}
         contentContainerStyle={[
           styles.practiceAreaContent,
           shouldScrollPracticeArea && styles.practiceAreaContentScrolling,
         ]}
-        scrollEnabled={shouldScrollPracticeArea}
-        showsVerticalScrollIndicator={shouldScrollPracticeArea}
         bounces={shouldScrollPracticeArea}
       >
         {/* Card */}
         <TouchableOpacity
           ref={accessibleCardRef}
-          style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}
+          style={{ width: cardWidth }}
           onPress={frontInteractive ? flipToBack : undefined}
           activeOpacity={frontInteractive ? 0.95 : 1}
           accessible
@@ -413,11 +412,13 @@ function FlashcardScreenSession() {
             style={[
               styles.card,
               styles.cardBack,
+              !backInFlow && styles.cardOverlay,
               isCompactCard && styles.cardCompact,
               isTinyCard && styles.cardTiny,
               {
                 backgroundColor: colors.primary + '10',
                 borderColor: colors.controlBorder,
+                minHeight: cardHeight,
                 opacity: phase === 'advancing' ? outgoingOpacity : phase === 'front' ? 0 : flipAnim,
               },
             ]}
@@ -532,12 +533,6 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     borderRadius: radius.md,
   },
-  scoreBarFloating: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.lg,
-    right: spacing.lg,
-  },
   scoreBarCompact: { paddingVertical: spacing.xs },
   scoreBarTiny: { paddingVertical: 2, paddingHorizontal: spacing.xs },
   scoreRow: { flexDirection: 'row', justifyContent: 'space-around' },
@@ -560,18 +555,17 @@ const styles = StyleSheet.create({
   practiceAreaContentScrolling: {
     justifyContent: 'flex-start',
   },
-  cardContainer: {},
   card: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', padding: spacing.xl,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 4,
   },
+  cardOverlay: StyleSheet.absoluteFill,
   cardCompact: { padding: spacing.md },
   cardTiny: { padding: 10, borderRadius: radius.md },
   cardBack: { borderWidth: 2 },
   tenseLabel: {
     fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold,
-    letterSpacing: 1, textTransform: 'uppercase', marginBottom: spacing.md,
+    letterSpacing: 1, textTransform: 'uppercase', textAlign: 'center', marginBottom: spacing.md,
   },
   tenseLabelCompact: { marginBottom: spacing.sm },
   tenseLabelTiny: { fontSize: 10, letterSpacing: 0.8, marginBottom: 2 },
@@ -594,9 +588,9 @@ const styles = StyleSheet.create({
   contextTextCompact: { marginBottom: spacing.sm },
   contextTextTiny: { fontSize: 11, marginBottom: 2 },
   speakButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  tapHint: { fontSize: fonts.sizes.xs, position: 'absolute', bottom: spacing.lg },
-  tapHintCompact: { bottom: spacing.md },
-  tapHintTiny: { fontSize: 10, bottom: spacing.sm },
+  tapHint: { fontSize: fonts.sizes.xs, marginTop: spacing.lg },
+  tapHintCompact: { marginTop: spacing.md },
+  tapHintTiny: { fontSize: 10, marginTop: spacing.xs },
   buttonRow: { flexDirection: 'row', gap: spacing.md },
   actionButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',

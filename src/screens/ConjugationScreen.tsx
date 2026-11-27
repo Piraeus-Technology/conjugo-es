@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   AppState,
+  useWindowDimensions,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -39,7 +40,10 @@ const tenseGroups = [
   },
   {
     label: 'Compound',
-    tenses: ['present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect'] as Tense[],
+    tenses: [
+      'present_perfect', 'past_perfect', 'future_perfect', 'conditional_perfect',
+      'subjunctive_present_perfect', 'subjunctive_past_perfect',
+    ] as Tense[],
   },
   {
     label: 'Progressive',
@@ -63,6 +67,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const favorited = isFavorite(infinitive);
   const colors = useColors();
+  const { fontScale } = useWindowDimensions();
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const highlightRef = useRef<ComponentRef<typeof TouchableOpacity>>(null);
   const scrollContentRef = useRef<ComponentRef<typeof View>>(null);
@@ -174,6 +179,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                     key={tense}
                     style={[
                       styles.tenseButton,
+                      fontScale >= 1.5 && styles.fullWidthTenseButton,
                       { backgroundColor: isOpen ? colors.pillActiveBg : colors.pillBg },
                     ]}
                     onPress={() => toggleTense(tense)}
@@ -266,21 +272,28 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                           {row.pronoun}
                         </Text>
                         <View style={styles.formContainer}>
-                          <Text
-                            style={
-                              row.disabled
-                                ? [styles.disabledForm, { color: colors.textMuted }]
-                                : [
-                                    styles.form,
-                                    { color: colors.primaryText },
-                                    isHighlighted && { color: colors.primaryDark, fontWeight: fonts.weights.bold },
-                                  ]
-                            }
-                          >
-                            {row.disabled ? '—' : row.form}
-                          </Text>
-                          {!row.disabled && (
-                            <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} style={{ marginLeft: 6 }} />
+                          {row.disabled ? (
+                            <Text style={[styles.disabledForm, { color: colors.textMuted }]}>—</Text>
+                          ) : (
+                            <>
+                              <View style={styles.formWords}>
+                                {row.form.split(' ').map((word, wordIndex) => (
+                                  <Text
+                                    key={wordIndex}
+                                    numberOfLines={1}
+                                    adjustsFontSizeToFit
+                                    style={[
+                                      styles.form,
+                                      { color: colors.primaryText },
+                                      isHighlighted && { color: colors.primaryDark, fontWeight: fonts.weights.bold },
+                                    ]}
+                                  >
+                                    {word}
+                                  </Text>
+                                ))}
+                              </View>
+                              <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} style={{ marginLeft: 6 }} />
+                            </>
                           )}
                         </View>
                       </TouchableOpacity>
@@ -529,12 +542,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: spacing.xs,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: radius.md,
     width: '48.5%',
   },
-  tenseText: { fontSize: fonts.sizes.xs, fontWeight: fonts.weights.medium },
+  fullWidthTenseButton: { width: '100%' },
+  tenseText: { flexShrink: 1, fontSize: fonts.sizes.xs, fontWeight: fonts.weights.medium },
   table: {
     borderRadius: radius.md,
     padding: spacing.md,
@@ -557,7 +572,8 @@ const styles = StyleSheet.create({
   highlightedRow: { marginHorizontal: -8, paddingHorizontal: 16, borderRadius: radius.sm },
   pronoun: { flex: 1, fontSize: fonts.sizes.md },
   formContainer: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' },
-  form: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold, textAlign: 'right' },
+  formWords: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', columnGap: spacing.xs },
+  form: { maxWidth: '100%', fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold, textAlign: 'right' },
   disabledText: { textDecorationLine: 'line-through' },
   disabledForm: { flex: 1, fontSize: fonts.sizes.lg, fontWeight: fonts.weights.regular, textAlign: 'right' },
 });

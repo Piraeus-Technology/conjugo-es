@@ -17,6 +17,7 @@ export interface ConjMatch {
   pronoun: string;
   form: string;
   normalizedForm: string;
+  tableForm?: string;
 }
 
 export function normalizeSearchText(value: string): string {
@@ -148,6 +149,7 @@ async function scanConjugations(
     exactOnly = false,
   } = options;
   const normalizedQuery = normalizeSearchText(query);
+  const queryLastWord = normalizedQuery.split(' ').at(-1);
   const writtenQuery = normalizeWrittenForm(query);
   const writtenQueryBase = writtenQuery.replace(/^no\s+/, '');
   const negativeQuery = writtenQuery.startsWith('no ');
@@ -160,13 +162,21 @@ async function scanConjugations(
   for (let verbIndex = 0; verbIndex < verbEntries.length; verbIndex += 1) {
     if (shouldCancel()) break;
     const entry = verbEntries[verbIndex];
+    const alternate = entry.alternativePastParticiple;
+    const participle = alternate && normalizeSearchText(alternate) === queryLastWord
+      ? conjugate(entry.infinitive, entry, 'gerund_participle')[1].form
+      : undefined;
 
     for (const tense of allTenses) {
       const results = conjugate(entry.infinitive, entry, tense);
       for (const result of results) {
         if (result.disabled || result.form === '—') continue;
 
-        const form = result.form;
+        const lastWordStart = participle ? result.form.lastIndexOf(' ') + 1 : 0;
+        const alternateForm = participle && result.form.slice(lastWordStart) === participle
+          ? result.form.slice(0, lastWordStart) + alternate
+          : undefined;
+        const form = alternateForm && normalizeSearchText(alternateForm) === normalizedQuery ? alternateForm : result.form;
         const normalizedForm = normalizeSearchText(form);
         evaluatedFormCount += 1;
         const score = exactOnly
@@ -187,6 +197,7 @@ async function scanConjugations(
             pronoun: result.pronoun,
             form,
             normalizedForm,
+            ...(form !== result.form && { tableForm: result.form }),
           },
         });
       }

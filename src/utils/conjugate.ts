@@ -63,6 +63,8 @@ const haberForms = {
   past_perfect: ['había', 'habías', 'había', 'habíamos', 'habíais', 'habían'],
   future_perfect: ['habré', 'habrás', 'habrá', 'habremos', 'habréis', 'habrán'],
   conditional_perfect: ['habría', 'habrías', 'habría', 'habríamos', 'habríais', 'habrían'],
+  subjunctive_present_perfect: ['haya', 'hayas', 'haya', 'hayamos', 'hayáis', 'hayan'],
+  subjunctive_past_perfect: ['hubiera', 'hubieras', 'hubiera', 'hubiéramos', 'hubierais', 'hubieran'],
 } as const satisfies Record<string, readonly string[]>;
 
 // ============ PROGRESSIVE TENSES ============
@@ -275,14 +277,15 @@ export const allTenses: Tense[] = [
   'past_perfect',
   'future_perfect',
   'conditional_perfect',
+  'subjunctive_present_perfect',
+  'subjunctive_past_perfect',
   'present_progressive',
   'past_progressive',
   'gerund_participle',
 ];
 
-// Practice prompts require a person-indexed form. Derive this list from the
-// canonical tense list so adding a new finite tense cannot silently omit it
-// from practice settings.
+// Practice prompts require a person-indexed form. The Practice settings screen
+// lists these tenses by group, and its rendered-screen test checks the list.
 export const practiceTenses: Tense[] = allTenses.filter(
   (tense) => tense !== 'gerund_participle',
 );
@@ -301,6 +304,8 @@ export const tenseNames: Record<Tense, string> = {
   past_perfect: 'Past Perfect',
   future_perfect: 'Future Perfect',
   conditional_perfect: 'Conditional Perfect',
+  subjunctive_present_perfect: 'Subjunctive Present Perfect',
+  subjunctive_past_perfect: 'Subjunctive Past Perfect',
   present_progressive: 'Present Progressive',
   past_progressive: 'Past Progressive',
   gerund_participle: 'Gerund & Participle',
@@ -347,7 +352,9 @@ export interface VerbData {
   regular: boolean;
   translation: string;
   englishSearchAliases?: string[];
+  alternativePastParticiple?: string;
   impersonal?: boolean;
+  impersonalCompound?: boolean;
   thirdPersonOnly?: boolean;
   noImperative?: boolean;
   unavailableTenses?: Tense[];
@@ -949,12 +956,13 @@ function applyUsageRestrictions(
   tense: Tense,
   results: ConjugationResult[],
 ): ConjugationResult[] {
+  const impersonal = verb.impersonal || (verb.impersonalCompound && tense in haberForms);
   const unavailableTense = verb.unavailableTenses?.includes(tense)
     || ((verb.impersonal || verb.thirdPersonOnly || verb.noImperative) && imperativeTenses.includes(tense));
-  if (!unavailableTense && !verb.impersonal && !verb.thirdPersonOnly) return results;
+  if (!unavailableTense && !impersonal && !verb.thirdPersonOnly) return results;
 
   return results.map((result, index) => {
-    const unavailablePerson = (verb.impersonal && index !== 2)
+    const unavailablePerson = (impersonal && index !== 2)
       || (verb.thirdPersonOnly && index !== 2 && index !== 5);
     return unavailableTense || unavailablePerson
       ? { ...result, form: '—', disabled: true }

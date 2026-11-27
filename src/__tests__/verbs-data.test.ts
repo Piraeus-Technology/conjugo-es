@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { conjugate, VerbData, allTenses, Tense, type IrregularPattern } from '../utils/conjugate';
+import { getRuleNotes } from '../utils/conjugationInsights';
 import verbs from '../data/verbs.json';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>);
@@ -45,6 +46,22 @@ describe('Verb database integrity', () => {
           expect(typeof r.pronoun).toBe('string');
         }
       }
+    }
+  });
+
+  test('perfect tense restrictions blank only the named table and identify it in the rule notes', () => {
+    const tenses = [
+      ['present_perfect', 'Present Perfect'],
+      ['subjunctive_present_perfect', 'Subjunctive Present Perfect'],
+      ['subjunctive_past_perfect', 'Subjunctive Past Perfect'],
+    ] as const;
+    for (const [restrictedTense, label] of tenses) {
+      const data: VerbData = { type: 'ar', regular: true, translation: 'to speak', unavailableTenses: [restrictedTense] };
+      for (const [tense] of tenses) {
+        const forms = conjugate('hablar', data, tense).filter(row => !row.disabled && row.form !== '—');
+        expect(forms).toHaveLength(tense === restrictedTense ? 0 : 6);
+      }
+      expect(getRuleNotes('hablar', data)).toEqual([`This verb is not used in these tenses: ${label}.`]);
     }
   });
 
@@ -99,13 +116,26 @@ describe('Common verb conjugation spot checks', () => {
     expect(forms('rebotar', 'imperative_negative')[1]).toBe('no rebotes');
   });
 
+  test('compound subjunctives use the six haber forms and the existing participle', () => {
+    expect(forms('hablar', 'subjunctive_present_perfect')).toEqual([
+      'haya hablado', 'hayas hablado', 'haya hablado', 'hayamos hablado', 'hayáis hablado', 'hayan hablado',
+    ]);
+    expect(forms('hablar', 'subjunctive_past_perfect')).toEqual([
+      'hubiera hablado', 'hubieras hablado', 'hubiera hablado', 'hubiéramos hablado', 'hubierais hablado', 'hubieran hablado',
+    ]);
+    expect(forms('morir', 'subjunctive_present_perfect')[0]).toBe('haya muerto');
+    expect(forms('romper', 'subjunctive_past_perfect')[0]).toBe('hubiera roto');
+    expect(forms('pudrir', 'subjunctive_past_perfect')[0]).toBe('hubiera podrido');
+  });
+
   test('defective verbs only display their available forms', () => {
     const available = (verb: string, tense: Tense) => forms(verb, tense).filter(form => form !== '—');
     expect(available('haber', 'imperative_affirmative')).toEqual([]);
     expect(available('haber', 'imperative_negative')).toEqual([]);
     expect(allTenses.filter(tense => available('soler', tense).length)).toEqual([
       'present', 'preterite', 'imperfect', 'subjunctive_present', 'subjunctive_imperfect', 'present_perfect',
-      'past_perfect', 'present_progressive', 'past_progressive', 'gerund_participle',
+      'past_perfect', 'subjunctive_present_perfect', 'subjunctive_past_perfect',
+      'present_progressive', 'past_progressive', 'gerund_participle',
     ]);
     expect(available('soler', 'preterite')).toEqual(expect.arrayContaining(['solí', 'solieron']));
     expect(available('soler', 'past_perfect')).toContain('había solido');

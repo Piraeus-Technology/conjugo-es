@@ -6,7 +6,6 @@ import {
   __resetPracticeSettingsStoreForTests,
   allTenses,
   allLevels,
-  beginnerTenses,
   beginnerLevels,
   usePracticeSettingsStore,
 } from '../store/practiceSettingsStore';
@@ -157,12 +156,14 @@ describe('simple store persistence', () => {
 
   describe('practice settings', () => {
     test('fresh install persists beginner defaults before any activity', async () => {
+      const defaultTenses = ['present', 'preterite', 'imperfect', 'future', 'imperative_affirmative'];
       await usePracticeSettingsStore.getState().loadPracticeSettings();
-      expect(usePracticeSettingsStore.getState().activeTenses).toEqual(beginnerTenses);
+      expect(usePracticeSettingsStore.getState().activeTenses).toEqual(defaultTenses);
       expect(usePracticeSettingsStore.getState().activeLevels).toEqual(beginnerLevels);
       mockStorage.set('verb_history', '["hablar"]');
       __resetPracticeSettingsStoreForTests();
       await usePracticeSettingsStore.getState().loadPracticeSettings();
+      expect(usePracticeSettingsStore.getState().activeTenses).toEqual(defaultTenses);
       expect(usePracticeSettingsStore.getState().activeLevels).toEqual(beginnerLevels);
     });
 

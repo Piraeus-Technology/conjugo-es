@@ -394,6 +394,7 @@ const styles = StyleSheet.create({
     fontWeight: fonts.weights.semibold,
     letterSpacing: 1,
     textTransform: 'uppercase',
+    textAlign: 'center',
     marginBottom: spacing.md,
   },
   questionVerb: {
