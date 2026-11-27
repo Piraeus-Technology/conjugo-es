@@ -22,7 +22,7 @@ interface FlashcardSessionStore {
   loaded: boolean;
   loadError: boolean;
   loadSessions: () => Promise<void>;
-  saveSession: (session: Omit<FlashcardSession, 'day'> & { day?: string }) => Promise<void>;
+  saveSession: (session: Omit<FlashcardSession, 'day'> & { day?: string }, markSaved?: () => void) => Promise<void>;
   clearSessions: () => Promise<boolean>;
 }
 
@@ -127,7 +127,7 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
     });
   },
 
-  saveSession: async (session) => {
+  saveSession: async (session, markSaved) => {
     const version = usePracticeResetStore.getState().version;
     const day = session.day ?? getTodayKey();
     if (!isValidDayKey(day)) throw new Error('Invalid session day');
@@ -162,6 +162,8 @@ export const useFlashcardSessionStore = create<FlashcardSessionStore>((set, get)
       if (!persisted) {
         throw new Error('Failed to persist flashcard session');
       }
+      // Move the answered delta out of memory just before publishing the saved row.
+      markSaved?.();
       set({ sessions: updated });
     });
   },

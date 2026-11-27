@@ -1,54 +1,94 @@
 import {
   conjugate,
   getRegularPastParticiple,
+  imperativeTenses,
+  tenseNames,
+  type Tense,
   type VerbData,
 } from './conjugate';
 
 const familyBases = ['decir', 'hacer', 'poner', 'tener', 'venir', 'traer', 'ver', 'oír', 'reír'] as const;
 const verFamily = new Set(['ver', 'prever', 'entrever']);
 
-export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
+const accentless = (form: string) => form.normalize('NFD').replace(/\u0301/g, '');
+
+export function getOverrideExample(infinitive: string, verb: VerbData) {
+  for (const tense of ['present', 'preterite', 'subjunctive_present'] as const) {
+    if (!verb.overrides?.[tense] && !verb.pattern?.fullOverrides?.[tense]) continue;
+    const regular = conjugate(infinitive, { type: verb.type, regular: true, translation: verb.translation }, tense);
+    const displayed = conjugate(infinitive, verb, tense);
+    const order = tense === 'preterite' ? [2, 0, 1, 3, 4, 5] : [0, 1, 2, 3, 4, 5];
+    const personIndex = order.find(index => !displayed[index].disabled && displayed[index].form !== regular[index].form);
+    if (personIndex === undefined) continue;
+
+    const form = displayed[personIndex].form;
+    const regularForm = regular[personIndex].form;
+    const stem = infinitive.slice(0, -2);
+    const regularEnding = regularForm.slice(stem.length);
+    let difference = 'stem and ending';
+    if (accentless(form) === accentless(regularForm)) difference = 'accent';
+    else if (form.replace(/ü/g, 'u') === regularForm || form.replace(/y/g, 'i') === regularForm) difference = 'spelling';
+    else if (regularEnding && form.endsWith(regularEnding)) difference = 'stem';
+    else if (stem && form.startsWith(stem)) difference = 'ending';
+    return { tense, personIndex, form, regularForm, difference };
+  }
+}
+
+export function getInflectionNotes(infinitive: string, verb: VerbData): string[] {
   const notes = new Set<string>();
   const pattern = verb.pattern;
   const present = conjugate(infinitive, verb, 'present');
+  const hasForms = (tense: Tense) => conjugate(infinitive, verb, tense).some(row => !row.disabled);
+  const presentScope = verb.impersonal ? 'in the third-person singular' : verb.thirdPersonOnly
+    ? 'in the third person' : 'in boot forms';
 
-  switch (pattern?.stemChange?.present) {
+  switch (!present[2].disabled && pattern?.stemChange?.present) {
     case 'e_ie':
-      notes.add('Present tense stem change: e -> ie in boot forms.');
+      notes.add(`Present tense stem change: e -> ie ${presentScope}.`);
       break;
     case 'o_ue':
-      notes.add('Present tense stem change: o -> ue in boot forms.');
+      notes.add(`Present tense stem change: o -> ue ${presentScope}.`);
       break;
     case 'e_i':
-      notes.add('Present tense stem change: e -> i in boot forms.');
+      notes.add(`Present tense stem change: e -> i ${presentScope}.`);
       break;
     case 'i_ie':
-      notes.add('Present tense stem change: i -> ie in boot forms.');
+      notes.add(`Present tense stem change: i -> ie ${presentScope}.`);
       break;
     case 'u_ue':
-      notes.add('Present tense stem change: u -> ue in boot forms.');
+      notes.add(`Present tense stem change: u -> ue ${presentScope}.`);
       break;
     case 'i_í':
-      notes.add('The stem i takes an accent in present-tense boot forms.');
+      notes.add(`The stem i takes an accent ${presentScope} in the present tense.`);
       break;
     case 'u_ú':
-      notes.add('The stem u takes an accent in present-tense boot forms.');
+      notes.add(`The stem u takes an accent ${presentScope} in the present tense.`);
       break;
   }
 
-  switch (pattern?.stemChange?.preterite) {
-    case 'e_i':
-      notes.add('The stem changes from e to i in the third-person preterite and throughout the imperfect subjunctive.');
-      break;
-    case 'o_u':
-      notes.add('The stem changes from o to u in the third-person preterite and throughout the imperfect subjunctive.');
-      break;
+  const preteriteChange = pattern?.stemChange?.preterite;
+  if (preteriteChange === 'e_i' || preteriteChange === 'o_u') {
+    const [from, to] = preteriteChange.split('_');
+    const affected = [
+      hasForms('preterite') && 'the third-person preterite',
+      hasForms('subjunctive_imperfect') && (verb.impersonal || verb.thirdPersonOnly
+        ? 'the available imperfect subjunctive forms' : 'all imperfect subjunctive forms'),
+      !conjugate(infinitive, verb, 'subjunctive_present')[3].disabled && 'the nosotros and vosotros forms of the present subjunctive',
+      'the gerund',
+    ].filter(Boolean);
+    notes.add(`For this -ir verb, the stem changes from ${from} to ${to} in ${affected.slice(0, -1).join(', ')}${affected.length > 1 ? ', and ' : ''}${affected.at(-1)}.`);
   }
 
   if (pattern?.yoGo && !present[0].disabled) notes.add('Irregular yo form: the present tense yo form ends in -go.');
   if (pattern?.yoZco && !present[0].disabled) notes.add('Irregular yo form: the present tense yo form ends in -zco.');
-  if (pattern?.irregularFutureStem) notes.add('Future and conditional use an irregular stem.');
-  if (pattern?.irregularPreteriteStem) notes.add('Preterite and imperfect subjunctive use an irregular preterite stem.');
+  if (pattern?.irregularFutureStem) {
+    const tenses = (['future', 'conditional'] as const).filter(hasForms).map(tense => tenseNames[tense]);
+    if (tenses.length) notes.add(`Irregular stem in ${tenses.join(' and ')}.`);
+  }
+  if (pattern?.irregularPreteriteStem) {
+    const tenses = (['preterite', 'subjunctive_imperfect'] as const).filter(hasForms).map(tense => tenseNames[tense]);
+    if (tenses.length) notes.add(`Irregular preterite stem in ${tenses.join(' and ')}.`);
+  }
 
   switch (pattern?.spellingChange) {
     case 'car_qué':
@@ -83,7 +123,9 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   const regularParticiple = getRegularPastParticiple(infinitive, verb.type);
 
   if (verb.type !== 'ar' && /(?:ñ|ll)$/.test(stem) && gerund === `${stem}endo`) {
-    notes.add(`After ñ or ll, the gerund ends in -endo (${gerund}). The third-person preterite endings are -ó and -eron.`);
+    notes.add(`In -er and -ir verbs, ñ or ll absorbs the i of the gerund ending (${gerund}).`);
+    if (hasForms('preterite')) notes.add('After ñ or ll in these verbs, third-person preterite endings are -ó and -eron.');
+    if (hasForms('subjunctive_imperfect')) notes.add('The imperfect subjunctive also drops that i, using endings such as -era and -eran.');
   } else if (gerund !== regularGerund) {
     notes.add(`Irregular gerund: ${gerund}.`);
   }
@@ -91,26 +133,38 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
     notes.add(`Irregular past participle: ${participle}.`);
   }
 
-  for (const tense of ['present', 'preterite', 'subjunctive_present'] as const) {
-    if (!verb.overrides?.[tense] && !pattern?.fullOverrides?.[tense]) continue;
-    const example = conjugate(infinitive, verb, tense)[tense === 'preterite' ? 2 : 0];
-    if (!example.disabled) {
-      notes.add(`Some forms have irregular stems or endings, such as ${example.form}.`);
-      break;
-    }
-  }
-
-  if (verb.impersonal) {
-    notes.add('Defective conjugation: only the third-person singular is used for weather or time of day.');
-  }
-  if (verb.thirdPersonOnly) {
-    notes.add('Defective conjugation: used only in the third-person singular and plural.');
-  }
-  if (verb.pronominalOnly) {
-    notes.add(`Used as ${infinitive}se: me ${present[0].form}, te ${present[1].form}, se ${present[2].form}.`);
-  }
+  const example = getOverrideExample(infinitive, verb);
+  if (example) notes.add(`Change in ${example.difference}: ${example.form}.`);
 
   return [...notes];
+}
+
+export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
+  const notes = getInflectionNotes(infinitive, verb);
+
+  if (verb.impersonal) {
+    notes.push('For weather or time of day, only the third-person singular is used.');
+  }
+  if (verb.thirdPersonOnly) {
+    notes.push('In the meaning shown here, finite forms are used only in the third-person singular and plural.');
+  }
+  const unavailableTenses = verb.unavailableTenses ?? [];
+  const hasNoImperative = verb.impersonal || verb.thirdPersonOnly || verb.noImperative
+    || imperativeTenses.every(tense => unavailableTenses.includes(tense));
+  if (hasNoImperative) notes.push('This use has no imperative forms.');
+  const unavailableNamedTenses = unavailableTenses.filter(tense => !hasNoImperative || !imperativeTenses.includes(tense));
+  if (unavailableNamedTenses.length) {
+    notes.push(`This verb is not used in these tenses: ${unavailableNamedTenses.map(tense => tenseNames[tense]).join(', ')}.`);
+  }
+  if (verb.pronominalOnly) {
+    const present = conjugate(infinitive, verb, 'present');
+    const examples = ['me', 'te', 'se'].flatMap((pronoun, index) =>
+      present[index].disabled ? [] : [`${pronoun} ${present[index].form}`],
+    );
+    notes.push(`Used as ${infinitive}se${examples.length ? `: ${examples.join(', ')}` : ''}.`);
+  }
+
+  return notes;
 }
 
 export function getFamilyKey(infinitive: string, verb: VerbData): string | null {

@@ -10,11 +10,11 @@ import {
 import * as Haptics from 'expo-haptics';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as StoreReview from 'expo-store-review';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
 import { generateQuestion, type Question } from '../utils/quizQuestion';
-import { createPracticeSession } from '../utils/practicePrompts';
+import { createPracticeSession, practiceSelectionKey } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { usePracticeResetStore } from '../store/practiceResetStore';
 import { getPersonLabel, tenseNames, VerbData, VerbLevel } from '../utils/conjugate';
@@ -50,6 +50,7 @@ function QuizScreenSession() {
   const { activeTenses, activeLevels, loaded: settingsLoaded, loadPracticeSettings } = usePracticeSettingsStore();
   const includeVosotros = useThemeStore((s) => s.includeVosotros);
   const nav = useNavigation<any>();
+  const focused = useIsFocused();
 
   const filteredEntries = React.useMemo(() =>
     allVerbEntries.filter(([, d]) => activeLevels.includes(d.level as VerbLevel)),
@@ -60,6 +61,17 @@ function QuizScreenSession() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [streak, setStreak] = useState(0);
   const [practiceSession] = useState(createPracticeSession);
+  const selectionKey = practiceSelectionKey(activeTenses, activeLevels, includeVosotros);
+  const appliedSelection = React.useRef<string | null>(null);
+  const currentQuestion = React.useRef<Question | null>(null);
+  const answeredQuestion = React.useRef<Question | null>(null);
+
+  const showQuestion = React.useCallback((next: Question | null) => {
+    currentQuestion.current = next;
+    answeredQuestion.current = null;
+    setQuestion(next);
+    setSelectedAnswer(null);
+  }, []);
 
   React.useLayoutEffect(() => {
     nav.setOptions({
@@ -85,25 +97,25 @@ function QuizScreenSession() {
     loadPracticeSettings();
   }, [loadStats, loadWeights, loadSessions, loadPracticeSettings]);
 
-  useEffect(() => {
-    if (!weightsLoaded || !settingsLoaded) return;
-    if (activeTenses.length > 0 && filteredEntries.length > 0) {
-      setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros, practiceSession));
-      setSelectedAnswer(null);
-    } else {
-      practiceSession.prune(filteredEntries, activeTenses, includeVosotros);
-      setQuestion(null);
-    }
-  }, [weightsLoaded, settingsLoaded, activeTenses, filteredEntries, includeVosotros, getWeight, practiceSession]);
+  React.useLayoutEffect(() => {
+    if (!focused || !weightsLoaded || !settingsLoaded || appliedSelection.current === selectionKey) return;
+    appliedSelection.current = selectionKey;
+    practiceSession.prune(filteredEntries, activeTenses, includeVosotros);
+    showQuestion(activeTenses.length && filteredEntries.length
+      ? generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros, practiceSession, false)
+      : null);
+  }, [focused, weightsLoaded, settingsLoaded, selectionKey, activeTenses, filteredEntries, includeVosotros, getWeight, practiceSession, showQuestion]);
 
   const isCorrect = selectedAnswer === question?.correctAnswer;
   const answered = selectedAnswer !== null;
 
   const handleAnswer = (answer: string) => {
-    if (answered || !question) return;
+    if (!question || currentQuestion.current !== question || answeredQuestion.current === question) return;
+    answeredQuestion.current = question;
     setSelectedAnswer(answer);
 
     const correct = answer === question.correctAnswer;
+    practiceSession.recordAnswer(question, correct);
     if (correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       const newStreak = streak + 1;
@@ -124,7 +136,6 @@ function QuizScreenSession() {
           .catch((e) => console.warn('StoreReview failed:', e));
       }
     } else {
-      practiceSession.recordMiss(question);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setStreak(0);
       recordProgress(false);
@@ -136,14 +147,14 @@ function QuizScreenSession() {
   };
 
   const handleNext = () => {
+    if (!question || currentQuestion.current !== question || answeredQuestion.current !== question) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros, practiceSession));
-    setSelectedAnswer(null);
+    showQuestion(generateQuestion(activeTenses, getWeight, filteredEntries, includeVosotros, practiceSession));
   };
 
   const { unsavedCount, unsavedCorrect, recordProgress } = useSessionAutosave({
-    save: ({ day, count, correct, bestStreak }) =>
-      saveSession({ day, total: count, correct, streak: bestStreak }),
+    save: ({ day, count, correct, bestStreak }, markSaved) =>
+      saveSession({ day, total: count, correct, streak: bestStreak }, markSaved),
   });
 
   // Today's cumulative totals plus any unsaved in-memory progress.

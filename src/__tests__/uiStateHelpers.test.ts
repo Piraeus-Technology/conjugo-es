@@ -12,7 +12,9 @@ describe('UI state helpers', () => {
 
   test('detects pending debounced search without treating clears as pending', () => {
     expect(isSearchDebouncePending('', 'hablar')).toBe(false);
-    expect(isSearchDebouncePending('hablé', 'hable')).toBe(false);
+    expect(isSearchDebouncePending('hablé', 'hable')).toBe(true);
+    expect(isSearchDebouncePending('no hables', 'hables')).toBe(true);
+    expect(isSearchDebouncePending('hable\u0301', 'hablé')).toBe(false);
     expect(isSearchDebouncePending('hablo', 'hab')).toBe(true);
   });
 

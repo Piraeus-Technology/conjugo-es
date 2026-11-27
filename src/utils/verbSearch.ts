@@ -7,6 +7,7 @@ export interface VerbEntry extends VerbData {
   infinitive: string;
   normalizedInfinitive: string;
   normalizedTranslation: string;
+  normalizedSenses: string[];
 }
 
 export interface ConjMatch {
@@ -25,7 +26,7 @@ export function normalizeSearchText(value: string): string {
     .replace(/^no\s+/, '');
 }
 
-function normalizeWrittenForm(value: string): string {
+export function normalizeWrittenForm(value: string): string {
   return value
     .toLowerCase()
     .normalize('NFC')
@@ -34,11 +35,22 @@ function normalizeWrittenForm(value: string): string {
     .trim();
 }
 
+const splitGloss = (translation: string) => translation.split(/\s*\/\s*|\s+or\s+(?=to )/);
+const withoutGlossAnnotation = (sense: string) => sense.replace(/\s*\([^)]*\)/g, '');
+
+export function getEnglishSenses(translation: string): string[] {
+  return splitGloss(translation).map(part => part.startsWith('to ') ? part : `to ${part}`);
+}
+
 export const verbEntries: VerbEntry[] = Object.entries(verbs as Record<string, VerbData>).map(
   ([infinitive, data]) => ({
     infinitive,
     normalizedInfinitive: normalizeSearchText(infinitive),
     normalizedTranslation: normalizeSearchText(data.translation),
+    normalizedSenses: [...new Set([...getEnglishSenses(data.translation), ...(data.englishSearchAliases ?? [])].flatMap(sense => [
+      normalizeSearchText(sense),
+      normalizeSearchText(withoutGlossAnnotation(sense)),
+    ]))],
     ...data,
   }),
 );
@@ -49,6 +61,7 @@ const verbFuse = new Fuse(verbEntries, {
     { name: 'normalizedInfinitive', weight: 2 },
     { name: 'translation', weight: 1 },
     { name: 'normalizedTranslation', weight: 1 },
+    { name: 'normalizedSenses', weight: 1 },
   ],
   threshold: FUSE_INFINITIVE_THRESHOLD,
   ignoreLocation: true,
@@ -71,7 +84,7 @@ interface ConjugationScanOptions {
 interface RankedConjugationMatch {
   match: ConjMatch;
   score: number;
-  writtenMatch: boolean;
+  writtenScore: number;
 }
 
 interface ConjugationScanResult {
@@ -136,6 +149,8 @@ async function scanConjugations(
   } = options;
   const normalizedQuery = normalizeSearchText(query);
   const writtenQuery = normalizeWrittenForm(query);
+  const writtenQueryBase = writtenQuery.replace(/^no\s+/, '');
+  const negativeQuery = writtenQuery.startsWith('no ');
   const ranked: RankedConjugationMatch[] = [];
   const previous = new Array<number>(normalizedQuery.length + 1);
   const current = new Array<number>(normalizedQuery.length + 1);
@@ -159,9 +174,12 @@ async function scanConjugations(
           : editDistanceScore(normalizedQuery, normalizedForm, previous, current);
         if (score > FUSE_CONJUGATION_THRESHOLD) continue;
 
+        const writtenForm = score === 0 ? normalizeWrittenForm(form) : '';
+        const sameSpelling = writtenForm.replace(/^no\s+/, '') === writtenQueryBase;
+        const samePolarity = writtenForm.startsWith('no ') === negativeQuery;
         ranked.push({
           score,
-          writtenMatch: score === 0 && normalizeWrittenForm(form) === writtenQuery,
+          writtenScore: score === 0 ? Number(sameSpelling) * 2 + Number(samePolarity) : 0,
           match: {
             infinitive: entry.infinitive,
             translation: entry.translation,
@@ -182,7 +200,7 @@ async function scanConjugations(
 
   ranked.sort((first, second) =>
     first.score - second.score ||
-    Number(second.writtenMatch) - Number(first.writtenMatch) ||
+    second.writtenScore - first.writtenScore ||
     first.match.infinitive.localeCompare(second.match.infinitive),
   );
   return {
@@ -193,7 +211,27 @@ async function scanConjugations(
 }
 
 export function searchVerbs(query: string): FuseResult<VerbEntry>[] {
-  return verbFuse.search(query);
+  const normalized = normalizeSearchText(query);
+  if (!normalized) return [];
+  const exactInfinitives: FuseResult<VerbEntry>[] = [];
+  const exactEnglish: FuseResult<VerbEntry>[] = [];
+  const exactEnglishAliases: FuseResult<VerbEntry>[] = [];
+  verbEntries.forEach((item, refIndex) => {
+    if (item.normalizedInfinitive === normalized) exactInfinitives.push({ item, refIndex, score: 0 });
+    else if (isExactEnglishMatch(item, normalized)) {
+      const writtenSense = item.normalizedTranslation === normalized || splitGloss(item.translation).some(part =>
+        normalizeSearchText(part) === normalized || normalizeSearchText(withoutGlossAnnotation(part)) === normalized,
+      );
+      (writtenSense ? exactEnglish : exactEnglishAliases).push({ item, refIndex, score: 0 });
+    }
+  });
+  const exact = [...exactInfinitives, ...exactEnglish, ...exactEnglishAliases];
+  const seen = new Set(exact.map(result => result.refIndex));
+  return [...exact, ...verbFuse.search(query).filter(result => !seen.has(result.refIndex))];
+}
+
+export function isExactEnglishMatch(entry: VerbEntry, normalizedQuery: string): boolean {
+  return entry.normalizedTranslation === normalizedQuery || entry.normalizedSenses.includes(normalizedQuery);
 }
 
 export async function searchConjugations(

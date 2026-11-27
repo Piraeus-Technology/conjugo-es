@@ -3,10 +3,11 @@ import { generateQuestion } from '../utils/quizQuestion';
 import {
   createPracticeSession,
   getCorePracticeEntries,
+  getPracticeAnswer,
   MISSED_PROMPT_DELAY,
   pickWeightedPrompt,
 } from '../utils/practicePrompts';
-import type { Tense, VerbData } from '../utils/conjugate';
+import { allTenses, type Tense, type VerbData } from '../utils/conjugate';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const flatWeight = () => 1;
@@ -122,16 +123,30 @@ describe('practice prompt selection', () => {
     }
   });
 
-  test('a missed prompt returns on the third draw in its own session', () => {
+  test('a missed prompt returns after two other answers despite settings redraws', () => {
     jest.spyOn(Math, 'random').mockImplementation(seededRandom(223));
     const session = createPracticeSession();
-    const next = () => session.next(allVerbEntries, ['present', 'preterite'], flatWeight, true);
+    const next = (allowRetry = true) => session.next(allVerbEntries, ['present', 'preterite'], flatWeight, true, allowRetry);
     const missed = next();
-    session.recordMiss(missed);
+    session.recordAnswer(missed, false);
+    for (let index = 0; index < 5; index += 1) expect(next(false)).not.toEqual(missed);
     for (let index = 1; index < MISSED_PROMPT_DELAY; index += 1) {
-      expect(next()).not.toEqual(missed);
+      const prompt = next();
+      expect(prompt).not.toEqual(missed);
+      session.recordAnswer(prompt, true);
     }
+    expect(next(false)).not.toEqual(missed);
     expect(next()).toEqual(missed);
+    expect(next()).toEqual(missed);
+    session.recordAnswer(missed, true);
+    expect(next()).not.toEqual(missed);
+  });
+
+  test('limits soler practice to frequently used forms', () => {
+    const soler = (verbs as Record<string, VerbData>).soler;
+    expect(allTenses.filter(tense => getPracticeAnswer('soler', soler, tense, 0))).toEqual([
+      'present', 'imperfect', 'subjunctive_present', 'subjunctive_imperfect', 'present_perfect',
+    ]);
   });
 
   test('a settings change drops queued prompts that are no longer eligible', () => {
@@ -139,10 +154,10 @@ describe('practice prompt selection', () => {
     const session = createPracticeSession();
     const entries = allVerbEntries.filter(([verb]) => verb === 'hablar');
     const missed = { verb: 'hablar', tense: 'present', personIndex: 4 } as const;
-    session.recordMiss(missed);
+    session.recordAnswer(missed, false);
     session.prune(entries, ['present'], false);
-    session.next(entries, ['present'], flatWeight, true);
-    session.next(entries, ['present'], flatWeight, true);
+    session.recordAnswer(session.next(entries, ['present'], flatWeight, true), true);
+    session.recordAnswer(session.next(entries, ['present'], flatWeight, true), true);
     expect(session.next(entries, ['present'], flatWeight, true).personIndex).toBe(0);
   });
 

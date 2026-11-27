@@ -42,9 +42,7 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
   loaded: false,
 
   loadPracticeSettings: async () => {
-    // The loaded guard matters beyond avoiding I/O: every screen calls this
-    // on mount, and re-setting fresh array identities re-fires the question/
-    // card generation effects on still-mounted sibling screens.
+    // The loaded guard preserves the current selection across screen mounts.
     if (get().loaded) return;
     return queue.runLoad(async () => {
       if (get().loaded) return;
@@ -86,54 +84,32 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
     if (!get().loaded) {
       await get().loadPracticeSettings();
     }
-    return queue.enqueue(async () => {
-      set({ activeTenses: [...tenses] });
-      await persistSnapshot(get);
-    });
+    set({ activeTenses: [...tenses] });
+    return queue.enqueue(() => persistSnapshot(get));
   },
 
   setActiveLevels: async (levels) => {
     if (!get().loaded) {
       await get().loadPracticeSettings();
     }
-    return queue.enqueue(async () => {
-      set({ activeLevels: [...levels] });
-      await persistSnapshot(get);
-    });
+    set({ activeLevels: [...levels] });
+    return queue.enqueue(() => persistSnapshot(get));
   },
 
   toggleTense: async (tense) => {
     if (!get().loaded) {
       await get().loadPracticeSettings();
     }
-    return queue.enqueue(async () => {
-      const current = get().activeTenses;
-      let updated: Tense[];
-      if (current.includes(tense)) {
-        updated = current.filter(t => t !== tense);
-      } else {
-        updated = [...current, tense];
-      }
-      set({ activeTenses: updated });
-      await persistSnapshot(get);
-    });
+    const current = get().activeTenses;
+    return get().setActiveTenses(current.includes(tense) ? current.filter(t => t !== tense) : [...current, tense]);
   },
 
   toggleLevel: async (level) => {
     if (!get().loaded) {
       await get().loadPracticeSettings();
     }
-    return queue.enqueue(async () => {
-      const current = get().activeLevels;
-      let updated: VerbLevel[];
-      if (current.includes(level)) {
-        updated = current.filter(l => l !== level);
-      } else {
-        updated = [...current, level];
-      }
-      set({ activeLevels: updated });
-      await persistSnapshot(get);
-    });
+    const current = get().activeLevels;
+    return get().setActiveLevels(current.includes(level) ? current.filter(l => l !== level) : [...current, level]);
   },
 
   resetPracticeSettings: async () => {
@@ -155,9 +131,8 @@ export const usePracticeSettingsStore = create<PracticeSettingsStore>((set, get)
   },
 }));
 
-// Persist the full in-memory snapshot. The store state is the source of
-// truth; re-reading disk here (the old patch-merge approach) let two quick
-// toggles overwrite each other's field with stale data.
+// Apply selections immediately so practice sees the last tap on return from
+// settings. Serialize complete snapshots to preserve the current selection.
 async function persistSnapshot(get: () => PracticeSettingsStore) {
   const { activeTenses, activeLevels } = get();
   const persisted = await safeSetItem(

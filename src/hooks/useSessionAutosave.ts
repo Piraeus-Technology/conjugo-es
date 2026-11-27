@@ -7,7 +7,7 @@ import { isCurrentPracticeSession, usePracticeResetStore } from '../store/practi
 // Capture the local day and queue its delta with each answer. Lifecycle
 // events use the same serialized coordinator and can retry a failed write.
 export function useSessionAutosave({ save }: {
-  save: (delta: DatedSessionDelta) => Promise<void>;
+  save: (delta: DatedSessionDelta, markSaved: () => void) => Promise<void>;
 }) {
   const nav = useNavigation();
   const version = React.useRef(usePracticeResetStore.getState().version).current;
@@ -17,7 +17,7 @@ export function useSessionAutosave({ save }: {
   const coordinatorRef = React.useRef<ReturnType<typeof createDatedSessionSaveCoordinator> | null>(null);
   if (!coordinatorRef.current) {
     coordinatorRef.current = createDatedSessionSaveCoordinator(
-      delta => saveRef.current(delta),
+      (delta, markSaved) => saveRef.current(delta, markSaved),
       () => isCurrentPracticeSession(version),
     );
   }

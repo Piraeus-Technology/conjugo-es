@@ -1142,7 +1142,10 @@
       "Siéntate aquí, por favor.",
       "Nos sentamos en la primera fila."
     ],
-    "level": "A1"
+    "level": "A1",
+    "englishSearchAliases": [
+      "to seat"
+    ]
   },
   "acertar": {
     "type": "ar",
@@ -1223,7 +1226,7 @@
   "manifestar": {
     "type": "ar",
     "regular": false,
-    "translation": "to manifest",
+    "translation": "to express / to demonstrate (manifestarse)",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
@@ -1233,7 +1236,10 @@
       "Los ciudadanos se manifestaron en la plaza.",
       "Manifestó su desacuerdo con la nueva ley."
     ],
-    "level": "B1"
+    "level": "B1",
+    "englishSearchAliases": [
+      "to manifest"
+    ]
   },
   "merendar": {
     "type": "ar",
@@ -1590,7 +1596,12 @@
       "Los niños se divierten en el parque.",
       "Nos divertimos mucho en la fiesta de anoche."
     ],
-    "level": "A2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to amuse/entertain",
+      "to amuse",
+      "to entertain"
+    ]
   },
   "convertir": {
     "type": "ir",
@@ -1659,7 +1670,7 @@
   "referir": {
     "type": "ir",
     "regular": false,
-    "translation": "to refer",
+    "translation": "to refer someone / to refer to something (referirse a)",
     "pattern": {
       "stemChange": {
         "present": "e_ie",
@@ -1670,7 +1681,11 @@
       "Se refiere al artículo que leímos ayer.",
       "El doctor lo refirió a un especialista."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to refer",
+      "to refer to"
+    ]
   },
   "invertir": {
     "type": "ir",
@@ -1890,7 +1905,7 @@
   "acordar": {
     "type": "ar",
     "regular": false,
-    "translation": "to agree/remember",
+    "translation": "to agree / to remember (acordarse de)",
     "pattern": {
       "stemChange": {
         "present": "o_ue"
@@ -1900,7 +1915,10 @@
       "Acordamos vernos el próximo lunes.",
       "No me acuerdo de dónde dejé el libro."
     ],
-    "level": "A2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to agree/remember"
+    ]
   },
   "apostar": {
     "type": "ar",
@@ -2283,12 +2301,21 @@
       "Solíamos ir a la playa en verano."
     ],
     "level": "C1",
-    "allowedTenses": [
+    "extendedReference": true,
+    "practiceTenses": [
       "present",
       "imperfect",
       "subjunctive_present",
       "subjunctive_imperfect",
       "present_perfect"
+    ],
+    "unavailableTenses": [
+      "future",
+      "conditional",
+      "imperative_affirmative",
+      "imperative_negative",
+      "future_perfect",
+      "conditional_perfect"
     ]
   },
   "doler": {
@@ -2304,7 +2331,8 @@
       "Me duele la cabeza.",
       "Ayer me dolía mucho la espalda."
     ],
-    "level": "A2"
+    "level": "A2",
+    "thirdPersonOnly": true
   },
   "oler": {
     "type": "er",
@@ -2482,7 +2510,10 @@
       "Se viste muy elegante para el trabajo.",
       "Me vestí rápido y salí."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to dress"
+    ]
   },
   "competir": {
     "type": "ir",
@@ -2514,7 +2545,12 @@
       "La empresa despidió a veinte empleados.",
       "Se despide de sus amigos en el aeropuerto."
     ],
-    "level": "B1"
+    "level": "B1",
+    "englishSearchAliases": [
+      "to fire/say goodbye",
+      "to fire",
+      "to see someone off"
+    ]
   },
   "impedir": {
     "type": "ir",
@@ -2551,7 +2587,7 @@
   "rendir": {
     "type": "ir",
     "regular": false,
-    "translation": "to yield/surrender",
+    "translation": "to yield / to exhaust / to surrender (rendirse)",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2562,7 +2598,10 @@
       "El cansancio me rindió.",
       "Este coche rinde mucho en carretera."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to yield/surrender"
+    ]
   },
   "derretir": {
     "type": "ir",
@@ -2946,7 +2985,7 @@
   },
   "amanecer": {
     "type": "er",
-    "regular": false,
+    "regular": true,
     "translation": "to dawn",
     "impersonal": true,
     "pattern": {
@@ -2960,7 +2999,7 @@
   },
   "anochecer": {
     "type": "er",
-    "regular": false,
+    "regular": true,
     "translation": "to get dark",
     "impersonal": true,
     "pattern": {
@@ -3204,7 +3243,11 @@
       "El terremoto estremeció toda la ciudad.",
       "Me estremezco con el frío."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to shake",
+      "to make someone shudder"
+    ]
   },
   "producir": {
     "type": "ir",
@@ -3824,7 +3867,10 @@
       "Me equivoqué de dirección.",
       "Todos nos equivocamos alguna vez."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to mistake"
+    ]
   },
   "fabricar": {
     "type": "ar",
@@ -5780,7 +5826,12 @@
       "Me acostumbré al clima frío.",
       "Acostumbra tomar té por la tarde."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to be accustomed",
+      "to do habitually",
+      "to accustom someone"
+    ]
   },
   "administrar": {
     "type": "ar",
@@ -6020,7 +6071,12 @@
       "Me concentro mejor por la mañana.",
       "Concéntrate en lo importante."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to concentrate",
+      "to gather",
+      "to concentrate something"
+    ]
   },
   "condenar": {
     "type": "ar",
@@ -6331,7 +6387,10 @@
       "Me ducho todas las mañanas.",
       "Se duchó después del gimnasio."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to shower"
+    ]
   },
   "echar": {
     "type": "ar",
@@ -6406,7 +6465,7 @@
   "enfocar": {
     "type": "ar",
     "regular": false,
-    "translation": "to focus",
+    "translation": "to focus a camera / to focus on something (enfocarse en)",
     "examples": [
       "Enfoca la cámara antes de tomar la foto.",
       "Se enfocaron en mejorar la calidad."
@@ -6414,7 +6473,11 @@
     "level": "B2",
     "pattern": {
       "spellingChange": "car_qué"
-    }
+    },
+    "englishSearchAliases": [
+      "to focus",
+      "to focus on"
+    ]
   },
   "engañar": {
     "type": "ar",
@@ -6434,7 +6497,12 @@
       "Se enojó por el comentario.",
       "No te enojes, fue un accidente."
     ],
-    "level": "A2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to annoy/anger",
+      "to annoy",
+      "to anger"
+    ]
   },
   "ensayar": {
     "type": "ar",
@@ -6845,12 +6913,15 @@
   "levantar": {
     "type": "ar",
     "regular": true,
-    "translation": "to lift/raise",
+    "translation": "to lift / to raise / to get up (levantarse)",
     "examples": [
       "Me levanto a las seis todos los días.",
       "Levantó la mano para hacer una pregunta."
     ],
-    "level": "A1"
+    "level": "A1",
+    "englishSearchAliases": [
+      "to lift/raise"
+    ]
   },
   "liberar": {
     "type": "ar",
@@ -6940,7 +7011,10 @@
       "Nos mudamos a una casa más grande.",
       "Se mudó a otra ciudad por trabajo."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to move (house)"
+    ]
   },
   "notar": {
     "type": "ar",
@@ -7045,7 +7119,7 @@
   "preocupar": {
     "type": "ar",
     "regular": true,
-    "translation": "to worry",
+    "translation": "to worry someone / to worry (preocuparse)",
     "examples": [
       "Me preocupa su salud.",
       "No te preocupes, todo saldrá bien."
@@ -7211,7 +7285,12 @@
       "Retiré dinero del cajero.",
       "Se retiró del cargo a los sesenta años."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to withdraw/retire",
+      "to withdraw",
+      "to remove"
+    ]
   },
   "robar": {
     "type": "ar",
@@ -7753,7 +7832,7 @@
   "suceder": {
     "type": "er",
     "regular": true,
-    "translation": "to happen",
+    "translation": "to happen / to succeed someone",
     "examples": [
       "¿Qué sucedió anoche?",
       "Suceden cosas extrañas en esa casa."
@@ -8153,7 +8232,8 @@
       "¿Qué ocurrió en la reunión?",
       "Se me ocurrió una idea genial."
     ],
-    "level": "A2"
+    "level": "A2",
+    "thirdPersonOnly": true
   },
   "añadir": {
     "type": "ir",
@@ -8587,7 +8667,11 @@
       "Me suscribí a la revista.",
       "Suscribieron un acuerdo de paz."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to sign",
+      "to endorse"
+    ]
   },
   "transmitir": {
     "type": "ir",
@@ -9078,12 +9162,15 @@
   "casar": {
     "type": "ar",
     "regular": true,
-    "translation": "to marry",
+    "translation": "to marry (officiate) / to get married (casarse)",
     "examples": [
       "Se casaron en una ceremonia íntima.",
       "Mi hermana se casa el próximo mes."
     ],
-    "level": "A2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to marry"
+    ]
   },
   "circular": {
     "type": "ar",
@@ -9438,12 +9525,15 @@
   "disculpar": {
     "type": "ar",
     "regular": true,
-    "translation": "to excuse/forgive",
+    "translation": "to excuse / to forgive / to apologize (disculparse)",
     "examples": [
       "Discúlpame por el malentendido.",
       "Se disculpó por su error."
     ],
-    "level": "B1"
+    "level": "B1",
+    "englishSearchAliases": [
+      "to excuse/forgive"
+    ]
   },
   "disputar": {
     "type": "ar",
@@ -9601,7 +9691,10 @@
       "Me enteré de la noticia por la radio.",
       "Se enteró de todo al llegar."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to inform/find out"
+    ]
   },
   "enterrar": {
     "type": "ar",
@@ -10549,12 +10642,16 @@
   "relajar": {
     "type": "ar",
     "regular": true,
-    "translation": "to loosen or relax something / to unwind (relajarse)",
+    "translation": "to loosen or relax something / to relax (relajarse) / to unwind (relajarse)",
     "examples": [
       "Relájate, todo va a salir bien.",
       "Me relajé en la piscina del hotel."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to loosen",
+      "to relax something"
+    ]
   },
   "relevar": {
     "type": "ar",
@@ -10594,7 +10691,10 @@
       "Remontaron un marcador adverso.",
       "Se remonta a la época medieval."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to go back (in time)"
+    ]
   },
   "renunciar": {
     "type": "ar",
@@ -10672,7 +10772,7 @@
   "resultar": {
     "type": "ar",
     "regular": true,
-    "translation": "to result",
+    "translation": "to result / to turn out",
     "examples": [
       "El examen resultó más fácil de lo esperado.",
       "Resultó ser una gran oportunidad."
@@ -10808,7 +10908,7 @@
   "tatuar": {
     "type": "ar",
     "regular": false,
-    "translation": "to tattoo",
+    "translation": "to tattoo / to get a tattoo (tatuarse)",
     "overrides": {
       "present": [
         "tatúo",
@@ -11336,7 +11436,12 @@
       "Se zambulló en la piscina.",
       "Los niños se zambullen en el mar."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to dive/plunge",
+      "to dive",
+      "to plunge"
+    ]
   },
   "abdicar": {
     "type": "ar",
@@ -11565,7 +11670,11 @@
       "Se aferra a sus creencias.",
       "Se aferró al pasamanos para no caer."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to grip/cling",
+      "to cling"
+    ]
   },
   "afirmar": {
     "type": "ar",
@@ -11892,7 +12001,12 @@
       "Se aventuró a explorar la cueva.",
       "No me aventuro a opinar sin datos."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to venture",
+      "to risk",
+      "to venture something"
+    ]
   },
   "averiguar": {
     "type": "ar",
@@ -12047,7 +12161,7 @@
   "colar": {
     "type": "ar",
     "regular": false,
-    "translation": "to strain/sneak in",
+    "translation": "to strain / to sneak in (colarse) / to cut in line (colarse)",
     "examples": [
       "Se coló en la fila sin que lo vieran.",
       "Cuela el jugo para quitar las semillas."
@@ -12057,7 +12171,10 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "englishSearchAliases": [
+      "to strain/sneak in"
+    ]
   },
   "combinar": {
     "type": "ar",
@@ -12140,7 +12257,10 @@
       "Se comprometió a entregar el trabajo el lunes.",
       "Nos comprometimos en diciembre."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to compromise"
+    ]
   },
   "computar": {
     "type": "ar",
@@ -12180,7 +12300,10 @@
       "Se confederaron para tener más poder.",
       "Los estados se confederaron en una unión."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to confederate"
+    ]
   },
   "confeccionar": {
     "type": "ar",
@@ -12265,7 +12388,7 @@
   "constar": {
     "type": "ar",
     "regular": true,
-    "translation": "to be evident",
+    "translation": "to be evident / to be on record / to consist of",
     "examples": [
       "El informe consta de cinco capítulos.",
       "Me consta que dice la verdad."
@@ -12349,7 +12472,7 @@
   },
   "acontecer": {
     "type": "er",
-    "regular": false,
+    "regular": true,
     "translation": "to happen",
     "examples": [
       "Aconteció un milagro en el pueblo.",
@@ -12400,7 +12523,7 @@
   "apetecer": {
     "type": "er",
     "regular": false,
-    "translation": "to feel like/crave",
+    "translation": "to be appealing / to crave",
     "examples": [
       "¿Te apetece un helado?",
       "No me apetecía salir con ese frío."
@@ -12408,7 +12531,11 @@
     "level": "C2",
     "pattern": {
       "yoZco": true
-    }
+    },
+    "englishSearchAliases": [
+      "to feel like/crave",
+      "to feel like"
+    ]
   },
   "arder": {
     "type": "er",
@@ -12422,7 +12549,7 @@
   },
   "atardecer": {
     "type": "er",
-    "regular": false,
+    "regular": true,
     "translation": "to get dark (evening)",
     "impersonal": true,
     "examples": [
@@ -12478,7 +12605,7 @@
   },
   "competer": {
     "type": "er",
-    "regular": false,
+    "regular": true,
     "translation": "to be within one's competence",
     "examples": [
       "Eso no me compete a mí.",
@@ -12601,7 +12728,8 @@
       "El tiempo transcurre muy rápido.",
       "Transcurrieron dos horas sin noticias."
     ],
-    "level": "C2"
+    "level": "C2",
+    "thirdPersonOnly": true
   },
   "transgredir": {
     "type": "ir",

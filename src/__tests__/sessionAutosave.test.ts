@@ -27,8 +27,8 @@ describe('session autosave coordination', () => {
       coordinator.recordAnswer(true, 1);
       await Promise.all([coordinator.saveNow(), coordinator.saveNow()]);
       expect(save.mock.calls).toEqual([
-        [{ day: '2026-09-30', count: 2, correct: 1, bestStreak: 1 }],
-        [{ day: '2026-10-01', count: 1, correct: 1, bestStreak: 1 }],
+        [{ day: '2026-09-30', count: 2, correct: 1, bestStreak: 1 }, expect.any(Function)],
+        [{ day: '2026-10-01', count: 1, correct: 1, bestStreak: 1 }, expect.any(Function)],
       ]);
       expect(coordinator.getUnsaved()).toEqual({ count: 0, correct: 0 });
     } finally {
@@ -46,6 +46,23 @@ describe('session autosave coordination', () => {
     await pending;
     await coordinator.saveNow();
     expect(save).not.toHaveBeenCalled();
+  });
+
+  test('answers added during a write stay visible and are saved in the next delta', async () => {
+    const firstWrite = deferred();
+    const save = jest.fn(async () => {}).mockImplementationOnce(() => firstWrite.promise);
+    const coordinator = createDatedSessionSaveCoordinator(save);
+    coordinator.recordAnswer(true);
+    const firstSave = coordinator.saveNow();
+    await Promise.resolve();
+    coordinator.recordAnswer(false);
+    expect(coordinator.getUnsaved()).toEqual({ count: 2, correct: 1 });
+    firstWrite.resolve();
+    await firstSave;
+    expect(coordinator.getUnsaved()).toEqual({ count: 1, correct: 0 });
+    await coordinator.saveNow();
+    expect(save).toHaveBeenLastCalledWith(expect.objectContaining({ count: 1, correct: 0 }), expect.any(Function));
+    expect(coordinator.getUnsaved()).toEqual({ count: 0, correct: 0 });
   });
 
   test('a failed save cannot roll the cursor behind a later successful save', async () => {
@@ -69,6 +86,7 @@ describe('session autosave coordination', () => {
 
     const firstSave = coordinator.saveNow();
     await Promise.resolve();
+    expect(coordinator.getUnsaved()).toEqual({ count: 5, correct: 4 });
     snapshot = { count: 8, correct: 7, bestStreak: 5 };
     const overlappingSave = coordinator.saveNow();
 

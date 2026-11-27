@@ -1,6 +1,6 @@
 import verbs from '../data/verbs.json';
-import { conjugate, type Tense, type VerbData } from './conjugate';
-import { pickWeightedPrompt, type createPracticeSession } from './practicePrompts';
+import type { Tense, VerbData } from './conjugate';
+import { getPracticeAnswer, getPracticeForms, pickWeightedPrompt, type createPracticeSession } from './practicePrompts';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 
@@ -19,23 +19,22 @@ export function generateQuestion(
   filteredEntries: [string, VerbData][],
   includeVosotros: boolean = true,
   session?: ReturnType<typeof createPracticeSession>,
+  allowRetry = true,
 ): Question {
   const verbEntries = filteredEntries.length > 0 ? filteredEntries : allVerbEntries;
   const prompt = session
-    ? session.next(verbEntries, activeTenses, getWeight, includeVosotros)
+    ? session.next(verbEntries, activeTenses, getWeight, includeVosotros, allowRetry)
     : pickWeightedPrompt(verbEntries, activeTenses, getWeight, includeVosotros);
   const { verb, data, tense, personIndex } = prompt;
   const correctAnswer = prompt.answer;
-  const results = conjugate(verb, data, tense);
+  const results = getPracticeForms(verb, data, tense);
 
   // Generate wrong answers — prioritize hard distractors.
   const sameVerbSameTense: string[] = [];
   results.forEach((result, index) => {
     if (
-      index !== personIndex
+      result && index !== personIndex
       && (includeVosotros || index !== 4)
-      && result.form !== '—'
-      && !result.disabled
       && result.form !== correctAnswer
       && !sameVerbSameTense.includes(result.form)
     ) {
@@ -46,12 +45,10 @@ export function generateQuestion(
   const sameVerbDiffTense: string[] = [];
   for (const otherTense of activeTenses) {
     if (otherTense === tense) continue;
-    const otherResults = conjugate(verb, data, otherTense);
-    const form = otherResults[personIndex].form;
+    const form = getPracticeAnswer(verb, data, otherTense, personIndex);
     if (
-      form !== '—'
+      form
       && form.startsWith('no ') === correctAnswer.startsWith('no ')
-      && !otherResults[personIndex].disabled
       && form !== correctAnswer
       && !sameVerbSameTense.includes(form)
       && !sameVerbDiffTense.includes(form)
@@ -90,10 +87,8 @@ export function generateQuestion(
   while (selected.length < 3 && fallbackAttempts < 200) {
     fallbackAttempts += 1;
     const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
-    if (otherData.pronominalOnly) continue;
-    const otherResults = conjugate(otherVerb, otherData, tense);
-    const form = otherResults[personIndex].form;
-    if (form !== correctAnswer && form !== '—' && !selected.includes(form)) {
+    const form = getPracticeAnswer(otherVerb, otherData, tense, personIndex);
+    if (form && form !== correctAnswer && !selected.includes(form)) {
       selected.push(form);
     }
   }

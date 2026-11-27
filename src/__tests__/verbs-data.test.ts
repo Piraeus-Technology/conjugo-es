@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { conjugate, VerbData, allTenses, Tense, type IrregularPattern } from '../utils/conjugate';
+import { conjugate, getAdditionalReferenceForms, VerbData, allTenses, Tense, type IrregularPattern } from '../utils/conjugate';
 import verbs from '../data/verbs.json';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>);
@@ -104,9 +104,20 @@ describe('Common verb conjugation spot checks', () => {
     expect(available('haber', 'imperative_affirmative')).toEqual([]);
     expect(available('haber', 'imperative_negative')).toEqual([]);
     expect(allTenses.filter(tense => available('soler', tense).length)).toEqual([
-      'present', 'imperfect', 'subjunctive_present', 'subjunctive_imperfect', 'present_perfect', 'gerund_participle',
+      'present', 'preterite', 'imperfect', 'subjunctive_present', 'subjunctive_imperfect', 'present_perfect',
+      'past_perfect', 'present_progressive', 'past_progressive', 'gerund_participle',
     ]);
+    expect(available('soler', 'preterite')).toEqual(expect.arrayContaining(['solí', 'solieron']));
+    expect(available('soler', 'past_perfect')).toContain('había solido');
+    const reference = getAdditionalReferenceForms('soler', verbs.soler as VerbData, verbs.haber as VerbData);
+    expect(reference.flatMap(({ rows }) => rows.map(row => row.form))).toEqual(expect.arrayContaining([
+      'solés', 'soliese', 'hube solido', 'haya solido', 'hubiera solido', 'hubiese solido', 'haber solido', 'habiendo solido',
+    ]));
     expect(available('acontecer', 'preterite')).toEqual(['aconteció', 'acontecieron']);
+    expect(available('ocurrir', 'present')).toEqual(['ocurre', 'ocurren']);
+    expect(available('doler', 'present')).toEqual(['duele', 'duelen']);
+    expect(available('transcurrir', 'present')).toEqual(['transcurre', 'transcurren']);
+    expect(available('suceder', 'present')).toHaveLength(6);
     expect(available('competer', 'present')).toEqual(['compete', 'competen']);
     expect(available('competer', 'imperative_negative')).toEqual([]);
   });

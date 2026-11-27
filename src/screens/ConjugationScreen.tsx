@@ -14,6 +14,7 @@ import { speak, stopSpeech } from '../utils/speech';
 import verbs from '../data/verbs.json';
 import {
   conjugate,
+  getAdditionalReferenceForms,
   tenseNames,
   Tense,
   VerbData,
@@ -56,6 +57,7 @@ const tenseGroups = [
 export default function ConjugationScreen({ route, navigation }: ConjugationScreenProps) {
   const { infinitive } = route.params;
   const verb = (verbs as Record<string, VerbData>)[infinitive];
+  const [showReferenceForms, setShowReferenceForms] = useState(false);
   const initialTense = route.params?.initialTense || 'present';
   const highlightForm = route.params?.highlightForm?.toLowerCase() || null;
   const [openTense, setOpenTense] = useState<Tense | null>(initialTense);
@@ -67,6 +69,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const highlightRef = useRef<View>(null);
   const scrollContentRef = useRef<View>(null);
   const ruleNotes = useMemo(() => verb ? getRuleNotes(infinitive, verb) : [], [infinitive, verb]);
+  const referenceForms = useMemo(() => verb ? getAdditionalReferenceForms(infinitive, verb, verbs.haber as VerbData) : [], [infinitive, verb]);
   const snapshotRows = useMemo(() => verb ? getSnapshotRows(infinitive, verb, openTense) : [], [infinitive, verb, openTense]);
   const relatedVerbs = useMemo(() => {
     if (!verb) return [];
@@ -101,7 +104,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   if (!verb) {
     return (
       <View style={[styles.container, { backgroundColor: colors.bg, justifyContent: 'center', alignItems: 'center', padding: spacing.lg }]}>
-        <Text style={[styles.infinitive, { color: colors.primaryText, marginBottom: spacing.sm }]}>{infinitive}</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.infinitive, { color: colors.primaryText, marginBottom: spacing.sm }]}>{infinitive}</Text>
         <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.md, textAlign: 'center' }}>
           This verb is not available in the current dataset.
         </Text>
@@ -114,7 +117,11 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
       <View ref={scrollContentRef}>
       <View style={[styles.header, { backgroundColor: colors.card }]}>
         <View style={styles.headerTop}>
-          <Text style={[styles.infinitive, { color: colors.primaryText }]}>{infinitive}</Text>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={[styles.infinitive, { color: colors.primaryText }]}
+          >{infinitive}</Text>
           <View style={styles.headerActions}>
             <TouchableOpacity
               style={styles.headerIconButton}
@@ -289,6 +296,39 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
         ))}
       </View>
 
+      {referenceForms.length > 0 && (
+        <View style={[styles.detailBox, { backgroundColor: colors.card, borderColor: colors.controlBorder }]}>
+          <TouchableOpacity
+            onPress={() => setShowReferenceForms(current => !current)}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showReferenceForms }}
+            style={[styles.snapshotRow, styles.referenceToggle]}
+          >
+            <Text style={[styles.tenseText, { color: colors.primaryText }]}>Additional conjugations</Text>
+            <Ionicons name={showReferenceForms ? 'chevron-up' : 'chevron-down'} size={16} color={colors.textMuted} />
+          </TouchableOpacity>
+          {showReferenceForms && referenceForms.map(({ label, rows }) => (
+            <View key={label}>
+              <Text style={[styles.referenceHeading, { color: colors.textMuted }]}>{label}</Text>
+              {rows.map(row => (
+                <TouchableOpacity
+                  key={row.pronoun}
+                  style={styles.snapshotRow}
+                  onPress={() => speak(row.form)}
+                  disabled={row.disabled}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: row.disabled }}
+                  accessibilityLabel={row.disabled ? `${row.pronoun}, unavailable in ${label}` : `Play pronunciation: ${row.pronoun}, ${row.form}`}
+                >
+                  <Text style={[styles.snapshotPronoun, { color: colors.textSecondary }]}>{row.pronoun}</Text>
+                  <Text style={[styles.snapshotForm, { color: colors.primaryText }]}>{row.form}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
+        </View>
+      )}
+
       {snapshotRows.length > 0 && (
         <View style={[
           styles.detailBox,
@@ -404,16 +444,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  headerTop: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
-  headerActions: { flexDirection: 'row', flexShrink: 0 },
+  headerTop: { gap: spacing.xs },
+  headerActions: { flexDirection: 'row', alignSelf: 'flex-end' },
   headerIconButton: {
     minWidth: 44,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  infinitive: { flex: 1, minWidth: 0, fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
+  infinitive: { fontSize: fonts.sizes.hero, fontWeight: fonts.weights.bold },
   translation: { fontSize: fonts.sizes.lg, marginTop: spacing.xs },
+  referenceToggle: { minHeight: 44, alignItems: 'center' },
+  referenceHeading: { marginTop: spacing.md, fontSize: fonts.sizes.sm, fontWeight: fonts.weights.semibold },
   metaRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.md, gap: spacing.sm },
   tag: {
     paddingHorizontal: 10,

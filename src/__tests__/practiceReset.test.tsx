@@ -35,6 +35,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => mockNavigation,
+  useIsFocused: () => true,
   useRoute: () => ({ params: { mode: 'quiz' } }),
 }));
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
@@ -126,11 +127,13 @@ test('taps during flashcard flip-back cannot reveal the next answer', async () =
     const screen = render(<FlashcardScreen />);
     const firstFront = await screen.findByLabelText('Tap to reveal conjugation of comer for yo, Present');
     await act(async () => { fireEvent.press(firstFront); });
+    expect(screen.getByLabelText('Tap to reveal conjugation of comer for yo, Present')).toBe(firstFront);
     expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
     await act(async () => { jest.advanceTimersByTime(350); });
     expect(speak).toHaveBeenCalledTimes(1);
     expect(speak).toHaveBeenCalledWith('como');
     await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
+    expect(screen.getByLabelText('Next flashcard')).toBe(firstFront);
     await act(async () => { fireEvent.press(firstFront); });
     expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
     await act(async () => { jest.advanceTimersByTime(350); });
@@ -145,12 +148,33 @@ test('taps during flashcard flip-back cannot reveal the next answer', async () =
   }
 });
 
+test('an interrupted current flashcard transition still lands on a usable face', async () => {
+  const timing = jest.spyOn(Animated, 'timing').mockImplementation(() => ({
+    start: callback => callback?.({ finished: false }),
+    stop: jest.fn(), reset: jest.fn(),
+  }));
+  try {
+    const screen = render(<FlashcardScreen />);
+    const front = await screen.findByLabelText('Tap to reveal conjugation of hablar for yo, Present');
+    await act(async () => { fireEvent.press(front); });
+    await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
+    expect(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')).toBe(front);
+  } finally {
+    timing.mockRestore();
+  }
+});
+
 test('Next becomes accessible only after the quiz answer', async () => {
   const screen = render(<QuizScreen />);
   await screen.findByLabelText('Answer: hablo');
   expect(screen.queryByLabelText('Next question')).toBeNull();
-  await act(async () => { fireEvent.press(screen.getByLabelText('Answer: hablo')); });
+  await act(async () => {
+    fireEvent.press(screen.getByLabelText('Answer: hablo'));
+    fireEvent.press(screen.getByLabelText('Answer: hablas'));
+  });
   expect(screen.getByLabelText('Next question')).toBeTruthy();
+  expect(useQuizStore.getState().totalQuestions).toBe(1);
+  expect(useSessionStore.getState().sessions[0].total).toBe(1);
 });
 
 test.each([
