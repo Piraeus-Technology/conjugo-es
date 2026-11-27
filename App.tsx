@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useLayoutEffect } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StatusBar, useColorScheme } from 'react-native';
+import { Platform, StatusBar, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SplashScreen from 'expo-splash-screen';
@@ -29,10 +29,17 @@ SplashScreen.preventAutoHideAsync().catch((error) => {
 const QuizStack = createNativeStackNavigator();
 const FlashcardStack = createNativeStackNavigator();
 
+function useStackStatusBarStyle() {
+  const isDark = useThemeStore(state => state.isDark);
+  return Platform.OS === 'ios' ? (isDark ? 'light' : 'dark') : undefined;
+}
+
 function QuizStackScreen() {
   const colors = useColors();
+  const statusBarStyle = useStackStatusBarStyle();
   return (
     <QuizStack.Navigator id="QuizStack" screenOptions={{
+      statusBarStyle,
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.primaryText,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
@@ -47,8 +54,10 @@ function QuizStackScreen() {
 
 function FlashcardStackScreen() {
   const colors = useColors();
+  const statusBarStyle = useStackStatusBarStyle();
   return (
     <FlashcardStack.Navigator id="FlashcardStack" screenOptions={{
+      statusBarStyle,
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.primaryText,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
@@ -65,8 +74,10 @@ const MoreStack = createNativeStackNavigator();
 
 function MoreStackScreen() {
   const colors = useColors();
+  const statusBarStyle = useStackStatusBarStyle();
   return (
     <MoreStack.Navigator id="MoreStack" screenOptions={{
+      statusBarStyle,
       headerStyle: { backgroundColor: colors.bg },
       headerTintColor: colors.primaryText,
       headerTitleStyle: { fontWeight: fonts.weights.semibold, color: colors.textPrimary },
@@ -86,11 +97,13 @@ const Tab = createBottomTabNavigator();
 
 function SearchStackScreen() {
   const colors = useColors();
+  const statusBarStyle = useStackStatusBarStyle();
 
   return (
     <SearchStack.Navigator
       id="SearchStack"
       screenOptions={{
+        statusBarStyle,
         headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.primaryText,
         headerTitleStyle: {
@@ -160,9 +173,7 @@ function AppContent() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }} onLayout={onLayoutRootView}>
-      <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-      />
+      {Platform.OS !== 'ios' && <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />}
       <NavigationContainer theme={navTheme}>
         <Tab.Navigator
           id="MainTabs"

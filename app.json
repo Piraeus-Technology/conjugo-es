@@ -51,6 +51,9 @@
           "image": "./assets/splash.png",
           "resizeMode": "cover",
           "backgroundColor": "#FFFFFF",
+          "android": {
+            "imageWidth": 200
+          },
           "ios": {
             "enableFullScreenImage_legacy": true
           }

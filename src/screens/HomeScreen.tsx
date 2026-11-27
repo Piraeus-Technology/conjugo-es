@@ -34,16 +34,23 @@ const dailyVerbEntries = [...verbEntries].sort((first, second) =>
 );
 
 function DeleteAction({ translation }: { translation: SharedValue<number> }) {
+  const panelStyle = useAnimatedStyle(() => ({
+    opacity: translation.value < 0 ? 1 : 0,
+  }));
   const iconStyle = useAnimatedStyle(() => ({
     transform: [{ scale: interpolate(translation.value, [-80, 0], [1, 0.5], Extrapolation.CLAMP) }],
   }));
 
   return (
-    <View style={styles.deleteAction}>
+    <Animated.View
+      style={[styles.deleteAction, panelStyle]}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    >
       <Animated.View style={iconStyle}>
         <Ionicons name="trash-outline" size={20} color="#fff" />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 }
 
