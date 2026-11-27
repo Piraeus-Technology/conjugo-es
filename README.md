@@ -26,7 +26,7 @@ Expo aligns dependencies.
 Start Metro with `npm start`, or create local native builds with
 `npm run ios` / `npm run android`. Native project folders are generated from
 `app.json`. The `expo-iap` config plugin selects Google Play Billing for
-Android builds. Use a native development build to test the tip jar.
+Android builds.
 
 ## Project map
 
@@ -38,8 +38,9 @@ Android builds. Use a native development build to test the tip jar.
 - `docs/index.html` — hosted privacy policy
 
 The tip jar offers one consumable in-app purchase, `tip_small`, and displays
-the store's localized price. The app still finishes delivered transactions for
-the retired `tip_medium` and `tip_large` products. Verify store delivery and
-transaction completion on real devices in both sandboxes.
+the store's localized price. The app also finishes completed purchases of the
+retired `tip_medium` and `tip_large` products. Verify store delivery and
+transaction completion on real devices in both sandboxes using
+release-configuration native builds.
 
 See [the release checklist](docs/release-checklist.md) before shipping.
