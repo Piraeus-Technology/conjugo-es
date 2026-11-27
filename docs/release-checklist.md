@@ -9,25 +9,36 @@
 - [ ] Run `npm ci`, typecheck, lint, tests with coverage, and the example audit.
 - [ ] Run `npx expo-doctor` and confirm all project-health checks pass.
 - [ ] Run a clean Expo prebuild and build both native platforms.
+- [ ] Confirm the iOS minimum is 16.4. Users on iOS 15.1–16.3 stay on 1.2.3.
 - [ ] Confirm the privacy policy and store/support links match shipped behavior.
 
 ## Device smoke tests
 
 - [ ] Test search, conjugation audio, quiz, flashcards, stats, settings, and
       learning-data reset with light/dark themes and large text.
-- [ ] Test cold launch, background/foreground, and remount behavior.
+- [ ] Test cold launch and returning from the background.
 - [ ] Confirm offline use after installation.
+- [ ] Set the Android phone language to English. Check that the infinitive,
+      conjugation rows, flashcard answers, and auto-play speak Spanish.
+- [ ] On iOS, check status-bar icon contrast with the phone set to Light and
+      to Dark. For each phone setting, switch between the app's light and dark
+      themes while it is open and check the status bar immediately.
+- [ ] Tap a Favorite and a Recent row. The row should dim without showing the
+      red delete panel or trash icon.
 - [ ] Swipe left on Recent and Favorites rows to remove them. Check that
-      search results have no swipe action and that the screen-reader remove
-      actions work.
+      the row does not linger before disappearing, search results have no
+      swipe action, and the screen-reader remove actions work without exposing
+      a separate trash icon.
 
 ## Tip-jar sandbox tests
 
-Run these in native builds with `expo-iap` on physical devices against both
-Apple and Google sandbox accounts for `tip_small`.
+Run these in release-configuration native builds with `expo-iap` on physical
+devices against both Apple and Google sandbox accounts for `tip_small`.
+Android runs R8 only on release builds.
 
 - [ ] Cold-launch the app, then complete a purchase.
-- [ ] Remount/navigate away and back before completing a purchase.
+- [ ] Background the app during a purchase, then return to the foreground
+      and complete it.
 - [ ] Cancel a purchase and confirm no error or thank-you state is shown.
 - [ ] Recover an interrupted purchase on cold launch before opening More.
       Confirm recovery is silent and the transaction clears.
@@ -36,8 +47,9 @@ Apple and Google sandbox accounts for `tip_small`.
 - [ ] Replay a pending transaction for a retired product (`tip_medium` or
       `tip_large`) and confirm the app finishes it after payment. Include
       startup and foreground recovery on both platforms.
-- [ ] Confirm every delivered transaction is finished/acknowledged and does
-      not replay on the next cold launch.
+- [ ] Confirm every purchased, allowlisted tip is finished and does not
+      replay on the next cold launch. On Play, a consumable must be consumed
+      before it can be bought again. Check that `tip_small` can be bought again.
 - [ ] Confirm unrelated product identifiers are ignored.
 
 ## Distribution
