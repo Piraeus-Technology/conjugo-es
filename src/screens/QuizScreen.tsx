@@ -13,7 +13,7 @@ import * as StoreReview from 'expo-store-review';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
-import { generateQuestion, type Question } from '../utils/quizQuestion';
+import { generateQuestion, isCorrectAnswer, type Question } from '../utils/quizQuestion';
 import { createPracticeSession, practiceSelectionKey } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { usePracticeResetStore } from '../store/practiceResetStore';
@@ -106,7 +106,7 @@ function QuizScreenSession() {
       : null);
   }, [focused, weightsLoaded, settingsLoaded, selectionKey, activeTenses, filteredEntries, includeVosotros, getWeight, practiceSession, showQuestion]);
 
-  const isCorrect = selectedAnswer === question?.correctAnswer;
+  const isCorrect = question !== null && selectedAnswer !== null && isCorrectAnswer(question, selectedAnswer);
   const answered = selectedAnswer !== null;
 
   const handleAnswer = (answer: string) => {
@@ -114,7 +114,7 @@ function QuizScreenSession() {
     answeredQuestion.current = question;
     setSelectedAnswer(answer);
 
-    const correct = answer === question.correctAnswer;
+    const correct = isCorrectAnswer(question, answer);
     practiceSession.recordAnswer(question, correct);
     if (correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -168,7 +168,7 @@ function QuizScreenSession() {
     if (!answered || !question) {
       return { backgroundColor: colors.card, borderColor: colors.controlBorder };
     }
-    if (option === question.correctAnswer) {
+    if (isCorrectAnswer(question, option)) {
       return { backgroundColor: colors.successBg, borderColor: colors.successBorder };
     }
     if (option === selectedAnswer && !isCorrect) {
@@ -179,7 +179,7 @@ function QuizScreenSession() {
 
   const getOptionTextColor = (option: string) => {
     if (!answered || !question) return colors.textPrimary;
-    if (option === question.correctAnswer) return colors.successText;
+    if (isCorrectAnswer(question, option)) return colors.successText;
     if (option === selectedAnswer && !isCorrect) return colors.errorText;
     return colors.textMuted;
   };
@@ -287,10 +287,10 @@ function QuizScreenSession() {
               >
                 {option}
               </Text>
-              {answered && option === question.correctAnswer && (
+              {answered && isCorrectAnswer(question, option) && (
                 <Ionicons name="checkmark-circle" size={22} color={colors.successText} style={{ marginLeft: 8 }} />
               )}
-              {answered && option === selectedAnswer && !isCorrect && option !== question.correctAnswer && (
+              {answered && option === selectedAnswer && !isCorrect && (
                 <Ionicons name="close-circle" size={22} color={colors.errorText} style={{ marginLeft: 8 }} />
               )}
             </TouchableOpacity>

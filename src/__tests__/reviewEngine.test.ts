@@ -1,25 +1,29 @@
 import verbs from '../data/verbs.json';
-import { conjugate, type Tense, type VerbData } from '../utils/conjugate';
+import { conjugate, getBareInfinitive, getBareVerbData, reflexivePronouns, type Tense, type VerbData } from '../utils/conjugate';
 import { auditExamples, exampleContainsVerbForm } from '../utils/exampleAudit';
 
 const dataset = verbs as Record<string, VerbData>;
 const forms = (verb: string, tense: Tense) => conjugate(verb, dataset[verb], tense).map(row => row.form);
 
 test('every generated -ar preterite retains its -ar endings', () => {
-  for (const [word, data] of Object.entries(dataset)) {
+  for (const [word, entry] of Object.entries(dataset)) {
+    const bare = getBareInfinitive(word);
+    const data = getBareVerbData(entry);
     if (data.type !== 'ar' || data.overrides?.preterite || data.pattern?.fullOverrides?.preterite
       || data.pattern?.irregularPreteriteStem) continue;
-    const stem = word.slice(0, -2);
-    const rows = conjugate(word, data, 'preterite');
+    const stem = bare.slice(0, -2);
+    const rows = conjugate(word, entry, 'preterite');
     ['aste', 'ó', 'amos', 'asteis', 'aron'].forEach((ending, offset) => {
-      if (!rows[offset + 1].disabled) expect(rows[offset + 1].form).toBe(stem + ending);
+      const person = offset + 1;
+      const prefix = bare === word ? '' : `${reflexivePronouns[person]} `;
+      if (!rows[person].disabled) expect(rows[person].form).toBe(prefix + stem + ending);
     });
   }
 });
 
 test.each([
   ['gruñir', 'gruñó', 'gruñeron', 'gruñendo'],
-  ['zambullir', 'zambulló', 'zambulleron', 'zambullendo'],
+  ['zambullirse', 'se zambulló', 'se zambulleron', 'zambulléndose'],
 ])('%s retains non-ar i-absorption', (word, singular, plural, gerund) => {
   expect(forms(word, 'preterite')[2]).toBe(singular);
   expect(forms(word, 'preterite')[5]).toBe(plural);
@@ -92,6 +96,10 @@ test('example checker accepts complete enclitic forms, but not a shared stem', (
   expect(exampleContainsVerbForm('hablar', dataset.hablar, 'Quiero hablarles mañana.')).toBe(true);
   expect(exampleContainsVerbForm('hablar', dataset.hablar, 'Un hablador llegó.')).toBe(false);
   expect(exampleContainsVerbForm('enseñar', dataset.enseñar, 'Me enseñaron español.')).toBe(true);
+  expect(exampleContainsVerbForm('levantarse', dataset.levantarse, 'Voy a levantarme.')).toBe(true);
+  expect(exampleContainsVerbForm('levantarse', dataset.levantarse, 'Estoy levantándome.')).toBe(true);
+  expect(exampleContainsVerbForm('levantarse', dataset.levantarse, 'Levanto la caja.')).toBe(false);
+  expect(exampleContainsVerbForm('despedirse', dataset.despedirse, 'Salió sin despedirse.')).toBe(true);
 });
 
 // The generic example gate is audit:examples; group B resolves the four

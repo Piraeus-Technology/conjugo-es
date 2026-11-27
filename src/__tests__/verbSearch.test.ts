@@ -50,11 +50,29 @@ describe('conjugation search', () => {
       .toMatchObject({ tense, form });
   });
 
-  test.each([['to shower', 'duchar'], ['to relax', 'relajar'], ['to cut in line', 'colar']])(
+  test.each([
+    ['to shower', 'ducharse'], ['to relax', 'relajarse'], ['to cut in line', 'colarse'],
+    ['to get up', 'levantarse'], ['to lift', 'levantar'], ['levantarse', 'levantarse'],
+  ])(
     'ranks an exact English sense %s first', (query, verb) => {
       expect(searchVerbs(query)[0]?.item.infinitive).toBe(verb);
     },
   );
+
+  test.each([
+    ['me levanto', 'levantarse', 'present', undefined],
+    ['levántate', 'levantarse', 'imperative_affirmative', undefined],
+    ['nos hemos levantado', 'levantarse', 'present_perfect', undefined],
+    ['levanto', 'levantar', 'present', undefined],
+    ['estoy levantándome', 'levantarse', 'present_progressive', 'me estoy levantando'],
+    ['estaba levantándome', 'levantarse', 'past_progressive', 'me estaba levantando'],
+    ['vayámonos', 'irse', 'imperative_affirmative', 'vámonos'],
+    ['iros', 'irse', 'imperative_affirmative', 'idos'],
+  ])('finds %s and identifies its table row', async (query, infinitive, tense, tableForm) => {
+    const [first] = await searchConjugations(query);
+    expect(first.item).toMatchObject({ infinitive, tense, form: query });
+    expect(first.item.tableForm).toBe(tableForm);
+  });
 
   test('scans in bounded chunks without retaining the full conjugation matrix', async () => {
     let chunkStarted = performance.now();

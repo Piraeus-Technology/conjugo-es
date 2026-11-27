@@ -19,7 +19,8 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 const navigate = jest.fn<void, ['Conjugation', ConjugationScreenProps['route']['params']]>();
-const navigation = { navigate } as unknown as ConjugationScreenProps['navigation'];
+const push = jest.fn();
+const navigation = { navigate, push } as unknown as ConjugationScreenProps['navigation'];
 
 test('the conjugation picker and Practice settings list every supported tense in order', () => {
   const verb = render(<ConjugationScreen
@@ -85,9 +86,11 @@ test('saved 1.2.3 settings can select all tenses and toggle each new tense by la
 });
 
 test.each([
-  ['hubiéramos vivido', 'vivir', 'subjunctive_past_perfect', 'nosotros'],
-  ['haya muerto', 'morir', 'subjunctive_present_perfect', 'yo'],
-] as const)('tapping the search result for %s opens its conjugation table', async (form, infinitive, tense, person) => {
+  ['hubiéramos vivido', 'vivir', 'subjunctive_past_perfect', 'nosotros', undefined],
+  ['haya muerto', 'morir', 'subjunctive_present_perfect', 'yo', undefined],
+  ['estoy levantándome', 'levantarse', 'present_progressive', 'yo', 'me estoy levantando'],
+] as const)('tapping the search result for %s opens its conjugation table', async (form, infinitive, tense, person, canonicalForm) => {
+  const tableForm = canonicalForm ?? form;
   jest.useFakeTimers();
   try {
     const home = render(
@@ -102,14 +105,25 @@ test.each([
     expect(result.props.accessibilityHint).toContain(form);
     await act(async () => { fireEvent.press(result); });
 
-    expect(navigate).toHaveBeenLastCalledWith('Conjugation', { infinitive, initialTense: tense, highlightForm: form });
+    expect(navigate).toHaveBeenLastCalledWith('Conjugation', { infinitive, initialTense: tense, highlightForm: tableForm });
     const [, params] = navigate.mock.lastCall!;
     home.unmount();
 
     const verb = render(<ConjugationScreen navigation={navigation} route={{ key: 'verb', name: 'Conjugation', params }} />);
     expect(verb.getByRole('button', { name: `${tenseNames[tense]} conjugations` })).toBeExpanded();
-    expect(verb.getByRole('button', { name: `Play pronunciation: ${person}, ${form}` })).toBeTruthy();
+    expect(verb.getByRole('button', { name: `Play pronunciation: ${person}, ${tableForm}` })).toBeTruthy();
   } finally {
     jest.useRealTimers();
   }
 });
+
+test.each([['levantar', 'levantarse'], ['levantarse', 'levantar']])(
+  '%s links to %s in Related Verbs', (infinitive, counterpart) => {
+    const verb = render(<ConjugationScreen
+      navigation={navigation}
+      route={{ key: 'verb', name: 'Conjugation', params: { infinitive } }}
+    />);
+    fireEvent.press(verb.getByRole('button', { name: new RegExp(`^Open ${counterpart},`) }));
+    expect(push).toHaveBeenLastCalledWith('Conjugation', { infinitive: counterpart });
+  },
+);

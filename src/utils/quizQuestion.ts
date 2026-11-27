@@ -1,5 +1,5 @@
 import verbs from '../data/verbs.json';
-import type { Tense, VerbData } from './conjugate';
+import { getBareInfinitive, type Tense, type VerbData } from './conjugate';
 import { getPracticeAnswer, getPracticeForms, pickWeightedPrompt, type createPracticeSession } from './practicePrompts';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
@@ -10,7 +10,12 @@ export interface Question {
   tense: Tense;
   personIndex: number;
   correctAnswer: string;
+  alternateAnswers?: string[];
   options: string[];
+}
+
+export function isCorrectAnswer(question: Question, answer: string): boolean {
+  return answer === question.correctAnswer || question.alternateAnswers?.includes(answer) === true;
 }
 
 export function generateQuestion(
@@ -28,6 +33,13 @@ export function generateQuestion(
   const { verb, data, tense, personIndex } = prompt;
   const correctAnswer = prompt.answer;
   const results = getPracticeForms(verb, data, tense);
+  const alternateAnswers = results[personIndex]?.alternateForms;
+  const wordCount = correctAnswer.split(' ').length;
+  const negative = correctAnswer.startsWith('no ');
+  const reflexive = getBareInfinitive(verb) !== verb;
+  const isDistractor = (form: string) =>
+    form !== correctAnswer && !alternateAnswers?.includes(form)
+    && form.startsWith('no ') === negative && form.split(' ').length === wordCount;
 
   // Generate wrong answers — prioritize hard distractors.
   const sameVerbSameTense: string[] = [];
@@ -35,7 +47,7 @@ export function generateQuestion(
     if (
       result && index !== personIndex
       && (includeVosotros || index !== 4)
-      && result.form !== correctAnswer
+      && isDistractor(result.form)
       && !sameVerbSameTense.includes(result.form)
     ) {
       sameVerbSameTense.push(result.form);
@@ -48,8 +60,7 @@ export function generateQuestion(
     const form = getPracticeAnswer(verb, data, otherTense, personIndex);
     if (
       form
-      && form.startsWith('no ') === correctAnswer.startsWith('no ')
-      && form !== correctAnswer
+      && isDistractor(form)
       && !sameVerbSameTense.includes(form)
       && !sameVerbDiffTense.includes(form)
     ) {
@@ -83,13 +94,21 @@ export function generateQuestion(
     }
   }
 
+  const addDistractorFrom = ([otherVerb, otherData]: [string, VerbData]) => {
+    if ((getBareInfinitive(otherVerb) !== otherVerb) !== reflexive) return;
+    const form = getPracticeAnswer(otherVerb, otherData, tense, personIndex);
+    if (form && isDistractor(form) && !selected.includes(form)) selected.push(form);
+  };
   let fallbackAttempts = 0;
   while (selected.length < 3 && fallbackAttempts < 200) {
     fallbackAttempts += 1;
-    const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
-    const form = getPracticeAnswer(otherVerb, otherData, tense, personIndex);
-    if (form && form !== correctAnswer && !selected.includes(form)) {
-      selected.push(form);
+    addDistractorFrom(verbEntries[Math.floor(Math.random() * verbEntries.length)]);
+  }
+  if (selected.length < 3) {
+    // Small or restricted pools can run out of options with the right shape.
+    for (const entry of allVerbEntries) {
+      addDistractorFrom(entry);
+      if (selected.length === 3) break;
     }
   }
 
@@ -105,6 +124,7 @@ export function generateQuestion(
     tense,
     personIndex,
     correctAnswer,
+    ...(alternateAnswers && { alternateAnswers }),
     options,
   };
 }

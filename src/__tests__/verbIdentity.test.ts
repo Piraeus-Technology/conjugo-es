@@ -47,6 +47,35 @@ test('legacy and prompt weights migrate, retaining the strongest colliding weigh
   expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual(expected);
 });
 
+test('saved favorites, history and prompt weights follow reflexive renames', async () => {
+  mockStorage.set('favorites', JSON.stringify(['quejar', 'equivocar']));
+  mockStorage.set('verb_history', JSON.stringify(['equivocar', 'quejar']));
+  mockStorage.set('spaced_rep_weights', JSON.stringify({
+    'quejar::present::0': 3,
+    'equivocar::present::0': 2,
+    'levantar::present::0': 5,
+    'levantarse::present::0': 4,
+  }));
+  await useFavoritesStore.getState().loadFavorites();
+  await useHistoryStore.getState().loadHistory();
+  await useSpacedRepStore.getState().loadWeights();
+  expect(useFavoritesStore.getState().favorites).toEqual(['quejarse', 'equivocarse']);
+  expect(useHistoryStore.getState().history).toEqual(['equivocarse', 'quejarse']);
+  const weights = {
+    'quejarse::present::0': 3,
+    'equivocarse::present::0': 2,
+    'levantar::present::0': 5,
+    'levantarse::present::0': 4,
+  };
+  expect(useSpacedRepStore.getState().weights).toEqual(weights);
+  expect(buildPracticeInsights(weights).weakForms.map(form => form.label)).toEqual(expect.arrayContaining([
+    'quejarse · Present · yo', 'equivocarse · Present · yo',
+  ]));
+  expect(JSON.parse(mockStorage.get('favorites')!)).toEqual(['quejarse', 'equivocarse']);
+  expect(JSON.parse(mockStorage.get('verb_history')!)).toEqual(['equivocarse', 'quejarse']);
+  expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual(weights);
+});
+
 test('unknown stored verbs stay recoverable but are excluded from practice insights', () => {
   expect(migrateVerbList(['removed-verb', 'aconsolar'])).toEqual(['removed-verb', 'aconsejar']);
   const insights = buildPracticeInsights({ 'removed-verb::present::0': 5, 'hablar::present::0': 2 });

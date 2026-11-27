@@ -1,6 +1,6 @@
 import Fuse, { type FuseResult } from 'fuse.js';
 import verbs from '../data/verbs.json';
-import { VerbData, conjugate, allTenses, Tense } from './conjugate';
+import { VerbData, conjugate, allTenses, getBareInfinitive, Tense } from './conjugate';
 import { FUSE_CONJUGATION_THRESHOLD, FUSE_INFINITIVE_THRESHOLD } from './constants';
 
 export interface VerbEntry extends VerbData {
@@ -176,7 +176,9 @@ async function scanConjugations(
         const alternateForm = participle && result.form.slice(lastWordStart) === participle
           ? result.form.slice(0, lastWordStart) + alternate
           : undefined;
-        const form = alternateForm && normalizeSearchText(alternateForm) === normalizedQuery ? alternateForm : result.form;
+        const matchingAlternate = result.alternateForms?.find(alternate => normalizeSearchText(alternate) === normalizedQuery);
+        const form = matchingAlternate ?? (alternateForm && normalizeSearchText(alternateForm) === normalizedQuery
+          ? alternateForm : result.form);
         const normalizedForm = normalizeSearchText(form);
         evaluatedFormCount += 1;
         const score = exactOnly
@@ -225,18 +227,24 @@ export function searchVerbs(query: string): FuseResult<VerbEntry>[] {
   const normalized = normalizeSearchText(query);
   if (!normalized) return [];
   const exactInfinitives: FuseResult<VerbEntry>[] = [];
-  const exactEnglish: FuseResult<VerbEntry>[] = [];
-  const exactEnglishAliases: FuseResult<VerbEntry>[] = [];
+  const exactEnglish: { result: FuseResult<VerbEntry>; senseRank: number; reflexive: boolean }[] = [];
   verbEntries.forEach((item, refIndex) => {
     if (item.normalizedInfinitive === normalized) exactInfinitives.push({ item, refIndex, score: 0 });
     else if (isExactEnglishMatch(item, normalized)) {
-      const writtenSense = item.normalizedTranslation === normalized || splitGloss(item.translation).some(part =>
-        normalizeSearchText(part) === normalized || normalizeSearchText(withoutGlossAnnotation(part)) === normalized,
-      );
-      (writtenSense ? exactEnglish : exactEnglishAliases).push({ item, refIndex, score: 0 });
+      const senses = getEnglishSenses(item.translation);
+      const writtenSense = item.normalizedTranslation === normalized
+        || senses.some(sense => normalizeSearchText(sense) === normalized);
+      const annotatedSense = senses.some(sense => normalizeSearchText(withoutGlossAnnotation(sense)) === normalized);
+      exactEnglish.push({
+        result: { item, refIndex, score: 0 },
+        senseRank: writtenSense ? 0 : annotatedSense ? 1 : 2,
+        reflexive: getBareInfinitive(item.infinitive) !== item.infinitive,
+      });
     }
   });
-  const exact = [...exactInfinitives, ...exactEnglish, ...exactEnglishAliases];
+  exactEnglish.sort((first, second) => first.senseRank - second.senseRank
+    || Number(second.reflexive) - Number(first.reflexive));
+  const exact = [...exactInfinitives, ...exactEnglish.map(({ result }) => result)];
   const seen = new Set(exact.map(result => result.refIndex));
   return [...exact, ...verbFuse.search(query).filter(result => !seen.has(result.refIndex))];
 }

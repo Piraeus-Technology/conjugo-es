@@ -1,5 +1,5 @@
 import verbs from '../data/verbs.json';
-import { generateQuestion } from '../utils/quizQuestion';
+import { generateQuestion, isCorrectAnswer } from '../utils/quizQuestion';
 import {
   createPracticeSession,
   getCorePracticeEntries,
@@ -7,7 +7,7 @@ import {
   MISSED_PROMPT_DELAY,
   pickWeightedPrompt,
 } from '../utils/practicePrompts';
-import { allTenses, type Tense, type VerbData } from '../utils/conjugate';
+import { allTenses, practiceTenses, type Tense, type VerbData } from '../utils/conjugate';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
 const flatWeight = () => 1;
@@ -112,15 +112,32 @@ describe('practice prompt selection', () => {
     }
   });
 
-  test('skips pronominal-only entries and tenses no longer taught', () => {
+  test('includes reflexive imperatives and skips tenses no longer taught', () => {
     jest.spyOn(Math, 'random').mockImplementation(seededRandom(0xA3));
     const pool = allVerbEntries.filter(([verb]) =>
-      ['quejar', 'atrever', 'desvivir', 'adentrar', 'haber', 'soler', 'hablar'].includes(verb),
+      ['quejarse', 'atreverse', 'desvivirse', 'adentrarse', 'haber', 'soler', 'hablar'].includes(verb),
     );
-    for (let index = 0; index < 50; index += 1) {
-      const prompt = pickWeightedPrompt(pool, ['imperative_affirmative', 'imperative_negative'], flatWeight);
-      expect(prompt.verb).toBe('hablar');
-    }
+    const verbsPicked = new Set(Array.from({ length: 50 }, () =>
+      pickWeightedPrompt(pool, ['imperative_affirmative', 'imperative_negative'], flatWeight).verb,
+    ));
+    expect(verbsPicked).toEqual(new Set(['quejarse', 'atreverse', 'desvivirse', 'adentrarse', 'hablar']));
+  });
+
+  test('reflexive command distractors match the answer shape and exclude alternate correct forms', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.65);
+    const irse = allVerbEntries.find(([verb]) => verb === 'irse')!;
+    const question = generateQuestion(['imperative_affirmative', ...practiceTenses.filter(tense =>
+      tense !== 'imperative_affirmative')], flatWeight, [irse], true, {
+      ...createPracticeSession(),
+      next: () => ({ verb: 'irse', data: irse[1], tense: 'imperative_affirmative', personIndex: 3, answer: 'vámonos' }),
+    });
+    expect(question.options).toHaveLength(4);
+    expect(question.options).toContain('vámonos');
+    expect(question.options).not.toContain('vayámonos');
+    expect(question.options).not.toContain('vamos');
+    expect(question.options.every(option => !option.includes(' '))).toBe(true);
+    expect(isCorrectAnswer(question, 'vayámonos')).toBe(true);
+    expect(isCorrectAnswer(question, 'vamos')).toBe(false);
   });
 
   test('a missed prompt returns after two other answers despite settings redraws', () => {

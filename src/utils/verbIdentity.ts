@@ -1,6 +1,24 @@
-// Dataset corrections from the 1.2.1 review. Keep these aliases so existing
-// local favorites, history and prompt weights survive infinitive renames.
-const renamedVerbs: Record<string, string> = { aconsolar: 'aconsejar', tañir: 'tañer' };
+// Keep these aliases so local favorites, history and prompt weights survive
+// dataset corrections and infinitive renames.
+const renamedVerbs: Record<string, string> = {
+  aconsolar: 'aconsejar',
+  tañir: 'tañer',
+  quejar: 'quejarse',
+  atrever: 'atreverse',
+  adentrar: 'adentrarse',
+  desvivir: 'desvivirse',
+  esforzar: 'esforzarse',
+  equivocar: 'equivocarse',
+  especializar: 'especializarse',
+  duchar: 'ducharse',
+  enterar: 'enterarse',
+  refugiar: 'refugiarse',
+  resignar: 'resignarse',
+  zambullir: 'zambullirse',
+  aferrar: 'aferrarse',
+  avecindar: 'avecindarse',
+  confederar: 'confederarse',
+};
 
 export function resolveVerbIdentity(infinitive: string): string {
   return Object.prototype.hasOwnProperty.call(renamedVerbs, infinitive)

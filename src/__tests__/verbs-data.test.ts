@@ -1,14 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { conjugate, VerbData, allTenses, Tense, type IrregularPattern } from '../utils/conjugate';
+import { conjugate, getBareInfinitive, VerbData, allTenses, Tense, type IrregularPattern } from '../utils/conjugate';
 import { getRuleNotes } from '../utils/conjugationInsights';
 import verbs from '../data/verbs.json';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>);
 
 describe('Verb database integrity', () => {
-  test('has at least 1000 verbs', () => {
-    expect(verbEntries.length).toBeGreaterThanOrEqual(1000);
+  test('has 1114 verbs including 107 reflexives', () => {
+    expect(verbEntries).toHaveLength(1114);
+    expect(verbEntries.filter(([word]) => getBareInfinitive(word) !== word)).toHaveLength(107);
   });
 
   test('all verbs have required fields', () => {
@@ -21,12 +22,17 @@ describe('Verb database integrity', () => {
     }
   });
 
-  test('all verb infinitives end in -ar, -er, or -ir', () => {
-    for (const [infinitive] of verbEntries) {
-      const ending = infinitive.slice(-2);
+  test('bare and reflexive infinitives have -ar, -er, or -ir stems', () => {
+    for (const [infinitive, data] of verbEntries) {
+      const bare = getBareInfinitive(infinitive);
+      const ending = bare.slice(-2);
       // Some verbs like "oír" end in -ír
       const normalizedEnding = ending.replace('í', 'i');
       expect(['ar', 'er', 'ir']).toContain(normalizedEnding);
+      if (data.reflexiveBase) {
+        expect(data.reflexiveBase).toBe(bare);
+        expect(verbs).toHaveProperty(bare, expect.objectContaining({ type: data.type, regular: data.regular }));
+      }
     }
   });
 
@@ -82,9 +88,10 @@ describe('Verb database integrity', () => {
     };
     const mismatches = verbEntries.flatMap(([infinitive, { pattern }]) => {
       const spelling = pattern?.spellingChange;
+      const bare = getBareInfinitive(infinitive);
       return [
-        ...(spelling && !endings[spelling].test(infinitive) ? [`${infinitive}: ${spelling}`] : []),
-        ...(pattern?.yoZco && !/[aeiou]c[ei]r$/.test(infinitive) ? [`${infinitive}: yoZco`] : []),
+        ...(spelling && !endings[spelling].test(bare) ? [`${infinitive}: ${spelling}`] : []),
+        ...(pattern?.yoZco && !/[aeiou]c[ei]r$/.test(bare) ? [`${infinitive}: yoZco`] : []),
       ];
     });
     expect(mismatches).toEqual([]);

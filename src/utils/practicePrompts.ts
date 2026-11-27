@@ -71,7 +71,7 @@ export function getPracticeAnswer(
 }
 
 export function getPracticeForms(verb: string, data: VerbData, tense: Tense) {
-  if (data.pronominalOnly || !practiceTenses.includes(tense)
+  if (!practiceTenses.includes(tense)
     || (data.practiceTenses && !data.practiceTenses.includes(tense))) return [];
   return conjugate(verb, data, tense).map(result =>
     result.disabled || result.form === '—' ? undefined : result,
@@ -102,13 +102,12 @@ export function getCorePracticeEntries(
 // and the beginner core cannot drown out higher levels. Difficulty weights
 // still choose among the sampled candidates.
 export function pickWeightedPrompt(
-  entries: [string, VerbData][],
+  verbEntries: [string, VerbData][],
   activeTenses: Tense[],
   getWeight: WeightForPrompt,
   includeVosotros: boolean = true,
   skip?: SkipPrompt,
 ): PromptCandidate {
-  const verbEntries = entries.filter(([, data]) => !data.pronominalOnly);
   const coreEntries = getCorePracticeEntries(verbEntries);
   const beginnerOnly = verbEntries.every(([, data]) => data.level === 'A1' || data.level === 'A2');
   const byLevel = new Map<VerbData['level'], [string, VerbData][]>();
@@ -162,7 +161,7 @@ export function pickWeightedPrompt(
         }
       }
     }
-    if (skip) return pickWeightedPrompt(entries, activeTenses, getWeight, includeVosotros);
+    if (skip) return pickWeightedPrompt(verbEntries, activeTenses, getWeight, includeVosotros);
     throw new Error('No conjugable prompts for the current practice settings');
   }
 

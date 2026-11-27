@@ -1,5 +1,7 @@
 import {
   conjugate,
+  getBareInfinitive,
+  getBareVerbData,
   getRegularPastParticiple,
   imperativeTenses,
   tenseNames,
@@ -13,6 +15,8 @@ const verFamily = new Set(['ver', 'prever', 'entrever']);
 const accentless = (form: string) => form.normalize('NFD').replace(/\u0301/g, '');
 
 export function getOverrideExample(infinitive: string, verb: VerbData) {
+  infinitive = getBareInfinitive(infinitive);
+  verb = getBareVerbData(verb);
   for (const tense of ['present', 'preterite', 'subjunctive_present'] as const) {
     if (!verb.overrides?.[tense] && !verb.pattern?.fullOverrides?.[tense]) continue;
     const regular = conjugate(infinitive, { type: verb.type, regular: true, translation: verb.translation }, tense);
@@ -35,6 +39,8 @@ export function getOverrideExample(infinitive: string, verb: VerbData) {
 }
 
 export function getInflectionNotes(infinitive: string, verb: VerbData): string[] {
+  infinitive = getBareInfinitive(infinitive);
+  verb = getBareVerbData(verb);
   const notes = new Set<string>();
   const pattern = verb.pattern;
   const present = conjugate(infinitive, verb, 'present');
@@ -171,18 +177,28 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   if (unavailableNamedTenses.length) {
     notes.push(`This verb is not used in these tenses: ${unavailableNamedTenses.join(', ')}.`);
   }
-  if (verb.pronominalOnly) {
-    const present = conjugate(infinitive, verb, 'present');
-    const examples = ['me', 'te', 'se'].flatMap((pronoun, index) =>
-      present[index].disabled ? [] : [`${pronoun} ${present[index].form}`],
-    );
-    notes.push(`Used as ${infinitive}se${examples.length ? `: ${examples.join(', ')}` : ''}.`);
+  if (getBareInfinitive(infinitive) !== infinitive) {
+    const [present] = conjugate(infinitive, verb, 'present');
+    const [presentProgressive] = conjugate(infinitive, verb, 'present_progressive');
+    const [pastProgressive] = conjugate(infinitive, verb, 'past_progressive');
+    notes.unshift(`This reflexive verb uses me, te, se, nos, os and se, as in ${present.form}.`);
+    if (presentProgressive.alternateForms && pastProgressive.alternateForms) {
+      notes.splice(1, 0, `In the Present and Past Progressive, the pronoun can also attach to the gerund. For example, ${presentProgressive.alternateForms[0]} and ${pastProgressive.alternateForms[0]}.`);
+    }
+    if (infinitive === 'irse') {
+      const [, , , nosotros, vosotros] = conjugate(infinitive, verb, 'imperative_affirmative');
+      if (nosotros.alternateForms && vosotros.alternateForms) {
+        notes.push(`In affirmative commands, ${nosotros.alternateForms[0]} is also correct for nosotros and ${vosotros.alternateForms[0]} is also correct for vosotros.`);
+      }
+    }
   }
 
   return notes;
 }
 
 export function getFamilyKey(infinitive: string, verb: VerbData): string | null {
+  infinitive = getBareInfinitive(infinitive);
+  verb = getBareVerbData(verb);
   for (const base of familyBases) {
     if (base === 'ver') {
       if (verFamily.has(infinitive)) return 'base:ver';

@@ -1,4 +1,4 @@
-import { allTenses, conjugate, type VerbData } from './conjugate';
+import { allTenses, conjugate, getBareInfinitive, reflexivePronouns, type VerbData } from './conjugate';
 
 export interface ExampleMismatch {
   infinitive: string;
@@ -20,12 +20,17 @@ export function exampleContainsVerbForm(infinitive: string, data: VerbData, exam
   const sentenceWords = words(example);
   const sentence = ` ${sentenceWords.join(' ')} `;
   const forms = new Set([infinitive]);
-  const attachableForms = new Set([withoutStressAccents(infinitive)]);
+  const bareInfinitive = getBareInfinitive(infinitive);
+  const reflexive = bareInfinitive !== infinitive;
+  const attachableForms = new Set([withoutStressAccents(bareInfinitive)]);
   for (const tense of allTenses) {
     for (const row of conjugate(infinitive, data, tense)) {
       if (row.disabled || row.form === '—') continue;
       forms.add(row.form);
-      if (tense === 'imperative_affirmative' || tense === 'gerund_participle') {
+      row.alternateForms?.forEach(form => forms.add(form));
+      if (reflexive && row.pronoun === 'Gerund') {
+        attachableForms.add(withoutStressAccents(row.form.slice(0, -2)));
+      } else if (!reflexive && (tense === 'imperative_affirmative' || tense === 'gerund_participle')) {
         attachableForms.add(withoutStressAccents(row.form));
       }
     }
@@ -33,7 +38,8 @@ export function exampleContainsVerbForm(infinitive: string, data: VerbData, exam
   if ([...forms].some(form => sentence.includes(` ${words(form).join(' ')} `))) return true;
   // An enclitic may shift the written accent, but the ENTIRE remaining form
   // must match an infinitive, gerund or affirmative command; never a stem.
-  return sentenceWords.some(word => cliticEndings.some(ending =>
+  const endings = reflexive ? reflexivePronouns : cliticEndings;
+  return sentenceWords.some(word => endings.some(ending =>
     word.endsWith(ending) && attachableForms.has(withoutStressAccents(word.slice(0, -ending.length))),
   ));
 }

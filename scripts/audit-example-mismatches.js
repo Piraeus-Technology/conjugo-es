@@ -9,7 +9,7 @@ const verbs = require('../src/data/verbs.json');
 function loadTypeScript(relativePath, dependencies = {}) {
   const filename = path.resolve(__dirname, relativePath);
   const source = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
   }).outputText;
   const loaded = new Module(filename, module);
   loaded.filename = filename;

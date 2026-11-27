@@ -28,7 +28,7 @@ describe('conjugation insights', () => {
       'remover',
       'disolver',
       'conmover',
-      'atrever',
+      'atreverse',
     ]) {
       expect(getFamilyKey(unrelated, verbData[unrelated])).not.toBe(verKey);
     }
@@ -80,7 +80,7 @@ describe('conjugation insights', () => {
 
   test('every override note shows a changed form and names the change', () => {
     const overridden = Object.entries(verbData).filter(([, verb]) => verb.overrides || verb.pattern?.fullOverrides);
-    expect(overridden).toHaveLength(39);
+    expect(overridden).toHaveLength(40);
     for (const [infinitive, verb] of overridden) {
       const example = getOverrideExample(infinitive, verb)!;
       expect(example.form).not.toBe(example.regularForm);
