@@ -272,21 +272,28 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                           {row.pronoun}
                         </Text>
                         <View style={styles.formContainer}>
-                          <Text
-                            style={
-                              row.disabled
-                                ? [styles.disabledForm, { color: colors.textMuted }]
-                                : [
-                                    styles.form,
-                                    { color: colors.primaryText },
-                                    isHighlighted && { color: colors.primaryDark, fontWeight: fonts.weights.bold },
-                                  ]
-                            }
-                          >
-                            {row.disabled ? '—' : row.form}
-                          </Text>
-                          {!row.disabled && (
-                            <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} style={{ marginLeft: 6 }} />
+                          {row.disabled ? (
+                            <Text style={[styles.disabledForm, { color: colors.textMuted }]}>—</Text>
+                          ) : (
+                            <>
+                              <View style={styles.formWords}>
+                                {row.form.split(' ').map((word, wordIndex) => (
+                                  <Text
+                                    key={wordIndex}
+                                    numberOfLines={1}
+                                    adjustsFontSizeToFit
+                                    style={[
+                                      styles.form,
+                                      { color: colors.primaryText },
+                                      isHighlighted && { color: colors.primaryDark, fontWeight: fonts.weights.bold },
+                                    ]}
+                                  >
+                                    {word}
+                                  </Text>
+                                ))}
+                              </View>
+                              <Ionicons name="volume-medium-outline" size={14} color={colors.textMuted} style={{ marginLeft: 6 }} />
+                            </>
                           )}
                         </View>
                       </TouchableOpacity>
@@ -565,7 +572,8 @@ const styles = StyleSheet.create({
   highlightedRow: { marginHorizontal: -8, paddingHorizontal: 16, borderRadius: radius.sm },
   pronoun: { flex: 1, fontSize: fonts.sizes.md },
   formContainer: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' },
-  form: { fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold, textAlign: 'right' },
+  formWords: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', columnGap: spacing.xs },
+  form: { maxWidth: '100%', fontSize: fonts.sizes.lg, fontWeight: fonts.weights.semibold, textAlign: 'right' },
   disabledText: { textDecorationLine: 'line-through' },
   disabledForm: { flex: 1, fontSize: fonts.sizes.lg, fontWeight: fonts.weights.regular, textAlign: 'right' },
 });
