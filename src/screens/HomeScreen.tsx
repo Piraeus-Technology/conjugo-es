@@ -15,13 +15,14 @@ import {
 import { Swipeable } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import verbs from '../data/verbs.json';
-import { VerbData, tenseNames } from '../utils/conjugate';
+import { VerbData, tenseNames, type Tense } from '../utils/conjugate';
 import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { MAX_SEARCH_RESULTS } from '../utils/constants';
 import {
   normalizeSearchText,
+  isExactEnglishMatch,
   searchConjugations,
   searchVerbs,
   verbEntries,
@@ -69,7 +70,7 @@ function buildVerbMatchMeta(
     };
   }
 
-  if (query === normalizedTranslation) {
+  if (isExactEnglishMatch(entry, query)) {
     return {
       matchLabel: 'English match',
       matchDetail: `Exact match for "${entry.translation}"`,
@@ -95,25 +96,8 @@ function buildVerbSearchResults(searchValue: string, query: string): SearchResul
       infinitive: result.item.infinitive,
       translation: result.item.translation,
       matchType: 'infinitive' as const,
-      score: result.score ?? 1,
       ...buildVerbMatchMeta(query, result.item),
-    }))
-    .sort((first, second) => {
-      const firstExactInfinitive = normalizeSearchText(first.infinitive) === query ? 1 : 0;
-      const secondExactInfinitive = normalizeSearchText(second.infinitive) === query ? 1 : 0;
-      if (firstExactInfinitive !== secondExactInfinitive) {
-        return secondExactInfinitive - firstExactInfinitive;
-      }
-
-      const firstExactTranslation = normalizeSearchText(first.translation) === query ? 1 : 0;
-      const secondExactTranslation = normalizeSearchText(second.translation) === query ? 1 : 0;
-      if (firstExactTranslation !== secondExactTranslation) {
-        return secondExactTranslation - firstExactTranslation;
-      }
-
-      return first.score - second.score;
-    })
-    .map(({ score: _score, ...result }) => result);
+    }));
 }
 
 async function buildSearchResults(
@@ -130,33 +114,34 @@ async function buildSearchResults(
     .map((result) => result.item)
     .filter((conjugation) => conjugation.normalizedForm === query);
   if (exactConjugations.length > 0) {
-    const grouped = new Map<string, SearchResult>();
+    const grouped = new Map<string, { result: SearchResult; tenses: Set<Tense> }>();
 
     exactConjugations.forEach((conjugation) => {
       const detail = `"${conjugation.form}" — ${tenseNames[conjugation.tense]}, ${conjugation.pronoun}`;
       const existing = grouped.get(conjugation.infinitive);
       if (existing) {
-        if (existing.matchDetail && !existing.matchDetail.includes(detail)) {
-          const details = existing.matchDetail.split(' · ');
-          if (details.length < 2) {
-            existing.matchDetail = [...details, detail].join(' · ');
-          }
+        if (!existing.tenses.has(conjugation.tense)) {
+          existing.tenses.add(conjugation.tense);
+          existing.result.matchDetail += ` · ${detail}`;
         }
         return;
       }
 
       grouped.set(conjugation.infinitive, {
-        infinitive: conjugation.infinitive,
-        translation: conjugation.translation,
-        matchType: 'conjugation',
-        matchLabel: 'Conjugation match',
-        matchDetail: detail,
-        matchTense: conjugation.tense,
-        matchForm: conjugation.form,
+        tenses: new Set([conjugation.tense]),
+        result: {
+          infinitive: conjugation.infinitive,
+          translation: conjugation.translation,
+          matchType: 'conjugation',
+          matchLabel: 'Conjugation match',
+          matchDetail: detail,
+          matchTense: conjugation.tense,
+          matchForm: conjugation.form,
+        },
       });
     });
 
-    const exactResults = [...grouped.values()];
+    const exactResults = [...grouped.values()].map(({ result }) => result);
     const seen = new Set(exactResults.map((result) => result.infinitive));
     verbResults.forEach((result) => {
       if (!seen.has(result.infinitive)) {
@@ -321,10 +306,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     );
   };
 
-  const handleSwipeDelete = (item: SearchResult) => {
+  const removeSavedVerb = (item: SearchResult) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     if (item.matchType === 'favorite') {
-      toggleFavorite(item.infinitive);
+      if (useFavoritesStore.getState().isFavorite(item.infinitive)) toggleFavorite(item.infinitive);
     } else if (item.matchType === 'history') {
       removeFromHistory(item.infinitive);
     }
@@ -341,6 +326,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         accessibilityRole="button"
         accessibilityLabel={`${item.infinitive}, ${item.translation}`}
         accessibilityHint={item.matchDetail || 'Opens conjugation table'}
+        accessibilityActions={isSwipeable ? [{
+          name: 'remove',
+          label: item.matchType === 'favorite' ? 'Remove from Favorites' : 'Remove from Recent',
+        }] : undefined}
+        onAccessibilityAction={isSwipeable ? ({ nativeEvent }) => {
+          if (nativeEvent.actionName === 'remove') removeSavedVerb(item);
+        } : undefined}
       >
         <View style={styles.verbInfo}>
           <Text style={[styles.verbName, { color: colors.textPrimary }]}>{item.infinitive}</Text>
@@ -379,7 +371,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return (
       <Swipeable
         renderRightActions={renderDeleteAction}
-        onSwipeableOpen={() => handleSwipeDelete(item)}
+        onSwipeableOpen={() => removeSavedVerb(item)}
         overshootRight={false}
       >
         {row}
@@ -478,12 +470,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         SectionSeparatorComponent={() => <View style={styles.sectionSeparator} />}
         ListEmptyComponent={
           search.trim() ? (
-            searchPending ? null : (
             <View style={styles.emptyContainer}>
-              <Ionicons name="search-outline" size={48} color={colors.border} />
-              <Text style={[styles.emptyText, { color: colors.textMuted }]}>No verbs found</Text>
+              {!searchPending && <Ionicons name="search-outline" size={48} color={colors.border} />}
+              <Text accessibilityLiveRegion="polite" style={[styles.emptyText, { color: colors.textMuted }]}>
+                {searchPending ? 'Searching…' : 'No verbs found'}
+              </Text>
             </View>
-            )
           ) : sections.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Image source={require('../../assets/logo.png')} style={styles.heroLogo} />

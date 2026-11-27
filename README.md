@@ -37,9 +37,9 @@ Start Metro with `npm start`, or create local native builds with
 - `src/__tests__` — logic and React Native component tests
 - `docs/index.html` — hosted privacy policy
 
-The three tip products are consumable in-app purchases. Store products,
-pricing, and purchase lifecycle changes require sandbox testing on real
-devices in both stores; unit tests cannot validate store delivery or
-acknowledgement.
+The tip jar offers one consumable in-app purchase, `tip_small`, and displays
+the store's localized price. The app still finishes delivered transactions for
+the retired `tip_medium` and `tip_large` products. Verify store delivery and
+transaction completion on real devices in both sandboxes.
 
 See [the release checklist](docs/release-checklist.md) before shipping.

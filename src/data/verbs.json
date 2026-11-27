@@ -261,7 +261,8 @@
       "Ha llovido mucho esta semana.",
       "Había muchas personas en la fiesta."
     ],
-    "level": "A1"
+    "level": "A1",
+    "noImperative": true
   },
   "hacer": {
     "type": "er",
@@ -366,9 +367,9 @@
         "rehacen"
       ],
       "preterite": [
-        "rehice",
+        "rehíce",
         "rehiciste",
-        "rehizo",
+        "rehízo",
         "rehicimos",
         "rehicisteis",
         "rehicieron"
@@ -383,7 +384,7 @@
       ]
     },
     "examples": [
-      "Rehice el informe después de los comentarios.",
+      "Rehíce el informe después de los comentarios.",
       "Tendremos que rehacer el trabajo."
     ],
     "level": "B2"
@@ -1131,7 +1132,7 @@
   "sentar": {
     "type": "ar",
     "regular": false,
-    "translation": "to seat",
+    "translation": "to seat someone / to sit down (sentarse)",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
@@ -1141,7 +1142,10 @@
       "Siéntate aquí, por favor.",
       "Nos sentamos en la primera fila."
     ],
-    "level": "A1"
+    "level": "A1",
+    "englishSearchAliases": [
+      "to seat"
+    ]
   },
   "acertar": {
     "type": "ar",
@@ -1186,7 +1190,7 @@
       "Atravesamos el puente con cuidado.",
       "El río atraviesa toda la ciudad."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "gobernar": {
     "type": "ar",
@@ -1222,7 +1226,7 @@
   "manifestar": {
     "type": "ar",
     "regular": false,
-    "translation": "to manifest",
+    "translation": "to express / to demonstrate (manifestarse)",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
@@ -1232,7 +1236,10 @@
       "Los ciudadanos se manifestaron en la plaza.",
       "Manifestó su desacuerdo con la nueva ley."
     ],
-    "level": "B1"
+    "level": "B1",
+    "englishSearchAliases": [
+      "to manifest"
+    ]
   },
   "merendar": {
     "type": "ar",
@@ -1478,7 +1485,7 @@
       "La enfermera atiende a los pacientes con cariño.",
       "¿Quién me atiende, por favor?"
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "tender": {
     "type": "er",
@@ -1578,7 +1585,7 @@
   "divertir": {
     "type": "ir",
     "regular": false,
-    "translation": "to amuse/entertain",
+    "translation": "to amuse or entertain / to have fun (divertirse)",
     "pattern": {
       "stemChange": {
         "present": "e_ie",
@@ -1589,7 +1596,12 @@
       "Los niños se divierten en el parque.",
       "Nos divertimos mucho en la fiesta de anoche."
     ],
-    "level": "A2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to amuse/entertain",
+      "to amuse",
+      "to entertain"
+    ]
   },
   "convertir": {
     "type": "ir",
@@ -1658,7 +1670,7 @@
   "referir": {
     "type": "ir",
     "regular": false,
-    "translation": "to refer",
+    "translation": "to refer someone / to refer to something (referirse a)",
     "pattern": {
       "stemChange": {
         "present": "e_ie",
@@ -1669,7 +1681,11 @@
       "Se refiere al artículo que leímos ayer.",
       "El doctor lo refirió a un especialista."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to refer",
+      "to refer to"
+    ]
   },
   "invertir": {
     "type": "ir",
@@ -1839,7 +1855,7 @@
       "Prueba este pastel, está delicioso.",
       "Probaron un nuevo método de enseñanza."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "soñar": {
     "type": "ar",
@@ -1889,7 +1905,7 @@
   "acordar": {
     "type": "ar",
     "regular": false,
-    "translation": "to agree/remember",
+    "translation": "to agree / to remember (acordarse de)",
     "pattern": {
       "stemChange": {
         "present": "o_ue"
@@ -1899,7 +1915,10 @@
       "Acordamos vernos el próximo lunes.",
       "No me acuerdo de dónde dejé el libro."
     ],
-    "level": "A2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to agree/remember"
+    ]
   },
   "apostar": {
     "type": "ar",
@@ -1914,7 +1933,7 @@
       "Apuesto a que mañana hace sol.",
       "Apostaron todo su dinero en ese proyecto."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "aprobar": {
     "type": "ar",
@@ -2019,7 +2038,7 @@
       "Sonó el teléfono a las tres de la mañana.",
       "Esa canción me suena, pero no recuerdo el nombre."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "forzar": {
     "type": "ar",
@@ -2040,7 +2059,7 @@
   "esforzar": {
     "type": "ar",
     "regular": false,
-    "translation": "to make an effort",
+    "translation": "to give strength or encouragement / to make an effort (esforzarse)",
     "pattern": {
       "stemChange": {
         "present": "o_ue"
@@ -2083,7 +2102,7 @@
       "Almorzamos juntos en la cafetería del trabajo.",
       "¿A qué hora almuerzas normalmente?"
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "colgar": {
     "type": "ar",
@@ -2099,7 +2118,7 @@
       "Cuelga el abrigo en el perchero.",
       "Colgaron las luces de Navidad en el balcón."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "rogar": {
     "type": "ar",
@@ -2281,7 +2300,23 @@
       "Suelo despertarme temprano.",
       "Solíamos ir a la playa en verano."
     ],
-    "level": "C1"
+    "level": "C1",
+    "extendedReference": true,
+    "practiceTenses": [
+      "present",
+      "imperfect",
+      "subjunctive_present",
+      "subjunctive_imperfect",
+      "present_perfect"
+    ],
+    "unavailableTenses": [
+      "future",
+      "conditional",
+      "imperative_affirmative",
+      "imperative_negative",
+      "future_perfect",
+      "conditional_perfect"
+    ]
   },
   "doler": {
     "type": "er",
@@ -2296,7 +2331,8 @@
       "Me duele la cabeza.",
       "Ayer me dolía mucho la espalda."
     ],
-    "level": "A2"
+    "level": "A2",
+    "thirdPersonOnly": true
   },
   "oler": {
     "type": "er",
@@ -2463,7 +2499,7 @@
   "vestir": {
     "type": "ir",
     "regular": false,
-    "translation": "to dress",
+    "translation": "to dress someone / to get dressed (vestirse)",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2474,7 +2510,10 @@
       "Se viste muy elegante para el trabajo.",
       "Me vestí rápido y salí."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to dress"
+    ]
   },
   "competir": {
     "type": "ir",
@@ -2495,7 +2534,7 @@
   "despedir": {
     "type": "ir",
     "regular": false,
-    "translation": "to fire/say goodbye",
+    "translation": "to fire or see someone off / to say goodbye (despedirse)",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2506,7 +2545,12 @@
       "La empresa despidió a veinte empleados.",
       "Se despide de sus amigos en el aeropuerto."
     ],
-    "level": "C2"
+    "level": "B1",
+    "englishSearchAliases": [
+      "to fire/say goodbye",
+      "to fire",
+      "to see someone off"
+    ]
   },
   "impedir": {
     "type": "ir",
@@ -2543,7 +2587,7 @@
   "rendir": {
     "type": "ir",
     "regular": false,
-    "translation": "to yield/surrender",
+    "translation": "to yield / to exhaust / to surrender (rendirse)",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2554,7 +2598,10 @@
       "El cansancio me rindió.",
       "Este coche rinde mucho en carretera."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to yield/surrender"
+    ]
   },
   "derretir": {
     "type": "ir",
@@ -2791,7 +2838,7 @@
       "De repente apareció un gato en la ventana.",
       "Aparecen nuevas tiendas cada mes."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "desaparecer": {
     "type": "er",
@@ -2804,7 +2851,7 @@
       "El gato desapareció durante tres días.",
       "Las nubes desaparecen con el viento."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "establecer": {
     "type": "er",
@@ -2856,7 +2903,7 @@
       "Permanecimos en silencio durante la ceremonia.",
       "Permanece tranquilo, todo saldrá bien."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "reconocer": {
     "type": "er",
@@ -2948,7 +2995,7 @@
       "Amaneció nublado en la montaña.",
       "Amanece a las seis en verano."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "anochecer": {
     "type": "er",
@@ -3188,7 +3235,7 @@
   "estremecer": {
     "type": "er",
     "regular": false,
-    "translation": "to shudder",
+    "translation": "to shake or make someone shudder / to shudder (estremecerse)",
     "pattern": {
       "yoZco": true
     },
@@ -3196,7 +3243,11 @@
       "El terremoto estremeció toda la ciudad.",
       "Me estremezco con el frío."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to shake",
+      "to make someone shudder"
+    ]
   },
   "producir": {
     "type": "ir",
@@ -3374,7 +3425,7 @@
       "Huyeron del incendio a tiempo.",
       "No huyas de tus problemas."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "contribuir": {
     "type": "ir",
@@ -3647,7 +3698,7 @@
       "Practico español todos los días.",
       "Practicábamos natación en el verano."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "indicar": {
     "type": "ar",
@@ -3808,7 +3859,7 @@
   "equivocar": {
     "type": "ar",
     "regular": false,
-    "translation": "to mistake",
+    "translation": "to mistake one thing for another / to make a mistake (equivocarse)",
     "pattern": {
       "spellingChange": "car_qué"
     },
@@ -3816,7 +3867,10 @@
       "Me equivoqué de dirección.",
       "Todos nos equivocamos alguna vez."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to mistake"
+    ]
   },
   "fabricar": {
     "type": "ar",
@@ -3933,7 +3987,7 @@
       "Pescamos truchas en el lago.",
       "Mi abuelo pescaba todos los domingos."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "picar": {
     "type": "ar",
@@ -4102,7 +4156,7 @@
       "El ejército atacó al amanecer.",
       "Los mosquitos me atacan por la noche."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "rascar": {
     "type": "ar",
@@ -4183,7 +4237,7 @@
       "Entregué el informe a tiempo.",
       "Entregan los paquetes a domicilio."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "apagar": {
     "type": "ar",
@@ -4209,7 +4263,7 @@
       "Cargué las maletas en el coche.",
       "Necesito cargar mi teléfono."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "castigar": {
     "type": "ar",
@@ -4521,7 +4575,7 @@
       "Lanzó la pelota con toda su fuerza.",
       "La empresa lanza un nuevo producto mañana."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "organizar": {
     "type": "ar",
@@ -4599,7 +4653,7 @@
       "Reza todas las noches antes de dormir.",
       "Rezamos por la paz del mundo."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "gozar": {
     "type": "ar",
@@ -4773,7 +4827,7 @@
   "especializar": {
     "type": "ar",
     "regular": false,
-    "translation": "to specialize",
+    "translation": "to adapt for a specific purpose / to specialize (especializarse)",
     "pattern": {
       "spellingChange": "zar_cé"
     },
@@ -4846,7 +4900,7 @@
       "Localizamos el problema en el sistema.",
       "No logro localizar mis llaves."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "memorizar": {
     "type": "ar",
@@ -5020,7 +5074,7 @@
   "tranquilizar": {
     "type": "ar",
     "regular": false,
-    "translation": "to calm down",
+    "translation": "to calm someone / to calm down (tranquilizarse)",
     "pattern": {
       "spellingChange": "zar_cé"
     },
@@ -5067,7 +5121,7 @@
       "Cazaron ciervos en el bosque.",
       "El gato caza ratones por instinto."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "rechazar": {
     "type": "ar",
@@ -5106,15 +5160,12 @@
       "El avión aterrizó sin problemas.",
       "Aterrizamos en Madrid a las tres."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "rebotar": {
     "type": "ar",
-    "regular": false,
+    "regular": true,
     "translation": "to bounce",
-    "pattern": {
-      "spellingChange": "zar_cé"
-    },
     "examples": [
       "La pelota rebotó en la pared.",
       "El cheque rebotó por falta de fondos."
@@ -5375,7 +5426,7 @@
       "Viajamos a Japón el año pasado.",
       "Me encanta viajar en tren."
     ],
-    "level": "B2"
+    "level": "A1"
   },
   "descansar": {
     "type": "ar",
@@ -5435,7 +5486,7 @@
       "Mandé un paquete a mi familia.",
       "¿Me mandas la dirección por mensaje?"
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "acabar": {
     "type": "ar",
@@ -5585,7 +5636,7 @@
       "Regresé a casa a medianoche.",
       "¿Cuándo regresas de vacaciones?"
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "aceptar": {
     "type": "ar",
@@ -5615,7 +5666,7 @@
       "Borré el mensaje por accidente.",
       "Borra la pizarra antes de empezar."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "celebrar": {
     "type": "ar",
@@ -5675,7 +5726,7 @@
       "Guarda tus juguetes en la caja.",
       "Guardé el secreto durante años."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "lograr": {
     "type": "ar",
@@ -5735,7 +5786,7 @@
       "Trato de llegar puntual siempre.",
       "Lo trataron con mucho respeto."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "visitar": {
     "type": "ar",
@@ -5755,7 +5806,7 @@
       "Abandonó su trabajo para viajar.",
       "No abandones tus sueños."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "acompañar": {
     "type": "ar",
@@ -5770,12 +5821,17 @@
   "acostumbrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to be accustomed",
+    "translation": "to do habitually or accustom someone / to get used to (acostumbrarse)",
     "examples": [
       "Me acostumbré al clima frío.",
       "Acostumbra tomar té por la tarde."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to be accustomed",
+      "to do habitually",
+      "to accustom someone"
+    ]
   },
   "administrar": {
     "type": "ar",
@@ -5835,7 +5891,7 @@
       "Alimenta al gato dos veces al día.",
       "Se alimentaron de frutas y verduras."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "amar": {
     "type": "ar",
@@ -5845,7 +5901,7 @@
       "Ama a su familia con todo el corazón.",
       "La amé desde el primer momento."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "aportar": {
     "type": "ar",
@@ -5925,7 +5981,7 @@
       "Cancelaron el vuelo por la tormenta.",
       "Tuve que cancelar mi cita."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "capturar": {
     "type": "ar",
@@ -5945,7 +6001,7 @@
       "El accidente causó mucho tráfico.",
       "Sus palabras causaron una gran polémica."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "cenar": {
     "type": "ar",
@@ -5955,7 +6011,7 @@
       "Cenamos juntos todos los viernes.",
       "Cené una ensalada ligera."
     ],
-    "level": "C2"
+    "level": "A1"
   },
   "charlar": {
     "type": "ar",
@@ -6010,12 +6066,17 @@
   "concentrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to concentrate",
+    "translation": "to gather or concentrate something / to focus (concentrarse)",
     "examples": [
       "Me concentro mejor por la mañana.",
       "Concéntrate en lo importante."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to concentrate",
+      "to gather",
+      "to concentrate something"
+    ]
   },
   "condenar": {
     "type": "ar",
@@ -6053,7 +6114,7 @@
       "Confío en ti completamente.",
       "Confiaron en el plan del arquitecto."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "confirmar": {
     "type": "ar",
@@ -6103,7 +6164,7 @@
       "Contrataron a diez empleados nuevos.",
       "Quiero contratar un servicio de limpieza."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "controlar": {
     "type": "ar",
@@ -6143,7 +6204,7 @@
       "Cuido a mis sobrinos los fines de semana.",
       "Cuida mucho su salud."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "cultivar": {
     "type": "ar",
@@ -6163,7 +6224,7 @@
       "El médico curó la herida.",
       "Se curó con reposo y paciencia."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "dañar": {
     "type": "ar",
@@ -6243,7 +6304,7 @@
       "Desayuno a las siete de la mañana.",
       "Desayunamos tostadas con mermelada."
     ],
-    "level": "C2"
+    "level": "A1"
   },
   "descargar": {
     "type": "ar",
@@ -6276,7 +6337,7 @@
       "Disfrutamos de un día soleado.",
       "Disfruta cada momento de tu vida."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "diseñar": {
     "type": "ar",
@@ -6296,7 +6357,7 @@
       "El cazador disparó al aire.",
       "Dispararon fuegos artificiales a medianoche."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "dominar": {
     "type": "ar",
@@ -6321,12 +6382,15 @@
   "duchar": {
     "type": "ar",
     "regular": true,
-    "translation": "to shower",
+    "translation": "to give someone a shower / to take a shower (ducharse)",
     "examples": [
       "Me ducho todas las mañanas.",
       "Se duchó después del gimnasio."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to shower"
+    ]
   },
   "echar": {
     "type": "ar",
@@ -6336,7 +6400,7 @@
       "Echa un poco de sal a la comida.",
       "Lo echaron del trabajo sin aviso."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "eliminar": {
     "type": "ar",
@@ -6346,7 +6410,7 @@
       "Eliminaron las barreras comerciales.",
       "Elimina los archivos que no necesitas."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "emocionar": {
     "type": "ar",
@@ -6371,7 +6435,7 @@
   "enamorar": {
     "type": "ar",
     "regular": true,
-    "translation": "to fall in love",
+    "translation": "to make someone fall in love / to fall in love (enamorarse)",
     "examples": [
       "Se enamoró a primera vista.",
       "Me enamoré de esta ciudad."
@@ -6391,7 +6455,7 @@
   "enfadar": {
     "type": "ar",
     "regular": true,
-    "translation": "to anger",
+    "translation": "to anger / to get angry (enfadarse)",
     "examples": [
       "Se enfadó porque llegué tarde.",
       "No te enfades conmigo."
@@ -6401,7 +6465,7 @@
   "enfocar": {
     "type": "ar",
     "regular": false,
-    "translation": "to focus",
+    "translation": "to focus a camera / to focus on something (enfocarse en)",
     "examples": [
       "Enfoca la cámara antes de tomar la foto.",
       "Se enfocaron en mejorar la calidad."
@@ -6409,7 +6473,11 @@
     "level": "B2",
     "pattern": {
       "spellingChange": "car_qué"
-    }
+    },
+    "englishSearchAliases": [
+      "to focus",
+      "to focus on"
+    ]
   },
   "engañar": {
     "type": "ar",
@@ -6419,17 +6487,22 @@
       "No me engañes con mentiras.",
       "Lo engañaron con un producto falso."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "enojar": {
     "type": "ar",
     "regular": true,
-    "translation": "to annoy/anger",
+    "translation": "to annoy or anger / to get angry (enojarse)",
     "examples": [
       "Se enojó por el comentario.",
       "No te enojes, fue un accidente."
     ],
-    "level": "A2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to annoy/anger",
+      "to annoy",
+      "to anger"
+    ]
   },
   "ensayar": {
     "type": "ar",
@@ -6477,7 +6550,7 @@
       "Escapó de la prisión por un túnel.",
       "Quiero escapar de la rutina."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "estacionar": {
     "type": "ar",
@@ -6635,7 +6708,7 @@
       "Firmé el contrato esta mañana.",
       "Firma aquí abajo, por favor."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "flotar": {
     "type": "ar",
@@ -6665,7 +6738,7 @@
       "No fumes dentro del edificio.",
       "Dejó de fumar hace tres años."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "generar": {
     "type": "ar",
@@ -6685,7 +6758,7 @@
       "Gira a la derecha en la esquina.",
       "La Tierra gira alrededor del Sol."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "golpear": {
     "type": "ar",
@@ -6695,7 +6768,7 @@
       "Golpeó la mesa con el puño.",
       "Alguien golpea la puerta."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "grabar": {
     "type": "ar",
@@ -6705,7 +6778,7 @@
       "Grabamos un video para el proyecto.",
       "Grabó un disco de canciones propias."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "habitar": {
     "type": "ar",
@@ -6840,12 +6913,15 @@
   "levantar": {
     "type": "ar",
     "regular": true,
-    "translation": "to lift/raise",
+    "translation": "to lift / to raise / to get up (levantarse)",
     "examples": [
       "Me levanto a las seis todos los días.",
       "Levantó la mano para hacer una pregunta."
     ],
-    "level": "A1"
+    "level": "A1",
+    "englishSearchAliases": [
+      "to lift/raise"
+    ]
   },
   "liberar": {
     "type": "ar",
@@ -6855,7 +6931,7 @@
       "Liberaron a los prisioneros.",
       "Libera tu mente de pensamientos negativos."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "limitar": {
     "type": "ar",
@@ -6875,7 +6951,7 @@
       "Luchamos por nuestros derechos.",
       "Luchó contra la enfermedad con valentía."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "manejar": {
     "type": "ar",
@@ -6895,7 +6971,7 @@
       "La sequía mató las cosechas.",
       "Me mata la curiosidad."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "mezclar": {
     "type": "ar",
@@ -6915,7 +6991,7 @@
       "¿Te molesta si abro la ventana?",
       "Me molestó su actitud."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "montar": {
     "type": "ar",
@@ -6925,17 +7001,20 @@
       "Montamos en bicicleta por el pueblo.",
       "Montaron un negocio juntos."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "mudar": {
     "type": "ar",
     "regular": true,
-    "translation": "to move (house)",
+    "translation": "to change / to move house (mudarse)",
     "examples": [
       "Nos mudamos a una casa más grande.",
       "Se mudó a otra ciudad por trabajo."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to move (house)"
+    ]
   },
   "notar": {
     "type": "ar",
@@ -6985,7 +7064,7 @@
       "Para el coche aquí un momento.",
       "No paró de llover en toda la noche."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "patinar": {
     "type": "ar",
@@ -7005,7 +7084,7 @@
       "Los hermanos pelean por todo.",
       "Pelearon por el último trozo de pastel."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "perdonar": {
     "type": "ar",
@@ -7015,7 +7094,7 @@
       "Perdóname por llegar tarde.",
       "Lo perdonó después de mucho tiempo."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "planchar": {
     "type": "ar",
@@ -7040,7 +7119,7 @@
   "preocupar": {
     "type": "ar",
     "regular": true,
-    "translation": "to worry",
+    "translation": "to worry someone / to worry (preocuparse)",
     "examples": [
       "Me preocupa su salud.",
       "No te preocupes, todo saldrá bien."
@@ -7055,7 +7134,7 @@
       "Te presento a mi hermano.",
       "Presentaron el proyecto ante el comité."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "prestar": {
     "type": "ar",
@@ -7105,7 +7184,8 @@
       "Se queja del dolor de espalda.",
       "Nos quejamos del mal servicio."
     ],
-    "level": "A2"
+    "level": "A2",
+    "pronominalOnly": true
   },
   "reclamar": {
     "type": "ar",
@@ -7195,17 +7275,22 @@
       "Respira profundo y relájate.",
       "Respiré aire fresco en la montaña."
     ],
-    "level": "C1"
+    "level": "A2"
   },
   "retirar": {
     "type": "ar",
     "regular": true,
-    "translation": "to withdraw/retire",
+    "translation": "to withdraw or remove / to retire (retirarse)",
     "examples": [
       "Retiré dinero del cajero.",
       "Se retiró del cargo a los sesenta años."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to withdraw/retire",
+      "to withdraw",
+      "to remove"
+    ]
   },
   "robar": {
     "type": "ar",
@@ -7215,7 +7300,7 @@
       "Le robaron la cartera en el metro.",
       "Robaron varias obras del museo."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "saludar": {
     "type": "ar",
@@ -7225,7 +7310,7 @@
       "Saluda a tu tía cuando llegue.",
       "Lo saludé con un abrazo."
     ],
-    "level": "B2"
+    "level": "A1"
   },
   "salvar": {
     "type": "ar",
@@ -7235,7 +7320,7 @@
       "Los bomberos salvaron al gato del árbol.",
       "Se salvó por muy poco."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "separar": {
     "type": "ar",
@@ -7255,7 +7340,7 @@
       "No soporto el calor del verano.",
       "Soportó la presión con mucha calma."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "soplar": {
     "type": "ar",
@@ -7458,7 +7543,7 @@
       "Temo que no lleguemos a tiempo.",
       "Temían a los truenos de niños."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "toser": {
     "type": "er",
@@ -7492,7 +7577,7 @@
   },
   "romper": {
     "type": "er",
-    "regular": true,
+    "regular": false,
     "translation": "to break",
     "examples": [
       "Rompió el jarrón sin querer.",
@@ -7518,7 +7603,7 @@
       "Accedí a su petición.",
       "No puedo acceder a mi cuenta."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "barrer": {
     "type": "er",
@@ -7548,7 +7633,7 @@
       "Cogí el tren de las ocho.",
       "Coge un abrigo, hace frío."
     ],
-    "level": "C2",
+    "level": "A2",
     "pattern": {
       "spellingChange": "ger_j"
     }
@@ -7616,7 +7701,7 @@
       "Escondió el regalo en el armario.",
       "Se esconden detrás del sofá."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "exceder": {
     "type": "er",
@@ -7747,12 +7832,12 @@
   "suceder": {
     "type": "er",
     "regular": true,
-    "translation": "to happen",
+    "translation": "to happen / to succeed someone",
     "examples": [
       "¿Qué sucedió anoche?",
       "Suceden cosas extrañas en esa casa."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "suspender": {
     "type": "er",
@@ -7938,7 +8023,7 @@
       "Me convenció con sus argumentos.",
       "No logro convencerlo de cambiar de opinión."
     ],
-    "level": "C1",
+    "level": "B1",
     "pattern": {
       "spellingChange": "cer_z"
     }
@@ -7964,7 +8049,7 @@
       "Vencimos al equipo contrario.",
       "Venció su miedo a las alturas."
     ],
-    "level": "B2",
+    "level": "B1",
     "pattern": {
       "spellingChange": "cer_z"
     }
@@ -7991,7 +8076,7 @@
   },
   "escribir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to write",
     "examples": [
       "Escribo en mi diario todas las noches.",
@@ -8001,7 +8086,7 @@
   },
   "abrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to open",
     "examples": [
       "Abre la ventana, hace calor.",
@@ -8051,7 +8136,7 @@
   },
   "describir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to describe",
     "examples": [
       "Describe tu día perfecto.",
@@ -8067,7 +8152,7 @@
       "Discutimos el problema en la reunión.",
       "No discutas con tu hermano."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "existir": {
     "type": "ir",
@@ -8087,7 +8172,7 @@
       "¿Me permites pasar?",
       "No permitieron la entrada sin invitación."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "sufrir": {
     "type": "ir",
@@ -8117,7 +8202,7 @@
       "Asistí a una conferencia muy interesante.",
       "Asiste a clase todos los días."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "cumplir": {
     "type": "ir",
@@ -8147,7 +8232,8 @@
       "¿Qué ocurrió en la reunión?",
       "Se me ocurrió una idea genial."
     ],
-    "level": "A2"
+    "level": "A2",
+    "thirdPersonOnly": true
   },
   "añadir": {
     "type": "ir",
@@ -8167,7 +8253,7 @@
       "Admitió su error ante todos.",
       "No admiten mascotas en este hotel."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "partir": {
     "type": "ir",
@@ -8201,7 +8287,7 @@
   },
   "imprimir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to print",
     "examples": [
       "Imprimí los documentos para la reunión.",
@@ -8217,7 +8303,7 @@
       "No interrumpas cuando alguien habla.",
       "Interrumpieron la transmisión por una emergencia."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "sacudir": {
     "type": "ir",
@@ -8271,7 +8357,7 @@
   },
   "cubrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to cover",
     "examples": [
       "Cubre la olla con una tapa.",
@@ -8301,7 +8387,7 @@
   },
   "descubrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to discover",
     "examples": [
       "Descubrimos un restaurante increíble.",
@@ -8430,7 +8516,7 @@
   },
   "inscribir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to inscribe/register",
     "examples": [
       "Me inscribí en un curso de cocina.",
@@ -8571,17 +8657,21 @@
       "Sobrevivieron al naufragio.",
       "Sobrevive con un sueldo muy bajo."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "suscribir": {
     "type": "ir",
-    "regular": true,
-    "translation": "to subscribe",
+    "regular": false,
+    "translation": "to sign or endorse / to subscribe (suscribirse)",
     "examples": [
       "Me suscribí a la revista.",
       "Suscribieron un acuerdo de paz."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to sign",
+      "to endorse"
+    ]
   },
   "transmitir": {
     "type": "ir",
@@ -8634,7 +8724,7 @@
       "Aclaré mis dudas con el profesor.",
       "El cielo se aclaró después de la lluvia."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "aconsejar": {
     "type": "ar",
@@ -8674,7 +8764,7 @@
       "Adivina qué tengo en la mano.",
       "Adivinó la respuesta correcta."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "agitar": {
     "type": "ar",
@@ -8739,7 +8829,7 @@
   "alejar": {
     "type": "ar",
     "regular": true,
-    "translation": "to move away",
+    "translation": "to move someone or something away / to move away (alejarse)",
     "examples": [
       "Aléjate del borde del acantilado.",
       "Se alejó sin decir una palabra."
@@ -8854,7 +8944,7 @@
       "Aprovecha el buen clima para salir.",
       "Aprovechamos la oferta y compramos dos."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "arañar": {
     "type": "ar",
@@ -8964,7 +9054,7 @@
       "Atraparon al ladrón en la esquina.",
       "Atrapa la pelota con las dos manos."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "bajar": {
     "type": "ar",
@@ -8984,7 +9074,7 @@
       "Besó a su hija en la frente.",
       "Se besaron bajo la lluvia."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "bloquear": {
     "type": "ar",
@@ -9072,12 +9162,15 @@
   "casar": {
     "type": "ar",
     "regular": true,
-    "translation": "to marry",
+    "translation": "to marry (officiate) / to get married (casarse)",
     "examples": [
       "Se casaron en una ceremonia íntima.",
       "Mi hermana se casa el próximo mes."
     ],
-    "level": "B2"
+    "level": "A2",
+    "englishSearchAliases": [
+      "to marry"
+    ]
   },
   "circular": {
     "type": "ar",
@@ -9200,7 +9293,7 @@
   "contagiar": {
     "type": "ar",
     "regular": true,
-    "translation": "to infect",
+    "translation": "to infect / to catch an illness (contagiarse)",
     "examples": [
       "Se contagió de gripe en la oficina.",
       "La risa se contagia fácilmente."
@@ -9432,12 +9525,15 @@
   "disculpar": {
     "type": "ar",
     "regular": true,
-    "translation": "to excuse/forgive",
+    "translation": "to excuse / to forgive / to apologize (disculparse)",
     "examples": [
       "Discúlpame por el malentendido.",
       "Se disculpó por su error."
     ],
-    "level": "B1"
+    "level": "B1",
+    "englishSearchAliases": [
+      "to excuse/forgive"
+    ]
   },
   "disputar": {
     "type": "ar",
@@ -9590,12 +9686,15 @@
   "enterar": {
     "type": "ar",
     "regular": true,
-    "translation": "to inform/find out",
+    "translation": "to inform / to find out (enterarse)",
     "examples": [
       "Me enteré de la noticia por la radio.",
       "Se enteró de todo al llegar."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to inform/find out"
+    ]
   },
   "enterrar": {
     "type": "ar",
@@ -9620,7 +9719,7 @@
       "Entreno tres veces por semana.",
       "Entrenaron durante meses para la competencia."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "enumerar": {
     "type": "ar",
@@ -9748,7 +9847,7 @@
       "El globo explotó con un gran ruido.",
       "Explotan los recursos naturales sin control."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "extrañar": {
     "type": "ar",
@@ -10081,7 +10180,7 @@
       "Mencionó tu nombre en la reunión.",
       "No menciones ese tema delante de ella."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "mimar": {
     "type": "ar",
@@ -10428,7 +10527,7 @@
       "Quemé la carta después de leerla.",
       "Se quemó la mano con la estufa."
     ],
-    "level": "B2"
+    "level": "A2"
   },
   "rajar": {
     "type": "ar",
@@ -10508,12 +10607,12 @@
       "Recuperé mi billetera perdida.",
       "Se recuperó de la operación en un mes."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "refugiar": {
     "type": "ar",
     "regular": true,
-    "translation": "to take refuge",
+    "translation": "to shelter / to take refuge (refugiarse)",
     "examples": [
       "Se refugiaron de la lluvia bajo un árbol.",
       "Nos refugiamos en una cueva."
@@ -10543,12 +10642,16 @@
   "relajar": {
     "type": "ar",
     "regular": true,
-    "translation": "to relax",
+    "translation": "to loosen or relax something / to relax (relajarse) / to unwind (relajarse)",
     "examples": [
       "Relájate, todo va a salir bien.",
       "Me relajé en la piscina del hotel."
     ],
-    "level": "B2"
+    "level": "B2",
+    "englishSearchAliases": [
+      "to loosen",
+      "to relax something"
+    ]
   },
   "relevar": {
     "type": "ar",
@@ -10583,12 +10686,15 @@
   "remontar": {
     "type": "ar",
     "regular": true,
-    "translation": "to go back (in time)",
+    "translation": "to overcome a setback / to date back (remontarse)",
     "examples": [
       "Remontaron un marcador adverso.",
       "Se remonta a la época medieval."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to go back (in time)"
+    ]
   },
   "renunciar": {
     "type": "ar",
@@ -10646,7 +10752,7 @@
   "resignar": {
     "type": "ar",
     "regular": true,
-    "translation": "to resign oneself",
+    "translation": "to hand over authority / to resign oneself (resignarse)",
     "examples": [
       "Se resignó a esperar un poco más.",
       "No me resigno a perder."
@@ -10666,7 +10772,7 @@
   "resultar": {
     "type": "ar",
     "regular": true,
-    "translation": "to result",
+    "translation": "to result / to turn out",
     "examples": [
       "El examen resultó más fácil de lo esperado.",
       "Resultó ser una gran oportunidad."
@@ -10701,7 +10807,7 @@
       "Revisa tu tarea antes de entregarla.",
       "Revisaron el motor del coche."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "ridiculizar": {
     "type": "ar",
@@ -10744,7 +10850,7 @@
       "Solucionamos el problema rápidamente.",
       "Hay que solucionar esto antes del viernes."
     ],
-    "level": "B2"
+    "level": "B1"
   },
   "sospechar": {
     "type": "ar",
@@ -10802,7 +10908,7 @@
   "tatuar": {
     "type": "ar",
     "regular": false,
-    "translation": "to tattoo",
+    "translation": "to tattoo / to get a tattoo (tatuarse)",
     "overrides": {
       "present": [
         "tatúo",
@@ -11133,14 +11239,14 @@
       "Fingió estar enfermo para no ir al trabajo.",
       "No finjas, sé que estás triste."
     ],
-    "level": "C1",
+    "level": "B2",
     "pattern": {
       "spellingChange": "gir_j"
     }
   },
   "gruñir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to growl",
     "examples": [
       "El perro gruñó al ver al gato.",
@@ -11242,7 +11348,7 @@
   },
   "pudrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to rot",
     "examples": [
       "La fruta se pudrió en el refrigerador.",
@@ -11324,13 +11430,18 @@
   },
   "zambullir": {
     "type": "ir",
-    "regular": true,
-    "translation": "to dive/plunge",
+    "regular": false,
+    "translation": "to plunge someone or something into water / to dive in (zambullirse)",
     "examples": [
       "Se zambulló en la piscina.",
       "Los niños se zambullen en el mar."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to dive/plunge",
+      "to dive",
+      "to plunge"
+    ]
   },
   "abdicar": {
     "type": "ar",
@@ -11538,7 +11649,8 @@
       "Se adentraron en el bosque.",
       "No te adentres demasiado en el mar."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pronominalOnly": true
   },
   "adornar": {
     "type": "ar",
@@ -11553,12 +11665,16 @@
   "aferrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to grip/cling",
+    "translation": "to grip / to cling to (aferrarse)",
     "examples": [
       "Se aferra a sus creencias.",
       "Se aferró al pasamanos para no caer."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to grip/cling",
+      "to cling"
+    ]
   },
   "afirmar": {
     "type": "ar",
@@ -11598,7 +11714,7 @@
       "No aguanto más este calor.",
       "Aguantó el dolor sin quejarse."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "aislar": {
     "type": "ar",
@@ -11870,9 +11986,9 @@
   "avecindar": {
     "type": "ar",
     "regular": true,
-    "translation": "to settle nearby",
+    "translation": "to admit as a resident / to settle as a resident (avecindarse)",
     "examples": [
-      "Se avecindan tiempos difíciles.",
+      "Muchas familias se avecindaron en la costa.",
       "Se avecindaron en el barrio hace años."
     ],
     "level": "C2"
@@ -11880,12 +11996,17 @@
   "aventurar": {
     "type": "ar",
     "regular": true,
-    "translation": "to venture",
+    "translation": "to risk or venture something / to venture to do something (aventurarse)",
     "examples": [
       "Se aventuró a explorar la cueva.",
       "No me aventuro a opinar sin datos."
     ],
-    "level": "C1"
+    "level": "C1",
+    "englishSearchAliases": [
+      "to venture",
+      "to risk",
+      "to venture something"
+    ]
   },
   "averiguar": {
     "type": "ar",
@@ -11913,7 +12034,7 @@
       "Averigüé su número de teléfono.",
       "Averigua qué pasó en la reunión."
     ],
-    "level": "C1"
+    "level": "B1"
   },
   "avisar": {
     "type": "ar",
@@ -11923,7 +12044,7 @@
       "Avísame cuando llegues.",
       "Le avisaron del cambio de planes."
     ],
-    "level": "C2"
+    "level": "A2"
   },
   "brindar": {
     "type": "ar",
@@ -12040,7 +12161,7 @@
   "colar": {
     "type": "ar",
     "regular": false,
-    "translation": "to strain/sneak in",
+    "translation": "to strain / to sneak in (colarse) / to cut in line (colarse)",
     "examples": [
       "Se coló en la fila sin que lo vieran.",
       "Cuela el jugo para quitar las semillas."
@@ -12050,7 +12171,10 @@
       "stemChange": {
         "present": "o_ue"
       }
-    }
+    },
+    "englishSearchAliases": [
+      "to strain/sneak in"
+    ]
   },
   "combinar": {
     "type": "ar",
@@ -12128,12 +12252,15 @@
   "comprometer": {
     "type": "er",
     "regular": true,
-    "translation": "to compromise",
+    "translation": "to put at risk / to commit oneself (comprometerse)",
     "examples": [
       "Se comprometió a entregar el trabajo el lunes.",
       "Nos comprometimos en diciembre."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to compromise"
+    ]
   },
   "computar": {
     "type": "ar",
@@ -12168,12 +12295,15 @@
   "confederar": {
     "type": "ar",
     "regular": true,
-    "translation": "to confederate",
+    "translation": "to unite groups in a confederation / to form a confederation (confederarse)",
     "examples": [
       "Se confederaron para tener más poder.",
       "Los estados se confederaron en una unión."
     ],
-    "level": "C2"
+    "level": "C2",
+    "englishSearchAliases": [
+      "to confederate"
+    ]
   },
   "confeccionar": {
     "type": "ar",
@@ -12258,7 +12388,7 @@
   "constar": {
     "type": "ar",
     "regular": true,
-    "translation": "to be evident",
+    "translation": "to be evident / to be on record / to consist of",
     "examples": [
       "El informe consta de cinco capítulos.",
       "Me consta que dice la verdad."
@@ -12351,7 +12481,8 @@
     "level": "B2",
     "pattern": {
       "yoZco": true
-    }
+    },
+    "thirdPersonOnly": true
   },
   "acoger": {
     "type": "er",
@@ -12392,7 +12523,7 @@
   "apetecer": {
     "type": "er",
     "regular": false,
-    "translation": "to feel like/crave",
+    "translation": "to be appealing / to crave",
     "examples": [
       "¿Te apetece un helado?",
       "No me apetecía salir con ese frío."
@@ -12400,7 +12531,11 @@
     "level": "C2",
     "pattern": {
       "yoZco": true
-    }
+    },
+    "englishSearchAliases": [
+      "to feel like/crave",
+      "to feel like"
+    ]
   },
   "arder": {
     "type": "er",
@@ -12434,7 +12569,8 @@
       "No me atrevo a saltar.",
       "Se atrevió a hablar delante de todos."
     ],
-    "level": "B2"
+    "level": "B2",
+    "pronominalOnly": true
   },
   "bendecir": {
     "type": "ir",
@@ -12475,7 +12611,8 @@
       "Eso no me compete a mí.",
       "Le compete al director tomar esa decisión."
     ],
-    "level": "C1"
+    "level": "C1",
+    "thirdPersonOnly": true
   },
   "desmentir": {
     "type": "ir",
@@ -12501,7 +12638,8 @@
       "Se desvive por sus hijos.",
       "Se desvivía por complacer a todos."
     ],
-    "level": "C1"
+    "level": "C1",
+    "pronominalOnly": true
   },
   "disuadir": {
     "type": "ir",
@@ -12531,7 +12669,7 @@
   },
   "encubrir": {
     "type": "ir",
-    "regular": true,
+    "regular": false,
     "translation": "to cover up",
     "examples": [
       "Encubrió el delito de su hermano.",
@@ -12590,7 +12728,8 @@
       "El tiempo transcurre muy rápido.",
       "Transcurrieron dos horas sin noticias."
     ],
-    "level": "C2"
+    "level": "C2",
+    "thirdPersonOnly": true
   },
   "transgredir": {
     "type": "ir",

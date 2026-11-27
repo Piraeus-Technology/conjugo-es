@@ -13,7 +13,7 @@ export interface SessionSaveCoordinator {
 
 export function createSessionSaveCoordinator(
   getSnapshot: () => SessionDelta,
-  save: (delta: SessionDelta) => Promise<void>,
+  save: (delta: SessionDelta, markSaved: () => void) => Promise<void>,
   onError: (error: unknown) => void = (error) =>
     console.warn('Failed to save session:', error),
 ): SessionSaveCoordinator {
@@ -24,33 +24,26 @@ export function createSessionSaveCoordinator(
 
   const saveNow = () => {
     const operation = saveQueue.then(async () => {
-      const snapshot = getSnapshot();
+      const snapshot = { ...getSnapshot() };
       const unsavedCount = snapshot.count - lastSavedCount;
       const unsavedCorrect = snapshot.correct - lastSavedCorrect;
       const unsavedBestStreak = Math.max(snapshot.bestStreak, lastSavedBestStreak);
       if (unsavedCount <= 0) return;
 
-      const previous = {
-        count: lastSavedCount,
-        correct: lastSavedCorrect,
-        bestStreak: lastSavedBestStreak,
+      const markSaved = () => {
+        lastSavedCount = snapshot.count;
+        lastSavedCorrect = snapshot.correct;
+        lastSavedBestStreak = unsavedBestStreak;
       };
-      lastSavedCount = snapshot.count;
-      lastSavedCorrect = snapshot.correct;
-      lastSavedBestStreak = unsavedBestStreak;
 
       try {
         await save({
           count: unsavedCount,
           correct: unsavedCorrect,
           bestStreak: unsavedBestStreak,
-        });
+        }, markSaved);
+        markSaved();
       } catch (error) {
-        // Saves execute serially, so no later successful claim can exist
-        // while this rollback happens.
-        lastSavedCount = previous.count;
-        lastSavedCorrect = previous.correct;
-        lastSavedBestStreak = previous.bestStreak;
         onError(error);
       }
     });
@@ -77,7 +70,7 @@ export interface DatedSessionDelta extends SessionDelta {
 }
 
 export function createDatedSessionSaveCoordinator(
-  save: (delta: DatedSessionDelta) => Promise<void>,
+  save: (delta: DatedSessionDelta, markSaved: () => void) => Promise<void>,
   isCurrent: () => boolean = () => true,
   onError?: (error: unknown) => void,
 ) {
@@ -92,7 +85,7 @@ export function createDatedSessionSaveCoordinator(
           snapshot,
           coordinator: createSessionSaveCoordinator(
             () => snapshot,
-            delta => isCurrent() ? save({ ...delta, day }) : Promise.resolve(),
+            (delta, markSaved) => isCurrent() ? save({ ...delta, day }, markSaved) : Promise.resolve(),
             onError,
           ),
         };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated } from 'react-native';
+import { Animated, AppState } from 'react-native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import QuizScreen from '../screens/QuizScreen';
 import FlashcardScreen from '../screens/FlashcardScreen';
@@ -10,6 +10,9 @@ import { useFlashcardSessionStore } from '../store/flashcardSessionStore';
 import { usePracticeResetStore } from '../store/practiceResetStore';
 import { resetAllLearningData } from '../utils/resetLearningData';
 import { usePracticeSettingsStore } from '../store/practiceSettingsStore';
+import { useThemeStore } from '../store/themeStore';
+import { speak } from '../utils/speech';
+import type { PromptCandidate } from '../utils/practicePrompts';
 
 const mockStorage = new Map<string, string>();
 const mockListeners: Record<string, Set<() => void>> = {};
@@ -20,6 +23,10 @@ const mockNavigation = {
     return () => { mockListeners[event].delete(listener); };
   }),
 };
+const mockFlashcardPrompt = jest.fn<PromptCandidate, []>(() => ({
+  verb: 'hablar', data: { type: 'ar', regular: true, translation: 'to speak' },
+  tense: 'present', personIndex: 0, answer: 'hablo',
+}));
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(async (key: string) => mockStorage.get(key) ?? null),
@@ -28,6 +35,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => mockNavigation,
+  useIsFocused: () => true,
   useRoute: () => ({ params: { mode: 'quiz' } }),
 }));
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
@@ -44,11 +52,13 @@ jest.mock('../utils/quizQuestion', () => ({
     correctAnswer: 'hablo', options: ['hablo', 'hablas', 'habla', 'hablan'],
   }),
 }));
-jest.mock('../utils/practicePrompts', () => ({
-  pickWeightedPrompt: () => ({
-    verb: 'hablar', data: { translation: 'to speak' }, tense: 'present', personIndex: 0, answer: 'hablo',
-  }),
-}));
+jest.mock('../utils/practicePrompts', () => {
+  const actual = jest.requireActual('../utils/practicePrompts');
+  return {
+    ...actual,
+    createPracticeSession: () => ({ ...actual.createPracticeSession(), next: mockFlashcardPrompt }),
+  };
+});
 
 beforeEach(async () => {
   await resetAllLearningData();
@@ -63,7 +73,9 @@ test('three correct answers → reset → one correct answer records a streak of
     await act(async () => { fireEvent.press(screen.getByLabelText('Next question')); });
   }
   expect(useQuizStore.getState().bestStreak).toBe(3);
+  expect(JSON.parse(mockStorage.get('sessions')!)[0]).toMatchObject({ total: 3, correct: 3, streak: 3 });
   await act(async () => { mockListeners.blur?.forEach(listener => listener()); });
+  expect(useSessionStore.getState().sessions[0].total).toBe(3);
   await act(async () => { await resetAllLearningData(); });
   await act(async () => { fireEvent.press(screen.getByLabelText('Answer: hablo')); });
   await act(async () => { mockListeners.blur?.forEach(listener => listener()); });
@@ -81,13 +93,14 @@ test('flashcard reset drops pre-reset deltas and starts the next card fresh', as
   }));
   try {
     const screen = render(<FlashcardScreen />);
-    await screen.findByLabelText('Tap to reveal conjugation of hablar for yo');
-    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo')); });
+    await screen.findByLabelText('Tap to reveal conjugation of hablar for yo, Present');
+    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')); });
     await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
-    // Reset before a blur save; stale cleanup must never recreate this card.
+    expect(JSON.parse(mockStorage.get('flashcardSessions')!)[0]).toMatchObject({ reviewed: 1, correct: 1 });
+    // Reset before blur; stale cleanup must never recreate this card.
     await act(async () => { await resetAllLearningData(); });
     expect(useFlashcardSessionStore.getState().sessions).toEqual([]);
-    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo')); });
+    await act(async () => { fireEvent.press(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')); });
     await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as missed')); });
     await act(async () => { mockListeners.blur?.forEach(listener => listener()); });
     expect(useFlashcardSessionStore.getState().sessions[0]).toMatchObject({ reviewed: 1, correct: 0 });
@@ -97,12 +110,71 @@ test('flashcard reset drops pre-reset deltas and starts the next card fresh', as
   }
 });
 
+test('taps during flashcard flip-back cannot reveal the next answer', async () => {
+  jest.useFakeTimers();
+  const originalAppState = AppState.currentState;
+  AppState.currentState = 'active';
+  const nativeTiming = Animated.timing;
+  const timing = jest.spyOn(Animated, 'timing').mockImplementation((value, config) =>
+    nativeTiming(value, { ...config, useNativeDriver: false }),
+  );
+  mockFlashcardPrompt.mockImplementationOnce(() => ({
+    verb: 'comer', data: { type: 'er', regular: true, translation: 'to eat' },
+    tense: 'present', personIndex: 0, answer: 'como',
+  }));
+  useThemeStore.setState({ autoTTS: true });
+  try {
+    const screen = render(<FlashcardScreen />);
+    const firstFront = await screen.findByLabelText('Tap to reveal conjugation of comer for yo, Present');
+    await act(async () => { fireEvent.press(firstFront); });
+    expect(screen.getByLabelText('Tap to reveal conjugation of comer for yo, Present')).toBe(firstFront);
+    expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
+    await act(async () => { jest.advanceTimersByTime(350); });
+    expect(speak).toHaveBeenCalledTimes(1);
+    expect(speak).toHaveBeenCalledWith('como');
+    await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
+    expect(screen.getByLabelText('Next flashcard')).toBe(firstFront);
+    await act(async () => { fireEvent.press(firstFront); });
+    expect(screen.queryByLabelText('Mark card as got it')).toBeNull();
+    await act(async () => { jest.advanceTimersByTime(350); });
+    expect(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')).toBeTruthy();
+    expect(screen.queryByLabelText('Play pronunciation of hablo')).toBeNull();
+    expect(speak).not.toHaveBeenCalledWith('hablo');
+    screen.unmount();
+  } finally {
+    timing.mockRestore();
+    AppState.currentState = originalAppState;
+    jest.useRealTimers();
+  }
+});
+
+test('an interrupted current flashcard transition still lands on a usable face', async () => {
+  const timing = jest.spyOn(Animated, 'timing').mockImplementation(() => ({
+    start: callback => callback?.({ finished: false }),
+    stop: jest.fn(), reset: jest.fn(),
+  }));
+  try {
+    const screen = render(<FlashcardScreen />);
+    const front = await screen.findByLabelText('Tap to reveal conjugation of hablar for yo, Present');
+    await act(async () => { fireEvent.press(front); });
+    await act(async () => { fireEvent.press(screen.getByLabelText('Mark card as got it')); });
+    expect(screen.getByLabelText('Tap to reveal conjugation of hablar for yo, Present')).toBe(front);
+  } finally {
+    timing.mockRestore();
+  }
+});
+
 test('Next becomes accessible only after the quiz answer', async () => {
   const screen = render(<QuizScreen />);
   await screen.findByLabelText('Answer: hablo');
   expect(screen.queryByLabelText('Next question')).toBeNull();
-  await act(async () => { fireEvent.press(screen.getByLabelText('Answer: hablo')); });
+  await act(async () => {
+    fireEvent.press(screen.getByLabelText('Answer: hablo'));
+    fireEvent.press(screen.getByLabelText('Answer: hablas'));
+  });
   expect(screen.getByLabelText('Next question')).toBeTruthy();
+  expect(useQuizStore.getState().totalQuestions).toBe(1);
+  expect(useSessionStore.getState().sessions[0].total).toBe(1);
 });
 
 test.each([

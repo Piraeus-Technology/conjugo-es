@@ -200,6 +200,20 @@ describe('simple store persistence', () => {
       expect(persisted.activeLevels).toEqual(usePracticeSettingsStore.getState().activeLevels);
     });
 
+    test('the final selection is visible immediately while a settings write is pending', async () => {
+      await usePracticeSettingsStore.getState().loadPracticeSettings();
+      let resolveWrite!: () => void;
+      jest.mocked(AsyncStorage.setItem).mockImplementationOnce(() => new Promise<void>(resolve => { resolveWrite = resolve; }));
+      const deselect = usePracticeSettingsStore.getState().setActiveTenses([]);
+      await Promise.resolve();
+      await Promise.resolve();
+      const reselect = usePracticeSettingsStore.getState().toggleTense('present');
+      expect(usePracticeSettingsStore.getState().activeTenses).toEqual(['present']);
+      resolveWrite();
+      await Promise.all([deselect, reselect]);
+      expect(JSON.parse(mockStorage.get('practiceSettings')!).activeTenses).toEqual(['present']);
+    });
+
     test('filters unknown values and preserves an intentional empty selection', async () => {
       mockStorage.set(
         'practiceSettings',
@@ -251,6 +265,25 @@ describe('simple store persistence', () => {
   });
 
   describe('theme', () => {
+    test('follows changes to the device theme until a choice is stored, then follows again after reset', async () => {
+      const { setDeviceTheme, loadTheme, toggleTheme, resetPreferences } = useThemeStore.getState();
+      setDeviceTheme(true);
+      await loadTheme();
+      expect(useThemeStore.getState().isDark).toBe(true);
+      setDeviceTheme(false);
+      expect(useThemeStore.getState().isDark).toBe(false);
+      await toggleTheme();
+      setDeviceTheme(false);
+      expect(useThemeStore.getState().isDark).toBe(true);
+      __resetThemeStoreForTests();
+      await loadTheme();
+      expect(useThemeStore.getState().isDark).toBe(true);
+      await resetPreferences();
+      expect(useThemeStore.getState().isDark).toBe(false);
+      setDeviceTheme(true);
+      expect(useThemeStore.getState().isDark).toBe(true);
+    });
+
     test('load failure falls back to defaults but still loads (App gates render on loaded)', async () => {
       jest.mocked(AsyncStorage.getItem).mockImplementation(() =>
         Promise.reject(new Error('disk error')),

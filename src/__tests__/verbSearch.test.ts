@@ -3,6 +3,7 @@ import {
   getExactConjugationMatches,
   normalizeSearchText,
   searchConjugations,
+  searchVerbs,
 } from '../utils/verbSearch';
 
 describe('conjugation search', () => {
@@ -30,6 +31,30 @@ describe('conjugation search', () => {
     expect(stats.retainedMatchCount).toBeLessThan(20);
     expect(await searchConjugations('')).toEqual([]);
   });
+
+  test.each([
+    ['habló', 'hablar', 'preterite', 'habló'],
+    ['no hables', 'hablar', 'imperative_negative', 'no hables'],
+    ['hablo', 'hablar', 'present', 'hablo'],
+    ['comió', 'comer', 'preterite', 'comió'],
+    ['vivía', 'vivir', 'imperfect', 'vivía'],
+    ['comio', 'comer', 'preterite', 'comió'],
+    ['no habló', 'hablar', 'preterite', 'habló'],
+    ['no hableis', 'hablar', 'imperative_negative', 'no habléis'],
+    ['no estes', 'estar', 'imperative_negative', 'no estés'],
+    ['no ensene', 'enseñar', 'imperative_negative', 'no enseñe'],
+    ['hable', 'hablar', 'subjunctive_present', 'hable'],
+  ])('ranks %s first for %s with the table spelling', async (query, infinitive, tense, form) => {
+    const matches = await searchConjugations(query);
+    expect(matches.find(result => result.item.infinitive === infinitive)?.item)
+      .toMatchObject({ tense, form });
+  });
+
+  test.each([['to shower', 'duchar'], ['to relax', 'relajar'], ['to cut in line', 'colar']])(
+    'ranks an exact English sense %s first', (query, verb) => {
+      expect(searchVerbs(query)[0]?.item.infinitive).toBe(verb);
+    },
+  );
 
   test('scans in bounded chunks without retaining the full conjugation matrix', async () => {
     let chunkStarted = performance.now();

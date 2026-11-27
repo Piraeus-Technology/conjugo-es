@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { conjugate, VerbData, allTenses, Tense } from '../utils/conjugate';
+import { conjugate, getAdditionalReferenceForms, VerbData, allTenses, Tense, type IrregularPattern } from '../utils/conjugate';
 import verbs from '../data/verbs.json';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>);
@@ -58,6 +58,21 @@ describe('Verb database integrity', () => {
     }
   });
 
+  test('spelling changes and yoZco match their infinitive endings', () => {
+    const endings: Record<NonNullable<IrregularPattern['spellingChange']>, RegExp> = {
+      car_qué: /car$/, gar_gué: /gar$/, zar_cé: /zar$/, cer_z: /c[ei]r$/,
+      ger_j: /ger$/, gir_j: /gir$/, guir_g: /guir$/, uir_uy: /(?<!g)uir$/,
+    };
+    const mismatches = verbEntries.flatMap(([infinitive, { pattern }]) => {
+      const spelling = pattern?.spellingChange;
+      return [
+        ...(spelling && !endings[spelling].test(infinitive) ? [`${infinitive}: ${spelling}`] : []),
+        ...(pattern?.yoZco && !/[aeiou]c[ei]r$/.test(infinitive) ? [`${infinitive}: yoZco`] : []),
+      ];
+    });
+    expect(mismatches).toEqual([]);
+  });
+
   test('no duplicate top-level keys in the raw JSON', () => {
     // JSON.parse silently keeps the last duplicate, so the parsed object
     // can't reveal duplicates — scan the raw text instead.
@@ -74,6 +89,41 @@ describe('Common verb conjugation spot checks', () => {
     const data = (verbs as Record<string, VerbData>)[infinitive];
     return conjugate(infinitive, data, tense).map(r => r.form);
   }
+
+  test('pudrir, rehacer and rebotar use their standard forms', () => {
+    expect(forms('pudrir', 'gerund_participle')).toEqual(['pudriendo', 'podrido']);
+    expect(forms('pudrir', 'present_perfect')[0]).toBe('he podrido');
+    expect(forms('rehacer', 'preterite')).toEqual(['rehíce', 'rehiciste', 'rehízo', 'rehicimos', 'rehicisteis', 'rehicieron']);
+    expect(forms('rebotar', 'preterite')[0]).toBe('reboté');
+    expect(forms('rebotar', 'subjunctive_present')[0]).toBe('rebote');
+    expect(forms('rebotar', 'imperative_negative')[1]).toBe('no rebotes');
+  });
+
+  test('defective verbs only display their available forms', () => {
+    const available = (verb: string, tense: Tense) => forms(verb, tense).filter(form => form !== '—');
+    expect(available('haber', 'imperative_affirmative')).toEqual([]);
+    expect(available('haber', 'imperative_negative')).toEqual([]);
+    expect(allTenses.filter(tense => available('soler', tense).length)).toEqual([
+      'present', 'preterite', 'imperfect', 'subjunctive_present', 'subjunctive_imperfect', 'present_perfect',
+      'past_perfect', 'present_progressive', 'past_progressive', 'gerund_participle',
+    ]);
+    expect(available('soler', 'preterite')).toEqual(expect.arrayContaining(['solí', 'solieron']));
+    expect(available('soler', 'past_perfect')).toContain('había solido');
+    const reference = getAdditionalReferenceForms('soler', verbs.soler as VerbData, verbs.haber as VerbData);
+    expect(reference.flatMap(({ rows }) => rows.map(row => row.form))).toEqual(expect.arrayContaining([
+      'solés', 'soliese', 'hube solido', 'haya solido', 'hubiera solido', 'hubiese solido', 'haber solido', 'habiendo solido',
+    ]));
+    expect(reference.filter(({ rows }) => rows.every(row => row.disabled)).map(({ label }) => label)).toEqual([
+      'Subjunctive Future', 'Subjunctive Future Perfect',
+    ]);
+    expect(available('acontecer', 'preterite')).toEqual(['aconteció', 'acontecieron']);
+    expect(available('ocurrir', 'present')).toEqual(['ocurre', 'ocurren']);
+    expect(available('doler', 'present')).toEqual(['duele', 'duelen']);
+    expect(available('transcurrir', 'present')).toEqual(['transcurre', 'transcurren']);
+    expect(available('suceder', 'present')).toHaveLength(6);
+    expect(available('competer', 'present')).toEqual(['compete', 'competen']);
+    expect(available('competer', 'imperative_negative')).toEqual([]);
+  });
 
   test('ser - present', () => {
     expect(forms('ser', 'present')).toEqual(['soy', 'eres', 'es', 'somos', 'sois', 'son']);

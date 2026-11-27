@@ -1,5 +1,10 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+
+function hideSplash() {
+  SplashScreen.hideAsync().catch(error => console.warn('Could not hide splash screen:', error));
+}
 
 interface AppErrorBoundaryState {
   hasError: boolean;
@@ -25,6 +30,7 @@ export default class AppErrorBoundary extends React.Component<
     return (
       <View
         style={styles.container}
+        onLayout={hideSplash}
         accessibilityRole="alert"
         accessibilityLabel="ConjuGo ES encountered an unexpected error"
       >

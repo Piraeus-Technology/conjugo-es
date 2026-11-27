@@ -86,6 +86,7 @@ const irregularParticiples: Record<string, string> = {
   hacer: 'hecho',
   morir: 'muerto',
   poner: 'puesto',
+  pudrir: 'podrido',
   resolver: 'resuelto',
   romper: 'roto',
   ver: 'visto',
@@ -345,7 +346,14 @@ export interface VerbData {
   type: 'ar' | 'er' | 'ir';
   regular: boolean;
   translation: string;
+  englishSearchAliases?: string[];
   impersonal?: boolean;
+  thirdPersonOnly?: boolean;
+  noImperative?: boolean;
+  unavailableTenses?: Tense[];
+  practiceTenses?: Tense[];
+  extendedReference?: boolean;
+  pronominalOnly?: boolean;
   level?: VerbLevel;
   examples?: string[];
   pattern?: IrregularPattern;
@@ -942,12 +950,50 @@ function applyUsageRestrictions(
   tense: Tense,
   results: ConjugationResult[],
 ): ConjugationResult[] {
-  if (!verb.impersonal || tense === 'gerund_participle') return results;
+  const unavailableTense = verb.unavailableTenses?.includes(tense)
+    || ((verb.impersonal || verb.thirdPersonOnly || verb.noImperative) && imperativeTenses.includes(tense));
+  if (!unavailableTense && !verb.impersonal && !verb.thirdPersonOnly) return results;
 
-  const isImperative = imperativeTenses.includes(tense);
-  return results.map((result, index) =>
-    !isImperative && index === 2
-      ? result
-      : { ...result, form: '—', disabled: true },
-  );
+  return results.map((result, index) => {
+    const unavailablePerson = (verb.impersonal && index !== 2)
+      || (verb.thirdPersonOnly && index !== 2 && index !== 5);
+    return unavailableTense || unavailablePerson
+      ? { ...result, form: '—', disabled: true }
+      : result;
+  });
+}
+
+export function getAdditionalReferenceForms(
+  infinitive: string, verb: VerbData, haber: VerbData,
+): { label: string; rows: ConjugationResult[] }[] {
+  if (!verb.extendedReference) return [];
+  const [, participle] = conjugate(infinitive, verb, 'gerund_participle');
+  const compound = (tense: SimpleTense, variant?: 'se' | 're') =>
+    conjugate('haber', haber, tense).map(row => ({
+      pronoun: row.pronoun,
+      form: `${variant ? subjunctiveVariant(row.form, variant) : row.form} ${participle.form}`,
+    }));
+  const imperfectSubjunctive = conjugate(infinitive, verb, 'subjunctive_imperfect');
+  const variantRows = (variant: 'se' | 're') => imperfectSubjunctive.map(row => ({
+    ...row, form: row.disabled ? row.form : subjunctiveVariant(row.form, variant),
+  }));
+  const voseoEnding = { ar: 'ás', er: 'és', ir: 'ís' }[verb.type];
+  return [
+    { label: 'Preterite Anterior', rows: compound('preterite') },
+    { label: 'Subjunctive Present Perfect', rows: compound('subjunctive_present') },
+    { label: 'Subjunctive Past Perfect', rows: compound('subjunctive_imperfect') },
+    { label: 'Subjunctive Past Perfect (-se)', rows: compound('subjunctive_imperfect', 'se') },
+    { label: 'Subjunctive Imperfect (-se)', rows: variantRows('se') },
+    { label: 'Subjunctive Future', rows: applyUsageRestrictions(verb, 'future', variantRows('re')) },
+    { label: 'Subjunctive Future Perfect', rows: applyUsageRestrictions(verb, 'future_perfect', compound('subjunctive_imperfect', 're')) },
+    { label: 'Present Voseo', rows: [{ pronoun: 'vos', form: infinitive.slice(0, -2) + voseoEnding }] },
+    { label: 'Nonfinite Compounds', rows: [
+      { pronoun: 'Perfect Infinitive', form: `haber ${participle.form}` },
+      { pronoun: 'Perfect Gerund', form: `habiendo ${participle.form}` },
+    ] },
+  ];
+}
+
+function subjunctiveVariant(form: string, variant: 'se' | 're'): string {
+  return form.replace(/ra(s|mos|is|n)?$/, `${variant}$1`);
 }

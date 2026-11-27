@@ -15,6 +15,15 @@ describe('parsePromptWeights', () => {
     };
     expect(parsePromptWeights(weights).map(e => e.personIndex)).toEqual([0, 5]);
   });
+
+  test('ignores stored weights for prompts that are no longer available', () => {
+    expect(buildPracticeInsights({
+      [key('haber', 'imperative_affirmative', 1)]: 5,
+      [key('soler', 'future', 2)]: 5,
+      [key('acontecer', 'present', 0)]: 5,
+      [key('quejar', 'present', 0)]: 5,
+    })).toEqual({ weakForms: [], weakTenses: [], weakPersons: [], weakVerbs: [] });
+  });
 });
 
 describe('buildPracticeInsights person labels', () => {

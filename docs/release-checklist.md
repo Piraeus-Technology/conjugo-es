@@ -3,8 +3,9 @@
 ## Code and metadata
 
 - [ ] Start from a clean release branch and review every included commit.
-- [ ] Keep `package.json` and `app.json` versions aligned.
-- [ ] Update iOS build number and Android version code as required.
+- [ ] Set the release version in `package.json` (`version`) and `app.json`
+      (`expo.version`). EAS increments the remotely managed iOS build number
+      and Android version code.
 - [ ] Run `npm ci`, typecheck, lint, tests with coverage, and the example audit.
 - [ ] Run Expo Doctor and confirm the required peer-dependency check passes.
 - [ ] Run a clean Expo prebuild and build both native platforms.
@@ -20,13 +21,18 @@
 ## Tip-jar sandbox tests
 
 Run these on physical devices against both Apple and Google sandbox accounts
-for `tip_small`, `tip_medium`, and `tip_large`.
+for `tip_small`.
 
 - [ ] Cold-launch the app, then complete a purchase.
 - [ ] Remount/navigate away and back before completing a purchase.
 - [ ] Cancel a purchase and confirm no error or thank-you state is shown.
-- [ ] Replay or recover an interrupted purchase and confirm it is processed
-      once.
+- [ ] Recover an interrupted purchase on cold launch before opening More.
+      Confirm recovery is silent and the transaction clears.
+- [ ] Verify delayed payment and Ask to Buy display the pending message and
+      only completed purchases are finished.
+- [ ] Replay a pending transaction for a retired product (`tip_medium` or
+      `tip_large`) and confirm the app finishes it after payment. Include
+      startup and foreground recovery on both platforms.
 - [ ] Confirm every delivered transaction is finished/acknowledged and does
       not replay on the next cold launch.
 - [ ] Confirm unrelated product identifiers are ignored.

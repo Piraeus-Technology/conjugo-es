@@ -101,7 +101,7 @@ export function useColors(): ThemeColors {
   return isDark ? darkColors : lightColors;
 }
 
-// Static export for places that can't use hooks (like building the conjugation index)
+// Light palette for use outside React.
 export const colors = lightColors;
 
 export const fonts = {

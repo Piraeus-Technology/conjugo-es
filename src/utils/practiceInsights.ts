@@ -6,8 +6,10 @@ import {
   PERSON_COUNT,
   Tense,
   tenseNames,
+  type VerbData,
 } from './conjugate';
 import { INSIGHT_RANK_LIMIT, INSIGHT_WEAK_FORM_LIMIT } from './constants';
+import { getPracticeAnswer } from './practicePrompts';
 
 type WeightMap = Record<string, number>;
 
@@ -47,7 +49,8 @@ export function parsePromptWeights(weights: WeightMap): PromptWeightEntry[] {
         !Number.isInteger(personIndex) ||
         personIndex < 0 ||
         personIndex >= PERSON_COUNT ||
-        !isTense(tense)
+        !isTense(tense) ||
+        !getPracticeAnswer(verb, (verbs as Record<string, VerbData>)[verb], tense, personIndex)
       ) {
         return null;
       }
