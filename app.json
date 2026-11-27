@@ -36,12 +36,11 @@
     },
     "plugins": [
       "expo-asset",
-      "react-native-iap",
       [
-        "expo-build-properties",
+        "expo-iap",
         {
           "android": {
-            "kotlinVersion": "2.2.0"
+            "store": "play"
           }
         }
       ],
