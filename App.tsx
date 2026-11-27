@@ -19,6 +19,7 @@ import AppErrorBoundary from './src/components/AppErrorBoundary';
 import { usePracticeSettingsStore } from './src/store/practiceSettingsStore';
 import { useThemeStore } from './src/store/themeStore';
 import { useColors, fonts } from './src/utils/theme';
+import { TipJarProvider } from './src/utils/tipJar';
 import type { SearchStackParamList } from './src/types/navigation';
 
 SplashScreen.preventAutoHideAsync().catch((error) => {
@@ -239,8 +240,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AppErrorBoundary>
-      <AppContent />
-    </AppErrorBoundary>
+    <TipJarProvider>
+      <AppErrorBoundary>
+        <AppContent />
+      </AppErrorBoundary>
+    </TipJarProvider>
   );
 }
