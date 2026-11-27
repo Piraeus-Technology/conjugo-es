@@ -7,7 +7,7 @@
       (`expo.version`). EAS increments the remotely managed iOS build number
       and Android version code.
 - [ ] Run `npm ci`, typecheck, lint, tests with coverage, and the example audit.
-- [ ] Run Expo Doctor and confirm the required peer-dependency check passes.
+- [ ] Run `npx expo-doctor` and confirm all project-health checks pass.
 - [ ] Run a clean Expo prebuild and build both native platforms.
 - [ ] Confirm the privacy policy and store/support links match shipped behavior.
 
@@ -17,11 +17,14 @@
       learning-data reset with light/dark themes and large text.
 - [ ] Test cold launch, background/foreground, and remount behavior.
 - [ ] Confirm offline use after installation.
+- [ ] Swipe left on Recent and Favorites rows to remove them. Check that
+      search results have no swipe action and that the screen-reader remove
+      actions work.
 
 ## Tip-jar sandbox tests
 
-Run these on physical devices against both Apple and Google sandbox accounts
-for `tip_small`.
+Run these in native builds with `expo-iap` on physical devices against both
+Apple and Google sandbox accounts for `tip_small`.
 
 - [ ] Cold-launch the app, then complete a purchase.
 - [ ] Remount/navigate away and back before completing a purchase.
