@@ -352,7 +352,6 @@ export interface VerbData {
   noImperative?: boolean;
   unavailableTenses?: Tense[];
   practiceTenses?: Tense[];
-  extendedReference?: boolean;
   pronominalOnly?: boolean;
   level?: VerbLevel;
   examples?: string[];
@@ -961,39 +960,4 @@ function applyUsageRestrictions(
       ? { ...result, form: '—', disabled: true }
       : result;
   });
-}
-
-export function getAdditionalReferenceForms(
-  infinitive: string, verb: VerbData, haber: VerbData,
-): { label: string; rows: ConjugationResult[] }[] {
-  if (!verb.extendedReference) return [];
-  const [, participle] = conjugate(infinitive, verb, 'gerund_participle');
-  const compound = (tense: SimpleTense, variant?: 'se' | 're') =>
-    conjugate('haber', haber, tense).map(row => ({
-      pronoun: row.pronoun,
-      form: `${variant ? subjunctiveVariant(row.form, variant) : row.form} ${participle.form}`,
-    }));
-  const imperfectSubjunctive = conjugate(infinitive, verb, 'subjunctive_imperfect');
-  const variantRows = (variant: 'se' | 're') => imperfectSubjunctive.map(row => ({
-    ...row, form: row.disabled ? row.form : subjunctiveVariant(row.form, variant),
-  }));
-  const voseoEnding = { ar: 'ás', er: 'és', ir: 'ís' }[verb.type];
-  return [
-    { label: 'Preterite Anterior', rows: compound('preterite') },
-    { label: 'Subjunctive Present Perfect', rows: compound('subjunctive_present') },
-    { label: 'Subjunctive Past Perfect', rows: compound('subjunctive_imperfect') },
-    { label: 'Subjunctive Past Perfect (-se)', rows: compound('subjunctive_imperfect', 'se') },
-    { label: 'Subjunctive Imperfect (-se)', rows: variantRows('se') },
-    { label: 'Subjunctive Future', rows: applyUsageRestrictions(verb, 'future', variantRows('re')) },
-    { label: 'Subjunctive Future Perfect', rows: applyUsageRestrictions(verb, 'future_perfect', compound('subjunctive_imperfect', 're')) },
-    { label: 'Present Voseo', rows: [{ pronoun: 'vos', form: infinitive.slice(0, -2) + voseoEnding }] },
-    { label: 'Nonfinite Compounds', rows: [
-      { pronoun: 'Perfect Infinitive', form: `haber ${participle.form}` },
-      { pronoun: 'Perfect Gerund', form: `habiendo ${participle.form}` },
-    ] },
-  ];
-}
-
-function subjunctiveVariant(form: string, variant: 'se' | 're'): string {
-  return form.replace(/ra(s|mos|is|n)?$/, `${variant}$1`);
 }
