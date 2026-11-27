@@ -60,6 +60,14 @@ test.each([
   ['vestirse', 4, 'vestíos'],
   ['reírse', 4, 'reíos'],
   ['oponerse', 1, 'oponte'],
+  ['reírse', 1, 'ríete'],
+  ['criarse', 1, 'críate'],
+  ['tatuarse', 1, 'tatúate'],
+  ['graduarse', 1, 'gradúate'],
+  ['peinarse', 1, 'péinate'],
+  ['afeitarse', 1, 'aféitate'],
+  ['caerse', 1, 'cáete'],
+  ['caerse', 2, 'cáigase'],
 ] as const)('%s affirmative command at person index %i is %s', (infinitive, person, form) => {
   expect(conjugate(infinitive, dataset[infinitive], 'imperative_affirmative')[person].form).toBe(form);
 });

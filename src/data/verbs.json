@@ -3236,7 +3236,7 @@
   "estremecer": {
     "type": "er",
     "regular": false,
-    "translation": "to shake / to make someone shudder",
+    "translation": "to make someone shudder / to shake (deeply)",
     "pattern": {
       "yoZco": true
     },
@@ -9157,15 +9157,13 @@
   "casar": {
     "type": "ar",
     "regular": true,
-    "translation": "to marry (officiate) / to match",
+    "translation": "to officiate a wedding / to marry off / to match",
     "examples": [
       "El juez casó a la pareja en el ayuntamiento.",
       "Estos datos no casan con los anteriores."
     ],
     "level": "B2",
-    "englishSearchAliases": [
-      "to marry"
-    ]
+    "englishSearchAliases": []
   },
   "circular": {
     "type": "ar",
@@ -10637,7 +10635,7 @@
   "relajar": {
     "type": "ar",
     "regular": true,
-    "translation": "to relax (something) / to loosen",
+    "translation": "to relax (something)",
     "examples": [
       "El masaje relaja los músculos.",
       "Relajaron las normas de vestimenta."
@@ -10687,9 +10685,7 @@
       "El barco remontó el río."
     ],
     "level": "C2",
-    "englishSearchAliases": [
-      "to go back (in time)"
-    ]
+    "englishSearchAliases": []
   },
   "renunciar": {
     "type": "ar",
@@ -13094,7 +13090,7 @@
     "regular": true,
     "reflexiveBase": "casar",
     "level": "A2",
-    "translation": "to get married",
+    "translation": "to get married / to marry (someone)",
     "examples": [
       "Se casaron en una ceremonia íntima.",
       "Mi hermana se casa el próximo mes."
@@ -13621,7 +13617,7 @@
     "translation": "to look like / to resemble",
     "examples": [
       "Te pareces mucho a tu padre.",
-      "Las dos hermanas se parecen."
+      "Me parezco a mi abuelo."
     ]
   },
   "encontrarse": {
@@ -13629,7 +13625,7 @@
     "regular": false,
     "reflexiveBase": "encontrar",
     "level": "A2",
-    "translation": "to feel / to meet (by chance) / to be located",
+    "translation": "to feel (well, ill) / to meet (by chance) / to be located",
     "examples": [
       "¿Cómo te encuentras hoy?",
       "Me encontré con Ana en el mercado."
@@ -13651,7 +13647,7 @@
     "regular": false,
     "reflexiveBase": "volver",
     "level": "B1",
-    "translation": "to become (suddenly) / to turn around",
+    "translation": "to become (a change of character or state) / to turn around",
     "examples": [
       "Se volvió loco de alegría.",
       "Me volví para ver quién era."
@@ -13662,7 +13658,7 @@
     "regular": false,
     "reflexiveBase": "hacer",
     "level": "B1",
-    "translation": "to become (through effort)",
+    "translation": "to become (a doctor, rich, friends…)",
     "examples": [
       "Se hizo médico a los treinta años.",
       "Nos hicimos amigos en la universidad."

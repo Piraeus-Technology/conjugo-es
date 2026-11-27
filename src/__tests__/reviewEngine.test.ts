@@ -5,7 +5,7 @@ import { auditExamples, exampleContainsVerbForm } from '../utils/exampleAudit';
 const dataset = verbs as Record<string, VerbData>;
 const forms = (verb: string, tense: Tense) => conjugate(verb, dataset[verb], tense).map(row => row.form);
 
-test('every generated -ar preterite retains its -ar endings', () => {
+test('generated -ar preterites retain their regular endings outside yo', () => {
   for (const [word, entry] of Object.entries(dataset)) {
     const bare = getBareInfinitive(word);
     const data = getBareVerbData(entry);
@@ -68,7 +68,7 @@ test.each(['prever', 'entrever'])('%s keeps the full ver imperfect', word => {
   );
 });
 
-test('every e→i class member raises the nosotros/vosotros subjunctive stem', () => {
+test('explicit e→i patterns raise the nosotros/vosotros subjunctive stem', () => {
   for (const [word, data] of Object.entries(dataset)) {
     if (data.pattern?.stemChange?.present !== 'e_i') continue;
     const subj = forms(word, 'subjunctive_present');
@@ -99,6 +99,9 @@ test('example checker accepts complete enclitic forms, but not a shared stem', (
   expect(exampleContainsVerbForm('levantarse', dataset.levantarse, 'Voy a levantarme.')).toBe(true);
   expect(exampleContainsVerbForm('levantarse', dataset.levantarse, 'Estoy levantándome.')).toBe(true);
   expect(exampleContainsVerbForm('levantarse', dataset.levantarse, 'Levanto la caja.')).toBe(false);
+  expect(exampleContainsVerbForm('levantarse', dataset.levantarse, 'He levantado la caja.')).toBe(false);
+  expect(exampleContainsVerbForm('irse', dataset.irse, 'He ido al mercado.')).toBe(false);
+  expect(exampleContainsVerbForm('irse', dataset.irse, 'Me he ido al mercado.')).toBe(true);
   expect(exampleContainsVerbForm('despedirse', dataset.despedirse, 'Salió sin despedirse.')).toBe(true);
 });
 

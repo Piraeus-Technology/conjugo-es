@@ -133,11 +133,25 @@ describe('practice prompt selection', () => {
     });
     expect(question.options).toHaveLength(4);
     expect(question.options).toContain('vámonos');
+    expect(question.options.some(option => ['irnos', 'yéndonos'].includes(option))).toBe(true);
     expect(question.options).not.toContain('vayámonos');
     expect(question.options).not.toContain('vamos');
     expect(question.options.every(option => !option.includes(' '))).toBe(true);
     expect(isCorrectAnswer(question, 'vayámonos')).toBe(true);
     expect(isCorrectAnswer(question, 'vamos')).toBe(false);
+  });
+
+  test('vayamos is accepted for the nosotros command and excluded from its distractors', () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.65);
+    const ir = allVerbEntries.find(([verb]) => verb === 'ir')!;
+    const question = generateQuestion(['imperative_affirmative', 'subjunctive_present'], flatWeight, [ir], true, {
+      ...createPracticeSession(),
+      next: () => ({ verb: 'ir', data: ir[1], tense: 'imperative_affirmative', personIndex: 3, answer: 'vamos' }),
+    });
+    expect(question.options).toHaveLength(4);
+    expect(question.options).toContain('vamos');
+    expect(question.options).not.toContain('vayamos');
+    expect(isCorrectAnswer(question, 'vayamos')).toBe(true);
   });
 
   test('a missed prompt returns after two other answers despite settings redraws', () => {

@@ -962,7 +962,7 @@ export function conjugate(
   });
 }
 
-function attachReflexivePronoun(form: string, pronoun: string): string {
+export function attachReflexivePronoun(form: string, pronoun: string): string {
   // Keep the verb's stress. A stressed weak vowel keeps its hiatus accent.
   if (/[íú]/.test(form)) return form + pronoun;
   // Treat silent u as a consonant so the match offsets still index the original word.
@@ -1023,7 +1023,7 @@ function applyUsageRestrictions(
   tense: Tense,
   results: ConjugationResult[],
 ): ConjugationResult[] {
-  const impersonal = verb.impersonal || (verb.impersonalCompound && tense in haberForms);
+  const impersonal = verb.impersonal || (verb.impersonalCompound && (tense in haberForms || tense in estarForms));
   const unavailableTense = verb.unavailableTenses?.includes(tense)
     || ((verb.impersonal || verb.thirdPersonOnly || verb.noImperative) && imperativeTenses.includes(tense));
   if (!unavailableTense && !impersonal && !verb.thirdPersonOnly) return results;

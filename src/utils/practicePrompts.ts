@@ -73,9 +73,21 @@ export function getPracticeAnswer(
 export function getPracticeForms(verb: string, data: VerbData, tense: Tense) {
   if (!practiceTenses.includes(tense)
     || (data.practiceTenses && !data.practiceTenses.includes(tense))) return [];
-  return conjugate(verb, data, tense).map(result =>
-    result.disabled || result.form === '—' ? undefined : result,
-  );
+  const alternateParticiple = data.alternativePastParticiple;
+  const participle = alternateParticiple ? conjugate(verb, data, 'gerund_participle')[1].form : undefined;
+  return conjugate(verb, data, tense).map((result, index) => {
+    if (result.disabled || result.form === '—') return undefined;
+    if (verb === 'ir' && tense === 'imperative_affirmative' && index === 3) {
+      return { ...result, alternateForms: ['vayamos'] };
+    }
+    if (alternateParticiple) {
+      const lastWordStart = result.form.lastIndexOf(' ') + 1;
+      if (result.form.slice(lastWordStart) === participle) {
+        return { ...result, alternateForms: [result.form.slice(0, lastWordStart) + alternateParticiple] };
+      }
+    }
+    return result;
+  });
 }
 
 export function getCorePracticeEntries(

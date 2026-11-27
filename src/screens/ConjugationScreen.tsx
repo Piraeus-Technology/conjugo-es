@@ -85,10 +85,10 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
 
     const family = Object.entries(entries)
       .filter(([candidateInfinitive, candidateVerb]) =>
-        candidateInfinitive !== infinitive && candidateInfinitive !== counterpart
+        candidateInfinitive !== bare && getBareInfinitive(candidateInfinitive) === candidateInfinitive
         && getFamilyKey(candidateInfinitive, candidateVerb) === familyKey
       );
-    return [...related, ...family].slice(0, 6);
+    return [...related, ...family.slice(0, 6)];
   }, [infinitive, verb]);
 
   const toggleTense = (tense: Tense) => {

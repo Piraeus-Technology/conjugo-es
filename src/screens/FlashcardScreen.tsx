@@ -15,7 +15,7 @@ import * as Haptics from 'expo-haptics';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
-import { createPracticeSession, practiceSelectionKey } from '../utils/practicePrompts';
+import { createPracticeSession, getPracticeForms, practiceSelectionKey } from '../utils/practicePrompts';
 import { useSessionAutosave } from '../hooks/useSessionAutosave';
 import { usePracticeResetStore } from '../store/practiceResetStore';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -43,6 +43,7 @@ interface Card {
   tense: Tense;
   personIndex: number;
   answer: string;
+  alternateAnswers?: string[];
 }
 
 type CardPhase = 'front' | 'revealing' | 'back' | 'advancing';
@@ -130,7 +131,9 @@ function FlashcardScreenSession() {
 
   const drawCard = React.useCallback((allowRetry: boolean): Card => {
     const prompt = practiceSession.next(filteredEntries, activeTenses, getWeight, includeVosotros, allowRetry);
-    return { ...prompt, translation: prompt.data.translation };
+    const { verb, data, tense, personIndex } = prompt;
+    const alternateAnswers = getPracticeForms(verb, data, tense)[personIndex]?.alternateForms;
+    return { ...prompt, translation: data.translation, alternateAnswers };
   }, [practiceSession, filteredEntries, activeTenses, getWeight, includeVosotros]);
 
   const stopTransition = React.useCallback(() => {
@@ -334,8 +337,9 @@ function FlashcardScreenSession() {
 
   const promptLabel = `Tap to reveal conjugation of ${card.verb} for ${getPersonLabel(card)}, ${tenseNames[card.tense]}`;
   const visibleFrontOpacity = phase === 'advancing' ? advanceAnim : phase === 'front' ? 1 : frontOpacity;
+  const alternateAnswerLabel = card.alternateAnswers && `Also correct: ${card.alternateAnswers.join(', ')}`;
   const cardLabel = phase === 'advancing' ? 'Next flashcard'
-    : phase === 'back' ? `${card.answer}, ${getPersonLabel(card)}, ${tenseNames[card.tense]}`
+    : phase === 'back' ? [card.answer, getPersonLabel(card), tenseNames[card.tense], alternateAnswerLabel].filter(Boolean).join(', ')
     : promptLabel;
 
   return (
@@ -431,12 +435,12 @@ function FlashcardScreenSession() {
             </Text>
             <Text
               style={[styles.answerText, isCompactCard && styles.answerTextCompact, isTinyCard && styles.answerTextTiny, { color: colors.primaryText }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.6}
             >
               {card.answer}
             </Text>
+            {alternateAnswerLabel && (
+              <Text style={[styles.alternateAnswerText, { color: colors.textSecondary }]}>{alternateAnswerLabel}</Text>
+            )}
             <Text style={[styles.contextText, isCompactCard && styles.contextTextCompact, isTinyCard && styles.contextTextTiny, { color: colors.textSecondary }]}>
               {getPersonLabel(card)} · {card.verb}
             </Text>
@@ -578,9 +582,10 @@ const styles = StyleSheet.create({
   pronounText: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.medium },
   pronounTextCompact: { fontSize: fonts.sizes.lg },
   pronounTextTiny: { fontSize: fonts.sizes.md },
-  answerText: { fontSize: 42, fontWeight: fonts.weights.bold, marginBottom: spacing.xs },
+  answerText: { fontSize: 42, fontWeight: fonts.weights.bold, marginBottom: spacing.xs, alignSelf: 'stretch', textAlign: 'center' },
   answerTextCompact: { fontSize: 34, marginBottom: 2 },
   answerTextTiny: { fontSize: 28, marginBottom: 0 },
+  alternateAnswerText: { fontSize: fonts.sizes.sm, marginBottom: spacing.xs, alignSelf: 'stretch', textAlign: 'center' },
   answerTranslation: { fontSize: fonts.sizes.md, fontStyle: 'italic', marginBottom: spacing.md },
   answerTranslationCompact: { marginBottom: spacing.sm },
   answerTranslationTiny: { fontSize: 12, marginBottom: spacing.xs },

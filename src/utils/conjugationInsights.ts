@@ -4,6 +4,7 @@ import {
   getBareVerbData,
   getRegularPastParticiple,
   imperativeTenses,
+  reflexivePronouns,
   tenseNames,
   type Tense,
   type VerbData,
@@ -14,9 +15,9 @@ const verFamily = new Set(['ver', 'prever', 'entrever']);
 
 const accentless = (form: string) => form.normalize('NFD').replace(/\u0301/g, '');
 
-export function getOverrideExample(infinitive: string, verb: VerbData) {
-  infinitive = getBareInfinitive(infinitive);
-  verb = getBareVerbData(verb);
+export function getOverrideExample(entry: string, data: VerbData) {
+  const infinitive = getBareInfinitive(entry);
+  const verb = getBareVerbData(data);
   for (const tense of ['present', 'preterite', 'subjunctive_present'] as const) {
     if (!verb.overrides?.[tense] && !verb.pattern?.fullOverrides?.[tense]) continue;
     const regular = conjugate(infinitive, { type: verb.type, regular: true, translation: verb.translation }, tense);
@@ -34,13 +35,18 @@ export function getOverrideExample(infinitive: string, verb: VerbData) {
     else if (form.replace(/ü/g, 'u') === regularForm || form.replace(/y/g, 'i') === regularForm) difference = 'spelling';
     else if (regularEnding && form.endsWith(regularEnding)) difference = 'stem';
     else if (stem && form.startsWith(stem)) difference = 'ending';
-    return { tense, personIndex, form, regularForm, difference };
+    if (entry === infinitive) return { tense, personIndex, form, regularForm, difference };
+    return {
+      tense, personIndex, difference,
+      form: conjugate(entry, data, tense)[personIndex].form,
+      regularForm: `${reflexivePronouns[personIndex]} ${regularForm}`,
+    };
   }
 }
 
-export function getInflectionNotes(infinitive: string, verb: VerbData): string[] {
-  infinitive = getBareInfinitive(infinitive);
-  verb = getBareVerbData(verb);
+export function getInflectionNotes(entry: string, data: VerbData): string[] {
+  const infinitive = getBareInfinitive(entry);
+  const verb = getBareVerbData(data);
   const notes = new Set<string>();
   const pattern = verb.pattern;
   const present = conjugate(infinitive, verb, 'present');
@@ -90,7 +96,7 @@ export function getInflectionNotes(infinitive: string, verb: VerbData): string[]
     if (!present[0].disabled) {
       notes.add('Irregular yo form: the present tense yo form ends in -zco.');
     } else {
-      const example = conjugate(infinitive, verb, 'subjunctive_present').find(row => !row.disabled && /zca(?:s|mos|is|n)?$/.test(row.form));
+      const example = conjugate(entry, data, 'subjunctive_present').find(row => !row.disabled && /zca(?:s|mos|is|n)?$/.test(row.form));
       if (example) notes.add(`In the present subjunctive, the stem changes from -c- to -zc-, as in ${example.form}.`);
     }
   }
@@ -131,16 +137,17 @@ export function getInflectionNotes(infinitive: string, verb: VerbData): string[]
   const [gerund, participle] = conjugate(infinitive, verb, 'gerund_participle').map(
     (result) => result.form,
   );
+  const displayedGerund = entry === infinitive ? gerund : conjugate(entry, data, 'gerund_participle')[0].form;
   const stem = infinitive.slice(0, -2);
   const regularGerund = verb.type === 'ar' ? `${stem}ando` : `${stem}iendo`;
   const regularParticiple = getRegularPastParticiple(infinitive, verb.type);
 
   if (verb.type !== 'ar' && /(?:ñ|ll)$/.test(stem) && gerund === `${stem}endo`) {
-    notes.add(`In -er and -ir verbs, ñ or ll absorbs the i of the gerund ending (${gerund}).`);
+    notes.add(`In -er and -ir verbs, ñ or ll absorbs the i of the gerund ending (${displayedGerund}).`);
     if (hasForms('preterite')) notes.add('After ñ or ll in these verbs, third-person preterite endings are -ó and -eron.');
     if (hasForms('subjunctive_imperfect')) notes.add('The imperfect subjunctive also drops that i, using endings such as -era and -eran.');
   } else if (gerund !== regularGerund) {
-    notes.add(`Irregular gerund: ${gerund}.`);
+    notes.add(`Irregular gerund: ${displayedGerund}.`);
   }
   if (verb.alternativePastParticiple) {
     notes.add(`The irregular past participle is ${participle}. The regular form ${verb.alternativePastParticiple} is also correct.`);
@@ -148,7 +155,7 @@ export function getInflectionNotes(infinitive: string, verb: VerbData): string[]
     notes.add(`Irregular past participle: ${participle}.`);
   }
 
-  const example = getOverrideExample(infinitive, verb);
+  const example = getOverrideExample(entry, data);
   if (example) notes.add(`Change in ${example.difference}: ${example.form}.`);
 
   return [...notes];
@@ -161,7 +168,7 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
     notes.push('For weather or time of day, only the third-person singular is used.');
   }
   if (verb.impersonalCompound) {
-    notes.push('In compound tenses, haber is used only impersonally (“there has been”), in the third-person singular.');
+    notes.push('In compound and progressive tenses, haber is used only impersonally, in the third-person singular.');
   }
   if (verb.thirdPersonOnly) {
     notes.push('In the meaning shown here, finite forms are used only in the third-person singular and plural.');
@@ -178,17 +185,17 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
     notes.push(`This verb is not used in these tenses: ${unavailableNamedTenses.join(', ')}.`);
   }
   if (getBareInfinitive(infinitive) !== infinitive) {
-    const [present] = conjugate(infinitive, verb, 'present');
+    const present = conjugate(infinitive, verb, 'present');
     const [presentProgressive] = conjugate(infinitive, verb, 'present_progressive');
     const [pastProgressive] = conjugate(infinitive, verb, 'past_progressive');
-    notes.unshift(`This reflexive verb uses me, te, se, nos, os and se, as in ${present.form}.`);
+    notes.unshift(`Used with me, te, se, nos, os: ${present.filter(row => !row.disabled).map(row => row.form).join(', ')}.`);
     if (presentProgressive.alternateForms && pastProgressive.alternateForms) {
       notes.splice(1, 0, `In the Present and Past Progressive, the pronoun can also attach to the gerund. For example, ${presentProgressive.alternateForms[0]} and ${pastProgressive.alternateForms[0]}.`);
     }
     if (infinitive === 'irse') {
       const [, , , nosotros, vosotros] = conjugate(infinitive, verb, 'imperative_affirmative');
       if (nosotros.alternateForms && vosotros.alternateForms) {
-        notes.push(`In affirmative commands, ${nosotros.alternateForms[0]} is also correct for nosotros and ${vosotros.alternateForms[0]} is also correct for vosotros.`);
+        notes.push(`${nosotros.form} is the everyday form; ${nosotros.alternateForms[0]} is also correct but literary. ${vosotros.form} is the recommended form; ${vosotros.alternateForms[0]} is also accepted.`);
       }
     }
   }

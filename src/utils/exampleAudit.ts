@@ -25,7 +25,7 @@ export function exampleContainsVerbForm(infinitive: string, data: VerbData, exam
   const attachableForms = new Set([withoutStressAccents(bareInfinitive)]);
   for (const tense of allTenses) {
     for (const row of conjugate(infinitive, data, tense)) {
-      if (row.disabled || row.form === '—') continue;
+      if (row.disabled || row.form === '—' || (reflexive && row.pronoun === 'Past Participle')) continue;
       forms.add(row.form);
       row.alternateForms?.forEach(form => forms.add(form));
       if (reflexive && row.pronoun === 'Gerund') {
@@ -36,8 +36,9 @@ export function exampleContainsVerbForm(infinitive: string, data: VerbData, exam
     }
   }
   if ([...forms].some(form => sentence.includes(` ${words(form).join(' ')} `))) return true;
-  // An enclitic may shift the written accent, but the ENTIRE remaining form
-  // must match an infinitive, gerund or affirmative command; never a stem.
+  // An enclitic may shift the written accent. Match the whole remaining word.
+  // Reflexive commands are matched above, so only infinitives and gerunds
+  // are checked here for a different attached reflexive pronoun.
   const endings = reflexive ? reflexivePronouns : cliticEndings;
   return sentenceWords.some(word => endings.some(ending =>
     word.endsWith(ending) && attachableForms.has(withoutStressAccents(word.slice(0, -ending.length))),

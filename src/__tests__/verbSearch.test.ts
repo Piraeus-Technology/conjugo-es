@@ -53,8 +53,10 @@ describe('conjugation search', () => {
   test.each([
     ['to shower', 'ducharse'], ['to relax', 'relajarse'], ['to cut in line', 'colarse'],
     ['to get up', 'levantarse'], ['to lift', 'levantar'], ['levantarse', 'levantarse'],
+    ['to drink', 'beber'], ['to feel', 'sentir'], ['to file', 'limar'],
+    ['to shake', 'sacudir'], ['to marry', 'casarse'],
   ])(
-    'ranks an exact English sense %s first', (query, verb) => {
+    'ranks the expected verb first for %s', (query, verb) => {
       expect(searchVerbs(query)[0]?.item.infinitive).toBe(verb);
     },
   );

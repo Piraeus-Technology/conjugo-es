@@ -1,6 +1,6 @@
 import Fuse, { type FuseResult } from 'fuse.js';
 import verbs from '../data/verbs.json';
-import { VerbData, conjugate, allTenses, getBareInfinitive, Tense } from './conjugate';
+import { VerbData, conjugate, allTenses, Tense } from './conjugate';
 import { FUSE_CONJUGATION_THRESHOLD, FUSE_INFINITIVE_THRESHOLD } from './constants';
 
 export interface VerbEntry extends VerbData {
@@ -227,24 +227,23 @@ export function searchVerbs(query: string): FuseResult<VerbEntry>[] {
   const normalized = normalizeSearchText(query);
   if (!normalized) return [];
   const exactInfinitives: FuseResult<VerbEntry>[] = [];
-  const exactEnglish: { result: FuseResult<VerbEntry>; senseRank: number; reflexive: boolean }[] = [];
+  const writtenEnglish: FuseResult<VerbEntry>[] = [];
+  const annotatedEnglish: FuseResult<VerbEntry>[] = [];
+  const supportingEnglish: FuseResult<VerbEntry>[] = [];
   verbEntries.forEach((item, refIndex) => {
     if (item.normalizedInfinitive === normalized) exactInfinitives.push({ item, refIndex, score: 0 });
     else if (isExactEnglishMatch(item, normalized)) {
-      const senses = getEnglishSenses(item.translation);
+      // A slash followed by another “to” starts a written sense. A slash
+      // within one sense shares its “to” across compact alternatives.
+      const senses = item.translation.split(/\s*\/\s*(?=to )|\s+or\s+(?=to )/).filter(part => !part.includes('/'));
       const writtenSense = item.normalizedTranslation === normalized
         || senses.some(sense => normalizeSearchText(sense) === normalized);
       const annotatedSense = senses.some(sense => normalizeSearchText(withoutGlossAnnotation(sense)) === normalized);
-      exactEnglish.push({
-        result: { item, refIndex, score: 0 },
-        senseRank: writtenSense ? 0 : annotatedSense ? 1 : 2,
-        reflexive: getBareInfinitive(item.infinitive) !== item.infinitive,
-      });
+      const matches = writtenSense ? writtenEnglish : annotatedSense ? annotatedEnglish : supportingEnglish;
+      matches.push({ item, refIndex, score: 0 });
     }
   });
-  exactEnglish.sort((first, second) => first.senseRank - second.senseRank
-    || Number(second.reflexive) - Number(first.reflexive));
-  const exact = [...exactInfinitives, ...exactEnglish.map(({ result }) => result)];
+  const exact = [...exactInfinitives, ...writtenEnglish, ...annotatedEnglish, ...supportingEnglish];
   const seen = new Set(exact.map(result => result.refIndex));
   return [...exact, ...verbFuse.search(query).filter(result => !seen.has(result.refIndex))];
 }

@@ -47,23 +47,32 @@ test('legacy and prompt weights migrate, retaining the strongest colliding weigh
   expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual(expected);
 });
 
-test('saved favorites, history and prompt weights follow reflexive renames', async () => {
-  mockStorage.set('favorites', JSON.stringify(['quejar', 'equivocar']));
-  mockStorage.set('verb_history', JSON.stringify(['equivocar', 'quejar']));
+test('saved favorites, history and prompt weights follow all 15 reflexive renames', async () => {
+  const oldNames = [
+    'quejar', 'atrever', 'adentrar', 'desvivir', 'esforzar', 'equivocar', 'especializar', 'duchar',
+    'enterar', 'refugiar', 'resignar', 'zambullir', 'aferrar', 'avecindar', 'confederar',
+  ];
+  const newNames = oldNames.map(verb => `${verb}se`);
+  const oldHistory = [...oldNames].reverse();
+  const newHistory = [...newNames].reverse();
+  const insightWeights: Record<string, number> = { quejar: 3, equivocar: 2 };
+  const promptWeights = (names: string[]) => Object.fromEntries(names.map((verb, index) => [
+    `${verb}::present::0`, insightWeights[oldNames[index]] ?? 1.5,
+  ]));
+  mockStorage.set('favorites', JSON.stringify(oldNames));
+  mockStorage.set('verb_history', JSON.stringify(oldHistory));
   mockStorage.set('spaced_rep_weights', JSON.stringify({
-    'quejar::present::0': 3,
-    'equivocar::present::0': 2,
+    ...promptWeights(oldNames),
     'levantar::present::0': 5,
     'levantarse::present::0': 4,
   }));
   await useFavoritesStore.getState().loadFavorites();
   await useHistoryStore.getState().loadHistory();
   await useSpacedRepStore.getState().loadWeights();
-  expect(useFavoritesStore.getState().favorites).toEqual(['quejarse', 'equivocarse']);
-  expect(useHistoryStore.getState().history).toEqual(['equivocarse', 'quejarse']);
+  expect(useFavoritesStore.getState().favorites).toEqual(newNames);
+  expect(useHistoryStore.getState().history).toEqual(newHistory);
   const weights = {
-    'quejarse::present::0': 3,
-    'equivocarse::present::0': 2,
+    ...promptWeights(newNames),
     'levantar::present::0': 5,
     'levantarse::present::0': 4,
   };
@@ -71,8 +80,8 @@ test('saved favorites, history and prompt weights follow reflexive renames', asy
   expect(buildPracticeInsights(weights).weakForms.map(form => form.label)).toEqual(expect.arrayContaining([
     'quejarse · Present · yo', 'equivocarse · Present · yo',
   ]));
-  expect(JSON.parse(mockStorage.get('favorites')!)).toEqual(['quejarse', 'equivocarse']);
-  expect(JSON.parse(mockStorage.get('verb_history')!)).toEqual(['equivocarse', 'quejarse']);
+  expect(JSON.parse(mockStorage.get('favorites')!)).toEqual(newNames);
+  expect(JSON.parse(mockStorage.get('verb_history')!)).toEqual(newHistory);
   expect(JSON.parse(mockStorage.get('spaced_rep_weights')!)).toEqual(weights);
 });
 
