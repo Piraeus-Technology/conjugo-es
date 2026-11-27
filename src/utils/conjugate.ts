@@ -284,9 +284,8 @@ export const allTenses: Tense[] = [
   'gerund_participle',
 ];
 
-// Practice prompts require a person-indexed form. Derive this list from the
-// canonical tense list so adding a new finite tense cannot silently omit it
-// from practice settings.
+// Practice prompts require a person-indexed form. The Practice settings screen
+// lists these tenses by group, and its rendered-screen test checks the list.
 export const practiceTenses: Tense[] = allTenses.filter(
   (tense) => tense !== 'gerund_participle',
 );
@@ -353,7 +352,9 @@ export interface VerbData {
   regular: boolean;
   translation: string;
   englishSearchAliases?: string[];
+  alternativePastParticiple?: string;
   impersonal?: boolean;
+  impersonalCompound?: boolean;
   thirdPersonOnly?: boolean;
   noImperative?: boolean;
   unavailableTenses?: Tense[];
@@ -930,10 +931,7 @@ export function conjugate(
       pronoun,
       form: `${haber[i]} ${participle}`,
     }));
-    const restrictionTense = tense === 'subjunctive_present_perfect' || tense === 'subjunctive_past_perfect'
-      ? 'present_perfect'
-      : tense;
-    return applyUsageRestrictions(verb, restrictionTense, results);
+    return applyUsageRestrictions(verb, tense, results);
   }
 
   if (tense in estarForms) {
@@ -958,12 +956,13 @@ function applyUsageRestrictions(
   tense: Tense,
   results: ConjugationResult[],
 ): ConjugationResult[] {
+  const impersonal = verb.impersonal || (verb.impersonalCompound && tense in haberForms);
   const unavailableTense = verb.unavailableTenses?.includes(tense)
     || ((verb.impersonal || verb.thirdPersonOnly || verb.noImperative) && imperativeTenses.includes(tense));
-  if (!unavailableTense && !verb.impersonal && !verb.thirdPersonOnly) return results;
+  if (!unavailableTense && !impersonal && !verb.thirdPersonOnly) return results;
 
   return results.map((result, index) => {
-    const unavailablePerson = (verb.impersonal && index !== 2)
+    const unavailablePerson = (impersonal && index !== 2)
       || (verb.thirdPersonOnly && index !== 2 && index !== 5);
     return unavailableTense || unavailablePerson
       ? { ...result, form: '—', disabled: true }

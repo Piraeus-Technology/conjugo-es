@@ -155,7 +155,7 @@ async function buildSearchResults(
           matchLabel: 'Conjugation match',
           matchDetail: detail,
           matchTense: conjugation.tense,
-          matchForm: conjugation.form,
+          matchForm: conjugation.tableForm ?? conjugation.form,
         },
       });
     });

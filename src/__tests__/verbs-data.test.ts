@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { conjugate, VerbData, allTenses, Tense, type IrregularPattern } from '../utils/conjugate';
+import { getRuleNotes } from '../utils/conjugationInsights';
 import verbs from '../data/verbs.json';
 
 const verbEntries = Object.entries(verbs as Record<string, VerbData>);
@@ -48,16 +49,19 @@ describe('Verb database integrity', () => {
     }
   });
 
-  test('both compound subjunctives follow Present Perfect availability', () => {
-    const unavailable = ({ disabled, form }: { disabled?: boolean; form: string }) => !!disabled || form === '—';
-    const entries: [string, VerbData][] = [
-      ...verbEntries,
-      ['hablar', { type: 'ar', regular: true, translation: 'to speak', unavailableTenses: ['present_perfect'] }],
-    ];
-    for (const [verb, data] of entries) {
-      const expected = conjugate(verb, data, 'present_perfect').map(unavailable);
-      expect(conjugate(verb, data, 'subjunctive_present_perfect').map(unavailable)).toEqual(expected);
-      expect(conjugate(verb, data, 'subjunctive_past_perfect').map(unavailable)).toEqual(expected);
+  test('perfect tense restrictions blank only the named table and identify it in the rule notes', () => {
+    const tenses = [
+      ['present_perfect', 'Present Perfect'],
+      ['subjunctive_present_perfect', 'Subjunctive Present Perfect'],
+      ['subjunctive_past_perfect', 'Subjunctive Past Perfect'],
+    ] as const;
+    for (const [restrictedTense, label] of tenses) {
+      const data: VerbData = { type: 'ar', regular: true, translation: 'to speak', unavailableTenses: [restrictedTense] };
+      for (const [tense] of tenses) {
+        const forms = conjugate('hablar', data, tense).filter(row => !row.disabled && row.form !== '—');
+        expect(forms).toHaveLength(tense === restrictedTense ? 0 : 6);
+      }
+      expect(getRuleNotes('hablar', data)).toEqual([`This verb is not used in these tenses: ${label}.`]);
     }
   });
 

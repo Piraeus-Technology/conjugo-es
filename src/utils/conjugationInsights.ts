@@ -136,7 +136,9 @@ export function getInflectionNotes(infinitive: string, verb: VerbData): string[]
   } else if (gerund !== regularGerund) {
     notes.add(`Irregular gerund: ${gerund}.`);
   }
-  if (participle !== regularParticiple) {
+  if (verb.alternativePastParticiple) {
+    notes.add(`The irregular past participle is ${participle}. The regular form ${verb.alternativePastParticiple} is also correct.`);
+  } else if (participle !== regularParticiple) {
     notes.add(`Irregular past participle: ${participle}.`);
   }
 
@@ -152,6 +154,9 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   if (verb.impersonal) {
     notes.push('For weather or time of day, only the third-person singular is used.');
   }
+  if (verb.impersonalCompound) {
+    notes.push('In compound tenses, haber is used only impersonally (“there has been”), in the third-person singular.');
+  }
   if (verb.thirdPersonOnly) {
     notes.push('In the meaning shown here, finite forms are used only in the third-person singular and plural.');
   }
@@ -161,6 +166,7 @@ export function getRuleNotes(infinitive: string, verb: VerbData): string[] {
   if (hasNoImperative) notes.push('This use has no imperative forms.');
   const unavailableNamedTenses = unavailableTenses
     .filter(tense => !hasNoImperative || !imperativeTenses.includes(tense))
+    .filter(tense => conjugate(infinitive, verb, tense).every(row => row.disabled))
     .map(tense => tenseNames[tense]);
   if (unavailableNamedTenses.length) {
     notes.push(`This verb is not used in these tenses: ${unavailableNamedTenses.join(', ')}.`);
