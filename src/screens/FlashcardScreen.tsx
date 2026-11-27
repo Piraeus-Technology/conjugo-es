@@ -13,6 +13,7 @@ import {
 import type { AppStateStatus, LayoutChangeEvent } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import WordFittingText from '../components/WordFittingText';
 import verbs from '../data/verbs.json';
 import { getTodayKey } from '../utils/dayKey';
 import { createPracticeSession, getPracticeForms, practiceSelectionKey } from '../utils/practicePrompts';
@@ -433,13 +434,13 @@ function FlashcardScreenSession() {
             <Text style={[styles.tenseLabel, isCompactCard && styles.tenseLabelCompact, isTinyCard && styles.tenseLabelTiny, { color: colors.textMuted }]}>
               {tenseNames[card.tense]}
             </Text>
-            <Text
+            <WordFittingText
               style={[styles.answerText, isCompactCard && styles.answerTextCompact, isTinyCard && styles.answerTextTiny, { color: colors.primaryText }]}
             >
               {card.answer}
-            </Text>
+            </WordFittingText>
             {alternateAnswerLabel && (
-              <Text style={[styles.alternateAnswerText, { color: colors.textSecondary }]}>{alternateAnswerLabel}</Text>
+              <WordFittingText style={[styles.alternateAnswerText, { color: colors.textSecondary }]}>{alternateAnswerLabel}</WordFittingText>
             )}
             <Text style={[styles.contextText, isCompactCard && styles.contextTextCompact, isTinyCard && styles.contextTextTiny, { color: colors.textSecondary }]}>
               {getPersonLabel(card)} · {card.verb}
@@ -582,10 +583,10 @@ const styles = StyleSheet.create({
   pronounText: { fontSize: fonts.sizes.xl, fontWeight: fonts.weights.medium },
   pronounTextCompact: { fontSize: fonts.sizes.lg },
   pronounTextTiny: { fontSize: fonts.sizes.md },
-  answerText: { fontSize: 42, fontWeight: fonts.weights.bold, marginBottom: spacing.xs, alignSelf: 'stretch', textAlign: 'center' },
+  answerText: { fontSize: 42, fontWeight: fonts.weights.bold, marginBottom: spacing.xs, textAlign: 'center' },
   answerTextCompact: { fontSize: 34, marginBottom: 2 },
   answerTextTiny: { fontSize: 28, marginBottom: 0 },
-  alternateAnswerText: { fontSize: fonts.sizes.sm, marginBottom: spacing.xs, alignSelf: 'stretch', textAlign: 'center' },
+  alternateAnswerText: { fontSize: fonts.sizes.sm, marginBottom: spacing.xs, textAlign: 'center' },
   answerTranslation: { fontSize: fonts.sizes.md, fontStyle: 'italic', marginBottom: spacing.md },
   answerTranslationCompact: { marginBottom: spacing.sm },
   answerTranslationTiny: { fontSize: 12, marginBottom: spacing.xs },
