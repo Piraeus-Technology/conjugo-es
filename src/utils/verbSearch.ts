@@ -228,22 +228,31 @@ export function searchVerbs(query: string): FuseResult<VerbEntry>[] {
   if (!normalized) return [];
   const exactInfinitives: FuseResult<VerbEntry>[] = [];
   const writtenEnglish: FuseResult<VerbEntry>[] = [];
+  const compactEnglish: FuseResult<VerbEntry>[] = [];
   const annotatedEnglish: FuseResult<VerbEntry>[] = [];
   const supportingEnglish: FuseResult<VerbEntry>[] = [];
   verbEntries.forEach((item, refIndex) => {
     if (item.normalizedInfinitive === normalized) exactInfinitives.push({ item, refIndex, score: 0 });
     else if (isExactEnglishMatch(item, normalized)) {
-      // A slash followed by another “to” starts a written sense. A slash
-      // within one sense shares its “to” across compact alternatives.
-      const senses = item.translation.split(/\s*\/\s*(?=to )|\s+or\s+(?=to )/).filter(part => !part.includes('/'));
+      // A slash followed by “to” starts a new sense. The first part of a
+      // compact sense carries the shared “to” and ranks above later parts.
+      const senses = item.translation.split(/\s*\/\s*(?=to )|\s+or\s+(?=to )/);
+      const standalone = senses.filter(sense => !sense.includes('/'));
       const writtenSense = item.normalizedTranslation === normalized
-        || senses.some(sense => normalizeSearchText(sense) === normalized);
-      const annotatedSense = senses.some(sense => normalizeSearchText(withoutGlossAnnotation(sense)) === normalized);
-      const matches = writtenSense ? writtenEnglish : annotatedSense ? annotatedEnglish : supportingEnglish;
+        || standalone.some(sense => normalizeSearchText(sense) === normalized);
+      const compactSense = senses.some(sense => {
+        const slash = sense.indexOf('/');
+        return slash !== -1 && normalizeSearchText(sense.slice(0, slash)) === normalized;
+      });
+      const annotatedSense = standalone.some(sense => normalizeSearchText(withoutGlossAnnotation(sense)) === normalized);
+      const matches = writtenSense ? writtenEnglish
+        : compactSense ? compactEnglish
+        : annotatedSense ? annotatedEnglish
+        : supportingEnglish;
       matches.push({ item, refIndex, score: 0 });
     }
   });
-  const exact = [...exactInfinitives, ...writtenEnglish, ...annotatedEnglish, ...supportingEnglish];
+  const exact = [...exactInfinitives, ...writtenEnglish, ...compactEnglish, ...annotatedEnglish, ...supportingEnglish];
   const seen = new Set(exact.map(result => result.refIndex));
   return [...exact, ...verbFuse.search(query).filter(result => !seen.has(result.refIndex))];
 }

@@ -53,13 +53,21 @@ describe('conjugation search', () => {
   test.each([
     ['to shower', 'ducharse'], ['to relax', 'relajarse'], ['to cut in line', 'colarse'],
     ['to get up', 'levantarse'], ['to lift', 'levantar'], ['levantarse', 'levantarse'],
-    ['to drink', 'beber'], ['to feel', 'sentir'], ['to file', 'limar'],
+    ['to pass', 'pasar'], ['to catch', 'atrapar'],
+    ['to drink', 'beber'], ['to feel', 'sentir'], ['to file', 'archivar'],
     ['to shake', 'sacudir'], ['to marry', 'casarse'],
   ])(
     'ranks the expected verb first for %s', (query, verb) => {
       expect(searchVerbs(query)[0]?.item.infinitive).toBe(verb);
     },
   );
+
+  test('keeps to drink searchable as a compact alternative below the written sense', () => {
+    const exactVerbs = searchVerbs('to drink')
+      .filter(result => result.score === 0)
+      .map(result => result.item.infinitive);
+    expect(exactVerbs).toEqual(['beber', 'tomar']);
+  });
 
   test.each([
     ['me levanto', 'levantarse', 'present', undefined],
