@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#FFFFFF"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lkh9596.conjugo",
@@ -47,10 +42,23 @@
         {
           "android": {
             "kotlinVersion": "2.2.0"
-          }
+          },
+          "buildReactNativeFromSource": true,
+          "useHermesV1": false
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#FFFFFF",
+          "ios": {
+            "enableFullScreenImage_legacy": true
+          }
+        }
+      ]
     ],
     "owner": "piraeustechnology"
   }
