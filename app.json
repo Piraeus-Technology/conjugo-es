@@ -42,9 +42,7 @@
         {
           "android": {
             "kotlinVersion": "2.2.0"
-          },
-          "buildReactNativeFromSource": true,
-          "useHermesV1": false
+          }
         }
       ],
       "expo-font",
