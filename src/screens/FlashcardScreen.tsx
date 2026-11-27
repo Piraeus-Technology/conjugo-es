@@ -344,7 +344,7 @@ function FlashcardScreenSession() {
         styles.sessionContainer,
         {
           backgroundColor: colors.bg,
-          paddingTop: verticalPadding,
+          paddingTop: isTinyHeight ? spacing.xs : spacing.sm,
           paddingBottom: verticalPadding,
         },
       ]}
@@ -354,7 +354,6 @@ function FlashcardScreenSession() {
       <View
         style={[
           styles.scoreBar,
-          !isShortHeight && styles.scoreBarFloating,
           isShortHeight && styles.scoreBarCompact,
           isTinyHeight && styles.scoreBarTiny,
           { backgroundColor: colors.card },
@@ -383,7 +382,7 @@ function FlashcardScreenSession() {
       </View>
 
       <ScrollView
-        style={[styles.practiceArea, { marginTop: isShortHeight ? scoreCardGap : 0 }]}
+        style={[styles.practiceArea, { marginTop: scoreCardGap }]}
         contentContainerStyle={[
           styles.practiceAreaContent,
           shouldScrollPracticeArea && styles.practiceAreaContentScrolling,
@@ -533,12 +532,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     padding: spacing.sm,
     borderRadius: radius.md,
-  },
-  scoreBarFloating: {
-    position: 'absolute',
-    top: spacing.sm,
-    left: spacing.lg,
-    right: spacing.lg,
   },
   scoreBarCompact: { paddingVertical: spacing.xs },
   scoreBarTiny: { paddingVertical: 2, paddingHorizontal: spacing.xs },
