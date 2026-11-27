@@ -7,12 +7,10 @@ import {
   SectionList,
   TouchableOpacity,
   StyleSheet,
-  Animated,
   Image,
 } from 'react-native';
-// Keep the legacy RNGH Swipeable during the SDK 54 maintenance pass. Its
-// replacement requires Reanimated, which this app otherwise does not use.
-import { Swipeable } from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, type SharedValue } from 'react-native-reanimated';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import verbs from '../data/verbs.json';
 import { VerbData, tenseNames, type Tense } from '../utils/conjugate';
@@ -34,6 +32,20 @@ import { getVerbOfTheDayIndex } from '../utils/verbOfTheDay';
 const dailyVerbEntries = [...verbEntries].sort((first, second) =>
   first.infinitive.localeCompare(second.infinitive, 'es'),
 );
+
+function DeleteAction({ translation }: { translation: SharedValue<number> }) {
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(translation.value, [-80, 0], [1, 0.5], Extrapolation.CLAMP) }],
+  }));
+
+  return (
+    <View style={styles.deleteAction}>
+      <Animated.View style={iconStyle}>
+        <Ionicons name="trash-outline" size={20} color="#fff" />
+      </Animated.View>
+    </View>
+  );
+}
 
 function getVerbOfTheDay() {
   return dailyVerbEntries[getVerbOfTheDayIndex(dailyVerbEntries.length)];
@@ -288,24 +300,6 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     return s;
   }, [search, results, favorites, history]);
 
-  const renderDeleteAction = (
-    _progress: Animated.AnimatedInterpolation<number>,
-    dragX: Animated.AnimatedInterpolation<number>,
-  ) => {
-    const scale = dragX.interpolate({
-      inputRange: [-80, 0],
-      outputRange: [1, 0.5],
-      extrapolate: 'clamp',
-    });
-    return (
-      <View style={styles.deleteAction}>
-        <Animated.View style={{ transform: [{ scale }] }}>
-          <Ionicons name="trash-outline" size={20} color="#fff" />
-        </Animated.View>
-      </View>
-    );
-  };
-
   const removeSavedVerb = (item: SearchResult) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     if (item.matchType === 'favorite') {
@@ -369,13 +363,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     if (!isSwipeable) return row;
 
     return (
-      <Swipeable
-        renderRightActions={renderDeleteAction}
+      <ReanimatedSwipeable
+        renderRightActions={(_progress, translation) => <DeleteAction translation={translation} />}
         onSwipeableOpen={() => removeSavedVerb(item)}
         overshootRight={false}
       >
         {row}
-      </Swipeable>
+      </ReanimatedSwipeable>
     );
   };
 
@@ -445,7 +439,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 </View>
               </TouchableOpacity>
             </View>
-          ) : null
+          ) : undefined
         }
         renderSectionHeader={({ section }) =>
           section.title ? (
@@ -483,7 +477,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                 Search for any Spanish verb or conjugation
               </Text>
             </View>
-          ) : null
+          ) : undefined
         }
       />
     </View>

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, type ComponentRef } from 'react';
 import * as Haptics from 'expo-haptics';
 import {
   View,
@@ -63,9 +63,9 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const favorited = isFavorite(infinitive);
   const colors = useColors();
-  const scrollRef = useRef<ScrollView>(null);
-  const highlightRef = useRef<View>(null);
-  const scrollContentRef = useRef<View>(null);
+  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
+  const highlightRef = useRef<ComponentRef<typeof TouchableOpacity>>(null);
+  const scrollContentRef = useRef<ComponentRef<typeof View>>(null);
   const ruleNotes = useMemo(() => verb ? getRuleNotes(infinitive, verb) : [], [infinitive, verb]);
   const snapshotRows = useMemo(() => verb ? getSnapshotRows(infinitive, verb, openTense) : [], [infinitive, verb, openTense]);
   const relatedVerbs = useMemo(() => {
@@ -214,7 +214,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                     return (
                       <TouchableOpacity
                         key={i}
-                        ref={isHighlighted ? highlightRef as any : undefined}
+                        ref={isHighlighted ? highlightRef : undefined}
                         onLayout={isHighlighted ? () => {
                           // Delay to allow layout to settle before measuring.
                           // onLayout is a plain event handler (a returned
@@ -223,7 +223,7 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
                           setTimeout(() => {
                             if (highlightRef.current && scrollContentRef.current) {
                               highlightRef.current.measureLayout(
-                                scrollContentRef.current as any,
+                                scrollContentRef.current,
                                 (_x, y) => {
                                   scrollRef.current?.scrollTo({ y: Math.max(0, y - 150), animated: true });
                                 },

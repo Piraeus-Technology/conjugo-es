@@ -159,10 +159,9 @@ function AppContent() {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }} onLayout={onLayoutRootView}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.bg}
       />
       <NavigationContainer theme={navTheme}>
         <Tab.Navigator

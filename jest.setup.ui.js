@@ -4,6 +4,8 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
+jest.mock('react-native-worklets', () => require('react-native-worklets/lib/module/mock'));
+
 // Vector icons load their font asynchronously on mount. The behavior belongs
 // to Expo, not these component tests, and otherwise produces act() warnings
 // after each test has finished.
@@ -29,3 +31,5 @@ void globalThis.TextDecoderStream;
 void globalThis.TextEncoderStream;
 void globalThis.URL;
 void globalThis.URLSearchParams;
+
+require('react-native-reanimated').setUpTests();

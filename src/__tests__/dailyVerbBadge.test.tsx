@@ -6,8 +6,6 @@ import { getVerbOfTheDayIndex } from '../utils/verbOfTheDay';
 import { useHistoryStore } from '../store/historyStore';
 import { useFavoritesStore } from '../store/favoritesStore';
 
-jest.mock('react-native-gesture-handler', () => ({ Swipeable: ({ children }: { children: React.ReactNode }) => children }));
-
 test('daily verb exposes its dataset level visually and in its accessibility label', () => {
   const history = useHistoryStore.getState();
   const favorites = useFavoritesStore.getState();
