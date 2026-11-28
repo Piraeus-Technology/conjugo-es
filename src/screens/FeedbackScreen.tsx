@@ -13,7 +13,7 @@ import {
   Switch,
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useColors, fonts, spacing, radius } from '../utils/theme';
 import { useThemeStore } from '../store/themeStore';
 import {
@@ -40,7 +40,9 @@ export default function FeedbackScreen() {
     unavailable: tipUnavailable,
     unsupported: tipUnsupported,
     tip,
+    retryIfUnavailable,
   } = useTipJar();
+  useFocusEffect(retryIfUnavailable);
   const storePlatform = Platform.OS === 'android' ? 'android' : Platform.OS === 'ios' ? 'ios' : 'other';
   const storeName = getStoreName(storePlatform);
 
@@ -199,7 +201,7 @@ export default function FeedbackScreen() {
         {(product || tipUnavailable) && (
           <>
             <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Tip Jar</Text>
-            {product ? (
+            {product && (!tipUnavailable || tipLoading) ? (
               <>
                 <Text style={[styles.tipDescription, { color: colors.textSecondary }]}>
                   {APP_NAME} is free with no ads. If you find it helpful, consider leaving a tip!
