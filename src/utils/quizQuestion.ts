@@ -1,5 +1,8 @@
 import verbs from '../data/verbs.json';
-import type { Tense, VerbData } from './conjugate';
+import {
+  attachReflexivePronoun, conjugate, getBareInfinitive, getBareVerbData, practiceTenses, reflexivePronouns,
+  type Tense, type VerbData,
+} from './conjugate';
 import { getPracticeAnswer, getPracticeForms, pickWeightedPrompt, type createPracticeSession } from './practicePrompts';
 
 const allVerbEntries = Object.entries(verbs as Record<string, VerbData>);
@@ -10,7 +13,19 @@ export interface Question {
   tense: Tense;
   personIndex: number;
   correctAnswer: string;
+  alternateAnswers?: string[];
   options: string[];
+}
+
+export function isCorrectAnswer(question: Question, answer: string): boolean {
+  return answer === question.correctAnswer || question.alternateAnswers?.includes(answer) === true;
+}
+
+function shuffle(options: string[]) {
+  for (let index = options.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [options[index], options[swapIndex]] = [options[swapIndex], options[index]];
+  }
 }
 
 export function generateQuestion(
@@ -28,14 +43,39 @@ export function generateQuestion(
   const { verb, data, tense, personIndex } = prompt;
   const correctAnswer = prompt.answer;
   const results = getPracticeForms(verb, data, tense);
+  const alternateAnswers = results[personIndex]?.alternateForms;
+  const wordCount = correctAnswer.split(' ').length;
+  const negative = correctAnswer.startsWith('no ');
+  const bare = getBareInfinitive(verb);
+  const reflexive = bare !== verb;
+  const isDistractor = (form: string) =>
+    form !== correctAnswer && !alternateAnswers?.includes(form)
+    && form.startsWith('no ') === negative && form.split(' ').length === wordCount;
 
-  // Generate wrong answers — prioritize hard distractors.
+  const commandDistractors: string[] = [];
+  if (reflexive && tense === 'imperative_affirmative') {
+    const pronoun = reflexivePronouns[personIndex];
+    const [gerund] = conjugate(bare, getBareVerbData(data), 'gerund_participle');
+    commandDistractors.push(attachReflexivePronoun(bare, pronoun), attachReflexivePronoun(gerund.form, pronoun));
+  } else if (reflexive && tense === 'imperative_negative') {
+    for (const indicative of ['present', 'imperfect'] as const) {
+      const row = conjugate(verb, data, indicative)[personIndex];
+      if (!row.disabled) commandDistractors.push(`no ${row.form}`);
+    }
+  }
+  // Reserve one same-pronoun option before drawing from the regular pools.
+  const samePronoun = commandDistractors.filter(isDistractor);
+  if (tense === 'imperative_affirmative') shuffle(samePronoun);
+  const selected = samePronoun.slice(0, 1);
+
+  // Balance wrong answers from the same tense and the same person.
   const sameVerbSameTense: string[] = [];
   results.forEach((result, index) => {
     if (
       result && index !== personIndex
       && (includeVosotros || index !== 4)
-      && result.form !== correctAnswer
+      && isDistractor(result.form)
+      && !selected.includes(result.form)
       && !sameVerbSameTense.includes(result.form)
     ) {
       sameVerbSameTense.push(result.form);
@@ -48,8 +88,8 @@ export function generateQuestion(
     const form = getPracticeAnswer(verb, data, otherTense, personIndex);
     if (
       form
-      && form.startsWith('no ') === correctAnswer.startsWith('no ')
-      && form !== correctAnswer
+      && isDistractor(form)
+      && !selected.includes(form)
       && !sameVerbSameTense.includes(form)
       && !sameVerbDiffTense.includes(form)
     ) {
@@ -57,47 +97,54 @@ export function generateQuestion(
     }
   }
 
-  for (let index = sameVerbSameTense.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [sameVerbSameTense[index], sameVerbSameTense[swapIndex]] =
-      [sameVerbSameTense[swapIndex], sameVerbSameTense[index]];
-  }
-  for (let index = sameVerbDiffTense.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [sameVerbDiffTense[index], sameVerbDiffTense[swapIndex]] =
-      [sameVerbDiffTense[swapIndex], sameVerbDiffTense[index]];
-  }
-
-  const selected: string[] = [];
+  shuffle(sameVerbSameTense);
+  shuffle(sameVerbDiffTense);
   if (sameVerbSameTense.length > 0 && sameVerbDiffTense.length > 0) {
     selected.push(sameVerbSameTense.shift()!);
     selected.push(sameVerbDiffTense.shift()!);
-    const remaining = [...sameVerbSameTense, ...sameVerbDiffTense];
-    if (remaining.length > 0) {
-      selected.push(remaining[Math.floor(Math.random() * remaining.length)]);
-    }
-  } else {
-    const pool = sameVerbSameTense.length > 0 ? sameVerbSameTense : sameVerbDiffTense;
-    while (selected.length < 3 && pool.length > 0) {
-      selected.push(pool.shift()!);
+  }
+  const remaining = [...sameVerbSameTense, ...sameVerbDiffTense];
+  while (selected.length < 3 && remaining.length > 0) {
+    selected.push(...remaining.splice(Math.floor(Math.random() * remaining.length), 1));
+  }
+
+  const addDistractor = (form: string) => {
+    if (selected.length < 3 && isDistractor(form) && !selected.includes(form)) selected.push(form);
+  };
+  samePronoun.forEach(addDistractor);
+  if (selected.length < 3) {
+    const otherTenses = [...new Set([...activeTenses, ...practiceTenses])].filter(otherTense => otherTense !== tense);
+    for (const otherTense of otherTenses) {
+      const rows = conjugate(verb, data, otherTense);
+      const samePerson = rows[personIndex];
+      if (samePerson && !samePerson.disabled) addDistractor(samePerson.form);
+      rows.forEach((row, index) => {
+        if (!row.disabled && row.form !== '—' && (includeVosotros || index !== 4)) addDistractor(row.form);
+      });
+      if (selected.length === 3) break;
     }
   }
 
+  const addDistractorFrom = ([otherVerb, otherData]: [string, VerbData]) => {
+    if ((getBareInfinitive(otherVerb) !== otherVerb) !== reflexive) return;
+    const form = getPracticeAnswer(otherVerb, otherData, tense, personIndex);
+    if (form) addDistractor(form);
+  };
   let fallbackAttempts = 0;
   while (selected.length < 3 && fallbackAttempts < 200) {
     fallbackAttempts += 1;
-    const [otherVerb, otherData] = verbEntries[Math.floor(Math.random() * verbEntries.length)];
-    const form = getPracticeAnswer(otherVerb, otherData, tense, personIndex);
-    if (form && form !== correctAnswer && !selected.includes(form)) {
-      selected.push(form);
+    addDistractorFrom(verbEntries[Math.floor(Math.random() * verbEntries.length)]);
+  }
+  if (selected.length < 3) {
+    // Small or restricted pools can run out of options with the right shape.
+    for (const entry of allVerbEntries) {
+      addDistractorFrom(entry);
+      if (selected.length === 3) break;
     }
   }
 
   const options = [correctAnswer, ...selected];
-  for (let index = options.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [options[index], options[swapIndex]] = [options[swapIndex], options[index]];
-  }
+  shuffle(options);
 
   return {
     verb,
@@ -105,6 +152,7 @@ export function generateQuestion(
     tense,
     personIndex,
     correctAnswer,
+    ...(alternateAnswers && { alternateAnswers }),
     options,
   };
 }

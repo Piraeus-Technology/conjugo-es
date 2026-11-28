@@ -47,6 +47,7 @@ jest.mock('expo-haptics', () => ({
 jest.mock('expo-store-review', () => ({ isAvailableAsync: jest.fn(async () => false) }));
 jest.mock('../utils/speech', () => ({ speak: jest.fn(), stopSpeech: jest.fn() }));
 jest.mock('../utils/quizQuestion', () => ({
+  ...jest.requireActual('../utils/quizQuestion'),
   generateQuestion: () => ({
     verb: 'hablar', translation: 'to speak', tense: 'present', personIndex: 0,
     correctAnswer: 'hablo', options: ['hablo', 'hablas', 'habla', 'hablan'],

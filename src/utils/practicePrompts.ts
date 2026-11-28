@@ -71,11 +71,23 @@ export function getPracticeAnswer(
 }
 
 export function getPracticeForms(verb: string, data: VerbData, tense: Tense) {
-  if (data.pronominalOnly || !practiceTenses.includes(tense)
+  if (!practiceTenses.includes(tense)
     || (data.practiceTenses && !data.practiceTenses.includes(tense))) return [];
-  return conjugate(verb, data, tense).map(result =>
-    result.disabled || result.form === '—' ? undefined : result,
-  );
+  const alternateParticiple = data.alternativePastParticiple;
+  const participle = alternateParticiple ? conjugate(verb, data, 'gerund_participle')[1].form : undefined;
+  return conjugate(verb, data, tense).map((result, index) => {
+    if (result.disabled || result.form === '—') return undefined;
+    if (verb === 'ir' && tense === 'imperative_affirmative' && index === 3) {
+      return { ...result, alternateForms: ['vayamos'] };
+    }
+    if (alternateParticiple) {
+      const lastWordStart = result.form.lastIndexOf(' ') + 1;
+      if (result.form.slice(lastWordStart) === participle) {
+        return { ...result, alternateForms: [result.form.slice(0, lastWordStart) + alternateParticiple] };
+      }
+    }
+    return result;
+  });
 }
 
 export function getCorePracticeEntries(
@@ -102,13 +114,12 @@ export function getCorePracticeEntries(
 // and the beginner core cannot drown out higher levels. Difficulty weights
 // still choose among the sampled candidates.
 export function pickWeightedPrompt(
-  entries: [string, VerbData][],
+  verbEntries: [string, VerbData][],
   activeTenses: Tense[],
   getWeight: WeightForPrompt,
   includeVosotros: boolean = true,
   skip?: SkipPrompt,
 ): PromptCandidate {
-  const verbEntries = entries.filter(([, data]) => !data.pronominalOnly);
   const coreEntries = getCorePracticeEntries(verbEntries);
   const beginnerOnly = verbEntries.every(([, data]) => data.level === 'A1' || data.level === 'A2');
   const byLevel = new Map<VerbData['level'], [string, VerbData][]>();
@@ -162,7 +173,7 @@ export function pickWeightedPrompt(
         }
       }
     }
-    if (skip) return pickWeightedPrompt(entries, activeTenses, getWeight, includeVosotros);
+    if (skip) return pickWeightedPrompt(verbEntries, activeTenses, getWeight, includeVosotros);
     throw new Error('No conjugable prompts for the current practice settings');
   }
 

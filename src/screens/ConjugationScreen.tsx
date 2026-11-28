@@ -15,6 +15,7 @@ import { speak, stopSpeech } from '../utils/speech';
 import verbs from '../data/verbs.json';
 import {
   conjugate,
+  getBareInfinitive,
   tenseNames,
   Tense,
   VerbData,
@@ -75,14 +76,19 @@ export default function ConjugationScreen({ route, navigation }: ConjugationScre
   const snapshotRows = useMemo(() => verb ? getSnapshotRows(infinitive, verb, openTense) : [], [infinitive, verb, openTense]);
   const relatedVerbs = useMemo(() => {
     if (!verb) return [];
+    const bare = getBareInfinitive(infinitive);
+    const counterpart = bare === infinitive ? `${infinitive}se` : bare;
+    const entries = verbs as Record<string, VerbData>;
+    const related: [string, VerbData][] = entries[counterpart] ? [[counterpart, entries[counterpart]]] : [];
     const familyKey = getFamilyKey(infinitive, verb);
-    if (!familyKey) return [];
+    if (!familyKey) return related;
 
-    return Object.entries(verbs as Record<string, VerbData>)
+    const family = Object.entries(entries)
       .filter(([candidateInfinitive, candidateVerb]) =>
-        candidateInfinitive !== infinitive && getFamilyKey(candidateInfinitive, candidateVerb) === familyKey
-      )
-      .slice(0, 6);
+        candidateInfinitive !== bare && getBareInfinitive(candidateInfinitive) === candidateInfinitive
+        && getFamilyKey(candidateInfinitive, candidateVerb) === familyKey
+      );
+    return [...related, ...family.slice(0, 6)];
   }, [infinitive, verb]);
 
   const toggleTense = (tense: Tense) => {

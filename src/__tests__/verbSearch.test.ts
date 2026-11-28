@@ -50,11 +50,39 @@ describe('conjugation search', () => {
       .toMatchObject({ tense, form });
   });
 
-  test.each([['to shower', 'duchar'], ['to relax', 'relajar'], ['to cut in line', 'colar']])(
-    'ranks an exact English sense %s first', (query, verb) => {
+  test.each([
+    ['to shower', 'ducharse'], ['to relax', 'relajarse'], ['to cut in line', 'colarse'],
+    ['to get up', 'levantarse'], ['to lift', 'levantar'], ['levantarse', 'levantarse'],
+    ['to pass', 'pasar'], ['to catch', 'atrapar'],
+    ['to drink', 'beber'], ['to feel', 'sentir'], ['to file', 'archivar'],
+    ['to shake', 'sacudir'], ['to marry', 'casarse'],
+  ])(
+    'ranks the expected verb first for %s', (query, verb) => {
       expect(searchVerbs(query)[0]?.item.infinitive).toBe(verb);
     },
   );
+
+  test('keeps to drink searchable as a compact alternative below the written sense', () => {
+    const exactVerbs = searchVerbs('to drink')
+      .filter(result => result.score === 0)
+      .map(result => result.item.infinitive);
+    expect(exactVerbs).toEqual(['beber', 'tomar']);
+  });
+
+  test.each([
+    ['me levanto', 'levantarse', 'present', undefined],
+    ['levántate', 'levantarse', 'imperative_affirmative', undefined],
+    ['nos hemos levantado', 'levantarse', 'present_perfect', undefined],
+    ['levanto', 'levantar', 'present', undefined],
+    ['estoy levantándome', 'levantarse', 'present_progressive', 'me estoy levantando'],
+    ['estaba levantándome', 'levantarse', 'past_progressive', 'me estaba levantando'],
+    ['vayámonos', 'irse', 'imperative_affirmative', 'vámonos'],
+    ['iros', 'irse', 'imperative_affirmative', 'idos'],
+  ])('finds %s and identifies its table row', async (query, infinitive, tense, tableForm) => {
+    const [first] = await searchConjugations(query);
+    expect(first.item).toMatchObject({ infinitive, tense, form: query });
+    expect(first.item.tableForm).toBe(tableForm);
+  });
 
   test('scans in bounded chunks without retaining the full conjugation matrix', async () => {
     let chunkStarted = performance.now();

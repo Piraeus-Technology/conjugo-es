@@ -176,7 +176,9 @@ async function scanConjugations(
         const alternateForm = participle && result.form.slice(lastWordStart) === participle
           ? result.form.slice(0, lastWordStart) + alternate
           : undefined;
-        const form = alternateForm && normalizeSearchText(alternateForm) === normalizedQuery ? alternateForm : result.form;
+        const matchingAlternate = result.alternateForms?.find(alternate => normalizeSearchText(alternate) === normalizedQuery);
+        const form = matchingAlternate ?? (alternateForm && normalizeSearchText(alternateForm) === normalizedQuery
+          ? alternateForm : result.form);
         const normalizedForm = normalizeSearchText(form);
         evaluatedFormCount += 1;
         const score = exactOnly
@@ -225,18 +227,32 @@ export function searchVerbs(query: string): FuseResult<VerbEntry>[] {
   const normalized = normalizeSearchText(query);
   if (!normalized) return [];
   const exactInfinitives: FuseResult<VerbEntry>[] = [];
-  const exactEnglish: FuseResult<VerbEntry>[] = [];
-  const exactEnglishAliases: FuseResult<VerbEntry>[] = [];
+  const writtenEnglish: FuseResult<VerbEntry>[] = [];
+  const compactEnglish: FuseResult<VerbEntry>[] = [];
+  const annotatedEnglish: FuseResult<VerbEntry>[] = [];
+  const supportingEnglish: FuseResult<VerbEntry>[] = [];
   verbEntries.forEach((item, refIndex) => {
     if (item.normalizedInfinitive === normalized) exactInfinitives.push({ item, refIndex, score: 0 });
     else if (isExactEnglishMatch(item, normalized)) {
-      const writtenSense = item.normalizedTranslation === normalized || splitGloss(item.translation).some(part =>
-        normalizeSearchText(part) === normalized || normalizeSearchText(withoutGlossAnnotation(part)) === normalized,
-      );
-      (writtenSense ? exactEnglish : exactEnglishAliases).push({ item, refIndex, score: 0 });
+      // A slash followed by “to” starts a new sense. The first part of a
+      // compact sense carries the shared “to” and ranks above later parts.
+      const senses = item.translation.split(/\s*\/\s*(?=to )|\s+or\s+(?=to )/);
+      const standalone = senses.filter(sense => !sense.includes('/'));
+      const writtenSense = item.normalizedTranslation === normalized
+        || standalone.some(sense => normalizeSearchText(sense) === normalized);
+      const compactSense = senses.some(sense => {
+        const slash = sense.indexOf('/');
+        return slash !== -1 && normalizeSearchText(sense.slice(0, slash)) === normalized;
+      });
+      const annotatedSense = standalone.some(sense => normalizeSearchText(withoutGlossAnnotation(sense)) === normalized);
+      const matches = writtenSense ? writtenEnglish
+        : compactSense ? compactEnglish
+        : annotatedSense ? annotatedEnglish
+        : supportingEnglish;
+      matches.push({ item, refIndex, score: 0 });
     }
   });
-  const exact = [...exactInfinitives, ...exactEnglish, ...exactEnglishAliases];
+  const exact = [...exactInfinitives, ...writtenEnglish, ...compactEnglish, ...annotatedEnglish, ...supportingEnglish];
   const seen = new Set(exact.map(result => result.refIndex));
   return [...exact, ...verbFuse.search(query).filter(result => !seen.has(result.refIndex))];
 }

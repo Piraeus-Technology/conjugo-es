@@ -1,4 +1,7 @@
+import verbs from '../data/verbs.json';
+
 const pronouns = ['yo', 'tú', 'él/ella/Ud.', 'nosotros', 'vosotros', 'ellos/ellas/Uds.'];
+export const reflexivePronouns = ['me', 'te', 'se', 'nos', 'os', 'se'] as const;
 
 // Imperative forms are directed to an addressee. Usted/ustedes are third
 // grammatical person but second person of discourse, so these cells label the
@@ -359,7 +362,7 @@ export interface VerbData {
   noImperative?: boolean;
   unavailableTenses?: Tense[];
   practiceTenses?: Tense[];
-  pronominalOnly?: boolean;
+  reflexiveBase?: string;
   level?: VerbLevel;
   examples?: string[];
   pattern?: IrregularPattern;
@@ -370,6 +373,15 @@ export interface ConjugationResult {
   pronoun: string;
   form: string;
   disabled?: boolean;
+  alternateForms?: string[];
+}
+
+export function getBareInfinitive(infinitive: string): string {
+  return infinitive.endsWith('rse') ? infinitive.slice(0, -2) : infinitive;
+}
+
+export function getBareVerbData(verb: VerbData): VerbData {
+  return verb.reflexiveBase ? (verbs as Record<string, VerbData>)[verb.reflexiveBase] : verb;
 }
 
 // ============ HELPER FUNCTIONS ============
@@ -917,6 +929,61 @@ export function conjugate(
   verb: VerbData,
   tense: Tense,
 ): ConjugationResult[] {
+  const bareInfinitive = getBareInfinitive(infinitive);
+  if (bareInfinitive === infinitive) return conjugateBare(infinitive, verb, tense);
+
+  const rows = conjugateBare(bareInfinitive, getBareVerbData(verb), tense);
+  if (tense === 'gerund_participle') {
+    return [{ ...rows[0], form: attachReflexivePronoun(rows[0].form, 'se') }, rows[1]];
+  }
+
+  return rows.map((row, index) => {
+    if (row.disabled || row.form === '—') return row;
+    const pronoun = reflexivePronouns[index];
+    if (tense === 'imperative_negative') return { ...row, form: `no ${pronoun} ${row.form.slice(3)}` };
+    if (tense === 'imperative_affirmative') {
+      if (infinitive === 'irse' && index === 3) return { ...row, form: 'vámonos', alternateForms: ['vayámonos'] };
+      if (infinitive === 'irse' && index === 4) return { ...row, form: 'idos', alternateForms: ['iros'] };
+      if (index === 4) {
+        const stem = row.form.slice(0, -1);
+        const form = verb.type === 'ir' ? `${stem.slice(0, -1)}íos` : `${stem}os`;
+        return { ...row, form };
+      }
+      const command = index === 3 ? row.form.slice(0, -1) : row.form;
+      return { ...row, form: attachReflexivePronoun(command, pronoun) };
+    }
+    const form = `${pronoun} ${row.form}`;
+    if (tense in estarForms) {
+      const split = row.form.indexOf(' ') + 1;
+      const alternate = row.form.slice(0, split) + attachReflexivePronoun(row.form.slice(split), pronoun);
+      return { ...row, form, alternateForms: [alternate] };
+    }
+    return { ...row, form };
+  });
+}
+
+export function attachReflexivePronoun(form: string, pronoun: string): string {
+  // Keep the verb's stress. A stressed weak vowel keeps its hiatus accent.
+  if (/[íú]/.test(form)) return form + pronoun;
+  // Treat silent u as a consonant so the match offsets still index the original word.
+  const pronounced = form.replace(/([gq])u(?=[eiéí])/g, '$1_');
+  const nuclei = [...pronounced.matchAll(/[iuü]?[aeoáéó][iuü]?|[iuü]{1,2}/g)];
+  const explicitStress = nuclei.find(nucleus => /[áéó]/.test(nucleus[0]));
+  const stressed = explicitStress ?? nuclei.at(/[aeiouns]$/.test(form) ? -2 : -1);
+  // The attached pronoun adds one syllable. Original final stress is now regular.
+  if (!stressed || stressed === nuclei.at(-1)) return removeAccents(form) + pronoun;
+  if (explicitStress) return form + pronoun;
+
+  const strongVowel = stressed[0].search(/[aeo]/);
+  const stressIndex = stressed.index + (strongVowel < 0 ? stressed[0].length - 1 : strongVowel);
+  return form.slice(0, stressIndex) + accentLastVowel(form[stressIndex]) + form.slice(stressIndex + 1) + pronoun;
+}
+
+function conjugateBare(
+  infinitive: string,
+  verb: VerbData,
+  tense: Tense,
+): ConjugationResult[] {
   if (tense === 'gerund_participle') {
     return [
       { pronoun: 'Gerund', form: getGerund(infinitive, verb) },
@@ -956,7 +1023,7 @@ function applyUsageRestrictions(
   tense: Tense,
   results: ConjugationResult[],
 ): ConjugationResult[] {
-  const impersonal = verb.impersonal || (verb.impersonalCompound && tense in haberForms);
+  const impersonal = verb.impersonal || (verb.impersonalCompound && (tense in haberForms || tense in estarForms));
   const unavailableTense = verb.unavailableTenses?.includes(tense)
     || ((verb.impersonal || verb.thirdPersonOnly || verb.noImperative) && imperativeTenses.includes(tense));
   if (!unavailableTense && !impersonal && !verb.thirdPersonOnly) return results;

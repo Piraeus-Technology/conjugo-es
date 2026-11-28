@@ -24,7 +24,7 @@ test.each<[string, Tense, number, string]>([
 });
 
 test('all shipped forms, examples and quiz distractors exclude superseded monosyllable spellings', () => {
-  const obsolete = new Set(['rió', 'riáis', 'huí', 'huís', 'fluí', 'fluís']);
+  const obsolete = new Set(['rió', 'riáis', 'huí', 'huís', 'fluí', 'fluís', 'crié', 'crió', 'criáis', 'criéis']);
   const obsoleteWords = (text: string) => (text.toLowerCase().match(/\p{L}+/gu) ?? []).filter(word => obsolete.has(word));
   for (const [verb, entry] of Object.entries(data)) {
     for (const tense of allTenses) {
@@ -38,7 +38,7 @@ test('all shipped forms, examples and quiz distractors exclude superseded monosy
     return state / 0x100000000;
   });
   try {
-    const entries: [string, VerbData][] = ['reír', 'huir', 'fluir'].map(verb => [verb, data[verb]]);
+    const entries: [string, VerbData][] = ['reír', 'huir', 'fluir', 'criarse'].map(verb => [verb, data[verb]]);
     for (let i = 0; i < 100; i++) {
       const question = generateQuestion(['present', 'preterite', 'subjunctive_present', 'imperative_negative'], () => 1, entries);
       expect(question.options.flatMap(obsoleteWords)).toEqual([]);

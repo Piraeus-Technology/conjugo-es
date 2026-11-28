@@ -759,8 +759,8 @@
       ]
     },
     "examples": [
-      "Nos reímos mucho con esa película.",
-      "El bebé se ríe todo el tiempo."
+      "El bebé ríe todo el tiempo.",
+      "Ríe mejor quien ríe último."
     ],
     "level": "A2"
   },
@@ -911,7 +911,7 @@
     },
     "examples": [
       "Pon los platos en la mesa, por favor.",
-      "Se puso nerviosa antes del examen."
+      "¿Dónde pusiste mis gafas?"
     ],
     "level": "A1"
   },
@@ -1021,8 +1021,8 @@
       ]
     },
     "examples": [
-      "Se cayó de la bicicleta.",
-      "Las hojas caen en otoño."
+      "Las hojas caen en otoño.",
+      "Cayó mucha nieve anoche."
     ],
     "level": "A1"
   },
@@ -1073,15 +1073,15 @@
   "despertar": {
     "type": "ar",
     "regular": false,
-    "translation": "to wake up",
+    "translation": "to wake (someone) up / to awaken",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
       }
     },
     "examples": [
-      "Me despierto a las seis todos los días.",
-      "El ruido lo despertó a medianoche."
+      "El ruido lo despertó a medianoche.",
+      "Despierta a tu hermano, que es tarde."
     ],
     "level": "A2"
   },
@@ -1133,19 +1133,20 @@
   "sentar": {
     "type": "ar",
     "regular": false,
-    "translation": "to seat someone / to sit down (sentarse)",
+    "translation": "to seat (someone) / to suit",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
       }
     },
     "examples": [
-      "Siéntate aquí, por favor.",
-      "Nos sentamos en la primera fila."
+      "La camarera nos sentó junto a la ventana.",
+      "Ese vestido le sienta muy bien."
     ],
-    "level": "A1",
+    "level": "A2",
     "englishSearchAliases": [
-      "to seat"
+      "to seat",
+      "to suit"
     ]
   },
   "acertar": {
@@ -1227,19 +1228,20 @@
   "manifestar": {
     "type": "ar",
     "regular": false,
-    "translation": "to express / to demonstrate (manifestarse)",
+    "translation": "to express / to state",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
       }
     },
     "examples": [
-      "Los ciudadanos se manifestaron en la plaza.",
-      "Manifestó su desacuerdo con la nueva ley."
+      "Manifestó su desacuerdo con la nueva ley.",
+      "El ministro manifestó su apoyo a las familias."
     ],
     "level": "B1",
     "englishSearchAliases": [
-      "to manifest"
+      "to manifest",
+      "to state"
     ]
   },
   "merendar": {
@@ -1538,7 +1540,7 @@
   "sentir": {
     "type": "ir",
     "regular": false,
-    "translation": "to feel",
+    "translation": "to feel (something) / to be sorry",
     "pattern": {
       "stemChange": {
         "present": "e_ie",
@@ -1547,7 +1549,7 @@
     },
     "examples": [
       "Siento mucho lo que pasó.",
-      "Se sentía cansada después del viaje."
+      "Sentí el frío en la cara."
     ],
     "level": "A1"
   },
@@ -1586,7 +1588,7 @@
   "divertir": {
     "type": "ir",
     "regular": false,
-    "translation": "to amuse or entertain / to have fun (divertirse)",
+    "translation": "to amuse / to entertain",
     "pattern": {
       "stemChange": {
         "present": "e_ie",
@@ -1594,12 +1596,11 @@
       }
     },
     "examples": [
-      "Los niños se divierten en el parque.",
-      "Nos divertimos mucho en la fiesta de anoche."
+      "El payaso divierte a los niños.",
+      "Me divierte mucho esa serie."
     ],
-    "level": "A2",
+    "level": "B1",
     "englishSearchAliases": [
-      "to amuse/entertain",
       "to amuse",
       "to entertain"
     ]
@@ -1616,7 +1617,7 @@
     },
     "examples": [
       "Convirtieron la oficina en una sala de juegos.",
-      "El agua se convierte en hielo a cero grados."
+      "Este programa convierte el texto en audio."
     ],
     "level": "A2"
   },
@@ -1906,7 +1907,7 @@
   "acordar": {
     "type": "ar",
     "regular": false,
-    "translation": "to agree / to remember (acordarse de)",
+    "translation": "to agree",
     "pattern": {
       "stemChange": {
         "present": "o_ue"
@@ -1914,11 +1915,11 @@
     },
     "examples": [
       "Acordamos vernos el próximo lunes.",
-      "No me acuerdo de dónde dejé el libro."
+      "Los dos países acordaron un alto el fuego."
     ],
     "level": "A2",
     "englishSearchAliases": [
-      "to agree/remember"
+      "to agree"
     ]
   },
   "apostar": {
@@ -2057,10 +2058,10 @@
     ],
     "level": "B2"
   },
-  "esforzar": {
+  "esforzarse": {
     "type": "ar",
     "regular": false,
-    "translation": "to give strength or encouragement / to make an effort (esforzarse)",
+    "translation": "to make an effort / to try hard",
     "pattern": {
       "stemChange": {
         "present": "o_ue"
@@ -2071,7 +2072,7 @@
       "Me esfuerzo cada día para mejorar mi español.",
       "Se esforzó mucho para conseguir ese trabajo."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "torcer": {
     "type": "er",
@@ -2427,7 +2428,7 @@
     },
     "examples": [
       "La planta murió por falta de agua.",
-      "Muero de hambre."
+      "Muchas personas murieron en la guerra."
     ],
     "level": "A1"
   },
@@ -2499,7 +2500,7 @@
   "vestir": {
     "type": "ir",
     "regular": false,
-    "translation": "to dress someone / to get dressed (vestirse)",
+    "translation": "to dress (someone) / to wear",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2507,12 +2508,13 @@
       }
     },
     "examples": [
-      "Se viste muy elegante para el trabajo.",
-      "Me vestí rápido y salí."
+      "Viste a su hija para ir al colegio.",
+      "Siempre viste ropa negra."
     ],
     "level": "B2",
     "englishSearchAliases": [
-      "to dress"
+      "to dress",
+      "to wear"
     ]
   },
   "competir": {
@@ -2534,7 +2536,7 @@
   "despedir": {
     "type": "ir",
     "regular": false,
-    "translation": "to fire or see someone off / to say goodbye (despedirse)",
+    "translation": "to fire / to see someone off",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2543,11 +2545,10 @@
     },
     "examples": [
       "La empresa despidió a veinte empleados.",
-      "Se despide de sus amigos en el aeropuerto."
+      "Fuimos al aeropuerto a despedir a mi tía."
     ],
     "level": "B1",
     "englishSearchAliases": [
-      "to fire/say goodbye",
       "to fire",
       "to see someone off"
     ]
@@ -2587,7 +2588,7 @@
   "rendir": {
     "type": "ir",
     "regular": false,
-    "translation": "to yield / to exhaust / to surrender (rendirse)",
+    "translation": "to yield / to perform well / to tire out",
     "pattern": {
       "stemChange": {
         "present": "e_i",
@@ -2595,12 +2596,12 @@
       }
     },
     "examples": [
-      "El cansancio me rindió.",
-      "Este coche rinde mucho en carretera."
+      "Este coche rinde mucho en carretera.",
+      "El cansancio me rindió."
     ],
     "level": "C2",
     "englishSearchAliases": [
-      "to yield/surrender"
+      "to yield"
     ]
   },
   "derretir": {
@@ -2953,7 +2954,7 @@
     },
     "examples": [
       "Viajar enriquece la mente.",
-      "Se enriqueció con el negocio de importación."
+      "La lectura enriquece el vocabulario."
     ],
     "level": "B2"
   },
@@ -3235,13 +3236,13 @@
   "estremecer": {
     "type": "er",
     "regular": false,
-    "translation": "to shake or make someone shudder / to shudder (estremecerse)",
+    "translation": "to make someone shudder / to shake (deeply)",
     "pattern": {
       "yoZco": true
     },
     "examples": [
       "El terremoto estremeció toda la ciudad.",
-      "Me estremezco con el frío."
+      "La noticia estremeció al país."
     ],
     "level": "C1",
     "englishSearchAliases": [
@@ -3748,7 +3749,7 @@
     },
     "examples": [
       "Comunicaron la decisión a todos los empleados.",
-      "Me comunico con mi familia por videollamada."
+      "La empresa comunicó los resultados ayer."
     ],
     "level": "A2"
   },
@@ -3856,10 +3857,10 @@
     ],
     "level": "C2"
   },
-  "equivocar": {
+  "equivocarse": {
     "type": "ar",
     "regular": false,
-    "translation": "to mistake one thing for another / to make a mistake (equivocarse)",
+    "translation": "to make a mistake / to be wrong",
     "pattern": {
       "spellingChange": "car_qué"
     },
@@ -3867,10 +3868,7 @@
       "Me equivoqué de dirección.",
       "Todos nos equivocamos alguna vez."
     ],
-    "level": "C1",
-    "englishSearchAliases": [
-      "to mistake"
-    ]
+    "level": "A2"
   },
   "fabricar": {
     "type": "ar",
@@ -4063,7 +4061,7 @@
     },
     "examples": [
       "Seca los platos con el trapo.",
-      "La ropa se secó al sol."
+      "El sol secó la ropa en una hora."
     ],
     "level": "B2"
   },
@@ -4824,10 +4822,10 @@
     ],
     "level": "C1"
   },
-  "especializar": {
+  "especializarse": {
     "type": "ar",
     "regular": false,
-    "translation": "to adapt for a specific purpose / to specialize (especializarse)",
+    "translation": "to specialize",
     "pattern": {
       "spellingChange": "zar_cé"
     },
@@ -4835,7 +4833,7 @@
       "Se especializó en cardiología.",
       "La empresa se especializa en tecnología."
     ],
-    "level": "C2"
+    "level": "B1"
   },
   "garantizar": {
     "type": "ar",
@@ -5074,13 +5072,13 @@
   "tranquilizar": {
     "type": "ar",
     "regular": false,
-    "translation": "to calm someone / to calm down (tranquilizarse)",
+    "translation": "to calm (someone) down / to reassure",
     "pattern": {
       "spellingChange": "zar_cé"
     },
     "examples": [
-      "Me tranquilicé después de respirar hondo.",
-      "Tranquiliza al niño con una canción."
+      "Tranquiliza al niño con una canción.",
+      "Sus palabras me tranquilizaron."
     ],
     "level": "C1"
   },
@@ -5291,10 +5289,10 @@
   "quedar": {
     "type": "ar",
     "regular": true,
-    "translation": "to stay/remain",
+    "translation": "to remain / to be left / to arrange to meet",
     "examples": [
       "Quedamos a las ocho en el café.",
-      "Me quedé dormido en el sofá."
+      "Solo quedan dos entradas."
     ],
     "level": "A1"
   },
@@ -5614,7 +5612,7 @@
     "translation": "to prepare",
     "examples": [
       "Preparé una sorpresa para su cumpleaños.",
-      "Se prepara para el examen final."
+      "Prepara la cena todos los días."
     ],
     "level": "A2"
   },
@@ -5821,10 +5819,10 @@
   "acostumbrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to do habitually or accustom someone / to get used to (acostumbrarse)",
+    "translation": "to be in the habit of / to get someone used to",
     "examples": [
-      "Me acostumbré al clima frío.",
-      "Acostumbra tomar té por la tarde."
+      "Acostumbra tomar té por la tarde.",
+      "Acostumbraron al perro a dormir fuera."
     ],
     "level": "C2",
     "englishSearchAliases": [
@@ -5949,7 +5947,7 @@
     "translation": "to bathe",
     "examples": [
       "Baño al perro una vez a la semana.",
-      "Se bañó en el río."
+      "Bañamos a los niños después de cenar."
     ],
     "level": "B2"
   },
@@ -5966,10 +5964,10 @@
   "calmar": {
     "type": "ar",
     "regular": true,
-    "translation": "to calm",
+    "translation": "to calm (someone) / to soothe",
     "examples": [
-      "Cálmate, todo va a estar bien.",
-      "La música me calma después de un día largo."
+      "La música me calma después de un día largo.",
+      "Esta pastilla calma el dolor."
     ],
     "level": "B2"
   },
@@ -6066,14 +6064,13 @@
   "concentrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to gather or concentrate something / to focus (concentrarse)",
+    "translation": "to concentrate / to gather (something)",
     "examples": [
-      "Me concentro mejor por la mañana.",
-      "Concéntrate en lo importante."
+      "La capital concentra la mitad de la población.",
+      "Concentró todos sus esfuerzos en el proyecto."
     ],
     "level": "C2",
     "englishSearchAliases": [
-      "to concentrate",
       "to gather",
       "to concentrate something"
     ]
@@ -6379,15 +6376,15 @@
     ],
     "level": "B1"
   },
-  "duchar": {
+  "ducharse": {
     "type": "ar",
     "regular": true,
-    "translation": "to give someone a shower / to take a shower (ducharse)",
+    "translation": "to take a shower",
     "examples": [
       "Me ducho todas las mañanas.",
       "Se duchó después del gimnasio."
     ],
-    "level": "B2",
+    "level": "A1",
     "englishSearchAliases": [
       "to shower"
     ]
@@ -6435,10 +6432,10 @@
   "enamorar": {
     "type": "ar",
     "regular": true,
-    "translation": "to make someone fall in love / to fall in love (enamorarse)",
+    "translation": "to make someone fall in love / to charm",
     "examples": [
-      "Se enamoró a primera vista.",
-      "Me enamoré de esta ciudad."
+      "Su sonrisa me enamoró.",
+      "Esta ciudad enamora a todos los visitantes."
     ],
     "level": "C2"
   },
@@ -6455,10 +6452,10 @@
   "enfadar": {
     "type": "ar",
     "regular": true,
-    "translation": "to anger / to get angry (enfadarse)",
+    "translation": "to anger / to annoy",
     "examples": [
-      "Se enfadó porque llegué tarde.",
-      "No te enfades conmigo."
+      "Me enfada que lleguen tarde.",
+      "Sus comentarios enfadaron al profesor."
     ],
     "level": "B2"
   },
@@ -6492,14 +6489,13 @@
   "enojar": {
     "type": "ar",
     "regular": true,
-    "translation": "to annoy or anger / to get angry (enojarse)",
+    "translation": "to anger / to annoy",
     "examples": [
-      "Se enojó por el comentario.",
-      "No te enojes, fue un accidente."
+      "Le enoja tener que esperar.",
+      "El ruido enojó a los vecinos."
     ],
-    "level": "A2",
+    "level": "B1",
     "englishSearchAliases": [
-      "to annoy/anger",
       "to annoy",
       "to anger"
     ]
@@ -6913,10 +6909,10 @@
   "levantar": {
     "type": "ar",
     "regular": true,
-    "translation": "to lift / to raise / to get up (levantarse)",
+    "translation": "to lift / to raise",
     "examples": [
-      "Me levanto a las seis todos los días.",
-      "Levantó la mano para hacer una pregunta."
+      "Levantó la mano para hacer una pregunta.",
+      "Levanta la caja con cuidado."
     ],
     "level": "A1",
     "englishSearchAliases": [
@@ -7006,14 +7002,14 @@
   "mudar": {
     "type": "ar",
     "regular": true,
-    "translation": "to change / to move house (mudarse)",
+    "translation": "to shed (skin, feathers) / to change",
     "examples": [
-      "Nos mudamos a una casa más grande.",
-      "Se mudó a otra ciudad por trabajo."
+      "Las serpientes mudan la piel.",
+      "Algunos pájaros mudan las plumas en verano."
     ],
     "level": "C2",
     "englishSearchAliases": [
-      "to move (house)"
+      "to shed"
     ]
   },
   "notar": {
@@ -7119,10 +7115,10 @@
   "preocupar": {
     "type": "ar",
     "regular": true,
-    "translation": "to worry someone / to worry (preocuparse)",
+    "translation": "to worry (someone)",
     "examples": [
       "Me preocupa su salud.",
-      "No te preocupes, todo saldrá bien."
+      "La situación económica preocupa a todos."
     ],
     "level": "A2"
   },
@@ -7176,7 +7172,7 @@
     ],
     "level": "C1"
   },
-  "quejar": {
+  "quejarse": {
     "type": "ar",
     "regular": true,
     "translation": "to complain",
@@ -7184,8 +7180,7 @@
       "Se queja del dolor de espalda.",
       "Nos quejamos del mal servicio."
     ],
-    "level": "A2",
-    "pronominalOnly": true
+    "level": "A2"
   },
   "reclamar": {
     "type": "ar",
@@ -7220,10 +7215,10 @@
   "registrar": {
     "type": "ar",
     "regular": true,
-    "translation": "to register/search",
+    "translation": "to search / to record / to register (something)",
     "examples": [
-      "Registré mi equipaje en el hotel.",
-      "Se registraron temperaturas muy altas."
+      "La policía registró el coche.",
+      "El termómetro registró cuarenta grados."
     ],
     "level": "C2"
   },
@@ -7280,14 +7275,13 @@
   "retirar": {
     "type": "ar",
     "regular": true,
-    "translation": "to withdraw or remove / to retire (retirarse)",
+    "translation": "to withdraw / to remove",
     "examples": [
       "Retiré dinero del cajero.",
-      "Se retiró del cargo a los sesenta años."
+      "Retiraron el producto del mercado."
     ],
     "level": "C2",
     "englishSearchAliases": [
-      "to withdraw/retire",
       "to withdraw",
       "to remove"
     ]
@@ -7699,7 +7693,7 @@
     "translation": "to hide",
     "examples": [
       "Escondió el regalo en el armario.",
-      "Se esconden detrás del sofá."
+      "Esconde las llaves en un cajón."
     ],
     "level": "A2"
   },
@@ -7982,7 +7976,7 @@
   "detener": {
     "type": "er",
     "regular": false,
-    "translation": "to stop/detain",
+    "translation": "to stop (something) / to arrest",
     "pattern": {
       "stemChange": {
         "present": "e_ie"
@@ -8281,7 +8275,7 @@
     "translation": "to bore",
     "examples": [
       "Esta película me aburre.",
-      "Se aburrieron en la clase de historia."
+      "La conferencia aburrió a todo el público."
     ],
     "level": "A2"
   },
@@ -8663,10 +8657,10 @@
   "suscribir": {
     "type": "ir",
     "regular": false,
-    "translation": "to sign or endorse / to subscribe (suscribirse)",
+    "translation": "to sign / to endorse",
     "examples": [
-      "Me suscribí a la revista.",
-      "Suscribieron un acuerdo de paz."
+      "Suscribieron un acuerdo de paz.",
+      "Suscribo cada palabra de su discurso."
     ],
     "level": "C1",
     "englishSearchAliases": [
@@ -8830,10 +8824,10 @@
   "alejar": {
     "type": "ar",
     "regular": true,
-    "translation": "to move someone or something away / to move away (alejarse)",
+    "translation": "to move (something or someone) away",
     "examples": [
-      "Aléjate del borde del acantilado.",
-      "Se alejó sin decir una palabra."
+      "Aleja el cuchillo del niño.",
+      "El trabajo lo alejó de su familia."
     ],
     "level": "C1"
   },
@@ -9033,7 +9027,7 @@
     "translation": "to scare",
     "examples": [
       "La tormenta asustó a los niños.",
-      "Me asusté con el ruido."
+      "El perro asusta a los niños del barrio."
     ],
     "level": "A2"
   },
@@ -9143,10 +9137,10 @@
   "callar": {
     "type": "ar",
     "regular": true,
-    "translation": "to be quiet",
+    "translation": "to keep (something) quiet / to silence",
     "examples": [
-      "Cállate un momento, por favor.",
-      "Se calló cuando entró el director."
+      "Calló la verdad durante años.",
+      "El profesor calló a los alumnos con una mirada."
     ],
     "level": "C1"
   },
@@ -9163,15 +9157,13 @@
   "casar": {
     "type": "ar",
     "regular": true,
-    "translation": "to marry (officiate) / to get married (casarse)",
+    "translation": "to officiate a wedding / to marry off / to match",
     "examples": [
-      "Se casaron en una ceremonia íntima.",
-      "Mi hermana se casa el próximo mes."
+      "El juez casó a la pareja en el ayuntamiento.",
+      "Estos datos no casan con los anteriores."
     ],
-    "level": "A2",
-    "englishSearchAliases": [
-      "to marry"
-    ]
+    "level": "B2",
+    "englishSearchAliases": []
   },
   "circular": {
     "type": "ar",
@@ -9294,10 +9286,10 @@
   "contagiar": {
     "type": "ar",
     "regular": true,
-    "translation": "to infect / to catch an illness (contagiarse)",
+    "translation": "to infect / to pass on",
     "examples": [
-      "Se contagió de gripe en la oficina.",
-      "La risa se contagia fácilmente."
+      "Me contagió el resfriado.",
+      "Su entusiasmo contagia a todo el equipo."
     ],
     "level": "B2"
   },
@@ -9526,10 +9518,10 @@
   "disculpar": {
     "type": "ar",
     "regular": true,
-    "translation": "to excuse / to forgive / to apologize (disculparse)",
+    "translation": "to excuse / to forgive",
     "examples": [
       "Discúlpame por el malentendido.",
-      "Se disculpó por su error."
+      "Disculpa la molestia."
     ],
     "level": "B1",
     "englishSearchAliases": [
@@ -9644,10 +9636,10 @@
   "enfermar": {
     "type": "ar",
     "regular": true,
-    "translation": "to get sick",
+    "translation": "to fall ill / to make sick",
     "examples": [
       "Enfermó por el cambio de clima.",
-      "Me enfermé del estómago."
+      "El estrés lo enfermó."
     ],
     "level": "C1"
   },
@@ -9684,17 +9676,17 @@
     ],
     "level": "B2"
   },
-  "enterar": {
+  "enterarse": {
     "type": "ar",
     "regular": true,
-    "translation": "to inform / to find out (enterarse)",
+    "translation": "to find out / to hear (about)",
     "examples": [
       "Me enteré de la noticia por la radio.",
       "Se enteró de todo al llegar."
     ],
-    "level": "C2",
+    "level": "B1",
     "englishSearchAliases": [
-      "to inform/find out"
+      "to find out"
     ]
   },
   "enterrar": {
@@ -10332,7 +10324,7 @@
     "translation": "to comb",
     "examples": [
       "Peina a su hija todas las mañanas.",
-      "Me peiné rápido antes de salir."
+      "El peluquero peina a la novia."
     ],
     "level": "B2"
   },
@@ -10526,7 +10518,7 @@
     "translation": "to burn",
     "examples": [
       "Quemé la carta después de leerla.",
-      "Se quemó la mano con la estufa."
+      "Quema las hojas secas en el jardín."
     ],
     "level": "A2"
   },
@@ -10610,15 +10602,15 @@
     ],
     "level": "B1"
   },
-  "refugiar": {
+  "refugiarse": {
     "type": "ar",
     "regular": true,
-    "translation": "to shelter / to take refuge (refugiarse)",
+    "translation": "to take refuge / to take shelter",
     "examples": [
       "Se refugiaron de la lluvia bajo un árbol.",
       "Nos refugiamos en una cueva."
     ],
-    "level": "C2"
+    "level": "B2"
   },
   "regatear": {
     "type": "ar",
@@ -10643,10 +10635,10 @@
   "relajar": {
     "type": "ar",
     "regular": true,
-    "translation": "to loosen or relax something / to relax (relajarse) / to unwind (relajarse)",
+    "translation": "to relax (something)",
     "examples": [
-      "Relájate, todo va a salir bien.",
-      "Me relajé en la piscina del hotel."
+      "El masaje relaja los músculos.",
+      "Relajaron las normas de vestimenta."
     ],
     "level": "B2",
     "englishSearchAliases": [
@@ -10687,15 +10679,13 @@
   "remontar": {
     "type": "ar",
     "regular": true,
-    "translation": "to overcome a setback / to date back (remontarse)",
+    "translation": "to overcome (a setback) / to go up (a river)",
     "examples": [
       "Remontaron un marcador adverso.",
-      "Se remonta a la época medieval."
+      "El barco remontó el río."
     ],
     "level": "C2",
-    "englishSearchAliases": [
-      "to go back (in time)"
-    ]
+    "englishSearchAliases": []
   },
   "renunciar": {
     "type": "ar",
@@ -10750,15 +10740,15 @@
     ],
     "level": "B2"
   },
-  "resignar": {
+  "resignarse": {
     "type": "ar",
     "regular": true,
-    "translation": "to hand over authority / to resign oneself (resignarse)",
+    "translation": "to resign oneself",
     "examples": [
       "Se resignó a esperar un poco más.",
       "No me resigno a perder."
     ],
-    "level": "C2"
+    "level": "C1"
   },
   "restaurar": {
     "type": "ar",
@@ -10909,7 +10899,7 @@
   "tatuar": {
     "type": "ar",
     "regular": false,
-    "translation": "to tattoo / to get a tattoo (tatuarse)",
+    "translation": "to tattoo",
     "overrides": {
       "present": [
         "tatúo",
@@ -10929,8 +10919,8 @@
       ]
     },
     "examples": [
-      "Se tatuó una estrella en el brazo.",
-      "¿Te quieres tatuar?"
+      "Tatúa a sus clientes en un estudio pequeño.",
+      "Le tatuaron una rosa en el hombro."
     ],
     "level": "B2"
   },
@@ -11429,17 +11419,16 @@
     ],
     "level": "C2"
   },
-  "zambullir": {
+  "zambullirse": {
     "type": "ir",
     "regular": false,
-    "translation": "to plunge someone or something into water / to dive in (zambullirse)",
+    "translation": "to dive in / to plunge into water",
     "examples": [
       "Se zambulló en la piscina.",
       "Los niños se zambullen en el mar."
     ],
-    "level": "C2",
+    "level": "C1",
     "englishSearchAliases": [
-      "to dive/plunge",
       "to dive",
       "to plunge"
     ]
@@ -11642,16 +11631,15 @@
       "spellingChange": "zar_cé"
     }
   },
-  "adentrar": {
+  "adentrarse": {
     "type": "ar",
     "regular": true,
-    "translation": "to go deeper",
+    "translation": "to go deeper (into)",
     "examples": [
       "Se adentraron en el bosque.",
       "No te adentres demasiado en el mar."
     ],
-    "level": "C1",
-    "pronominalOnly": true
+    "level": "C1"
   },
   "adornar": {
     "type": "ar",
@@ -11663,17 +11651,16 @@
     ],
     "level": "C2"
   },
-  "aferrar": {
+  "aferrarse": {
     "type": "ar",
     "regular": true,
-    "translation": "to grip / to cling to (aferrarse)",
+    "translation": "to cling (to)",
     "examples": [
       "Se aferra a sus creencias.",
       "Se aferró al pasamanos para no caer."
     ],
-    "level": "C2",
+    "level": "C1",
     "englishSearchAliases": [
-      "to grip/cling",
       "to cling"
     ]
   },
@@ -11748,7 +11735,7 @@
     "translation": "to make happy",
     "examples": [
       "Me alegra mucho verte.",
-      "Se alegró al recibir la noticia."
+      "Tu visita alegró a la abuela."
     ],
     "level": "C2"
   },
@@ -11984,10 +11971,10 @@
       "spellingChange": "zar_cé"
     }
   },
-  "avecindar": {
+  "avecindarse": {
     "type": "ar",
     "regular": true,
-    "translation": "to admit as a resident / to settle as a resident (avecindarse)",
+    "translation": "to settle (as a resident)",
     "examples": [
       "Muchas familias se avecindaron en la costa.",
       "Se avecindaron en el barrio hace años."
@@ -11997,14 +11984,13 @@
   "aventurar": {
     "type": "ar",
     "regular": true,
-    "translation": "to risk or venture something / to venture to do something (aventurarse)",
+    "translation": "to venture (an opinion) / to risk",
     "examples": [
-      "Se aventuró a explorar la cueva.",
-      "No me aventuro a opinar sin datos."
+      "Aventuró una hipótesis sobre el origen del fuego.",
+      "No quiso aventurar ninguna cifra."
     ],
     "level": "C1",
     "englishSearchAliases": [
-      "to venture",
       "to risk",
       "to venture something"
     ]
@@ -12162,10 +12148,10 @@
   "colar": {
     "type": "ar",
     "regular": false,
-    "translation": "to strain / to sneak in (colarse) / to cut in line (colarse)",
+    "translation": "to strain",
     "examples": [
-      "Se coló en la fila sin que lo vieran.",
-      "Cuela el jugo para quitar las semillas."
+      "Cuela el jugo para quitar las semillas.",
+      "Coló el café con un filtro de tela."
     ],
     "level": "C2",
     "pattern": {
@@ -12174,7 +12160,7 @@
       }
     },
     "englishSearchAliases": [
-      "to strain/sneak in"
+      "to strain"
     ]
   },
   "combinar": {
@@ -12253,10 +12239,10 @@
   "comprometer": {
     "type": "er",
     "regular": true,
-    "translation": "to put at risk / to commit oneself (comprometerse)",
+    "translation": "to compromise / to put at risk",
     "examples": [
-      "Se comprometió a entregar el trabajo el lunes.",
-      "Nos comprometimos en diciembre."
+      "Ese error comprometió la seguridad del sistema.",
+      "No quiero comprometer a nadie."
     ],
     "level": "C2",
     "englishSearchAliases": [
@@ -12293,10 +12279,10 @@
     ],
     "level": "C1"
   },
-  "confederar": {
+  "confederarse": {
     "type": "ar",
     "regular": true,
-    "translation": "to unite groups in a confederation / to form a confederation (confederarse)",
+    "translation": "to form a confederation",
     "examples": [
       "Se confederaron para tener más poder.",
       "Los estados se confederaron en una unión."
@@ -12562,7 +12548,7 @@
       "yoZco": true
     }
   },
-  "atrever": {
+  "atreverse": {
     "type": "er",
     "regular": true,
     "translation": "to dare",
@@ -12570,8 +12556,7 @@
       "No me atrevo a saltar.",
       "Se atrevió a hablar delante de todos."
     ],
-    "level": "B2",
-    "pronominalOnly": true
+    "level": "B1"
   },
   "bendecir": {
     "type": "ir",
@@ -12631,16 +12616,15 @@
     ],
     "level": "B2"
   },
-  "desvivir": {
+  "desvivirse": {
     "type": "ir",
     "regular": true,
-    "translation": "to go out of one's way",
+    "translation": "to go out of one's way / to bend over backwards",
     "examples": [
       "Se desvive por sus hijos.",
       "Se desvivía por complacer a todos."
     ],
-    "level": "C1",
-    "pronominalOnly": true
+    "level": "C1"
   },
   "disuadir": {
     "type": "ir",
@@ -12887,5 +12871,1059 @@
     "pattern": {
       "spellingChange": "ger_j"
     }
+  },
+  "sentarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "sentar",
+    "level": "A1",
+    "translation": "to sit down",
+    "examples": [
+      "Siéntate aquí, por favor.",
+      "Nos sentamos en la primera fila."
+    ]
+  },
+  "manifestarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "manifestar",
+    "level": "B2",
+    "translation": "to demonstrate (protest) / to become apparent",
+    "examples": [
+      "Los ciudadanos se manifestaron en la plaza.",
+      "Los síntomas se manifiestan a los pocos días."
+    ]
+  },
+  "divertirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "divertir",
+    "level": "A1",
+    "translation": "to have fun / to enjoy oneself",
+    "examples": [
+      "Los niños se divierten en el parque.",
+      "Nos divertimos mucho en la fiesta de anoche."
+    ]
+  },
+  "vestirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "vestir",
+    "level": "A1",
+    "translation": "to get dressed",
+    "examples": [
+      "Se viste muy elegante para el trabajo.",
+      "Me vestí rápido y salí."
+    ]
+  },
+  "despedirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "despedir",
+    "level": "A2",
+    "translation": "to say goodbye",
+    "examples": [
+      "Se despide de sus amigos en el aeropuerto.",
+      "Nos despedimos en la estación."
+    ]
+  },
+  "rendirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "rendir",
+    "level": "B1",
+    "translation": "to give up / to surrender",
+    "examples": [
+      "No te rindas nunca.",
+      "El ejército se rindió al amanecer."
+    ]
+  },
+  "estremecerse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "estremecer",
+    "level": "C1",
+    "translation": "to shudder / to tremble",
+    "examples": [
+      "Me estremezco con el frío.",
+      "Se estremeció al oír el grito."
+    ]
+  },
+  "tranquilizarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "tranquilizar",
+    "level": "B1",
+    "translation": "to calm down / to stop worrying",
+    "examples": [
+      "Me tranquilicé después de respirar hondo.",
+      "Tranquilízate, ya casi llegamos."
+    ]
+  },
+  "acostumbrarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "acostumbrar",
+    "level": "B1",
+    "translation": "to get used to",
+    "examples": [
+      "Me acostumbré al clima frío.",
+      "Nunca se acostumbró a vivir sola."
+    ]
+  },
+  "concentrarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "concentrar",
+    "level": "B1",
+    "translation": "to concentrate / to focus",
+    "examples": [
+      "Me concentro mejor por la mañana.",
+      "Concéntrate en lo importante."
+    ]
+  },
+  "enamorarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "enamorar",
+    "level": "A2",
+    "translation": "to fall in love",
+    "examples": [
+      "Se enamoró a primera vista.",
+      "Me enamoré de esta ciudad."
+    ]
+  },
+  "enfadarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "enfadar",
+    "level": "A2",
+    "translation": "to get angry (mainly Spain)",
+    "examples": [
+      "Se enfadó porque llegué tarde.",
+      "No te enfades conmigo."
+    ]
+  },
+  "enojarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "enojar",
+    "level": "A2",
+    "translation": "to get angry (mainly Latin America)",
+    "examples": [
+      "Se enojó por el comentario.",
+      "No te enojes, fue un accidente."
+    ]
+  },
+  "levantarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "levantar",
+    "level": "A1",
+    "translation": "to get up / to stand up",
+    "examples": [
+      "Me levanto a las seis todos los días.",
+      "Se levantó para saludar a los invitados."
+    ]
+  },
+  "mudarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "mudar",
+    "level": "A2",
+    "translation": "to move (house)",
+    "examples": [
+      "Nos mudamos a una casa más grande.",
+      "Se mudó a otra ciudad por trabajo."
+    ],
+    "englishSearchAliases": [
+      "to move (house)",
+      "to move house"
+    ]
+  },
+  "preocuparse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "preocupar",
+    "level": "A2",
+    "translation": "to worry",
+    "examples": [
+      "No te preocupes, todo saldrá bien.",
+      "Mi madre se preocupa por todo."
+    ]
+  },
+  "retirarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "retirar",
+    "level": "B2",
+    "translation": "to retire / to withdraw",
+    "examples": [
+      "Se retiró del cargo a los sesenta años.",
+      "Nos retiramos temprano de la fiesta."
+    ]
+  },
+  "suscribirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "suscribir",
+    "level": "B1",
+    "translation": "to subscribe",
+    "examples": [
+      "Me suscribí a la revista.",
+      "¿Te has suscrito al canal?"
+    ]
+  },
+  "alejarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "alejar",
+    "level": "B1",
+    "translation": "to move away / to get away",
+    "examples": [
+      "Aléjate del borde del acantilado.",
+      "Se alejó sin decir una palabra."
+    ]
+  },
+  "casarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "casar",
+    "level": "A2",
+    "translation": "to get married / to marry (someone)",
+    "examples": [
+      "Se casaron en una ceremonia íntima.",
+      "Mi hermana se casa el próximo mes."
+    ]
+  },
+  "contagiarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "contagiar",
+    "level": "B2",
+    "translation": "to catch (an illness) / to be catching",
+    "examples": [
+      "Se contagió de gripe en la oficina.",
+      "La risa se contagia fácilmente."
+    ]
+  },
+  "disculparse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "disculpar",
+    "level": "A2",
+    "translation": "to apologize",
+    "examples": [
+      "Se disculpó por su error.",
+      "Me disculpé con mi vecino por el ruido."
+    ]
+  },
+  "relajarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "relajar",
+    "level": "A2",
+    "translation": "to relax / to unwind",
+    "examples": [
+      "Relájate, todo va a salir bien.",
+      "Me relajé en la piscina del hotel."
+    ],
+    "englishSearchAliases": [
+      "to relax",
+      "to unwind"
+    ]
+  },
+  "remontarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "remontar",
+    "level": "C1",
+    "translation": "to date back / to go back (in time)",
+    "examples": [
+      "Se remonta a la época medieval.",
+      "Su amistad se remonta a la infancia."
+    ],
+    "englishSearchAliases": [
+      "to go back (in time)"
+    ]
+  },
+  "tatuarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "tatuar",
+    "level": "B2",
+    "translation": "to get a tattoo",
+    "examples": [
+      "Se tatuó una estrella en el brazo.",
+      "Me tatué el nombre de mi madre."
+    ]
+  },
+  "aventurarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "aventurar",
+    "level": "C1",
+    "translation": "to venture (out) / to dare",
+    "examples": [
+      "Se aventuró a explorar la cueva.",
+      "No me aventuro a opinar sin datos."
+    ]
+  },
+  "colarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "colar",
+    "level": "B2",
+    "translation": "to sneak in / to cut in line",
+    "examples": [
+      "Se coló en la fila sin que lo vieran.",
+      "Unos chicos se colaron en el concierto."
+    ]
+  },
+  "comprometerse": {
+    "type": "er",
+    "regular": true,
+    "reflexiveBase": "comprometer",
+    "level": "B1",
+    "translation": "to commit (oneself) / to get engaged",
+    "examples": [
+      "Se comprometió a entregar el trabajo el lunes.",
+      "Nos comprometimos en diciembre."
+    ]
+  },
+  "aburrirse": {
+    "type": "ir",
+    "regular": true,
+    "reflexiveBase": "aburrir",
+    "level": "A1",
+    "translation": "to get bored",
+    "examples": [
+      "Me aburro en las reuniones largas.",
+      "Se aburrieron en la clase de historia."
+    ]
+  },
+  "acordarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "acordar",
+    "level": "A2",
+    "translation": "to remember (acordarse de)",
+    "examples": [
+      "No me acuerdo de dónde dejé el libro.",
+      "¿Te acuerdas de mí?"
+    ]
+  },
+  "acostarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "acostar",
+    "level": "A1",
+    "translation": "to go to bed / to lie down",
+    "examples": [
+      "Me acuesto a las once.",
+      "Se acostó temprano porque estaba cansado."
+    ]
+  },
+  "alegrarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "alegrar",
+    "level": "A2",
+    "translation": "to be glad",
+    "examples": [
+      "Me alegro de verte.",
+      "Se alegró al recibir la noticia."
+    ]
+  },
+  "asustarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "asustar",
+    "level": "A2",
+    "translation": "to get scared",
+    "examples": [
+      "Me asusté con el ruido.",
+      "No te asustes, es solo el viento."
+    ]
+  },
+  "bañarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "bañar",
+    "level": "A1",
+    "translation": "to take a bath / to go for a swim",
+    "examples": [
+      "Me baño antes de dormir.",
+      "Se bañó en el río."
+    ]
+  },
+  "calentarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "calentar",
+    "level": "A2",
+    "translation": "to warm up / to get hot",
+    "examples": [
+      "Me caliento las manos junto al fuego.",
+      "El motor se calentó en la subida."
+    ]
+  },
+  "callarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "callar",
+    "level": "A2",
+    "translation": "to be quiet / to stop talking",
+    "examples": [
+      "Cállate un momento, por favor.",
+      "Se calló cuando entró el director."
+    ]
+  },
+  "calmarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "calmar",
+    "level": "A2",
+    "translation": "to calm down",
+    "examples": [
+      "Cálmate, todo va a estar bien.",
+      "Por fin se calmó el viento."
+    ]
+  },
+  "comunicarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "comunicar",
+    "level": "A2",
+    "translation": "to communicate / to get in touch",
+    "examples": [
+      "Me comunico con mi familia por videollamada.",
+      "Nos comunicamos por correo electrónico."
+    ]
+  },
+  "decidirse": {
+    "type": "ir",
+    "regular": true,
+    "reflexiveBase": "decidir",
+    "level": "B1",
+    "translation": "to make up one's mind",
+    "examples": [
+      "No me decido entre los dos vestidos.",
+      "Por fin se decidió a hablar con ella."
+    ]
+  },
+  "dedicarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "dedicar",
+    "level": "A2",
+    "translation": "to work as / to devote oneself (to)",
+    "examples": [
+      "¿A qué te dedicas?",
+      "Se dedica a la enseñanza desde hace veinte años."
+    ]
+  },
+  "desarrollarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "desarrollar",
+    "level": "B1",
+    "translation": "to develop / to take place",
+    "examples": [
+      "La historia se desarrolla en Buenos Aires.",
+      "La economía se desarrolló muy rápido."
+    ]
+  },
+  "despertarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "despertar",
+    "level": "A1",
+    "translation": "to wake up",
+    "examples": [
+      "Me despierto a las seis todos los días.",
+      "Se despertó con el ruido de la calle."
+    ]
+  },
+  "detenerse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "detener",
+    "level": "B1",
+    "translation": "to stop (oneself) / to pause",
+    "examples": [
+      "Nos detuvimos a mirar el paisaje.",
+      "El tren se detiene en todas las estaciones."
+    ]
+  },
+  "dormirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "dormir",
+    "level": "A1",
+    "translation": "to fall asleep",
+    "examples": [
+      "Me dormí viendo la película.",
+      "El bebé se durmió enseguida."
+    ]
+  },
+  "echarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "echar",
+    "level": "B1",
+    "translation": "to lie down / to burst out (laughing, crying)",
+    "examples": [
+      "Me eché en el sofá después del trabajo.",
+      "Se echó a reír al ver la foto."
+    ]
+  },
+  "enfermarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "enfermar",
+    "level": "A2",
+    "translation": "to get sick (mainly Latin America)",
+    "examples": [
+      "Me enfermé del estómago.",
+      "Los niños se enferman mucho en invierno."
+    ]
+  },
+  "enriquecerse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "enriquecer",
+    "level": "B2",
+    "translation": "to get rich",
+    "examples": [
+      "Se enriqueció con el negocio de importación.",
+      "Nadie se enriquece con ese sueldo."
+    ]
+  },
+  "esconderse": {
+    "type": "er",
+    "regular": true,
+    "reflexiveBase": "esconder",
+    "level": "A2",
+    "translation": "to hide (oneself)",
+    "examples": [
+      "Se esconden detrás del sofá.",
+      "El gato se escondió debajo de la cama."
+    ]
+  },
+  "irse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "ir",
+    "level": "A1",
+    "translation": "to leave / to go away",
+    "examples": [
+      "Me voy a casa.",
+      "Se fueron sin despedirse."
+    ]
+  },
+  "juntarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "juntar",
+    "level": "A2",
+    "translation": "to get together / to meet up",
+    "examples": [
+      "Nos juntamos los viernes para cenar.",
+      "Se juntaron muchos curiosos en la plaza."
+    ]
+  },
+  "lavarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "lavar",
+    "level": "A1",
+    "translation": "to wash (oneself)",
+    "examples": [
+      "Me lavo las manos antes de comer.",
+      "Lávate los dientes."
+    ]
+  },
+  "llamarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "llamar",
+    "level": "A1",
+    "translation": "to be called / to be named",
+    "examples": [
+      "Me llamo Ana.",
+      "¿Cómo se llama tu perro?"
+    ]
+  },
+  "moverse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "mover",
+    "level": "A2",
+    "translation": "to move (oneself)",
+    "examples": [
+      "No te muevas.",
+      "Nos movimos al otro lado de la sala."
+    ]
+  },
+  "negarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "negar",
+    "level": "B1",
+    "translation": "to refuse",
+    "examples": [
+      "Se negó a firmar el contrato.",
+      "Me niego a aceptar esas condiciones."
+    ]
+  },
+  "olvidarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "olvidar",
+    "level": "A2",
+    "translation": "to forget (about)",
+    "examples": [
+      "Me olvidé de llamarte.",
+      "No te olvides del paraguas."
+    ]
+  },
+  "peinarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "peinar",
+    "level": "A1",
+    "translation": "to comb one's hair",
+    "examples": [
+      "Me peiné rápido antes de salir.",
+      "Se peina con mucho cuidado."
+    ]
+  },
+  "ponerse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "poner",
+    "level": "A1",
+    "translation": "to put on (clothes) / to become",
+    "examples": [
+      "Ponte el abrigo, hace frío.",
+      "Se puso nerviosa antes del examen."
+    ]
+  },
+  "preguntarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "preguntar",
+    "level": "B1",
+    "translation": "to wonder",
+    "examples": [
+      "Me pregunto qué estará haciendo ahora.",
+      "Nos preguntamos por qué no vino."
+    ]
+  },
+  "prepararse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "preparar",
+    "level": "A2",
+    "translation": "to get ready / to prepare (oneself)",
+    "examples": [
+      "Se prepara para el examen final.",
+      "Prepárate, salimos en diez minutos."
+    ]
+  },
+  "quedarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "quedar",
+    "level": "A1",
+    "translation": "to stay",
+    "examples": [
+      "Nos quedamos en casa todo el fin de semana.",
+      "Me quedé dormido en el sofá."
+    ]
+  },
+  "quemarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "quemar",
+    "level": "A2",
+    "translation": "to burn oneself / to get burned",
+    "examples": [
+      "Se quemó la mano con la estufa.",
+      "Me quemé en la playa."
+    ]
+  },
+  "registrarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "registrar",
+    "level": "A2",
+    "translation": "to register / to sign up",
+    "examples": [
+      "Me registré en la página web.",
+      "Los huéspedes se registran en la recepción."
+    ]
+  },
+  "secarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "secar",
+    "level": "A1",
+    "translation": "to dry (oneself) / to dry up",
+    "examples": [
+      "Me seco el pelo con una toalla.",
+      "La ropa se secó al sol."
+    ]
+  },
+  "sentirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "sentir",
+    "level": "A1",
+    "translation": "to feel (well, sad…)",
+    "examples": [
+      "Me siento muy bien hoy.",
+      "Se sentía cansada después del viaje."
+    ]
+  },
+  "reírse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "reír",
+    "level": "A1",
+    "translation": "to laugh / to laugh at (reírse de)",
+    "examples": [
+      "Nos reímos mucho con esa película.",
+      "No te rías de mí."
+    ]
+  },
+  "caerse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "caer",
+    "level": "A1",
+    "translation": "to fall (down)",
+    "examples": [
+      "Se cayó de la bicicleta.",
+      "Casi me caigo en la escalera."
+    ]
+  },
+  "parecerse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "parecer",
+    "level": "A2",
+    "translation": "to look like / to resemble",
+    "examples": [
+      "Te pareces mucho a tu padre.",
+      "Me parezco a mi abuelo."
+    ]
+  },
+  "encontrarse": {
+    "type": "ar",
+    "regular": false,
+    "reflexiveBase": "encontrar",
+    "level": "A2",
+    "translation": "to feel (well, ill) / to meet (by chance) / to be located",
+    "examples": [
+      "¿Cómo te encuentras hoy?",
+      "Me encontré con Ana en el mercado."
+    ]
+  },
+  "convertirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "convertir",
+    "level": "B1",
+    "translation": "to become / to turn into",
+    "examples": [
+      "Se convirtió en una gran actriz.",
+      "El agua se convierte en hielo a cero grados."
+    ]
+  },
+  "volverse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "volver",
+    "level": "B1",
+    "translation": "to become (a change of character or state) / to turn around",
+    "examples": [
+      "Se volvió loco de alegría.",
+      "Me volví para ver quién era."
+    ]
+  },
+  "hacerse": {
+    "type": "er",
+    "regular": false,
+    "reflexiveBase": "hacer",
+    "level": "B1",
+    "translation": "to become (a doctor, rich, friends…)",
+    "examples": [
+      "Se hizo médico a los treinta años.",
+      "Nos hicimos amigos en la universidad."
+    ]
+  },
+  "morirse": {
+    "type": "ir",
+    "regular": false,
+    "reflexiveBase": "morir",
+    "level": "B1",
+    "translation": "to die / to be dying (for)",
+    "examples": [
+      "Me muero de hambre.",
+      "Se murió su abuelo el año pasado."
+    ]
+  },
+  "arreglarse": {
+    "type": "ar",
+    "regular": true,
+    "reflexiveBase": "arreglar",
+    "level": "A2",
+    "translation": "to get ready / to work out",
+    "examples": [
+      "Se arregla mucho para salir.",
+      "Al final todo se arregló."
+    ]
+  },
+  "acercarse": {
+    "type": "ar",
+    "regular": false,
+    "pattern": {
+      "spellingChange": "car_qué"
+    },
+    "level": "A2",
+    "translation": "to approach / to come closer",
+    "examples": [
+      "Acércate, que no te oigo.",
+      "Se acercó a la ventana."
+    ]
+  },
+  "afeitarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "A1",
+    "translation": "to shave",
+    "examples": [
+      "Me afeito todas las mañanas.",
+      "Se afeitó la barba para la boda."
+    ]
+  },
+  "arrepentirse": {
+    "type": "ir",
+    "regular": false,
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie",
+        "preterite": "e_i"
+      }
+    },
+    "level": "B1",
+    "translation": "to regret / to repent",
+    "examples": [
+      "No me arrepiento de nada.",
+      "Se arrepintió de lo que dijo."
+    ]
+  },
+  "broncearse": {
+    "type": "ar",
+    "regular": true,
+    "level": "A2",
+    "translation": "to get a tan",
+    "examples": [
+      "Nos bronceamos en la playa.",
+      "Se broncea con facilidad."
+    ]
+  },
+  "burlarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "B1",
+    "translation": "to make fun (of)",
+    "examples": [
+      "No te burles de tu hermano.",
+      "Se burlaban de su acento."
+    ]
+  },
+  "cansarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "A2",
+    "translation": "to get tired",
+    "examples": [
+      "Me canso mucho cuando subo escaleras.",
+      "Se cansó de esperar y se fue."
+    ]
+  },
+  "criarse": {
+    "type": "ar",
+    "regular": false,
+    "overrides": {
+      "present": [
+        "crío",
+        "crías",
+        "cría",
+        "criamos",
+        "criais",
+        "crían"
+      ],
+      "preterite": [
+        "crie",
+        "criaste",
+        "crio",
+        "criamos",
+        "criasteis",
+        "criaron"
+      ],
+      "subjunctive_present": [
+        "críe",
+        "críes",
+        "críe",
+        "criemos",
+        "crieis",
+        "críen"
+      ]
+    },
+    "level": "B1",
+    "translation": "to grow up / to be raised",
+    "examples": [
+      "Me crie en un pueblo pequeño.",
+      "Se criaron con sus abuelos."
+    ]
+  },
+  "divorciarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "A2",
+    "translation": "to get divorced",
+    "examples": [
+      "Se divorciaron después de diez años.",
+      "Mis padres se divorciaron cuando yo era niño."
+    ]
+  },
+  "emborracharse": {
+    "type": "ar",
+    "regular": true,
+    "level": "B1",
+    "translation": "to get drunk",
+    "examples": [
+      "Se emborrachó en la boda de su primo.",
+      "No te emborraches esta noche."
+    ]
+  },
+  "entusiasmarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "B2",
+    "translation": "to get excited / to get enthusiastic",
+    "examples": [
+      "Se entusiasmó con la idea del viaje.",
+      "Me entusiasmo fácilmente con los proyectos nuevos."
+    ]
+  },
+  "fijarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "B1",
+    "translation": "to notice / to pay attention",
+    "examples": [
+      "¿Te fijaste en su vestido?",
+      "Fíjate bien antes de cruzar."
+    ]
+  },
+  "graduarse": {
+    "type": "ar",
+    "regular": false,
+    "pattern": {
+      "stemChange": {
+        "present": "u_ú"
+      }
+    },
+    "level": "A2",
+    "translation": "to graduate",
+    "examples": [
+      "Me gradué en 2020.",
+      "Se graduará en junio."
+    ]
+  },
+  "hallarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "B2",
+    "translation": "to be (located) / to find oneself",
+    "examples": [
+      "El museo se halla en el centro.",
+      "Se hallaba en una situación difícil."
+    ]
+  },
+  "jactarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "C1",
+    "translation": "to boast",
+    "examples": [
+      "Se jacta de no haber estado nunca enfermo.",
+      "No te jactes de tus notas."
+    ]
+  },
+  "maquillarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "A1",
+    "translation": "to put on makeup",
+    "examples": [
+      "Se maquilla antes de ir al trabajo.",
+      "No me maquillo los fines de semana."
+    ]
+  },
+  "matricularse": {
+    "type": "ar",
+    "regular": true,
+    "level": "A2",
+    "translation": "to enroll",
+    "examples": [
+      "Me matriculé en un curso de inglés.",
+      "Se matriculó en la universidad."
+    ]
+  },
+  "oponerse": {
+    "type": "er",
+    "regular": false,
+    "pattern": {
+      "yoGo": true,
+      "irregularPreteriteStem": "opus",
+      "irregularFutureStem": "opondr"
+    },
+    "level": "B1",
+    "translation": "to oppose / to object",
+    "examples": [
+      "Me opongo a esa decisión.",
+      "Los vecinos se opusieron al proyecto."
+    ]
+  },
+  "portarse": {
+    "type": "ar",
+    "regular": true,
+    "level": "A2",
+    "translation": "to behave",
+    "examples": [
+      "Pórtate bien en la escuela.",
+      "Los niños se portaron muy bien."
+    ]
+  },
+  "quebrarse": {
+    "type": "ar",
+    "regular": false,
+    "pattern": {
+      "stemChange": {
+        "present": "e_ie"
+      }
+    },
+    "level": "C1",
+    "translation": "to break (a bone) / to crack (mainly Latin America)",
+    "examples": [
+      "Se quebró una pierna esquiando.",
+      "El hielo se quiebra bajo nuestros pies."
+    ]
   }
 }

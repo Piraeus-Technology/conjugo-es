@@ -5,7 +5,7 @@ import {
   getOverrideExample,
   getRuleNotes,
 } from '../utils/conjugationInsights';
-import { allTenses, conjugate, type VerbData } from '../utils/conjugate';
+import { allTenses, conjugate, getBareVerbData, type VerbData } from '../utils/conjugate';
 
 const verbData = verbs as Record<string, VerbData>;
 
@@ -28,7 +28,7 @@ describe('conjugation insights', () => {
       'remover',
       'disolver',
       'conmover',
-      'atrever',
+      'atreverse',
     ]) {
       expect(getFamilyKey(unrelated, verbData[unrelated])).not.toBe(verKey);
     }
@@ -63,7 +63,7 @@ describe('conjugation insights', () => {
       const explainsIrregularity = getInflectionNotes(infinitive, verb).length > 0;
       if (explainsIrregularity === verb.regular) return [infinitive];
       if (!verb.regular) return [];
-      const unmarked = { ...verb, pattern: undefined, overrides: undefined };
+      const unmarked = { ...getBareVerbData(verb), pattern: undefined, overrides: undefined };
       const hasIrregularForm = allTenses.some(tense => {
         const regular = conjugate(infinitive, unmarked, tense);
         return conjugate(infinitive, verb, tense).some((row, index) => !row.disabled && row.form !== regular[index].form);
@@ -79,11 +79,14 @@ describe('conjugation insights', () => {
   });
 
   test('every override note shows a changed form and names the change', () => {
-    const overridden = Object.entries(verbData).filter(([, verb]) => verb.overrides || verb.pattern?.fullOverrides);
-    expect(overridden).toHaveLength(39);
+    const overridden = Object.entries(verbData).filter(([, verb]) => {
+      const base = getBareVerbData(verb);
+      return base.overrides || base.pattern?.fullOverrides;
+    });
     for (const [infinitive, verb] of overridden) {
       const example = getOverrideExample(infinitive, verb)!;
       expect(example.form).not.toBe(example.regularForm);
+      expect(example.form).toBe(conjugate(infinitive, verb, example.tense)[example.personIndex].form);
       expect(getRuleNotes(infinitive, verb)).toContain(`Change in ${example.difference}: ${example.form}.`);
     }
     expect(getOverrideExample('averiguar', verbData.averiguar)).toMatchObject({ form: 'averigüé', difference: 'spelling' });
