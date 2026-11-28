@@ -32,6 +32,15 @@
         "ascAppId": "6759270074",
         "appleTeamId": "25MJJZZAWU"
       }
+    },
+    "internal": {
+      "android": {
+        "track": "internal"
+      },
+      "ios": {
+        "ascAppId": "6759270074",
+        "appleTeamId": "25MJJZZAWU"
+      }
     }
   }
 }
