@@ -26,6 +26,11 @@ jest.mock('expo-iap', () => ({
     NotPrepared: 'not-prepared',
     ServiceDisconnected: 'service-disconnected',
     ServiceTimeout: 'service-timeout',
+    BillingUnavailable: 'billing-unavailable',
+    IapNotAvailable: 'iap-not-available',
+    ItemUnavailable: 'item-unavailable',
+    DeveloperError: 'developer-error',
+    FeatureNotSupported: 'feature-not-supported',
     SkuNotFound: 'sku-not-found',
   },
 }));
@@ -301,11 +306,20 @@ describe('useTipJar', () => {
     expect(result.current.loading).toBe(false);
   });
 
-  test.each(['ios', 'android'] as const)('tip() shows Purchase Failed for an immediate %s sku-not-found refusal', async os => {
+  test.each([
+    ['android', 'billing-unavailable'],
+    ['android', 'item-unavailable'],
+    ['android', 'developer-error'],
+    ['android', 'feature-not-supported'],
+    ['android', 'sku-not-found'],
+    ['ios', 'iap-not-available'],
+    ['ios', 'item-unavailable'],
+    ['ios', 'developer-error'],
+    ['ios', 'feature-not-supported'],
+    ['ios', 'sku-not-found'],
+  ] as const)('tip() shows Purchase Failed for an active %s request rejected with %s', async (os, code) => {
     jest.replaceProperty(Platform, 'OS', os);
-    mockIap.requestPurchase.mockRejectedValueOnce({
-      code: 'sku-not-found',
-    });
+    mockIap.requestPurchase.mockRejectedValueOnce({ code });
     const { result } = await renderLoadedTipJar();
 
     await act(async () => {
@@ -314,6 +328,22 @@ describe('useTipJar', () => {
 
     expect(alertSpy).toHaveBeenCalledWith('Purchase Failed', 'Something went wrong. Please try again.');
     expect(alertSpy).toHaveBeenCalledTimes(1);
+    expect(result.current.loading).toBe(false);
+  });
+
+  test.each([
+    ['android', 'iap-not-available'],
+    ['ios', 'billing-unavailable'],
+  ] as const)('tip() quietly reconciles a %s request rejected with the other store\'s %s code', async (os, code) => {
+    jest.replaceProperty(Platform, 'OS', os);
+    mockIap.requestPurchase.mockRejectedValueOnce({ code });
+    const { result } = await renderLoadedTipJar();
+    const sweep = os === 'android' ? mockIap.getAvailablePurchases : mockIap.getPendingTransactionsIOS;
+
+    await act(async () => { await result.current.tip(); });
+
+    expect(alertSpy).not.toHaveBeenCalled();
+    expect(sweep).toHaveBeenCalledTimes(2);
     expect(result.current.loading).toBe(false);
   });
 

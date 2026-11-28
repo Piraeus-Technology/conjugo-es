@@ -122,6 +122,18 @@ function useTipJarController() {
     const { attempts, finishing, finished, attentionNotified } = session;
     const isAndroid = Platform.OS === 'android';
     const codes = iap.ErrorCode;
+    // Both stores: sku-not-found, item-unavailable, developer-error, feature-not-supported.
+    // Play also returns billing-unavailable. StoreKit also returns iap-not-available.
+    // In expo-iap 6.6.0 / OpenIAP 4.3.0 these purchase codes mean a lookup,
+    // request validation, or store refusal prevented payment, even with the sheet open.
+    // Recheck the store mappings and purchase paths when upgrading expo-iap.
+    const certainRefusalCodes = new Set([
+      codes.SkuNotFound,
+      codes.ItemUnavailable,
+      codes.DeveloperError,
+      codes.FeatureNotSupported,
+      isAndroid ? codes.BillingUnavailable : codes.IapNotAvailable,
+    ]);
     let mounted = true;
     let connected = false;
     let product: Product | null = null;
@@ -421,11 +433,7 @@ function useTipJarController() {
         showPending(attempt);
         return;
       }
-      // Show Purchase Failed only for a refusal proven to precede payment.
-      // In expo-iap 6.6.0's OpenIAP 4.3.0, both OpenIapModule.kt (Play) and
-      // OpenIapStoreKitModule.swift (Apple) emit SkuNotFound during product lookup
-      // before opening the purchase sheet. Recheck this when upgrading expo-iap.
-      const refused = code === codes.SkuNotFound;
+      const refused = code !== undefined && certainRefusalCodes.has(code);
       if (attempt.pendingNotified || (!refused && code !== codes.UserCancelled)) {
         refresh();
         return;
