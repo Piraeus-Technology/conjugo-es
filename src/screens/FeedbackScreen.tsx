@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   View,
   Text,
   TouchableOpacity,
@@ -201,7 +202,7 @@ export default function FeedbackScreen() {
         {(product || tipUnavailable) && (
           <>
             <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: spacing.lg }]}>Tip Jar</Text>
-            {product && (!tipUnavailable || tipLoading) ? (
+            {product && !tipUnavailable ? (
               <>
                 <Text style={[styles.tipDescription, { color: colors.textSecondary }]}>
                   {APP_NAME} is free with no ads. If you find it helpful, consider leaving a tip!
@@ -213,9 +214,11 @@ export default function FeedbackScreen() {
                   activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityLabel={`Leave a ${product.displayPrice} tip`}
-                  accessibilityState={{ disabled: tipLoading }}
+                  accessibilityState={{ disabled: tipLoading, busy: tipLoading }}
                 >
-                  <Text style={[styles.tipPrice, { color: colors.primaryText }]}>{product.displayPrice}</Text>
+                  {tipLoading
+                    ? <ActivityIndicator color={colors.primaryText} />
+                    : <Text style={[styles.tipPrice, { color: colors.primaryText }]}>{product.displayPrice}</Text>}
                 </TouchableOpacity>
               </>
             ) : (
