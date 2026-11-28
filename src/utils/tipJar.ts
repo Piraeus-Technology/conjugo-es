@@ -53,9 +53,11 @@ interface PlayRequest {
 function createTipSession() {
   return {
     attempts: new Map<string, TipAttempt>(),
-    finishing: new Map<string, TipAttempt | undefined>(),
+    finishing: new Set<string>(),
+    unfinishedMarkedTips: new Map<string, TipAttempt>(),
+    failedMarkedTips: new Set<string>(),
     finished: new Set<string>(),
-    attentionNotified: new Set<string>(),
+    markedReceiptCount: 0,
     playRequest: undefined as PlayRequest | undefined,
     onChange: undefined as (() => void) | undefined,
     onRequestError: undefined as ((
@@ -119,7 +121,7 @@ function useTipJarController() {
     if (!iap) return;
 
     const session = tipSession;
-    const { attempts, finishing, finished, attentionNotified } = session;
+    const { attempts, finishing, unfinishedMarkedTips, failedMarkedTips, finished } = session;
     const isAndroid = Platform.OS === 'android';
     const codes = iap.ErrorCode;
     // Both stores: sku-not-found, item-unavailable, developer-error, feature-not-supported.
@@ -140,7 +142,6 @@ function useTipJarController() {
     let productUnavailable = false;
     let needsProduct = true;
     let activeAttempt: TipAttempt | undefined;
-    let markedReceiptCount = 0;
     let connecting: Promise<boolean> | undefined;
     let refreshing = false;
     let reloadQueued = false;
@@ -149,16 +150,15 @@ function useTipJarController() {
     let purchaseListener: ReturnType<typeof iap.purchaseUpdatedListener> | undefined;
     let errorListener: ReturnType<typeof iap.purchaseErrorListener> | undefined;
 
-    const playBlocked = () => {
-      const request = session.playRequest;
-      // A marked receipt can arrive before the shared native promise drains.
-      return Boolean(request && (request.attempt.receiptReceived || request.expired));
-    };
-    const isFinishingMarkedTip = () => Array.from(finishing).some(([key, attempt]) => attempt && !finished.has(key));
-    const isBusy = () => Boolean(activeAttempt || (session.playRequest && !playBlocked()) || isFinishingMarkedTip());
+    const playRequestExpired = () => session.playRequest?.expired === true;
+    const isUnavailable = () => failedMarkedTips.size > 0 ||
+      (unfinishedMarkedTips.size === 0 && (productUnavailable || playRequestExpired()));
+    // A marked receipt can finish before the shared Play promise drains.
+    const isBusy = () => Boolean(activeAttempt || session.playRequest || unfinishedMarkedTips.size > 0);
     const sync = () => {
-      setLoading(isBusy());
-      setUnavailable(productUnavailable || playBlocked());
+      const unavailable = isUnavailable();
+      setLoading(!unavailable && isBusy());
+      setUnavailable(unavailable);
     };
     session.onChange = sync;
     sync();
@@ -173,7 +173,7 @@ function useTipJarController() {
       if (activeAttempt !== attempt) return;
       clearTimeout(attempt.timeout);
       activeAttempt = undefined;
-      sync();
+      if (mounted) sync();
     };
 
     const checkConnection = (error: unknown) => {
@@ -198,13 +198,14 @@ function useTipJarController() {
     };
 
     const claimPurchase = (purchase: Purchase) => {
-      if (!mounted || !CONSUMABLE_TIP_SKUS.has(purchase.productId)) return;
+      // A paid result can arrive after the provider that started checkout unmounts.
+      if (!CONSUMABLE_TIP_SKUS.has(purchase.productId)) return;
       // StoreKit history can include refunded or revoked consumables.
       if ('revocationDateIOS' in purchase && purchase.revocationDateIOS != null) return;
       const token = getAttemptToken(purchase);
       const attempt = purchase.productId === ACTIVE_TIP_SKU && token ? attempts.get(token) : undefined;
       if (purchase.purchaseState === 'pending') {
-        if (attempt && !attempt.receiptReceived) {
+        if (mounted && attempt && !attempt.receiptReceived) {
           settle(attempt);
           showPending(attempt);
         }
@@ -212,38 +213,46 @@ function useTipJarController() {
       }
       if (purchase.purchaseState !== 'purchased') return;
       const key = getTipTransactionKey(purchase, Platform.OS);
-      if (!key || finished.has(key) || finishing.has(key)) return;
+      if (!key || finished.has(key)) return;
 
-      finishing.set(key, attempt);
-      if (attempt) {
-        markedReceiptCount += 1;
+      const alreadyFinishing = finishing.has(key);
+      finishing.add(key);
+      if (attempt && !unfinishedMarkedTips.has(key)) {
+        // Keep the association by transaction key. A retry may omit the marker.
+        unfinishedMarkedTips.set(key, attempt);
+        session.markedReceiptCount += 1;
         attempt.receiptReceived = true;
         settle(attempt);
+        session.onChange?.();
       }
-      sync();
+      if (alreadyFinishing) return;
       return async () => {
         try {
-          if (!mounted || finished.has(key)) return;
+          if (finished.has(key)) return;
           // Observe a late success even after the timeout makes this key retryable.
           await withStoreTimeout(finishTip(purchase, key).then(() => {
             if (finished.has(key)) return;
             finished.add(key);
-            attentionNotified.delete(key);
-            if (attempt && attempts.get(attempt.token) === attempt) {
-              attempts.delete(attempt.token);
-              if (mounted) Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
+            const paidAttempt = unfinishedMarkedTips.get(key);
+            unfinishedMarkedTips.delete(key);
+            failedMarkedTips.delete(key);
+            if (paidAttempt && attempts.get(paidAttempt.token) === paidAttempt) {
+              attempts.delete(paidAttempt.token);
+              if (session.onChange) Alert.alert('Thank You!', 'Your support means a lot and helps keep the app free for everyone.');
             }
             session.onChange?.();
           }), FINISH_TIMEOUT_MS);
         } catch (error) {
-          if (!mounted || finished.has(key)) return;
-          checkConnection(error);
-          console.warn('Failed to finish tip transaction:', error);
-          if (attempt && !attentionNotified.has(key)) {
-            attentionNotified.add(key);
-            Alert.alert(
+          if (finished.has(key)) return;
+          if (mounted) {
+            checkConnection(error);
+            console.warn('Failed to finish tip transaction:', error);
+          }
+          if (unfinishedMarkedTips.has(key) && !failedMarkedTips.has(key)) {
+            failedMarkedTips.add(key);
+            if (session.onChange) Alert.alert(
               'Purchase Needs Attention',
-              'Your tip was received, but we could not finish the transaction. Please reopen the app or try again later.',
+              'Your tip was received, but we could not finish the transaction. Please reopen the app later.',
             );
           }
         } finally {
@@ -444,17 +453,17 @@ function useTipJarController() {
     }
 
     const tip = async () => {
-      if (!product || productUnavailable || session.playRequest || isBusy()) return;
+      if (!product || isUnavailable() || isBusy()) return;
       const token = createAttemptToken();
       const attempt: TipAttempt = { token, receiptReceived: false, pendingNotified: false };
       activeAttempt = attempt;
       sync();
       if (isAndroid) {
         // An earlier marked receipt can arrive and finish during preparation.
-        const receiptsBeforePreparation = markedReceiptCount;
+        const receiptsBeforePreparation = session.markedReceiptCount;
         const ready = await preparePurchase();
         if (!mounted) return;
-        if (!ready || markedReceiptCount !== receiptsBeforePreparation || isFinishingMarkedTip()) {
+        if (!ready || session.markedReceiptCount !== receiptsBeforePreparation || unfinishedMarkedTips.size > 0) {
           settle(attempt);
           return;
         }
@@ -517,7 +526,10 @@ function useTipJarController() {
 
     handlers.current = {
       tip,
-      retryIfUnavailable: () => { if (!connected || needsProduct || playBlocked()) refresh(true); },
+      retryIfUnavailable: () => {
+        if (!connected || needsProduct || playRequestExpired()) refresh(true);
+        else if (failedMarkedTips.size > 0) sweepPurchases();
+      },
     };
     session.onRequestError = handlePurchaseError;
     refresh();
@@ -525,7 +537,7 @@ function useTipJarController() {
       if (state !== 'active') return;
       if (activeAttempt?.deadline && activeAttempt.deadline <= Date.now()) settle(activeAttempt);
       sync();
-      refresh(productUnavailable || playBlocked());
+      refresh(productUnavailable || playRequestExpired());
     });
 
     return () => {
